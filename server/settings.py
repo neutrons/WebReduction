@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'server.apps.reduction',
-    'bootstrap3',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -128,8 +128,4 @@ STATICFILES_DIRS = [
     '/var/www/static/',
 ]
 
-# Default settings
-BOOTSTRAP3 = {
-    #'theme_url': os.path.join(BASE_DIR, "static", "css/ornl-bootstrap-theme.css"),
-    'theme_url': "http://localhost:8080/static/css/ornl-bootstrap-theme.css",
-}
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

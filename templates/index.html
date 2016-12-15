@@ -1,16 +1,9 @@
-{% extends 'bootstrap.html' %}
+{% extends 'base.html' %}
 
 {% load staticfiles %}
-{% load bootstrap3 %}
+{% load crispy_forms_tags %}
 
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-
-{% block bootstrap3_content %}
+{% block content %}
 
 <!DOCTYPE html>
 
