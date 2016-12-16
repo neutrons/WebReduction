@@ -23,5 +23,4 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^users/', include('server.apps.users.urls', namespace='users') ),
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
-    #url(r'^login/', TemplateView.as_view(template_name='login.html'), name='login'),
 ]

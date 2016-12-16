@@ -33,6 +33,7 @@ class LoginView(FormView):
     template_name = 'users/login.html'
     redirect_field_name = REDIRECT_FIELD_NAME
     success_url = reverse_lazy('index')
+    
     create_profile_url = reverse_lazy('users:profile_create')
 
 
@@ -44,15 +45,15 @@ class LoginView(FormView):
 
     def form_valid(self, form):
         # Mathieu athentication
-        username = form.cleaned_data["username"]
-        password = form.cleaned_data["password"]
+#        username = form.cleaned_data["username"]
+#        password = form.cleaned_data["password"]
 #         user = authenticate(username=username, password=password)
 #         if user is not None and not user.is_anonymous():
 #             auth_login(self.request, user)
 #         else:
 #             messages.error(self.request, "Django Authenticate Failed. Invalid username or password!")
 
-        # Default authentication
+        # Default authentication (NO PASSWORD!)
         auth_login(self.request, form.get_user())
 
         return super(LoginView, self).form_valid(form)
@@ -87,13 +88,13 @@ class LogoutView(RedirectView):
 
 class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
     model = UserProfile
-    fields = ['home_institution']
+    fields = ['home_institution', 'email_address']
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
 
 class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,CreateView):
     model = UserProfile
-    fields = ['home_institution']
+    fields = ['home_institution', 'email_address']
     success_url = reverse_lazy('index')
     success_message = "Your profile was created successfully."
 

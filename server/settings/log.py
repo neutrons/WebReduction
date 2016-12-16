@@ -62,5 +62,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
+        # My apps
+        'users': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
     }
 }

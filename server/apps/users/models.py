@@ -43,10 +43,11 @@ class UserProfile(models.Model):
                                 related_name="profile", related_query_name="profile",)
 
     # Add here as many fields as you want
-    home_institution = models.CharField(max_length=200, blank=True, null=True)
+    home_institution = models.CharField(max_length=200, blank=True)
+    email_address = models.EmailField()
 
     def __unicode__(self):
-        return  _("%s") %  (self.user)
+        return self.username
 
     # Meta
     class Meta:

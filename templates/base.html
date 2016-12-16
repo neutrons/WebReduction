@@ -1,144 +1,142 @@
 {% load staticfiles %}
-
-{% load crispy_forms_tags %}
-
 <!DOCTYPE html>
 <html>
-    <head>
-        {% block header %}
-        <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap-3.3.7-dist/css/bootstrap.min.css" %}'>
-        <link rel="stylesheet" type="text/css" href='{% static "css/ornl-bootstrap-theme.css" %}'>
-        <style>
-            body {
-                margin-top: 60px;
-                padding: 20px;
-            }
-        </style>
-        {% endblock %}
-    </head>
-    <body>
-        {% block navbar %}
-        <nav class="navbar navbar-default navbar-fixed-top">
+
+<head>
+    {% block header %}
+    <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap-3.3.7-dist/css/bootstrap.min.css" %}'>
+    <link rel="stylesheet" type="text/css" href='{% static "css/ornl-bootstrap-theme.css" %}'>
+    <style>
+        body {
+            margin-top: 60px;
+            padding: 20px;
+        }
+    </style>
+    {% endblock header %}
+</head>
+
+<body>
+    {% block navbar %}
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-                  <a class="navbar-brand" href="#">
-                        <img alt="Brand" src='{% static "imgs/logo.png" %}'>
-                  </a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'index' %}">
+                    <img alt="Brand" src='{% static "imgs/logo.png" %}'>
+                </a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-                <li><a href="#">Link</a></li>
-                <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">One more separated link</a></li>
+                <ul class="nav navbar-nav">
+                    <li><a href="#"><span class="glyphicon glyphicon-book"></span> &nbsp;Catalog</a></li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th-list"></span> &nbsp;Configuration <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">One more separated link</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th"></span> &nbsp;Reduction <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">One more separated link</a></li>
+                        </ul>
+                    </li>
+
                 </ul>
-                </li>
-            </ul>
-            <form class="navbar-form navbar-left">
-                <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Link</a></li>
-                <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                          <img src="{{ request.session.gravatar_url|safe }}&s=16"  class="user-image" alt="{{ user.username }}"/> &nbsp; {{user}}  <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            {% if user.profile %}
+                            <li><a href="{% url 'users:profile_update' user.profile.pk %}">Profile</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'users:logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
                 </ul>
-                </li>
-            </ul>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-        </nav>
-        {% endblock %}
-        {% block breadcrumbs %}
-        <div class="container">
-            <ol class="breadcrumb">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Library</a></li>
-                <li class="active">Data</li>
-            </ol>
+            </div>
+            <!-- /.navbar-collapse -->
         </div>
-        {% endblock %}
+        <!-- /.container-fluid -->
+    </nav>
+    {% endblock %}
+    {% block breadcrumbs %}
+    <div class="container">
+        <ol class="breadcrumb">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Library</a></li>
+            <li class="active">Data</li>
+        </ol>
+    </div>
+    {% endblock %}
 
-        {% block content %}
-        {% endblock content %}
+    {% block content %}{% endblock content %}
 
-        {% block messages %}
-        <div class="container">
-          <!-- Messages usually comming from the form validation -->
-          {% if messages %}
-          <div class="row">
-              <div class="col-md-10 col-md-offset-1">
-                  <div class="box box-default">
-                      <div class="box-body">
-                      {% for message in messages %}
-                          {% if message.tags %}
-                          <div class="alert alert-{{ message.tags }}">{{ message|safe }}</div>
-                          {% else %}
-                          <div class="alert">{{ message|safe }}</div>
-                          {% endif %}
-                      {% endfor %}
-                      </div>
-                  </div>
-              </div>
-          </div>
-          {% endif %}
-          <!-- Messages end! -->
-        </div>
-        {% endblock messages %}
+    {% block messages %}
+    <div class="container">
+        <!-- Messages usually comming from the form validation -->
+        {% if messages %}
+          {% for message in messages %} {% if message.tags %}
+            <div class="alert alert-{{ message.tags }}">{{ message|safe }}</div>
+          {% else %}
+            <div class="alert">{{ message|safe }}</div>
+          {% endif %} {% endfor %}
+        {% endif %}
+        <!-- Messages end! -->
+    </div>
+    {% endblock messages %}
+    {% block footer%}
+    <footer>
+        <hr />
+        <table align="center" style="width: 100%">
+            <tr>
+                <td align="center">
+                    <a title="UT-Battelle" href="http://ut-battelle.org" target="_blank" style="display:inline-block;height:44px;width:150px;"><img title="UT-Battelle" src='{% static "imgs/utb_logo.png" %}' alt="UT-Battelle" /></a>
+                </td>
+                <td>
+                    <table align="center" style="width: 50%">
+                        <tr>
+                            <td align="center"><a title="Security Notice" href="http://www.ornl.gov/ornlhome/disclaimers.shtml" target="_blank">Security Notice</a></td>
+                            <td align="center"><a title="Internal Users" href="http://www.ornl.gov/ornlhome/remote.shtml" target="_blank">Internal Users</a><br></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><a title="DOE - Oak Ridge" href="http://www.oakridge.doe.gov/external/" target="_blank">DOE - Oak Ridge</a></td>
+                            <td align="center"><a title="UT-Battelle" href="http://ut-battelle.org" target="_blank">UT-Battelle</a></td>
+                        </tr>
+                    </table>
+                </td>
+                <td align="center">
+                    <a title="Department of Energy, Office of Science" href="http://science.energy.gov/" target="_blank" style="display:inline-block;height:56px;width:173px;"><img title="Department of Energy , Office of Science" src='{% static "imgs/doe_os_logo.png" %}' alt="Department of Energy , Office of Science" /></a>
+                </td>
+            </tr>
+        </table>
+    </footer>
+    {% endblock %}
+    <script src='{% static "thirdparty/jquery-3.1.1.min.js" %}'></script>
+    <script src='{% static "thirdparty/bootstrap-3.3.7-dist/js/bootstrap.min.js" %}'></script>
+</body>
 
-        {% block footer%}
-          <footer>
-                <hr />
-                <table align="center" style="width: 100%">
-                    <tr>
-                        <td align="center">
-                            <a title="UT-Battelle" href="http://ut-battelle.org" target="_blank" style="display:inline-block;height:44px;width:150px;"><img title="UT-Battelle" src='{% static "imgs/utb_logo.png" %}' alt="UT-Battelle" /></a>
-                        </td>
-                        <td>
-                            <table align="center" style="width: 50%">
-                            <tr>
-                                <td align="center"><a title="Security Notice" href="http://www.ornl.gov/ornlhome/disclaimers.shtml" target="_blank">Security Notice</a></td>
-                                <td align="center"><a title="Internal Users" href="http://www.ornl.gov/ornlhome/remote.shtml" target="_blank">Internal Users</a><br></td>
-                            </tr>
-                            <tr>
-                                <td align="center"><a title="DOE - Oak Ridge" href="http://www.oakridge.doe.gov/external/" target="_blank">DOE - Oak Ridge</a></td>
-                                <td align="center"><a title="UT-Battelle" href="http://ut-battelle.org" target="_blank">UT-Battelle</a></td>
-                            </tr>
-                            </table>
-                        </td>
-                        <td align="center">
-                            <a title="Department of Energy, Office of Science" href="http://science.energy.gov/" target="_blank" style="display:inline-block;height:56px;width:173px;"><img title="Department of Energy , Office of Science" src='{% static "imgs/doe_os_logo.png" %}' alt="Department of Energy , Office of Science" /></a>
-                        </td>
-                    </tr>
-                </table>
-            </footer>
-        {% endblock %}
-        <script src='{% static "thirdparty/jquery-3.1.1.min.js" %}'></script>
-        <script src='{% static "thirdparty/bootstrap-3.3.7-dist/js/bootstrap.min.js" %}'></script>
-    </body>
 </html>
