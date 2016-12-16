@@ -22,6 +22,7 @@ import logging
 import json
 
 from .models import UserProfile
+from .forms import UserProfileForm
 
 logger = logging.getLogger('users')
 
@@ -87,8 +88,11 @@ class LogoutView(RedirectView):
 
 
 class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
+    '''
+    I'm using form_class to test crispy forms
+    '''
     model = UserProfile
-    fields = ['home_institution', 'email_address']
+    form_class = UserProfileForm
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
 
