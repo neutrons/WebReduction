@@ -10,23 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
-import os
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from .env import * #@UnusedWildImport
+from .ldapauth import * #@UnusedWildImport
+from .log import * #@UnusedWildImport
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'vndvsuu^90kpg!wk$z1pjbi%48cb+80#!y&n1k+8(q(ko(elf9'
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS',
+                         default=['reduction.sns.gov',
+                                  'lealpc.ornl.gov'])
 
 # Application definition
 
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'server.apps.reduction',
+    'server.apps.users',
     'crispy_forms',
 ]
 
@@ -56,8 +57,8 @@ ROOT_URLCONF = 'server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': 
-            [os.path.join(BASE_DIR,'templates'),
+        'DIRS':
+            [ROOT_DIR('templates'),
             ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -78,11 +79,10 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': env.db(), # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
+    #'extra': env.db('POSTGRES_URL', default='postgres:///reduction')
 }
+DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 
 # Password validation
@@ -124,8 +124,33 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    ROOT_DIR("static"),
     '/var/www/static/',
 ]
 
+# AUTHENTICATION CONFIGURATION
+# ------------------------------------------------------------------------------
+AUTHENTICATION_BACKENDS = (
+   'django_auth_ldap.backend.LDAPBackend',
+   'django.contrib.auth.backends.ModelBackend',
+)
+
+# Some really nice defaults
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+# Custom user app defaults
+# Select the correct user model
+# AUTH_USER_MODEL = 'users.User'
+# LOGIN_REDIRECT_URL = 'users:redirect'
+LOGIN_URL = 'users:login'
+AUTH_USER_MODEL = 'users.User'
+
+
+#
+# Other
+#
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+ADMIN_URL = env('ADMIN_URL')

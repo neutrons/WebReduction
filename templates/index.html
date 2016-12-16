@@ -3,65 +3,19 @@
 
 <div class="container">
   <div class="page-header">
-    <h1>Example page header <small>Subtext for header</small></h1>
+    <h1>Main page <small>Subtext for header</small></h1>
   </div>
 
-
-  <div class="panel panel-default">
-    <div class="panel-body">
-      Panel content
-    </div>
-    <div class="panel-footer">Panel footer</div>
-  </div>
-
-  <div class="panel panel-default">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Panel heading</div>
-    <div class="panel-body">
-      <p>...</p>
-    </div>
-
-    <!-- List group -->
-    <ul class="list-group">
-      <li class="list-group-item">Cras justo odio</li>
-      <li class="list-group-item">Dapibus ac facilisis in</li>
-      <li class="list-group-item">Morbi leo risus</li>
-      <li class="list-group-item">Porta ac consectetur ac</li>
-      <li class="list-group-item">Vestibulum at eros</li>
+  <div class="well">
+    <p>Hello <strong>{{ user.fullname }}</strong>!</p>
+    <p> From the LDAP server we have the following information:</p>
+    <ul>
+      <li> <strong>Email: </strong> {{ user.email }} </li>
+      <li> <strong>Address: </strong> {{ user.address }} </li>
     </ul>
+    <p>Your home institution is: <strong>{{ user.profile.home_institution }}</strong>. </p>
   </div>
 
-
-  <div class="panel panel-default">
-    <div class="panel-body">
-    <form class="form-horizontal">
-      <div class="form-group">
-        <label class="control-label col-sm-2" for="email">Email:</label>
-        <div class="col-sm-10">
-          <input type="email" class="form-control" id="email" placeholder="Enter email">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="control-label col-sm-2" for="pwd">Password:</label>
-        <div class="col-sm-10">
-          <input type="password" class="form-control" id="pwd" placeholder="Enter password">
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox"> Remember me</label>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-          <button type="submit" class="btn btn-default">Submit</button>
-        </div>
-      </div>
-    </form>
-  </div>
-  </div>
 </div>
 <!-- /container -->
 

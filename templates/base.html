@@ -1,4 +1,5 @@
 {% load staticfiles %}
+
 {% load crispy_forms_tags %}
 
 <!DOCTYPE html>
@@ -71,7 +72,7 @@
             </ul>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
-        </nav>        
+        </nav>
         {% endblock %}
         {% block breadcrumbs %}
         <div class="container">
@@ -82,8 +83,34 @@
             </ol>
         </div>
         {% endblock %}
+
         {% block content %}
-        {% endblock %}
+        {% endblock content %}
+
+        {% block messages %}
+        <div class="container">
+          <!-- Messages usually comming from the form validation -->
+          {% if messages %}
+          <div class="row">
+              <div class="col-md-10 col-md-offset-1">
+                  <div class="box box-default">
+                      <div class="box-body">
+                      {% for message in messages %}
+                          {% if message.tags %}
+                          <div class="alert alert-{{ message.tags }}">{{ message|safe }}</div>
+                          {% else %}
+                          <div class="alert">{{ message|safe }}</div>
+                          {% endif %}
+                      {% endfor %}
+                      </div>
+                  </div>
+              </div>
+          </div>
+          {% endif %}
+          <!-- Messages end! -->
+        </div>
+        {% endblock messages %}
+
         {% block footer%}
           <footer>
                 <hr />
