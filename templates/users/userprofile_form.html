@@ -2,6 +2,16 @@
 
 {% load crispy_forms_tags %}
 
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{%if user.profile %}{% url 'users:profile_update' user.profile.pk %}{% endif %}">User Profile</a></li>
+        <li class="active">{{ user }}</li>
+    </ol>
+</div>
+{% endblock %}
+
 {% block content %}
 
 <div class="container">

@@ -99,7 +99,8 @@ class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
 
 class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,CreateView):
     model = UserProfile
-    fields = ['home_institution', 'email_address']
+    form_class = UserProfileForm
+    #fields = ['home_institution', 'email_address']
     success_url = reverse_lazy('index')
     success_message = "Your profile was created successfully."
 

@@ -48,7 +48,7 @@ class UserProfile(models.Model):
     home_institution = models.CharField(max_length=200, blank=True)
     email_address = models.EmailField()
 
-    facility = models.ForeignKey(Facility, on_delete=models.CASCADE, null=True)
+    facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
     #instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, null=True)
 
     instrument = ChainedForeignKey(
