@@ -93,6 +93,7 @@ class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
     '''
     model = UserProfile
     form_class = UserProfileForm
+    # fields = '__all__'
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
 

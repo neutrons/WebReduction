@@ -37,9 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # My apps
     'server.apps.reduction',
     'server.apps.users',
+    'server.apps.catalog',
+    # Django addons
     'crispy_forms',
+    'smart_selects',
 ]
 
 MIDDLEWARE = [
@@ -160,3 +164,11 @@ from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
+
+FIXTURE_DIRS = (
+    ROOT_DIR("fixtures"),
+)
+
+# smart_selects
+USE_DJANGO_JQUERY = False
+#JQUERY_URL = False

@@ -6,7 +6,9 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from server.apps.catalog.models import Facility, Instrument
 
+from smart_selects.db_fields import ChainedForeignKey 
 
 class User(AbstractBaseUser, PermissionsMixin):
     '''
@@ -46,8 +48,20 @@ class UserProfile(models.Model):
     home_institution = models.CharField(max_length=200, blank=True)
     email_address = models.EmailField()
 
+    facility = models.ForeignKey(Facility, on_delete=models.CASCADE, null=True)
+    #instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, null=True)
+
+    instrument = ChainedForeignKey(
+        Instrument, 
+        chained_field="facility",
+        chained_model_field="facility", 
+        # show_all=False, 
+        # auto_choose=True,
+        # sort=True
+    )
+    
     def __str__(self):
-        return self.username
+        return self.user.username
 
     # Meta
     class Meta:

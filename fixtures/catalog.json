@@ -1,0 +1,80 @@
+[
+	{
+		"model": "catalog.facility",
+		"pk": 1,
+		"fields": 
+		{
+			"name": "HFIR",
+			"description": "High Flux Isotope Reactor",
+			"active": true
+		}
+	},
+
+	{
+		"model": "catalog.facility",
+		"pk": 2,
+		"fields": 
+		{
+			"name": "SNS",
+			"description": "Spallation Neutron Source",
+			"active": true
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 1,
+		"fields": 
+		{
+			"name": "BioSANS",
+			"description": "Biological Small-Angle Neutron Scattering Instrument",
+			"beamline": "CG-3",
+			"type": "SANS",
+			"icat_name": "biosans",
+			"ldap_name": "cg3",
+			"icat_url": "https://icat.sns.gov:8081/",
+			"drive_path": "/HFIR/CG3",
+			"reduction_available": true,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 2,
+		"fields": 
+		{
+			"name": "GPSANS",
+			"description": "General-Purpose Small-Angle Neutron Scattering Diffractometer",
+			"beamline": "CG-2",
+			"type": "SANS",
+			"icat_name": "gpsans",
+			"ldap_name": "gpsans",
+			"icat_url": "https://icat.sns.gov:8081/",
+			"drive_path": "/HFIR/CG2",
+			"reduction_available": true,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 3,
+		"fields": 
+		{
+			"name": "EQSANS",
+			"description": "Extended Q-Range Small-Angle Neutron Scattering Diffractometer",
+			"beamline": "BL-6",
+			"type": "SANS",
+			"icat_name": "eqsans",
+			"ldap_name": "eqsans",
+			"icat_url": "https://icat.sns.gov:8081/",
+			"drive_path": "/HFIR/EQSANS",
+			"reduction_available": true,
+			"active": true,
+			"facility": 2
+		}
+	}
+]
