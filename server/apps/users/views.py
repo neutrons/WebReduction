@@ -97,6 +97,13 @@ class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
 
+    def form_valid(self, form):
+        '''
+        Add instrument to session
+        '''
+        self.request.session['instrument'] = form.instance.instrument
+        return super(ProfileUpdate, self).form_valid(form)
+
 class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,CreateView):
     model = UserProfile
     form_class = UserProfileForm
@@ -110,4 +117,5 @@ class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,CreateView):
         '''
         user = self.request.user
         form.instance.user = user
+        self.request.session['instrument'] = form.instance.instrument
         return super(ProfileCreate, self).form_valid(form)

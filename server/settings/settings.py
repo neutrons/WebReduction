@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # My apps
-    'server.apps.reduction',
+    'server.apps.sans',
     'server.apps.users',
     'server.apps.catalog',
     # Django addons
@@ -172,3 +172,6 @@ FIXTURE_DIRS = (
 # smart_selects
 USE_DJANGO_JQUERY = False
 #JQUERY_URL = False
+
+# To store objects in the session
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'

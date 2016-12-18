@@ -1,0 +1,28 @@
+ {% extends "base.html" %}
+ 
+ {% load staticfiles %}
+ 
+ {% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_list' %}">Configuration</a></li>
+        <li class="active">{{ object }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <table class="table">
+        {% for name, value in object.get_field_titled_names_and_values %}
+            {% if value %}
+            <tr>
+                <th style="width:50%">{{ name }}</th>
+                <td>{{ value }} </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

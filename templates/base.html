@@ -40,13 +40,8 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th-list"></span> &nbsp;Configuration <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Separated link</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">One more separated link</a></li>
+                            <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_list' %}">List</a></li>
+                            <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_create' %}">New</a></li>
                         </ul>
                     </li>
 
@@ -84,13 +79,7 @@
     </nav>
     {% endblock %}
     {% block breadcrumbs %}
-    <div class="container">
-        <ol class="breadcrumb">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Library</a></li>
-            <li class="active">Data</li>
-        </ol>
-    </div>
+
     {% endblock %}
 
     {% block content %}{% endblock content %}
@@ -135,8 +124,10 @@
         </table>
     </footer>
     {% endblock %}
+    {% block footer_js%}
     <script src='{% static "thirdparty/jquery-3.1.1.min.js" %}'></script>
     <script src='{% static "thirdparty/bootstrap-3.3.7-dist/js/bootstrap.min.js" %}'></script>
+     {% endblock footer_js%}
 </body>
 
 </html>

@@ -24,7 +24,9 @@ from django.contrib.auth.decorators import login_required
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^users/', include('server.apps.users.urls', namespace='users') ),
+    url(r'^sans/', include('server.apps.sans.urls', namespace='sans') ),
     # For smart_selects
     url(r'^chaining/', include('smart_selects.urls')),
+    # test homepage
     url(r'^$', login_required(TemplateView.as_view(template_name='index.html')), name='index'),
 ]

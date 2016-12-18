@@ -1,0 +1,7 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+
+    "editor.rulers": [80,100],
+    "python.pythonPath": "${workspaceRoot}/venv/bin/python",
+    "python.formatting.provider": "autopep8"
+}
