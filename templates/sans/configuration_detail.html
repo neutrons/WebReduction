@@ -24,5 +24,28 @@
             {% endif %}
         {% endfor %}
     </table>
+			<hr/>
+			<p>
+				<a class="btn btn-primary" data-toggle="tooltip"
+				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_update' object.pk %}"
+				title="Click to edit the details of this configuration.">Edit</a>
+
+				<a id="button_delete" class="btn btn-danger" data-toggle="tooltip"
+				data-placement="top" href="#" title="Delete...">Delete</a>
+
+				<a class="btn btn-primary" data-toggle="tooltip"
+				data-placement="top" href="#"
+				title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
+
+				<a id="button_assign_user" class="btn btn-primary" data-toggle="tooltip"
+				data-placement="top" href="#"
+				title="If you would like to send this configuration to another user.">Assign to...</a>
+
+                <a id="button_assign_user" class="btn btn-default" data-toggle="tooltip"
+				data-placement="top" href="#"
+				title="If you would like to send this configuration to another user.">Cancel</a>
+
+			</p>
+
 </div>
 {% endblock %}

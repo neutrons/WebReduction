@@ -22,7 +22,6 @@ logger = logging.getLogger('sans.biosans')
 
 
 class ConfigurationMixin(object):
-
     def get_queryset(self):
         '''
         Make sure the user only accesses its configurations
@@ -33,8 +32,6 @@ class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
     '''
     List all configurations.
     '''
-    #template_name = 'sans/eq-sans/configuration_list.html'
-    #model = BioSANSConfiguration
     def get_queryset(self):
         return super(ConfigurationList, self).get_queryset()
 
@@ -65,3 +62,12 @@ class ConfigurationCreate(LoginRequiredMixin, CreateView):
         form.instance.instrument = get_object_or_404(Instrument,
             name=self.request.session['instrument'].name)
         return CreateView.form_valid(self, form)
+
+class ConfigurationUpdate(LoginRequiredMixin, UpdateView):
+    '''
+    Detail of a configuration
+    '''
+    template_name = 'sans/biosansconfiguration_form.html'
+    # Using form rather than model as we are hiding some fields!!
+    form_class = ConfigurationForm
+    model = BioSANSConfiguration
