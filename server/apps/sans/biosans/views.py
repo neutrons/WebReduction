@@ -39,9 +39,6 @@ class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixin, DetailView):
     '''
     Detail of a configuration
     '''
-    #template_name = 'sans/eq-sans/configuration_detail.html'
-    #model = EQSANSConfiguration
-
     def get_queryset(self):
         queryset = super(ConfigurationDetail, self).get_queryset()
         return queryset.filter(id = self.kwargs['pk'])
@@ -71,3 +68,18 @@ class ConfigurationUpdate(LoginRequiredMixin, UpdateView):
     # Using form rather than model as we are hiding some fields!!
     form_class = ConfigurationForm
     model = BioSANSConfiguration
+
+class ConfigurationDelete(LoginRequiredMixin, DeleteView):
+    
+    model = BioSANSConfiguration
+    success_url = reverse_lazy('sans:biosans:configuration_list')
+
+    def get_object(self, queryset=None):
+        """
+        Hook to ensure object is owned by request.user.
+        """
+        obj = super(ConfigurationDelete, self).get_object()
+        if not obj.user  == self.request.user:
+            raise Http404
+        logger.debug("Deleting %s"%obj)
+        return obj
