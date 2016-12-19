@@ -10,14 +10,19 @@ from server.apps.catalog.models import Facility, Instrument
 
 from smart_selects.db_fields import ChainedForeignKey 
 
+
+import logging
+logger = logging.getLogger('users.models')
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     '''
     This will overwrite the default user model
     '''
     username = models.CharField(max_length=40, unique=True, db_index=True,)
-    email = models.EmailField(max_length=100, unique=True, blank=True)
-    fullname = models.CharField(max_length=100, blank=True, verbose_name=_("Full Name"))
-    address = models.CharField(max_length=250, blank=True)
+    email = models.EmailField(max_length=100, unique=False, blank=True)
+    fullname = models.CharField(max_length=100, blank=False, verbose_name=_("Full Name"))
+    address = models.CharField(max_length=250, blank=False)
 
     date_joined = models.DateField(auto_now=True)
 
@@ -46,7 +51,6 @@ class UserProfile(models.Model):
 
     # Add here as many fields as you want
     home_institution = models.CharField(max_length=200, blank=True)
-    email_address = models.EmailField()
 
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
     #instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, null=True)

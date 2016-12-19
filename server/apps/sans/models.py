@@ -12,6 +12,9 @@ from django.forms.models import model_to_dict
 
 from server.util.script import build_script
 
+from server.apps.users import ldap_util
+from django_auth_ldap.backend import LDAPBackend
+
 import logging
 logger = logging.getLogger('sans.models')
 
@@ -40,17 +43,29 @@ class ConfigurationManager(models.Manager):
         obj.save() 
         return obj
     
-    def clone_and_assign_new_user(self,pk,new_user):
+    def clone_and_assign_new_uid(self,pk,new_uid):
         '''
+        if new_uid is not on the DB, populates it from the ldap
         '''
+        if not get_user_model().objects.filter(username= new_uid).exists():
+            # this new_uid is not on the database
+            ldapobj = LDAPBackend()
+            ldapobj.populate_user(new_uid)
         obj = self.get(id = pk)
         obj.pk = None # setting to None, clones the object!
-        obj.user = get_user_model().objects.get(username= new_user)
-        obj.save() 
+        obj.user = get_user_model().objects.get(username= new_uid)
+        obj.save()
         return obj
-        
-        
-        
+
+def clone_and_assign_new_uids_based_on_ipts(self,pk,ipts):
+        '''
+        For an IPTS get all user uids from LDAP and clones
+        the configuration as above
+        '''
+        ldap_server = ldap_util.setup()
+        uids = ldap_util.get_all_uids_for_an_ipts(ldap_server,ipts)
+        for uid in uids:
+            self.clone_and_assign_new_uid(pk,uid)
 
 class Configuration(models.Model):
     '''

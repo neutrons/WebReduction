@@ -87,11 +87,49 @@ class ConfigurationDelete(LoginRequiredMixin, DeleteView):
 
 class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
     '''
-    
+    Clones the Object Configuration. Keeps the same user
     '''
-
     def get_object(self):
         obj = BioSANSConfiguration.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
         messages.success(self.request, 'Configuration %s cloned. New id = %s'%(obj, obj.pk))
         return obj
+
+class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin, TemplateView):
+    '''
+    '''
+    template_name = 'sans/biosansconfiguration_list_uid.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ConfigurationAssignListUid, self).get_context_data(**kwargs)
+        # DO the LDAP list here 
+
+        obj = BioSANSConfiguration.objects.get(self.kwargs['pk'])
+        context['object'] = obj
+        return context
+
+
+
+class ConfigurationAssignUid(LoginRequiredMixin, ConfigurationMixin, DetailView):
+    '''
+    
+    '''
+    template_name = 'sans/biosansconfiguration_detail.html'
+    model = BioSANSConfiguration
+    
+    def get(self, request, *args, **kwargs):
+        obj = BioSANSConfiguration.objects.clone_and_assign_new_user(kwargs['pk'],kwargs['uid'])
+        messages.success(request, "Configuration '%s' assigned to %s. New id = %s"%(obj, obj.user, obj.pk))
+        return super(ConfigurationAssign, self).get(request, *args, **kwargs)
+
+class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin, DetailView):
+    '''
+    
+    '''
+    template_name = 'sans/biosansconfiguration_detail.html'
+    model = BioSANSConfiguration
+    
+    def get(self, request, *args, **kwargs):
+        obj = BioSANSConfiguration.objects.clone_and_assign_new_user(kwargs['pk'],kwargs['uid'])
+        messages.success(request, "Configuration '%s' assigned to %s. New id = %s"%(obj, obj.user, obj.pk))
+        return super(ConfigurationAssign, self).get(request, *args, **kwargs)
