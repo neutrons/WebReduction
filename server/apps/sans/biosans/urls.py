@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^create$', ConfigurationCreate.as_view(), name='configuration_create'),
     url(r'^(?P<pk>\d+)/update$', ConfigurationUpdate.as_view(), name='configuration_update'),
     url(r'^(?P<pk>\d+)/delete$', ConfigurationDelete.as_view(), name='configuration_delete'),
+    url(r'^(?P<pk>\d+)/clone$', ConfigurationClone.as_view(), name='configuration_clone'),
 ]
 

@@ -82,4 +82,16 @@ class ConfigurationDelete(LoginRequiredMixin, DeleteView):
         if not obj.user  == self.request.user:
             raise Http404
         logger.debug("Deleting %s"%obj)
+        messages.success(self.request, 'Configuration %s deleted.'%(obj))
+        return obj
+
+class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
+    '''
+    
+    '''
+
+    def get_object(self):
+        obj = BioSANSConfiguration.objects.clone(self.kwargs['pk'])
+        self.kwargs['pk'] = obj.pk
+        messages.success(self.request, 'Configuration %s cloned. New id = %s'%(obj, obj.pk))
         return obj

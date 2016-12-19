@@ -35,7 +35,7 @@
                 title="Delete...">Delete...</a>
 
 				<a class="btn btn-primary" data-toggle="tooltip"
-				data-placement="top" href="#"
+				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_clone' object.pk %}"
 				title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
 
 				<a id="button_assign_user" class="btn btn-primary" data-toggle="tooltip"
