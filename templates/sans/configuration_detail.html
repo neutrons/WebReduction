@@ -39,11 +39,11 @@
 				title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
 
 				<a class="btn btn-primary" data-toggle="tooltip"
-				data-placement="top" href="#"
+				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_assign_list_uid' object.pk %}"
 				title="If you would like to send this configuration to another user.">Assign to a User</a>
 
                 <a class="btn btn-primary" data-toggle="tooltip"
-				data-placement="top" href="#"
+				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_assign_list_ipts' object.pk %}"
 				title="If you would like to send this configuration to another user.">Assign to an IPTS</a>
 
                 <a id="cancel" class="btn btn-default" data-toggle="tooltip"

@@ -11,9 +11,11 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.forms.models import model_to_dict
 
 from server.util.script import build_script
+from pprint import pformat
 
-from server.apps.users import ldap_util
+from server.apps.users.ldap_util import LdapSns
 from django_auth_ldap.backend import LDAPBackend
+import ldap
 
 import logging
 logger = logging.getLogger('sans.models')
@@ -47,25 +49,39 @@ class ConfigurationManager(models.Manager):
         '''
         if new_uid is not on the DB, populates it from the ldap
         '''
-        if not get_user_model().objects.filter(username= new_uid).exists():
+        if not get_user_model().objects.filter(username=new_uid).exists():
             # this new_uid is not on the database
+            logger.debug("UID %s does not exist. Getting it from LDAP."%(new_uid))
             ldapobj = LDAPBackend()
-            ldapobj.populate_user(new_uid)
+            user = ldapobj.populate_user(new_uid)
+            if not user:
+                logger.warning("UID %s does not exist in LDAP... Skipping it."%new_uid)
+                return None
         obj = self.get(id = pk)
+        logger.debug("Cloning %s and assigning to user %s."%(obj,new_uid))
         obj.pk = None # setting to None, clones the object!
         obj.user = get_user_model().objects.get(username= new_uid)
         obj.save()
         return obj
 
-def clone_and_assign_new_uids_based_on_ipts(self,pk,ipts):
-        '''
-        For an IPTS get all user uids from LDAP and clones
-        the configuration as above
-        '''
-        ldap_server = ldap_util.setup()
-        uids = ldap_util.get_all_uids_for_an_ipts(ldap_server,ipts)
-        for uid in uids:
-            self.clone_and_assign_new_uid(pk,uid)
+
+
+
+
+    def clone_and_assign_new_uids_based_on_ipts(self,pk,ipts):
+            '''
+            For an IPTS get all user uids from LDAP and clones
+            the configuration as above
+            '''
+            ldap_server = LdapSns()
+            uids = ldap_server.get_all_uids_for_an_ipts(ipts)
+            logger.debug("Users for IPTS %s : %s"%(ipts, pformat(uids)))
+            cloned_objs = []
+            for uid in uids:
+                obj = self.clone_and_assign_new_uid(pk,uid)
+                if obj:
+                    cloned_objs.append(obj)
+            return cloned_objs
 
 class Configuration(models.Model):
     '''

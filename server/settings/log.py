@@ -60,7 +60,7 @@ LOGGING = {
         },
         'django_auth_ldap': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
         # My apps
         'users': {

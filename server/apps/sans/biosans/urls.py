@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/clone$', ConfigurationClone.as_view(), name='configuration_clone'),
     url(r'^(?P<pk>\d+)/assign_uid$', ConfigurationAssignListUid.as_view(), name='configuration_assign_list_uid'),
     url(r'^(?P<pk>\d+)/assign_ipts$', ConfigurationAssignListIpts.as_view(), name='configuration_assign_list_ipts'),
-    url(r'^(?P<pk>\d+)/assign_uid/(?P<uid>\w)$', ConfigurationAssignUid.as_view(), name='configuration_assign_uid'),
-    url(r'^(?P<pk>\d+)/assign_ipts/(?P<ipts>\w)$', ConfigurationAssignIpts.as_view(), name='configuration_assign_ipts'),
+    url(r'^(?P<pk>\d+)/assign_uid/(?P<uid>[\w\-]+)$', ConfigurationAssignUid.as_view(), name='configuration_assign_uid'),
+    url(r'^(?P<pk>\d+)/assign_ipts/(?P<ipts>[\w\-\:\.]+)$', ConfigurationAssignIpts.as_view(), name='configuration_assign_ipts'),
 ]
 

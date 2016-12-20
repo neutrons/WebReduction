@@ -1,0 +1,74 @@
+ {% extends "base.html" %}
+ 
+ {% load staticfiles %}
+ 
+ {% block header %}
+ {{ block.super }}
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_detail' object.id %}">{{object}}</a></li>
+        <li class="active">User Assignement</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Configuration Assignement to User<small> {{object}}</small></h1>
+    </div>
+
+    <table id="table_configuration" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in object_list %}
+            <tr>
+                <td>{{user.uid}}</td>
+                <td>{{user.name}}</td>
+                <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
+                    href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_assign_uid' object.id user.uid %}"
+                    title="Assign to this user.">Assign to this user</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<!-- page script -->
+<script>
+        $(function () {
+            $("#table_configuration").DataTable({
+                "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+                //"order": [[ 3, 'desc' ]],
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true
+            });
+        });
+    </script>
+{% endblock %}
