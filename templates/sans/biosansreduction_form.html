@@ -1,0 +1,48 @@
+ {% extends "base.html" %}
+ 
+ {% load staticfiles %}
+
+ {% load crispy_forms_tags %}
+ 
+ {% block header %}
+	{{ block.super }}
+	<!-- handsontable -->
+	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.css" %}'>
+{% endblock %}
+
+ 
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_list' %}">Reduction</a></li>
+        <li class="active">{%if object %}{{object}}{% else %} new {% endif%}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Reduction<small> new</small></h1>
+    </div>
+
+    <div class="well">
+        <div class="panel-body">
+        
+ 			{% crispy form  %}
+        
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
+<!-- page script -->
+<script>
+
+</script>
+{% endblock %}

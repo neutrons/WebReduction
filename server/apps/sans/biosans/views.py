@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSEntry
-from .forms import ConfigurationForm
+from .forms import ConfigurationForm, ReductionForm
 from server.apps.catalog.models import Instrument
 
 from server.apps.users.ldap_util import LdapSns
@@ -230,5 +230,24 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
         '''
         queryset = super(ReductionDetail, self).get_queryset()
         return queryset.filter(id = self.kwargs['pk'])
-    
+
+
+class ReductionCreate(LoginRequiredMixin,ReductionMixin, CreateView):
+    '''
+    Create a new entry!
+    '''
+    template_name = 'sans/biosansreduction_form.html'
+    #model = BioSANSReduction
+    form_class = ReductionForm
+    handsontable = None
+
+    def get_success_url(self):
+        '''
+        Called after the reduction was saved on the DB (after form_valid)
+        It creates The entries for this reduction
+        '''
+        BioSANSEntry.objects.create_entries_from_handsontable(self.handsontable, reduction=self.object)
+        return super(ReductionCreate, self).get_success_url()
+
+
     

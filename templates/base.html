@@ -51,7 +51,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="{%if request.session.instrument %}{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_list' %}{% endif %}">List</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#">New</a></li>
+                            <li><a href="{%if request.session.instrument %}{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_create' %}{% endif %}">New</a></li>
                         </ul>
                     </li>
 
