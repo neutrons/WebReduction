@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_list' %}">Reduction</a></li>
+        <li class="active">{{ object }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="page-header">
+       <h1>Reduction<small>{{ object }}</small></h1>
+    </div>
+
+    <div class="container-fluid">
+            <ul class="list-group">
+                {% for f in object.get_all_fields %}
+                	{% comment %}{% if value %}{% endcomment %}
+	                <li class="list-group-item">
+	                    <strong>{{f.label|capfirst}}</strong>
+	                    <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+	                </li>
+	                {% comment %}{% endif %}{% endcomment %}
+	            {% endfor %}
+            </ul>
+    </div>
+    <hr/>
+    
+    <div class="container-fluid">
+    	<table id="table_reduction" class="table table-striped">
+			{% for entry in object.entries.all %}
+				{% if forloop.first %}
+                <thead>
+					<tr>
+					{% for name, value in entry.get_field_titled_names_and_values %}
+					<th>{{ name }}</th>
+					{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+				{% endif %}
+				<tr>
+					{% for name, value in entry.get_field_titled_names_and_values %}
+					<td>{{ value }}</td>
+					{% endfor %}
+				</tr>
+				{% if forloop.last %}
+				</tbody>
+                <tfoot>
+					<tr>
+					{% for name, value in entry.get_field_titled_names_and_values %}
+					<th>{{ name }}</th>
+					{% endfor %}
+					</tr>
+				</tfoot>
+				{% endif %}
+			{% endfor %}
+		</table>
+    </div>
+
+    <p>
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href=""
+            title="Click to edit the details of this configuration.">Edit</a>
+
+        <a id="button_delete" class="btn btn-danger" data-toggle="tooltip" data-placement="top" href=""
+            title="Delete...">Delete...</a>
+
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href=""
+            title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
+
+        <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top"
+        	href="#" title="If you would like to send this configuration to another user.">Cancel</a>
+    </p>
+</div>
+{% endblock %}

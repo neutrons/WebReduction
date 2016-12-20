@@ -214,3 +214,21 @@ class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
         Get only reductions for this user: reduction.configuration.user
         '''
         return super(ReductionList, self).get_queryset()
+    
+
+class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
+    '''
+    Detail of a Reduction
+    A Reduction is a title and a set of entries.
+    The entries are an hidden field : id="entries_hidden"
+    Which are an Handsontable
+    '''
+
+    def get_queryset(self):
+        '''
+        Get only reductions for this user: reduction.configuration.user
+        '''
+        queryset = super(ReductionDetail, self).get_queryset()
+        return queryset.filter(id = self.kwargs['pk'])
+    
+    

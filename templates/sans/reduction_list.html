@@ -41,7 +41,7 @@
                 <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>
                 <td>{{object.modified_date | date:"DATETIME_FORMAT" }}</td>
                 <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
-                    href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_detail' object.id %}"
+                    href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_detail' object.id %}"
                     title="Click to see the details of this configuration.">View</a></td>
             </tr>
             {% endfor %}

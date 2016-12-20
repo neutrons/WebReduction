@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/assign_ipts/(?P<ipts>[\w\-\:\.]+)$', ConfigurationAssignIpts.as_view(), name='configuration_assign_ipts'),
     # Reduction
     url(r'^reduction$', ReductionList.as_view(), name='reduction_list'),
+    url(r'^reduction/(?P<pk>\d+)/$', ReductionDetail.as_view(), name='reduction_detail'),
 ]
 

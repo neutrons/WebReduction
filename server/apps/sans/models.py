@@ -64,24 +64,20 @@ class ConfigurationManager(models.Manager):
         obj.save()
         return obj
 
-
-
-
-
     def clone_and_assign_new_uids_based_on_ipts(self, pk, ipts):
-            '''
-            For an IPTS get all user uids from LDAP and clones
-            the configuration as above
-            '''
-            ldap_server = LdapSns()
-            uids = ldap_server.get_all_uids_for_an_ipts(ipts)
-            logger.debug("Users for IPTS %s : %s" % (ipts, pformat(uids)))
-            cloned_objs = []
-            for uid in uids:
-                obj = self.clone_and_assign_new_uid(pk, uid)
-                if obj:
-                    cloned_objs.append(obj)
-            return cloned_objs
+        '''
+        For an IPTS get all user uids from LDAP and clones
+        the configuration as above
+        '''
+        ldap_server = LdapSns()
+        uids = ldap_server.get_all_uids_for_an_ipts(ipts)
+        logger.debug("Users for IPTS %s : %s" % (ipts, pformat(uids)))
+        cloned_objs = []
+        for uid in uids:
+            obj = self.clone_and_assign_new_uid(pk, uid)
+            if obj:
+                cloned_objs.append(obj)
+        return cloned_objs
 
 class Configuration(models.Model):
     '''
@@ -268,7 +264,7 @@ class Entry(models.Model):
     class Meta:
         abstract = True
         ordering = ["id"]
-        verbose_name_plural = _("Entries")
+        #verbose_name_plural = _("Entries")
 
     def __str__(self):
         return self.save_name,
