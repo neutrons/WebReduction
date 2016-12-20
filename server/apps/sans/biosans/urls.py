@@ -5,6 +5,7 @@ from django.conf.urls import url
 
 
 urlpatterns = [
+    # Configurations
     url(r'^$', ConfigurationList.as_view(), name='configuration_list'),
     url(r'^(?P<pk>\d+)$', ConfigurationDetail.as_view(), name='configuration_detail'),
     url(r'^create$', ConfigurationCreate.as_view(), name='configuration_create'),
@@ -15,5 +16,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/assign_ipts$', ConfigurationAssignListIpts.as_view(), name='configuration_assign_list_ipts'),
     url(r'^(?P<pk>\d+)/assign_uid/(?P<uid>[\w\-]+)$', ConfigurationAssignUid.as_view(), name='configuration_assign_uid'),
     url(r'^(?P<pk>\d+)/assign_ipts/(?P<ipts>[\w\-\:\.]+)$', ConfigurationAssignIpts.as_view(), name='configuration_assign_ipts'),
+    # Reduction
+    url(r'^reduction$', ReductionList.as_view(), name='reduction_list'),
 ]
 

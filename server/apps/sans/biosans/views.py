@@ -157,3 +157,60 @@ class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin, DetailView
         for obj in cloned_objs:
             messages.success(request, "Configuration %s assigned to the user %s. New configuration id = %s."%(obj, obj.user, obj.pk))
         return super(ConfigurationAssignIpts, self).get(request, *args, **kwargs)
+
+#######################################################################
+#
+# Reduction
+#
+#######################################################################
+
+class ReductionMixin(object):
+    '''
+    Used in the template form to populate the redution spreadsheet
+    '''
+
+    def get_context_data(self, **kwargs):
+        '''
+        Populates the context with the titled case names and names as in the model
+        '''
+        context = super(ReductionMixin, self).get_context_data(**kwargs)
+        context["entry_headers"] = BioSANSEntry.get_field_titled_names()
+        context["entry_names"] = BioSANSEntry.get_field_names()
+        return context
+
+    def form_valid(self, form):
+        '''
+        Stores the handsontable in a variable
+        '''
+        #logger.debug(self.request.POST["entries_hidden"]);
+        self.handsontable = json.loads(self.request.POST["entries_hidden"])
+        return super(ReductionMixin, self).form_valid(form)
+
+    def get_queryset(self):
+        '''
+        Get only reductions for this user: reduction.configuration.user
+        '''
+        return BioSANSReduction.objects.filter(configuration__user = self.request.user)
+
+    def get_form(self, form_class=None):
+        '''
+        When creating a new form, this will make sure the user only sees it's own
+        configurations
+        '''
+        form = super(ReductionMixin,self).get_form(form_class) #instantiate using parent
+        form.fields['configuration'].queryset = BioSANSConfiguration.objects.filter(user = self.request.user)
+        return form
+
+
+class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
+    '''
+    List all Reduction.
+    '''
+    template_name = 'sans/biosansreduction_list.html'
+    # We wither use the model or the function get_queryset
+    #model = BioSANSReduction
+    def get_queryset(self):
+        '''
+        Get only reductions for this user: reduction.configuration.user
+        '''
+        return super(ReductionList, self).get_queryset()
