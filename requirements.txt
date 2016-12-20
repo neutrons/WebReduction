@@ -6,3 +6,8 @@ django-auth-ldap>=1.2.6
 psycopg2>=2.6.1
 django-environ
 django-smart-selects
+
+# Other
+# To have a nice ./manage.py shell
+ipython
+

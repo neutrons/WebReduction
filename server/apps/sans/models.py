@@ -40,27 +40,27 @@ class ConfigurationManager(models.Manager):
         '''
         Clone an object and returns
         '''
-        obj = self.get(id = pk)
-        obj.pk = None # setting to None, clones the object!
+        obj = self.get(id=pk)
+        obj.pk = None  # setting to None, clones the object!
         obj.save() 
         return obj
     
-    def clone_and_assign_new_uid(self,pk,new_uid):
+    def clone_and_assign_new_uid(self, pk, new_uid):
         '''
         if new_uid is not on the DB, populates it from the ldap
         '''
         if not get_user_model().objects.filter(username=new_uid).exists():
             # this new_uid is not on the database
-            logger.debug("UID %s does not exist. Getting it from LDAP."%(new_uid))
+            logger.debug("UID %s does not exist. Getting it from LDAP." % (new_uid))
             ldapobj = LDAPBackend()
             user = ldapobj.populate_user(new_uid)
             if not user:
-                logger.warning("UID %s does not exist in LDAP... Skipping it."%new_uid)
+                logger.warning("UID %s does not exist in LDAP... Skipping it." % new_uid)
                 return None
-        obj = self.get(id = pk)
-        logger.debug("Cloning %s and assigning to user %s."%(obj,new_uid))
-        obj.pk = None # setting to None, clones the object!
-        obj.user = get_user_model().objects.get(username= new_uid)
+        obj = self.get(id=pk)
+        logger.debug("Cloning %s and assigning to user %s." % (obj, new_uid))
+        obj.pk = None  # setting to None, clones the object!
+        obj.user = get_user_model().objects.get(username=new_uid)
         obj.save()
         return obj
 
@@ -68,17 +68,17 @@ class ConfigurationManager(models.Manager):
 
 
 
-    def clone_and_assign_new_uids_based_on_ipts(self,pk,ipts):
+    def clone_and_assign_new_uids_based_on_ipts(self, pk, ipts):
             '''
             For an IPTS get all user uids from LDAP and clones
             the configuration as above
             '''
             ldap_server = LdapSns()
             uids = ldap_server.get_all_uids_for_an_ipts(ipts)
-            logger.debug("Users for IPTS %s : %s"%(ipts, pformat(uids)))
+            logger.debug("Users for IPTS %s : %s" % (ipts, pformat(uids)))
             cloned_objs = []
             for uid in uids:
-                obj = self.clone_and_assign_new_uid(pk,uid)
+                obj = self.clone_and_assign_new_uid(pk, uid)
                 if obj:
                     cloned_objs.append(obj)
             return cloned_objs
@@ -109,18 +109,34 @@ class Configuration(models.Model):
     def __str__(self):
         return self.title
 
-    def get_fields(self):
-        '''
-        @return: pairs key,values for all fields of this class
-        '''
-        return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
-
-    def get_field_titled_names_and_values(self):
-        '''
-        Does not display related fields (i.e. FK)
-        @return: field names as title and values for web display no unicode
-        '''
-        return [ (str(field.verbose_name.title()), field.value_to_string(self)) for field in self._meta.fields if not field.is_relation]
+    def get_all_fields(self):
+        """
+        Returns a list of all field names on the instance.
+        """
+        fields = []
+        for f in self._meta.fields:
+            fname = f.name        
+            # resolve picklists/choices, with get_xyz_display() function
+            get_choice = 'get_' + fname + '_display'
+            if hasattr(self, get_choice):
+                value = getattr(self, get_choice)()
+            else:
+                try :
+                    value = getattr(self, fname)
+                except AttributeError:
+                    value = None
+    
+            # only display fields with values and skip some fields entirely
+            #if f.editable and value and f.name not in ('id', 'user') : # Hide None
+            if f.editable and f.name not in ('id', 'user') :
+                fields.append(
+                  {
+                   'label':f.verbose_name,
+                   'name':f.name,
+                   'value':value,
+                  }
+                )
+        return fields
 
 class ReductionManager(models.Manager):
     '''
@@ -133,19 +149,19 @@ class ReductionManager(models.Manager):
         '''
         Clones the Reduction object and related entries
         '''
-        obj = self.get(id = pk)
+        obj = self.get(id=pk)
         old_title = obj.title
         # Let's clone the related entries
-        new_entries =[]
+        new_entries = []
         for e in obj.entries.all():
             e.pk = None
             e.save()
             new_entries.append(e)
             
-        obj.pk = None # setting to None, clones the object!
+        obj.pk = None  # setting to None, clones the object!
         obj.save()
         obj.entries = new_entries
-        obj.title = "%s (copy)"%old_title
+        obj.title = "%s (copy)" % old_title
         obj.save()
         return obj
     
@@ -155,7 +171,7 @@ class ReductionManager(models.Manager):
         Note that the children object must have a script_file variable
         Is it the right way to serialise to JSON????
         '''
-        obj = self.select_related().get(pk = pk)
+        obj = self.select_related().get(pk=pk)
         d = model_to_dict(obj)
         d["entries"] = [model_to_dict(entry) for entry in obj.entries.all()]
         d["configuration"] = model_to_dict(obj.configuration)
@@ -180,11 +196,34 @@ class Reduction(models.Model):
     def __str__(self):
         return self.title
 
-    def get_fields(self):
-        '''
-        @return: pairs key,values for all fields of this class
-        '''
-        return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
+    def get_all_fields(self):
+        """
+        Returns a list of all field names on the instance.
+        """
+        fields = []
+        for f in self._meta.fields:
+            fname = f.name        
+            # resolve picklists/choices, with get_xyz_display() function
+            get_choice = 'get_' + fname + '_display'
+            if hasattr(self, get_choice):
+                value = getattr(self, get_choice)()
+            else:
+                try :
+                    value = getattr(self, fname)
+                except AttributeError:
+                    value = None
+    
+            # only display fields with values and skip some fields entirely
+            #if f.editable and value and f.name not in ('id', 'user') : # Hide None
+            if f.editable and f.name not in ('id', 'user') :
+                fields.append(
+                  {
+                   'label':f.verbose_name,
+                   'name':f.name,
+                   'value':value,
+                  }
+                )
+        return fields
 
 
 class EntryManager(models.Manager):
@@ -201,10 +240,10 @@ class EntryManager(models.Manager):
         @param reduction: reduction object to associate with the created entries
         '''
         for row in handsontable:
-            if any(row): #Row has some data
-                keywords_args = { field : elem for elem,field in zip(row,Entry.get_field_names()) }
-                logger.debug("Creating Entry object with: %s"%keywords_args)
-                keywords_args['reduction']=reduction
+            if any(row):  # Row has some data
+                keywords_args = { field : elem for elem, field in zip(row, Entry.get_field_names()) }
+                logger.debug("Creating Entry object with: %s" % keywords_args)
+                keywords_args['reduction'] = reduction
                 # The following is the same as:
                 # entry = Entry(**keywords_args)
                 # entry.save(force_insert=True)

@@ -1,8 +1,8 @@
- {% extends "base.html" %}
- 
- {% load staticfiles %}
- 
- {% block breadcrumbs %}
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block breadcrumbs %}
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
@@ -11,46 +11,39 @@
     </ol>
 </div>
 {% endblock %}
-
 {% block content %}
 <div class="container">
-    <table class="table">
-        {% for name, value in object.get_field_titled_names_and_values %}
-            {% if value %}
-            <tr>
-                <th style="width:50%">{{ name }}</th>
-                <td>{{ value }} </td>
-            </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
-			<hr/>
-			<p>
-				<a class="btn btn-primary" data-toggle="tooltip"
-				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_update' object.pk %}"
-				title="Click to edit the details of this configuration.">Edit</a>
+    <div class="container-fluid">
+            <ul class="list-group">
+                {% for f in object.get_all_fields %}
+                	{% comment %}{% if value %}{% endcomment %}
+	                <li class="list-group-item">
+	                    <strong>{{f.label|capfirst}}</strong>
+	                    <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+	                </li>
+	                {% comment %}{% endif %}{% endcomment %}
+	            {% endfor %}
+            </ul>
+    </div>
+    <hr/>
 
-				<a id="button_delete" class="btn btn-danger" data-toggle="tooltip"
-				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_delete' object.pk %}"
-                title="Delete...">Delete...</a>
+    <p>
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_update' object.pk %}"
+            title="Click to edit the details of this configuration.">Edit</a>
 
-				<a class="btn btn-primary" data-toggle="tooltip"
-				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_clone' object.pk %}"
-				title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
+        <a id="button_delete" class="btn btn-danger" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_delete' object.pk %}"
+            title="Delete...">Delete...</a>
 
-				<a class="btn btn-primary" data-toggle="tooltip"
-				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_assign_list_uid' object.pk %}"
-				title="If you would like to send this configuration to another user.">Assign to a User</a>
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_clone' object.pk %}"
+            title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
 
-                <a class="btn btn-primary" data-toggle="tooltip"
-				data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_assign_list_ipts' object.pk %}"
-				title="If you would like to send this configuration to another user.">Assign to an IPTS</a>
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_assign_list_uid' object.pk %}"
+            title="If you would like to send this configuration to another user.">Assign to a User</a>
 
-                <a id="cancel" class="btn btn-default" data-toggle="tooltip"
-				data-placement="top" href="#"
-				title="If you would like to send this configuration to another user.">Cancel</a>
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_assign_list_ipts' object.pk %}"
+            title="If you would like to send this configuration to another user.">Assign to an IPTS</a>
 
-			</p>
-
+        <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top" href="#" title="If you would like to send this configuration to another user.">Cancel</a>
+    </p>
 </div>
 {% endblock %}
