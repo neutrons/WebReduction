@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.forms.models import model_to_dict
+from django.contrib.postgres.fields import JSONField
 
 from server.util.script import build_script
 from pprint import pformat
@@ -28,6 +29,37 @@ Configuration - 1 to many - Reductions
 Reduction - 1 to many - Entries
 
 '''
+
+class ModelMixin(object):
+    
+    def get_all_fields(self, fields_to_ignore=('id', 'user')):
+        """
+        Returns a list of all field names on the instance.
+        """
+        fields = []
+        for f in self._meta.fields:
+            fname = f.name        
+            # resolve picklists/choices, with get_xyz_display() function
+            get_choice = 'get_' + fname + '_display'
+            if hasattr(self, get_choice):
+                value = getattr(self, get_choice)()
+            else:
+                try :
+                    value = getattr(self, fname)
+                except AttributeError:
+                    value = None
+    
+            # only display fields with values and skip some fields entirely
+            # if f.editable and value and f.name not in ('id', 'user') : # Hide None
+            if f.editable and f.name not in fields_to_ignore :
+                fields.append(
+                  {
+                   'label':f.verbose_name,
+                   'name':f.name,
+                   'value':value,
+                  }
+                )
+        return fields
 
 class ConfigurationManager(models.Manager):
     '''
@@ -79,7 +111,7 @@ class ConfigurationManager(models.Manager):
                 cloned_objs.append(obj)
         return cloned_objs
 
-class Configuration(models.Model):
+class Configuration(models.Model, ModelMixin):
     '''
 
     '''
@@ -89,11 +121,11 @@ class Configuration(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
 
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
-                                   related_name="instruments",
-                                   related_query_name="instrument",)  # , blank=True, null=True)
+                                   related_name="%(class)s_instruments",
+                                   related_query_name="%(class)s_instrument",)  # , blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                             related_name="users",
-                             related_query_name="user",)  # , blank=True, null=True)
+                             related_name="%(class)s_users",
+                             related_query_name="%(class)s_user",)  # , blank=True, null=True)
     
     # Manager
     objects = ConfigurationManager()
@@ -105,38 +137,10 @@ class Configuration(models.Model):
     def __str__(self):
         return self.title
 
-    def get_all_fields(self):
-        """
-        Returns a list of all field names on the instance.
-        """
-        fields = []
-        for f in self._meta.fields:
-            fname = f.name        
-            # resolve picklists/choices, with get_xyz_display() function
-            get_choice = 'get_' + fname + '_display'
-            if hasattr(self, get_choice):
-                value = getattr(self, get_choice)()
-            else:
-                try :
-                    value = getattr(self, fname)
-                except AttributeError:
-                    value = None
-    
-            # only display fields with values and skip some fields entirely
-            #if f.editable and value and f.name not in ('id', 'user') : # Hide None
-            if f.editable and f.name not in ('id', 'user') :
-                fields.append(
-                  {
-                   'label':f.verbose_name,
-                   'name':f.name,
-                   'value':value,
-                  }
-                )
-        return fields
+
 
 class ReductionManager(models.Manager):
     '''
-    Configuration go here!!
     '''
 
     use_for_related_fields = True
@@ -145,35 +149,10 @@ class ReductionManager(models.Manager):
         '''
         Clones the Reduction object and related entries
         '''
-        obj = self.get(id=pk)
-        old_title = obj.title
-        # Let's clone the related entries
-        new_entries = []
-        for e in obj.entries.all():
-            e.pk = None
-            e.save()
-            new_entries.append(e)
-            
-        obj.pk = None  # setting to None, clones the object!
-        obj.save()
-        obj.entries = new_entries
-        obj.title = "%s (copy)" % old_title
-        obj.save()
-        return obj
+        pass
     
-    def to_script(self, pk):
-        '''
-        Gets this reduction object in json format and builds a script
-        Note that the children object must have a script_file variable
-        Is it the right way to serialise to JSON????
-        '''
-        obj = self.select_related().get(pk=pk)
-        d = model_to_dict(obj)
-        d["entries"] = [model_to_dict(entry) for entry in obj.entries.all()]
-        d["configuration"] = model_to_dict(obj.configuration)
-        return build_script(obj.script_file, d)
     
-class Reduction(models.Model):
+class Reduction(models.Model, ModelMixin):
     '''
     '''
     title = models.CharField(max_length=256, blank=True)
@@ -181,120 +160,63 @@ class Reduction(models.Model):
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    
+    
+    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
+                               related_name="%(class)s_instruments",
+                               related_query_name="%(class)s_instrument",)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name="%(class)s_users",
+                             related_query_name="%(class)s_user",)
 
     # Manager
     objects = ReductionManager()
     
     class Meta:
-        abstract = True
         ordering = ["id"]
+        abstract = True
 
     def __str__(self):
         return self.title
-
-    def get_all_fields(self):
-        """
-        Returns a list of all field names on the instance.
-        """
-        fields = []
-        for f in self._meta.fields:
-            fname = f.name        
-            # resolve picklists/choices, with get_xyz_display() function
-            get_choice = 'get_' + fname + '_display'
-            if hasattr(self, get_choice):
-                value = getattr(self, get_choice)()
-            else:
-                try :
-                    value = getattr(self, fname)
-                except AttributeError:
-                    value = None
     
-            # only display fields with values and skip some fields entirely
-            #if f.editable and value and f.name not in ('id', 'user') : # Hide None
-            if f.editable and f.name not in ('id', 'user') :
-                fields.append(
-                  {
-                   'label':f.verbose_name,
-                   'name':f.name,
-                   'value':value,
-                  }
-                )
-        return fields
 
 
-class EntryManager(models.Manager):
+class RegionManager(models.Manager):
     '''
     Queries go here!!
     '''
-
+    
     use_for_related_fields = True
 
-    def create_entries_from_handsontable(self, handsontable, reduction):
-        '''
-        Create entries based on the contensts of handsontable
-        @param handsontable: It's a 2D array
-        @param reduction: reduction object to associate with the created entries
-        '''
-        for row in handsontable:
-            if any(row):  # Row has some data
-                keywords_args = { field : elem for elem, field in zip(row, Entry.get_field_names()) }
-                logger.debug("Creating Entry object with: %s" % keywords_args)
-                keywords_args['reduction'] = reduction
-                # The following is the same as:
-                # entry = Entry(**keywords_args)
-                # entry.save(force_insert=True)
-                self.create(**keywords_args)
 
 
-
-class Entry(models.Model):
+class Region(models.Model):
     '''
-    All Entries are Runs, except the description
+    Region can be low, medium or high Q
+    
+    This will be a formset from Reduction
     '''
-    sample_scattering = models.CharField(max_length=256)
-    sample_transmission = models.CharField(max_length=256)
-    background_scattering = models.CharField(max_length=256)
-    background_transmission = models.CharField(max_length=256)
-    empty_beam = models.CharField(max_length=256)
-    save_name = models.CharField(max_length=256, blank=True)
-
+    
     # Manager
-    objects = EntryManager()
+    objects = RegionManager()
 
+    REGION_CHOICES = (
+        ("L", _("Low Q")),
+        ("M", _("Medium Q")),
+        ("H", _("High Q"))
+    )
+    region = models.CharField(
+        max_length=1,
+        choices=REGION_CHOICES,
+        default=REGION_CHOICES[1][0],
+    )
+    
+    comments = models.CharField(max_length=256, blank=True,
+                                help_text="Any necessary comments...")
+
+    # This will be the json for sample / backgroun sample/transmission
+    entries = JSONField( default={} )
+    
     class Meta:
         abstract = True
         ordering = ["id"]
-        #verbose_name_plural = _("Entries")
-
-    def __str__(self):
-        return self.save_name,
-
-    def get_fields(self):
-        '''
-        @return: pairs key,values for all fields of this class
-        '''
-        return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
-
-    @staticmethod
-    def get_field_titled_names():
-        '''
-        @return: field names as title for web display no unicode
-        '''
-        return [str(field.verbose_name.title()) for field in Entry._meta.fields]
-
-    @staticmethod
-    def get_field_names():
-        '''
-        @return: field names no unicode
-        '''
-        return [str(field.name) for field in Entry._meta.fields]
-    
-    def get_field_titled_names_and_values(self):
-        '''
-        Does not display related fields (i.e. FK)
-        @return: field names as title and values for web display no unicode
-        '''
-        return [ (str(field.verbose_name.title()), field.value_to_string(self)) for field in self._meta.fields if not field.is_relation]
-
-
-

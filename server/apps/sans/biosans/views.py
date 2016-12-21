@@ -8,8 +8,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
-from .models import BioSANSConfiguration, BioSANSReduction, BioSANSEntry
-from .forms import ConfigurationForm, ReductionForm
+from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
+from .forms import ConfigurationForm, ReductionFormSet
 from server.apps.catalog.models import Instrument
 
 from server.apps.users.ldap_util import LdapSns
@@ -174,33 +174,15 @@ class ReductionMixin(object):
         Populates the context with the titled case names and names as in the model
         '''
         context = super(ReductionMixin, self).get_context_data(**kwargs)
-        context["entry_headers"] = BioSANSEntry.get_field_titled_names()
-        context["entry_names"] = BioSANSEntry.get_field_names()
+        # TODO
         return context
 
-    def form_valid(self, form):
-        '''
-        Stores the handsontable in a variable
-        '''
-        #logger.debug(self.request.POST["entries_hidden"]);
-        self.handsontable = json.loads(self.request.POST["entries_hidden"])
-        return super(ReductionMixin, self).form_valid(form)
 
     def get_queryset(self):
         '''
         Get only reductions for this user: reduction.configuration.user
         '''
         return BioSANSReduction.objects.filter(configuration__user = self.request.user)
-
-    def get_form(self, form_class=None):
-        '''
-        When creating a new form, this will make sure the user only sees it's own
-        configurations
-        '''
-        form = super(ReductionMixin,self).get_form(form_class) #instantiate using parent
-        form.fields['configuration'].queryset = BioSANSConfiguration.objects.filter(user = self.request.user)
-        return form
-
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
@@ -238,16 +220,13 @@ class ReductionCreate(LoginRequiredMixin,ReductionMixin, CreateView):
     '''
     template_name = 'sans/biosansreduction_form.html'
     #model = BioSANSReduction
-    form_class = ReductionForm
-    handsontable = None
+    form_class = ReductionFormSet
 
-    def get_success_url(self):
-        '''
-        Called after the reduction was saved on the DB (after form_valid)
-        It creates The entries for this reduction
-        '''
-        BioSANSEntry.objects.create_entries_from_handsontable(self.handsontable, reduction=self.object)
-        return super(ReductionCreate, self).get_success_url()
-
-
-    
+    def form_valid(self, form):
+        """
+        Sets initial values which are hidden in the form
+        """
+        form.instance.user = self.request.user
+        form.instance.instrument = get_object_or_404(Instrument,
+            name=self.request.session['instrument'].name)
+        return CreateView.form_valid(self, form)

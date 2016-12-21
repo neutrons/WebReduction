@@ -44,37 +44,38 @@
 <!-- page script -->
 <script>
 
-	/******************* Spreadsheet *************************/
-	
-	//Initial data: populated from what comes from django context variables
-	var headers = {{entry_headers | safe}};
-	{% if entries %}
-		var data = {{entries|safe}};
-	{% else %}
-		// 2D empty array
-		var data = [new Array(headers.length).join(".").split(".")];
-	{% endif %}
- 	// Creates and Populates the spreadsheet if editing the form
-	var container = document.getElementById('entries');
-	var hot = new Handsontable(container, {
-	    data: data,
-	    height: 300,
-	    minSpareRows: 10,
-	    stretchH: 'all',
-	    columnSorting: true,
-	    contextMenu: true,
-	    autoWrapRow: true,
-	    rowHeaders: false,
-	    colHeaders: headers,
-	    contextMenu: true,
-      	outsideClickDeselects: false,
-	    columns: [
-        {% for name in entry_names %}
-          { data: "{{name}}"}
-          {% if not forloop.last %},{% endif %}
-        {% endfor %}
-      ]
-	});
+/******************* handsontable *************************/
+
+//Initial data: populated from what comes from django context variables
+var headers = {{entry_headers | safe}};
+{% if entries %}
+	var data = {{entries|safe}};
+{% else %}
+	// 2D empty array
+	var data = [new Array(headers.length).join(".").split(".")];
+{% endif %}
+
+	// Creates and Populates the spreadsheet if editing the form
+var container = document.getElementById('entries');
+var hot = new Handsontable(container, {
+    data: data,
+    height: 300,
+    minSpareRows: 10,
+    stretchH: 'all',
+    columnSorting: true,
+    contextMenu: true,
+    autoWrapRow: true,
+    rowHeaders: false,
+    colHeaders: headers,
+    contextMenu: true,
+     	outsideClickDeselects: false,
+    columns: [
+       {% for name in entry_names %}
+         { data: "{{name}}"}
+         {% if not forloop.last %},{% endif %}
+       {% endfor %}
+     ]
+});
 	
 </script>
 {% endblock %}

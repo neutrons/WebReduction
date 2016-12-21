@@ -8,8 +8,7 @@ class BioSANSConfiguration(Configuration):
     
     absolute_scale_factor = models.DecimalField(
         max_digits=10, decimal_places=2, default=1.0)
-    sample_thickness = models.DecimalField(
-        max_digits=10, decimal_places=2, default=1.0)
+    
     sample_aperture_diameter = models.DecimalField(
         max_digits=10, decimal_places=2, default=10.0)
     
@@ -29,10 +28,6 @@ class BioSANSConfiguration(Configuration):
         return ('sans:biosans:configuration_detail', [self.pk])
 
 class BioSANSReduction(Reduction):
-    configuration = models.ForeignKey(BioSANSConfiguration, on_delete=models.CASCADE,
-                                      related_name="reductions",
-                                      related_query_name="reduction",
-                                      blank=True, null=True,)
     
     @models.permalink
     def get_absolute_url(self):
@@ -42,12 +37,20 @@ class BioSANSReduction(Reduction):
     script_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),"scripts","template.py")
 
 
-class BioSANSEntry(Entry):
+class BioSANSRegion(Region):
     # We can not have ForeignKey for abstract models. It has to be here!!
     reduction = models.ForeignKey(BioSANSReduction,
                                       on_delete=models.CASCADE,
-                                      related_name="entries",
-                                      related_query_name="entry",)
+                                      related_name="regions",
+                                      related_query_name="region",)
+    
+    configuration = models.ForeignKey(BioSANSConfiguration, on_delete=models.CASCADE,
+                                      related_name="reductions",
+                                      related_query_name="reduction",
+                                      blank=True, null=True,)
+    
+    empty_beam = models.CharField(max_length=256)
+    
     
     def __str__(self):
-        return "Entry: %s :: Reduction: %s" % (self.save_name, self.reduction.title)
+        return "Reduction {} -> Entry {}".format(self.reduction.title, self.region)
