@@ -19,11 +19,13 @@
 
 {% block content %}
 <div class="container">
+	
+	<div class="loading"><img style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" src="{% static 'imgs/spinner.gif' %}"></div>
     <div class="page-header">
         <h1>Configuration Assignement to User<small> {{object}}</small></h1>
     </div>
 
-    <table id="table_configuration" class="table table-bordered table-striped">
+    <table id="table_uid" class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>Username</th>
@@ -59,7 +61,7 @@
 <!-- page script -->
 <script>
         $(function () {
-            $("#table_configuration").DataTable({
+            $("#table_uid").DataTable({
                 "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
                 //"order": [[ 3, 'desc' ]],
                 "paging": true,
@@ -67,8 +69,12 @@
                 "searching": true,
                 "ordering": true,
                 "info": true,
-                "autoWidth": true
+                "autoWidth": true,
+    			"initComplete": function( settings, json ) {
+   					 $('div.loading').remove();
+ 				}
             });
+            
         });
     </script>
 {% endblock %}
