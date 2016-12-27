@@ -9,10 +9,12 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
-from .forms import ConfigurationForm, ReductionFormSet
+
+from .forms import ConfigurationForm, ReductionForm, RegionForm, RegionInlineFormSetCreate, RegionInlineFormSetEdit
 from server.apps.catalog.models import Instrument
 
 from server.apps.users.ldap_util import LdapSns
+from server.util.formsets import FormsetMixin
 
 from pprint import pformat
 import logging
@@ -214,13 +216,14 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
         return queryset.filter(id = self.kwargs['pk'])
 
 
-class ReductionCreate(LoginRequiredMixin,ReductionMixin, CreateView):
+class ReductionCreate(LoginRequiredMixin, FormsetMixin, ReductionMixin, CreateView):
     '''
     Create a new entry!
     '''
     template_name = 'sans/biosansreduction_form.html'
     #model = BioSANSReduction
-    form_class = ReductionFormSet
+    form_class = ReductionForm
+    formset_class = RegionInlineFormSetCreate
 
     def form_valid(self, form):
         """

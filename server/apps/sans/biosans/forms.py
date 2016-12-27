@@ -23,30 +23,42 @@ class ConfigurationForm(ModelForm):
         model = BioSANSConfiguration
         exclude = ['user','instrument']
 
-
-'''
-
-See: https://github.com/runekaagaard/django-crispy-forms-fancy-formsets
-
-https://github.com/runekaagaard/django-crispy-forms-fancy-formsets
-
-This:
-https://github.com/nyergler/nested-formset
-http://www.yergler.net/blog/2013/09/03/nested-formsets-redux/
-
-'''
-
-ReductionFormSet = inlineformset_factory(BioSANSReduction, BioSANSRegion,
-                                         fields = ('empty_beam', 'region', 'comments')) 
-class ReductionFormSetHelper(FormHelper):
+class ReductionForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ReductionFormSetHelper, self).__init__(*args, **kwargs)
-        self.form_method = 'post'
-        self.form_class = 'form-horizontal'
-        self.render_required_fields = True
-        self.layout = Layout(Submit('submit', 'Save'),
-                             Button('cancel', 'Cancel', css_class='btn-default', onclick="window.history.back()"))
+        super(ReductionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.render_required_fields = True
+        # self.helper.layout = Layout(Submit('submit', 'Save'),
+        #                      Button('cancel', 'Cancel', css_class='btn-default', onclick="window.history.back()"))
+        self.helper.form_tag = False
 
-reduction_formset = ReductionFormSet()
-reduction_helper = ReductionFormSetHelper()
+    class Meta:
+        model = BioSANSReduction
+        exclude = ['user','instrument']
 
+
+class RegionForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(RegionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.render_required_fields = True
+        self.helper.layout = Layout(
+            HTML('<div id="entries"></div>'),
+            # Submit('submit', 'Save'),
+            # Button('cancel', 'Cancel', css_class='btn-default', onclick="window.history.back()")
+        )
+        self.helper.form_tag = False
+        self.helper.render_hidden_fields = True
+        
+    class Meta:
+        model = BioSANSRegion
+        fields = '__all__'
+
+ # New
+RegionInlineFormSetCreate = inlineformset_factory(BioSANSReduction, BioSANSRegion, form=RegionForm, extra=3, can_delete=False)
+# Edit
+RegionInlineFormSetEdit = inlineformset_factory(BioSANSReduction, BioSANSRegion, form=RegionForm, extra=1, can_delete=True)
