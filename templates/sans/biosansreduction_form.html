@@ -27,36 +27,39 @@
         <h1>Reduction<small> new</small></h1>
     </div>
 
-    
-    <form method="post" action="" class="form-horizontal">
+    <form method="post" action="" class="form-horizontal" onsubmit="return populateFormWithHotContents();">
         {{ formset.management_form }}
-        <div class="container">
-            {% crispy form  %}
-        </div>
-            <hr />
-            
-        <ul class="nav nav-tabs nav-justified">
-        {% for f in formset %}
-            <li class="{{ forloop.first|yesno:'active,'}}"><a data-toggle="tab" href="#tab{{forloop.counter}}">Region {{forloop.counter}}</a>
-            </li>
-        {% endfor %}
-        </ul>
-        <div class="panel-body">
-            <div class="tab-content">
-            {% for f in formset %}
-                <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
-                
-                {% crispy f f.helper %}
-                
-                </div>
-            {% endfor %}
+        <div class="well">
+            <div class="panel-body">
+                {% crispy form  %}
             </div>
-        <div>
-        <hr />
-        <button type="submit" class="btn btn-primary">Save</button>
-        {% if form.title.value|length > 0 %}<button type="submit" name="add_form" class="btn btn-default">Add form...</button>{% endif %}
+        </div>
 
-            
+        <hr />
+        
+        <div class="well">
+            <div class="panel-body">
+                <ul class="nav nav-tabs nav-justified">
+                {% for f in formset %}
+                    <li class="{{ forloop.first|yesno:'active,'}}"><a data-toggle="tab" href="#tab{{forloop.counter}}">Region {{forloop.counter}}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+                <div class="tab-content">
+                {% for f in formset %}
+                    <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
+                        {% crispy f f.helper %}    
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="cancel" class="btn btn-default" onclick="window.history.back()" >Cancel</button>
+        {% if form.title.value|length > 0 %}<button type="submit" name="add_form" class="btn btn-default">Add form...</button>{% endif %}    
     </form>
 </div>
 {% endblock %}
@@ -64,41 +67,58 @@
 {% block footer_js%}
 {{ block.super }}
 <script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
+<script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
 <!-- page script -->
 <script>
 
 /******************* handsontable *************************/
 
-//Initial data: populated from what comes from django context variables
-var headers = {{entry_headers | safe}};
-{% if entries %}
-	var data = {{entries|safe}};
-{% else %}
-	// 2D empty array
-	var data = [new Array(headers.length).join(".").split(".")];
-{% endif %}
+// Let's get the entries: id_regions-0-entries
+var entriesSelectors = $('[id ^=id_regions][id $=entries]');
 
-	// Creates and Populates the spreadsheet if editing the form
-var container = document.getElementById('entries');
-var hot = new Handsontable(container, {
-    data: data,
-    height: 300,
-    minSpareRows: 10,
-    stretchH: 'all',
-    columnSorting: true,
-    contextMenu: true,
-    autoWrapRow: true,
-    rowHeaders: false,
-    colHeaders: headers,
-    contextMenu: true,
-     	outsideClickDeselects: false,
-    columns: [
-       {% for name in entry_names %}
-         { data: "{{name}}"}
-         {% if not forloop.last %},{% endif %}
-       {% endfor %}
-     ]
+// For every input field add a div anchor to place the spreadsheet
+$.each( entriesSelectors, function( i, selector ) {
+    var data =  JSON.parse(selector.value);
+    // Add the anchor: <div id="hot-?" />
+    var $div = $("<div>", {id: "hot-" + i, class: "hot handsontable" });
+    $div.insertAfter( selector );
+    //console.log(data);
+    var options = {
+        data: data,
+        height: 300,
+        minSpareRows: 10,
+        stretchH: 'all',
+        columnSorting: true,
+        contextMenu: true,
+        autoWrapRow: true,
+        rowHeaders: false,
+        colHeaders: {{entry_headers | safe}},
+        contextMenu: true,
+        outsideClickDeselects: false,
+        columns: [
+        {% for name in entry_names %}
+            { data: "{{name}}-"+i}
+            {% if not forloop.last %},{% endif %}
+        {% endfor %}
+        ]
+    };
+    $div.handsontable(options);
 });
-	
+
+/*
+ Let's map the spreasheet contents into the form entries field
+ */
+function populateFormWithHotContents() {
+    // the selectors are ordered by the order they are in the DOM
+    // entries are first, hot are after
+    var hotSelectors = $('[id ^=hot-],[id ^=id_regions][id $=entries]');
+    for(i = 0; i < hotSelectors.length; i=i+2) {
+        //console.log(hotSelectors[i]);
+        var hotContents = JSON.stringify($(hotSelectors[i+1]).handsontable('getData'));
+        $(hotSelectors[i]).val(hotContents);
+    }
+    return true;
+};
+
 </script>
 {% endblock %}

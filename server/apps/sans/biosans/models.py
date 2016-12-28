@@ -50,6 +50,5 @@ class BioSANSRegion(Region):
                                       related_name="reductions",
                                       related_query_name="reduction",
                                       blank=True, null=True,)
-
     def __str__(self):
         return "Reduction {} -> Entry {}".format(self.reduction.title, self.region)

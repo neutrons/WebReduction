@@ -176,7 +176,9 @@ class ReductionMixin(object):
         Populates the context with the titled case names and names as in the model
         '''
         context = super(ReductionMixin, self).get_context_data(**kwargs)
-        # TODO
+        context["entry_names"] = ["sample_scattering", "sample_transmission",
+                                  "backgroung_scattering", "backgroung_transmission"]
+        context["entry_headers"] = [i.title().replace("_"," ") for i in context["entry_names"]]
         return context
 
 

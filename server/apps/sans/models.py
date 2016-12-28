@@ -193,10 +193,9 @@ class RegionManager(models.Manager):
 class Region(models.Model):
     '''
     Region can be low, medium or high Q
-    
     This will be a formset from Reduction
     '''
-    
+
     # Manager
     objects = RegionManager()
 
@@ -210,13 +209,12 @@ class Region(models.Model):
         choices=REGION_CHOICES,
         default=REGION_CHOICES[1][0],
     )
-    
+
     comments = models.CharField(max_length=256, blank=True,
                                 help_text="Any necessary comments...")
-
     # This will be the json for sample / backgroun sample/transmission
-    entries = JSONField( default={} )
-    
+    entries = JSONField(default=[])
+
     class Meta:
         abstract = True
         ordering = ["id"]
