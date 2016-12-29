@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
 
-from .forms import ConfigurationForm, ReductionForm, RegionForm, RegionInlineFormSetCreate, RegionInlineFormSetEdit
+from .forms import ConfigurationForm, ReductionForm, RegionForm, RegionInlineFormSetCreate, RegionInlineFormSetUpdate
 from server.apps.catalog.models import Instrument
 
 from server.apps.users.ldap_util import LdapSns
@@ -186,7 +186,7 @@ class ReductionMixin(object):
         '''
         Get only reductions for this user: reduction.configuration.user
         '''
-        return BioSANSReduction.objects.filter(configuration__user = self.request.user)
+        return BioSANSReduction.objects.filter(user = self.request.user)
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
@@ -227,11 +227,19 @@ class ReductionCreate(LoginRequiredMixin, FormsetMixin, ReductionMixin, CreateVi
     form_class = ReductionForm
     formset_class = RegionInlineFormSetCreate
 
-    def form_valid(self, form):
+    def form_valid(self, form, formset):
         """
         Sets initial values which are hidden in the form
         """
         form.instance.user = self.request.user
         form.instance.instrument = get_object_or_404(Instrument,
             name=self.request.session['instrument'].name)
-        return CreateView.form_valid(self, form)
+        return FormsetMixin.form_valid(self, form, formset)
+
+class ReductionUpdate(LoginRequiredMixin, FormsetMixin, ReductionMixin, UpdateView):
+    '''
+    Edit a Reduction
+    '''
+    template_name = 'sans/biosansreduction_form.html'
+    form_class = ReductionForm
+    formset_class = RegionInlineFormSetUpdate

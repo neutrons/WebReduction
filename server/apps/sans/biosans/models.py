@@ -47,8 +47,7 @@ class BioSANSRegion(Region):
                                       related_query_name="region",)
     
     configuration = models.ForeignKey(BioSANSConfiguration, on_delete=models.CASCADE,
-                                      related_name="reductions",
-                                      related_query_name="reduction",
-                                      blank=True, null=True,)
+                                      related_name="regions",
+                                      related_query_name="region")
     def __str__(self):
         return "Reduction {} -> Entry {}".format(self.reduction.title, self.region)

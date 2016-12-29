@@ -35,39 +35,25 @@
     <hr/>
     
     <div class="container-fluid">
-    	<table id="table_reduction" class="table table-striped">
-			{% for entry in object.entries.all %}
-				{% if forloop.first %}
-                <thead>
-					<tr>
-					{% for name, value in entry.get_field_titled_names_and_values %}
-					<th>{{ name }}</th>
-					{% endfor %}
-					</tr>
-				</thead>
-				<tbody>
-				{% endif %}
-				<tr>
-					{% for name, value in entry.get_field_titled_names_and_values %}
-					<td>{{ value }}</td>
-					{% endfor %}
-				</tr>
-				{% if forloop.last %}
-				</tbody>
-                <tfoot>
-					<tr>
-					{% for name, value in entry.get_field_titled_names_and_values %}
-					<th>{{ name }}</th>
-					{% endfor %}
-					</tr>
-				</tfoot>
-				{% endif %}
+			{% for entry in object.regions.all %}
+			<h3>{{entry}}</h3>
+            <ul class="list-group">
+                {% for f in entry.get_all_fields %}
+	                <li class="list-group-item">
+						{% if f.name == "entries" %}
+							<div id="hot-{forloop.counter}}" value="{{f.value}}"></div>
+						{% else %}
+							<strong>{{f.label|capfirst}}</strong>
+							<span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+						{% endif %}
+	                </li>
+	            {% endfor %}
+            </ul>
 			{% endfor %}
-		</table>
     </div>
 
     <p>
-        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href=""
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_update' object.pk %}"
             title="Click to edit the details of this configuration.">Edit</a>
 
         <a id="button_delete" class="btn btn-danger" data-toggle="tooltip" data-placement="top" href=""
@@ -76,8 +62,64 @@
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href=""
             title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
 
-        <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top"
+        <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top" onclick="window.history.back()"
         	href="#" title="If you would like to send this configuration to another user.">Cancel</a>
     </p>
 </div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
+<!-- page script -->
+<script>
+
+/******************* handsontable *************************/
+
+// Let's get the entries: id_regions-0-entries
+var entriesSelectors = $('[id ^=hot]');
+
+// For every input field add a div anchor to place the spreadsheet
+$.each( entriesSelectors, function( i, selector ) {
+    var dataAsString = $(selector).attr('value');
+	dataAsString = dataAsString.replace(/\'/g,'"')
+	dataAsString = dataAsString.replace(/None/g,'null')
+	console.log(dataAsString);
+	var data =  JSON.parse(dataAsString);
+	console.log(data)
+    //console.log(data);
+    var options = {
+        data: data,
+        height: 300,
+        minSpareRows: 10,
+        stretchH: 'all',
+        columnSorting: true,
+        contextMenu: true,
+        autoWrapRow: true,
+        rowHeaders: false,
+        colHeaders: {{entry_headers | safe}},
+        contextMenu: true,
+        outsideClickDeselects: false,
+		readOnly: true
+    };
+    $(selector).handsontable(options);
+
+});
+
+/*
+ Let's map the spreasheet contents into the form entries field
+ */
+function populateFormWithHotContents() {
+    // the selectors are ordered by the order they are in the DOM
+    // entries are first, hot are after
+    var hotSelectors = $('[id ^=hot-],[id ^=id_regions][id $=entries]');
+    for(i = 0; i < hotSelectors.length; i=i+2) {
+        //console.log(hotSelectors[i]);
+        var hotContents = JSON.stringify($(hotSelectors[i+1]).handsontable('getData'));
+        $(hotSelectors[i]).val(hotContents);
+    }
+    return true;
+};
+
+</script>
 {% endblock %}

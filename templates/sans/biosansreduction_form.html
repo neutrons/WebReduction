@@ -67,7 +67,6 @@
 {% block footer_js%}
 {{ block.super }}
 <script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
-<script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
 <!-- page script -->
 <script>
 
@@ -94,15 +93,10 @@ $.each( entriesSelectors, function( i, selector ) {
         rowHeaders: false,
         colHeaders: {{entry_headers | safe}},
         contextMenu: true,
-        outsideClickDeselects: false,
-        columns: [
-        {% for name in entry_names %}
-            { data: "{{name}}-"+i}
-            {% if not forloop.last %},{% endif %}
-        {% endfor %}
-        ]
+        outsideClickDeselects: false
     };
     $div.handsontable(options);
+    console.log(options.data);
 });
 
 /*

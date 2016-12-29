@@ -155,8 +155,8 @@ class ReductionManager(models.Manager):
 class Reduction(models.Model, ModelMixin):
     '''
     '''
-    title = models.CharField(max_length=256, blank=True)
-    ipts = models.CharField(max_length=16, blank=True)
+    title = models.CharField(max_length=256)
+    ipts = models.CharField(max_length=16)
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
@@ -190,7 +190,7 @@ class RegionManager(models.Manager):
 
 
 
-class Region(models.Model):
+class Region(models.Model, ModelMixin):
     '''
     Region can be low, medium or high Q
     This will be a formset from Reduction
@@ -213,7 +213,7 @@ class Region(models.Model):
     comments = models.CharField(max_length=256, blank=True,
                                 help_text="Any necessary comments...")
     # This will be the json for sample / backgroun sample/transmission
-    entries = JSONField(default=[])
+    entries = JSONField(default=[[None, None, None, None]])
 
     class Meta:
         abstract = True
