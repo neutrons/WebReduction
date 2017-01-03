@@ -10,6 +10,8 @@ from crispy_forms.layout import Submit, Button, HTML, Div, Layout, Fieldset
 
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
 
+from dal import autocomplete
+
 class ConfigurationForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -54,7 +56,6 @@ class RegionForm(ModelForm):
                 #HTML('<hr/><div id="entries"></div>'),
             )
         )
-
 
     class Meta:
         model = BioSANSRegion

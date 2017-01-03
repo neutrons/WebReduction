@@ -8,6 +8,32 @@
 	{{ block.super }}
 	<!-- handsontable -->
 	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.css" %}'>
+	<!-- For the IPTS autocomplete-->
+	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.css" %}'>
+<style>
+/*jQuery UI autocomplete for bootstrap*/
+.ui-autocomplete {
+    position: absolute;
+    height: 200px;
+    overflow-y: scroll;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    cursor: default;
+    background-color: #fff;
+    padding:3px;
+    border: 1px solid #ccc;
+    font-size: 12px
+}
+.ui-autocomplete > li.ui-state-focus {
+  background-color: #FF6C00;
+}
+
+/* Show row selections for datatable. I use this rather than the jquery.dataTables.css which has conflicts with Adminlte*/
+table.dataTable tbody tr.selected {
+  background-color: #B0BED9;
+}
+</style>
 {% endblock %}
 
  
@@ -67,6 +93,8 @@
 {% block footer_js%}
 {{ block.super }}
 <script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
+<!-- For the IPTS autocomplete-->
+<script src='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.js" %}'></script>
 <!-- page script -->
 <script>
 
@@ -96,7 +124,6 @@ $.each( entriesSelectors, function( i, selector ) {
         outsideClickDeselects: false
     };
     $div.handsontable(options);
-    console.log(options.data);
 });
 
 /*
@@ -114,5 +141,43 @@ function populateFormWithHotContents() {
     return true;
 };
 
+/***
+* TODO:
+* Need to comment this!
+*/
+
+function set_autocomplete(selector, jsonurl) {
+	$.ajax({
+		url : jsonurl,
+		type : 'get',
+		dataType : 'json',
+		async : true,
+		success : function(data) {
+			// console.log(data);
+			$(selector).autocomplete({
+				source : data,
+				minLength : 0,
+				// fires the change event on selection!
+				select : function(event, ui) {
+					this.value = ui.item.value;
+					$(this).trigger('change');
+					return false;
+				},
+			}).bind('focus', function() {
+				if (!$(this).val().trim()) {
+					$(this).keydown();
+				}
+			});
+		},
+	});
+}
+
+set_autocomplete("#id_ipts", "{% url 'users:group_list_json' %}");
+
+
 </script>
+
+{# This is for django-autocomplete-light:  jquery is loaded before #}
+{{ form.media }}
+
 {% endblock %}

@@ -64,7 +64,7 @@ class Instrument(models.Model):
         max_length=32,
     )
 
-    ldap_name = models.CharField(
+    ldap_group_name = models.CharField(
         'instrument ldap name',
         help_text='Name used for querying LDAP server',
         max_length=32,

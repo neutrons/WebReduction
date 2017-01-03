@@ -1,28 +1,33 @@
 """
     User management
 """
+import json
+import logging
+
+from django.db.models import F
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import CreateView, UpdateView, FormView, RedirectView
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
+from django.views.generic import CreateView, UpdateView, FormView, RedirectView, ListView, TemplateView
 from django.http import JsonResponse
+from django.core import serializers
 
-import logging
-import json
-
-from .models import UserProfile
 from .forms import UserProfileForm
+from .models import UserProfile
+
 
 logger = logging.getLogger('users')
 
@@ -87,6 +92,18 @@ class LogoutView(RedirectView):
         return response
 
 
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = "index.html"
+    
+    def get(self, request, *args, **kwargs):
+        
+        if 'instrument' not in self.request.session:
+            # Has no default instrument! Go to profile!
+            return redirect(reverse_lazy('users:profile_create'))
+        else:
+            return super(ProfileView, self).get(request, *args, **kwargs)
+
+
 class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
     '''
     I'm using form_class to test crispy forms
@@ -119,3 +136,26 @@ class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,CreateView):
         form.instance.user = user
         self.request.session['instrument'] = form.instance.instrument
         return super(ProfileCreate, self).form_valid(form)
+
+
+
+class GroupMixin(object):
+    def get_queryset(self):
+        '''
+        Make sure the user only accesses its groups
+        '''
+        return Group.objects.filter(user = self.request.user)
+
+class GroupListJson(LoginRequiredMixin, GroupMixin, ListView):
+    '''
+    List all groups for this user.
+    '''
+    def get_queryset(self):
+        return super(GroupListJson, self).get_queryset()
+    
+    def get(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        # Rename to value and label
+        qs = qs.annotate(value=F('pk'), label=F('name')).values('value','label')
+        return JsonResponse(list(qs), safe=False)
+

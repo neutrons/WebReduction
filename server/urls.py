@@ -14,12 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+from django.urls import reverse_lazy
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.decorators import login_required
-
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -28,5 +28,6 @@ urlpatterns = [
     # For smart_selects
     url(r'^chaining/', include('smart_selects.urls')),
     # test homepage
-    url(r'^$', login_required(TemplateView.as_view(template_name='index.html')), name='index'),
+    url(r'^.*$', RedirectView.as_view(url=reverse_lazy('users:profile_view'), permanent=False), name='index')
+
 ]

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import logging
+
 from django.conf import settings
 import ldap
 
-import logging
+
 logger = logging.getLogger('users.util')
 
 '''
@@ -19,7 +21,16 @@ for uid in uids:
 
 '''
 
+
 class LdapSns(object):
+    '''
+
+    UID is the URCAMS 3 digit!
+
+    It uses the Django ldap server settings
+
+    '''
+
     def __init__(self):
         ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         self.server = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
@@ -30,7 +41,7 @@ class LdapSns(object):
     def get_all_ipts(self):
         '''
         @return list of IPTSs: ['IPTS-18360', 'IPTS-18361', 'IPTS-17692']
- 
+
         >>> all_ipts[-1]
         ('cn=IPTS-17757,ou=Groups,dc=sns,dc=ornl,dc=gov', {'cn': [b'IPTS-17757']})
         '''
@@ -38,19 +49,18 @@ class LdapSns(object):
             "ou=Groups,dc=sns,dc=ornl,dc=gov",
             ldap.SCOPE_SUBTREE,
             "(cn=IPTS*)",
-            ["cn",]
+            ["cn", ]
         )
         return [result[1]['cn'][0].decode('UTF-8') for result in results]
 
-
-    def get_all_uids_for_an_ipts(self,ipts):
+    def get_all_uids_for_an_ipts(self, ipts):
         '''
         @return list of uids: ['djk', 'jameshutchison', 'sandercr', 'hbd', 'q3n']
         '''
         results = self.server.search_s(
             "ou=Groups,dc=sns,dc=ornl,dc=gov",
             ldap.SCOPE_SUBTREE,
-            "(&(cn=%s)(memberUid=*))"%ipts,
+            "(&(cn=%s)(memberUid=*))" % ipts,
             ["memberUid"]
         )
         uids = []
@@ -70,7 +80,7 @@ class LdapSns(object):
                                              b'ri2',
                                              b'j7t']})
         Not used!!
-        
+
         >>> all_users_and_ipts[-1]
         ('cn=IPTS-17329,ou=Groups,dc=sns,dc=ornl,dc=gov', {'cn': [b'IPTS-17329'], 'memberUid': [b'ckt', b'boehler', b'biancahaberl', b'l8d', b'yyc', b'ri2', b'j7t']})
         >>> all_users_and_ipts[-1][1]
@@ -81,7 +91,7 @@ class LdapSns(object):
             "ou=Groups,dc=sns,dc=ornl,dc=gov",
             ldap.SCOPE_SUBTREE,
             "(&(cn=IPTS*)(description=proposal)(memberUid=*))",
-            ["cn","memberUid"]
+            ["cn", "memberUid"]
         )
         return results
 
@@ -94,9 +104,9 @@ class LdapSns(object):
             "ou=Users,dc=sns,dc=ornl,dc=gov",
             ldap.SCOPE_SUBTREE,
             "(objectClass=posixAccount)",
-            ["cn","uid"]
+            ["cn", "uid"]
         )
-        return [{'uid':result[1]['uid'][0].decode('UTF-8'), 'name' : result[1]['cn'][0].decode('UTF-8') } for result in results]
+        return [{'uid': result[1]['uid'][0].decode('UTF-8'), 'name': result[1]['cn'][0].decode('UTF-8')} for result in results]
 
     def get_all_ipts_for_an_uid(self, uid):
         '''
@@ -105,31 +115,27 @@ class LdapSns(object):
         results = self.server.search_s(
             "ou=Groups,dc=sns,dc=ornl,dc=gov",
             ldap.SCOPE_SUBTREE,
-            "(&(cn=IPTS*)(description=proposal)(memberUid=%s))"%uid,
+            "(&(cn=IPTS*)(description=proposal)(memberUid=%s))" % uid,
             ["cn"]
         )
-        #return results
         return [result[1]['cn'][0].decode('UTF-8') for result in results]
-        
-
 
 # Test
 if __name__ == '__main__':
     from pprint import pprint
     l = LdapSns()
-    
+
     #all_ipts = l.get_all_ipts()
-    #pprint(all_ipts)
-    
+    # pprint(all_ipts)
+
     #all_uids_for_an_ipts = l.get_all_uids_for_an_ipts(all_ipts[-1])
-    #pprint(all_uids_for_an_ipts)
-    
+    # pprint(all_uids_for_an_ipts)
+
     #all_users_and_ipts = l.get_all_users_and_ipts()
-    #pprint(all_users_and_ipts)
-    
+    # pprint(all_users_and_ipts)
+
     #all_users_name_and_uid = l.get_all_users_name_and_uid()
-    #pprint(all_users_name_and_uid)
-    
-    all_ipts_for_an_uid = l.get_all_ipts_for_an_uid("19g")
-    pprint(all_ipts_for_an_uid)
-    
+    # pprint(all_users_name_and_uid)
+
+    #all_ipts_for_an_uid = l.get_all_ipts_for_an_uid("19g")
+    # pprint(all_ipts_for_an_uid)

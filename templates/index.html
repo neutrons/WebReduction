@@ -12,7 +12,7 @@
 
 <div class="container">
   <div class="page-header">
-    <h1>Main page <small>Subtext for header</small></h1>
+    <h1>Welcome <small>This is your profile...</small></h1>
   </div>
 
   <div class="well">
@@ -24,6 +24,13 @@
     </ul>
     <p>Your home institution is: <strong>{{ user.profile.home_institution }}</strong>. </p>
     <p>Your intrument is: <strong>{{ user.profile.instrument }}</strong>. </p>
+    <p>Your groups are: </p>
+    <ul>
+    	{% for group in user.groups.all %}
+    		<li>{{group}}</li>
+    	{% endfor %}
+    	
+    </ul>
   </div>
 
 </div>

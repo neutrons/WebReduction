@@ -31,9 +31,7 @@ AUTH_LDAP_FIND_GROUP_PERMS = True
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     'is_active': 'cn=SNS_Neutron,ou=Groups,dc=sns,dc=ornl,dc=gov',
     'is_staff': 'cn=SNS_Neutron_dev,ou=Groups,dc=sns,dc=ornl,dc=gov',
-    # rhf and tcf are admins!
-    'is_superuser' : ['uid=rhf,ou=Users,dc=sns,dc=ornl,dc=gov',
-        'uid=tcf,ou=Users,dc=sns,dc=ornl,dc=gov']
+    'is_superuser': 'cn=SNS_Neutron_dev,ou=Groups,dc=sns,dc=ornl,dc=gov',
 }
 
 # User attributes from ldap

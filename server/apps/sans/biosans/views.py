@@ -1,25 +1,25 @@
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, RedirectView, TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
-from django.core.urlresolvers import reverse_lazy
-from django.http import Http404
+import json
+import logging
+import os
+from pprint import pformat
+
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.contenttypes.models import ContentType
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
-from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse_lazy
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, RedirectView, TemplateView
 
-from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
-
-from .forms import ConfigurationForm, ReductionForm, RegionForm, RegionInlineFormSetCreate, RegionInlineFormSetUpdate
 from server.apps.catalog.models import Instrument
-
 from server.apps.users.ldap_util import LdapSns
 from server.util.formsets import FormsetMixin
 
-from pprint import pformat
-import logging
-import json
-import os
+from .forms import ConfigurationForm, ReductionForm, RegionForm, RegionInlineFormSetCreate, RegionInlineFormSetUpdate
+from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
+
 
 logger = logging.getLogger('sans.biosans')
 
@@ -176,9 +176,9 @@ class ReductionMixin(object):
         Populates the context with the titled case names and names as in the model
         '''
         context = super(ReductionMixin, self).get_context_data(**kwargs)
-        context["entry_names"] = ["sample_scattering", "sample_transmission",
+        entry_names = ["sample_scattering", "sample_transmission",
                                   "backgroung_scattering", "backgroung_transmission"]
-        context["entry_headers"] = [i.title().replace("_"," ") for i in context["entry_names"]]
+        context["entry_headers"] = [i.title().replace("_"," ") for i in entry_names]
         return context
 
 
@@ -187,6 +187,16 @@ class ReductionMixin(object):
         Get only reductions for this user: reduction.configuration.user
         '''
         return BioSANSReduction.objects.filter(user = self.request.user)
+    
+    def get_formset(self, form_class=None):
+        '''
+        When creating/editing a formset, this will make sure the user only sees it's own
+        configurations
+        '''
+        formset = super(ReductionMixin,self).get_formset(form_class) #instantiate using parent
+        for form in formset:
+            form.fields['configuration'].queryset = BioSANSConfiguration.objects.filter(user = self.request.user)
+        return formset
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
@@ -218,7 +228,7 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
         return queryset.filter(id = self.kwargs['pk'])
 
 
-class ReductionCreate(LoginRequiredMixin, FormsetMixin, ReductionMixin, CreateView):
+class ReductionCreate(LoginRequiredMixin, ReductionMixin, FormsetMixin, CreateView):
     '''
     Create a new entry!
     '''
@@ -236,7 +246,8 @@ class ReductionCreate(LoginRequiredMixin, FormsetMixin, ReductionMixin, CreateVi
             name=self.request.session['instrument'].name)
         return FormsetMixin.form_valid(self, form, formset)
 
-class ReductionUpdate(LoginRequiredMixin, FormsetMixin, ReductionMixin, UpdateView):
+
+class ReductionUpdate(LoginRequiredMixin, ReductionMixin, FormsetMixin, UpdateView):
     '''
     Edit a Reduction
     '''

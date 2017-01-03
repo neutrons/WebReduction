@@ -3,14 +3,17 @@ django>=1.10
 # Django Packages
 django-crispy-forms
 django-auth-ldap>=1.2.6
+
+# PostGres
 psycopg2>=2.6.1
+
+# for .env file
 django-environ
+
 # Chained Selects (e.g. Pick facility then the associated instrument)
 django-smart-selects
-# Formsets
-django-extra-views
 
-# Other
+
 # To have a nice ./manage.py shell
 ipython
 

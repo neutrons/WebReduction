@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     # Django addons
     'crispy_forms',
     'smart_selects',
+    'dal',
+    'dal_select2',
 ]
 
 MIDDLEWARE = [
