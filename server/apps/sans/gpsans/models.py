@@ -25,13 +25,13 @@ class GPSANSConfiguration(Configuration):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:GPSANS:configuration_detail', [self.pk])
+        return ('sans:gpsans:configuration_detail', [self.pk])
 
 class GPSANSReduction(Reduction):
     
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:GPSANS:reduction_detail', [self.pk])
+        return ('sans:gpsans:reduction_detail', [self.pk])
 
     # Needed to generate the script from this object
     script_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),"scripts","template.py")
