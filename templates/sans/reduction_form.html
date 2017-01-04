@@ -1,0 +1,182 @@
+ {% extends "base.html" %}
+ 
+ {% load staticfiles %}
+
+ {% load crispy_forms_tags %}
+ 
+ {% block header %}
+	{{ block.super }}
+	<!-- handsontable -->
+	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
+	<!-- For the IPTS autocomplete-->
+	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui/jquery-ui.min.css" %}'>
+<style>
+/*jQuery UI autocomplete for bootstrap*/
+.ui-autocomplete {
+    position: absolute;
+    height: 200px;
+    overflow-y: scroll;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    cursor: default;
+    background-color: #fff;
+    padding:3px;
+    border: 1px solid #ccc;
+    font-size: 12px
+}
+.ui-autocomplete > li.ui-state-focus {
+  background-color: #FF6C00;
+}
+
+/* Show row selections for datatable. I use this rather than the jquery.dataTables.css which has conflicts with Adminlte*/
+table.dataTable tbody tr.selected {
+  background-color: #B0BED9;
+}
+</style>
+{% endblock %}
+
+ 
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_list' %}">Reduction</a></li>
+        <li class="active">{%if object %}{{object}}{% else %} new {% endif%}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Reduction<small> new</small></h1>
+    </div>
+
+    <form method="post" action="" class="form-horizontal" onsubmit="return populateFormWithHotContents();">
+        {{ formset.management_form }}
+        <div class="well">
+            <div class="panel-body">
+                {% crispy form  %}
+            </div>
+        </div>
+
+        <hr />
+        
+        <div class="well">
+            <div class="panel-body">
+                <ul class="nav nav-tabs nav-justified">
+                {% for f in formset %}
+                    <li class="{{ forloop.first|yesno:'active,'}}"><a data-toggle="tab" href="#tab{{forloop.counter}}">Region {{forloop.counter}}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+                <div class="tab-content">
+                {% for f in formset %}
+                    <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
+                        {% crispy f f.helper %}    
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="cancel" class="btn btn-default" onclick="window.history.back()" >Cancel</button>
+        {#{% if form.title.value|length > 0 %}<button type="submit" name="add_form" class="btn btn-default">Add form...</button>{% endif %}#}    
+    </form>
+</div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/handsontable/handsontable.full.min.js" %}'></script>
+<!-- For the IPTS autocomplete-->
+<script src='{% static "thirdparty/jquery-ui/jquery-ui.min.js" %}'></script>
+<!-- page script -->
+<script>
+
+/******************* handsontable *************************/
+
+// Let's get the entries: id_regions-0-entries
+var entriesSelectors = $('[id ^=id_regions][id $=entries]');
+
+// For every input field add a div anchor to place the spreadsheet
+$.each( entriesSelectors, function( i, selector ) {
+    var data =  JSON.parse(selector.value);
+    // Add the anchor: <div id="hot-?" />
+    var $div = $("<div>", {id: "hot-" + i, class: "hot handsontable" });
+    $div.insertAfter( selector );
+    //console.log(data);
+    var options = {
+        data: data,
+        height: 300,
+        minSpareRows: 10,
+        stretchH: 'all',
+        columnSorting: true,
+        contextMenu: true,
+        autoWrapRow: true,
+        rowHeaders: false,
+        colHeaders: {{entry_headers | safe}},
+        contextMenu: true,
+        outsideClickDeselects: false
+    };
+    $div.handsontable(options);
+});
+
+/*
+ Let's map the spreasheet contents into the form entries field
+ */
+function populateFormWithHotContents() {
+    // the selectors are ordered by the order they are in the DOM
+    // entries are first, hot are after
+    var hotSelectors = $('[id ^=hot-],[id ^=id_regions][id $=entries]');
+    for(i = 0; i < hotSelectors.length; i=i+2) {
+        //console.log(hotSelectors[i]);
+        var hotContents = JSON.stringify($(hotSelectors[i+1]).handsontable('getData'));
+        $(hotSelectors[i]).val(hotContents);
+    }
+    return true;
+};
+
+/***
+* TODO:
+* Need to comment this!
+*/
+
+function set_autocomplete(selector, jsonurl) {
+	$.ajax({
+		url : jsonurl,
+		type : 'get',
+		async : true,
+		success : function(data) {
+			//console.log(data);
+			$(selector).autocomplete({
+				source : data,
+				minLength : 0,
+				// fires the change event on selection!
+				select : function(event, ui) {
+					this.value = ui.item.value;
+					$(this).trigger('change');
+					return false;
+				},
+			}).bind('focus', function() {
+				if (!$(this).val().trim()) {
+					$(this).keydown();
+				}
+			});
+		},
+	});
+}
+// Set autocomplete for ipts form field
+set_autocomplete("#id_ipts", "{% url 'users:group_list_json' %}");
+
+
+</script>
+
+{# This is for django-autocomplete-light:  jquery is loaded before #}
+{{ form.media }}
+
+{% endblock %}

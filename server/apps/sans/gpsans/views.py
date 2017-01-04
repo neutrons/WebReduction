@@ -17,12 +17,11 @@ from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 from server.util.formsets import FormsetMixin
 
-from .forms import BioSANSConfigurationForm, BioSANSReductionForm, BioSANSRegionForm, \
-    BioSANSRegionInlineFormSetCreate, BioSANSRegionInlineFormSetUpdate
-from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
+from .forms import GPSANSConfigurationForm, GPSANSReductionForm, GPSANSRegionForm, \
+    GPSANSRegionInlineFormSetCreate, GPSANSRegionInlineFormSetUpdate
+from .models import GPSANSConfiguration, GPSANSReduction, GPSANSRegion
 
-
-logger = logging.getLogger('sans.biosans')
+logger = logging.getLogger('sans.GPSANS')
 
 
 class ConfigurationMixin(object):
@@ -30,7 +29,7 @@ class ConfigurationMixin(object):
         '''
         Make sure the user only accesses its configurations
         '''
-        return BioSANSConfiguration.objects.filter(user = self.request.user)
+        return GPSANSConfiguration.objects.filter(user = self.request.user)
 
 class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
     '''
@@ -51,9 +50,9 @@ class ConfigurationCreate(LoginRequiredMixin, CreateView):
     '''
     Detail of a configuration
     '''
-    template_name = 'sans/biosansconfiguration_form.html'
+    template_name = 'sans/gpsansconfiguration_form.html'
     # Using form rather than model as we are hiding some fields!!
-    form_class = BioSANSConfigurationForm
+    form_class = GPSANSConfigurationForm
 
     def form_valid(self, form):
         """
@@ -68,15 +67,15 @@ class ConfigurationUpdate(LoginRequiredMixin, UpdateView):
     '''
     Detail of a configuration
     '''
-    template_name = 'sans/biosansconfiguration_form.html'
+    template_name = 'sans/gpsansconfiguration_form.html'
     # Using form rather than model as we are hiding some fields!!
-    form_class = BioSANSConfigurationForm
-    model = BioSANSConfiguration
+    form_class = GPSANSConfigurationForm
+    model = GPSANSConfiguration
 
 class ConfigurationDelete(LoginRequiredMixin, DeleteView):
     
-    model = BioSANSConfiguration
-    success_url = reverse_lazy('sans:biosans:configuration_list')
+    model = GPSANSConfiguration
+    success_url = reverse_lazy('sans:GPSANS:configuration_list')
 
     def get_object(self, queryset=None):
         """
@@ -98,7 +97,7 @@ class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
     Clones the Object Configuration. Keeps the same user
     '''
     def get_object(self):
-        obj = BioSANSConfiguration.objects.clone(self.kwargs['pk'])
+        obj = GPSANSConfiguration.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
         messages.success(self.request, "Configuration '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
         return obj
@@ -109,14 +108,14 @@ class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin, Templat
     to a user.
     Context has 2 objects: the conf to assign and a list of uids + names
     '''
-    template_name = 'sans/biosansconfiguration_list_uid.html'
+    template_name = 'sans/gpsansconfiguration_list_uid.html'
 
     def get_context_data(self, **kwargs):
         context = super(ConfigurationAssignListUid, self).get_context_data(**kwargs)
         ldap_server = LdapSns()
         users_and_uids = ldap_server.get_all_users_name_and_uid()
         context['object_list'] = users_and_uids
-        obj = BioSANSConfiguration.objects.get(pk=kwargs['pk'])
+        obj = GPSANSConfiguration.objects.get(pk=kwargs['pk'])
         context['object'] = obj
         return context
 
@@ -126,14 +125,14 @@ class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin, Templa
     to all users to that IPTS.
     Context has 2 objects: the conf to assign and a list of ipts
     '''
-    template_name = 'sans/biosansconfiguration_list_ipts.html'
+    template_name = 'sans/gpsansconfiguration_list_ipts.html'
 
     def get_context_data(self, **kwargs):
         context = super(ConfigurationAssignListIpts, self).get_context_data(**kwargs)
         ldap_server = LdapSns()
         ipts = ldap_server.get_all_ipts()
         context['object_list'] = ipts
-        obj = BioSANSConfiguration.objects.get(pk=kwargs['pk'])
+        obj = GPSANSConfiguration.objects.get(pk=kwargs['pk'])
         context['object'] = obj
         return context
 
@@ -144,11 +143,11 @@ class ConfigurationAssignUid(LoginRequiredMixin, ConfigurationMixin, DetailView)
     and assigns it to the user
     It will display the original Configuration
     '''
-    template_name = 'sans/biosansconfiguration_detail.html'
-    model = BioSANSConfiguration
+    template_name = 'sans/gpsansconfiguration_detail.html'
+    model = GPSANSConfiguration
     
     def get(self, request, *args, **kwargs):
-        obj = BioSANSConfiguration.objects.clone_and_assign_new_uid(kwargs['pk'],kwargs['uid'])
+        obj = GPSANSConfiguration.objects.clone_and_assign_new_uid(kwargs['pk'],kwargs['uid'])
         messages.success(request, "Configuration %s assigned to the user %s. New configuration id = %s."%(obj, obj.user, obj.pk))
         return super(ConfigurationAssignUid, self).get(request, *args, **kwargs)
 
@@ -156,11 +155,11 @@ class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin, DetailView
     '''
     
     '''
-    template_name = 'sans/biosansconfiguration_detail.html'
-    model = BioSANSConfiguration
+    template_name = 'sans/gpsansconfiguration_detail.html'
+    model = GPSANSConfiguration
     
     def get(self, request, *args, **kwargs):
-        cloned_objs = BioSANSConfiguration.objects.clone_and_assign_new_uids_based_on_ipts(kwargs['pk'],kwargs['ipts'])
+        cloned_objs = GPSANSConfiguration.objects.clone_and_assign_new_uids_based_on_ipts(kwargs['pk'],kwargs['ipts'])
         for obj in cloned_objs:
             messages.success(request, "Configuration %s assigned to the user %s. New configuration id = %s."%(obj, obj.user, obj.pk))
         return super(ConfigurationAssignIpts, self).get(request, *args, **kwargs)
@@ -190,7 +189,7 @@ class ReductionMixin(object):
         '''
         Get only reductions for this user: reduction.configuration.user
         '''
-        return BioSANSReduction.objects.filter(user = self.request.user)
+        return GPSANSReduction.objects.filter(user = self.request.user)
     
     def get_formset(self, form_class=None):
         '''
@@ -199,16 +198,16 @@ class ReductionMixin(object):
         '''
         formset = super(ReductionMixin,self).get_formset(form_class) #instantiate using parent
         for form in formset:
-            form.fields['configuration'].queryset = BioSANSConfiguration.objects.filter(user = self.request.user)
+            form.fields['configuration'].queryset = GPSANSConfiguration.objects.filter(user = self.request.user)
         return formset
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
     List all Reduction.
     '''
-    template_name = 'sans/biosansreduction_list.html'
+    template_name = 'sans/gpsansreduction_list.html'
     # We wither use the model or the function get_queryset
-    #model = BioSANSReduction
+    #model = GPSANSReduction
     def get_queryset(self):
         '''
         Get only reductions for this user: reduction.configuration.user
@@ -236,10 +235,10 @@ class ReductionCreate(LoginRequiredMixin, ReductionMixin, FormsetMixin, CreateVi
     '''
     Create a new entry!
     '''
-    template_name = 'sans/biosansreduction_form.html'
-    #model = BioSANSReduction
-    form_class = BioSANSReductionForm
-    formset_class = BioSANSRegionInlineFormSetCreate
+    template_name = 'sans/gpsansreduction_form.html'
+    #model = GPSANSReduction
+    form_class = GPSANSReductionForm
+    formset_class = GPSANSRegionInlineFormSetCreate
 
     def form_valid(self, form, formset):
         """
@@ -255,14 +254,14 @@ class ReductionUpdate(LoginRequiredMixin, ReductionMixin, FormsetMixin, UpdateVi
     '''
     Edit a Reduction
     '''
-    template_name = 'sans/biosansreduction_form.html'
-    form_class = BioSANSReductionForm
-    formset_class = BioSANSRegionInlineFormSetUpdate
+    template_name = 'sans/gpsansreduction_form.html'
+    form_class = GPSANSReductionForm
+    formset_class = GPSANSRegionInlineFormSetUpdate
 
 
 class ReductionDelete(LoginRequiredMixin, DeleteView):
-    model = BioSANSReduction
-    success_url = reverse_lazy('sans:biosans:reduction_list')
+    model = GPSANSReduction
+    success_url = reverse_lazy('sans:GPSANS:reduction_list')
 
     def get_object(self, queryset=None):
         """
@@ -283,7 +282,7 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
     Clones the Object Configuration. Keeps the same user
     '''
     def get_object(self):
-        obj = BioSANSReduction.objects.clone(self.kwargs['pk'])
+        obj = GPSANSReduction.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
         messages.success(self.request, "Reduction '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
         return obj
