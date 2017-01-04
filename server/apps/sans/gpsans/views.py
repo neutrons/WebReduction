@@ -20,6 +20,7 @@ from server.util.formsets import FormsetMixin
 from .forms import GPSANSConfigurationForm, GPSANSReductionForm, GPSANSRegionForm, \
     GPSANSRegionInlineFormSetCreate, GPSANSRegionInlineFormSetUpdate
 from .models import GPSANSConfiguration, GPSANSReduction, GPSANSRegion
+from ..models import Region
 
 logger = logging.getLogger('sans.GPSANS')
 
@@ -200,6 +201,14 @@ class ReductionMixin(object):
         for form in formset:
             form.fields['configuration'].queryset = GPSANSConfiguration.objects.filter(user = self.request.user)
         return formset
+    
+    def get_formset_kwargs(self):
+        '''
+        Sets the initial values for the regions formsets
+        '''
+        kwargs = super(ReductionMixin,self).get_formset_kwargs()
+        kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
+        return kwargs
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''

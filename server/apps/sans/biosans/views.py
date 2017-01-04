@@ -20,7 +20,7 @@ from server.util.formsets import FormsetMixin
 from .forms import BioSANSConfigurationForm, BioSANSReductionForm, BioSANSRegionForm, \
     BioSANSRegionInlineFormSetCreate, BioSANSRegionInlineFormSetUpdate
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
-
+from ..models import Region
 
 logger = logging.getLogger('sans.biosans')
 
@@ -201,7 +201,16 @@ class ReductionMixin(object):
         for form in formset:
             form.fields['configuration'].queryset = BioSANSConfiguration.objects.filter(user = self.request.user)
         return formset
-
+    
+    def get_formset_kwargs(self):
+        '''
+        Sets the initial values for the regions formsets
+        '''
+        kwargs = super(ReductionMixin,self).get_formset_kwargs()
+        kwargs.update({'initial' : [{'region': Region.REGION_CHOICES[0][0]},
+                                    {'region': Region.REGION_CHOICES[-1][0]}]})
+        return kwargs
+    
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
     List all Reduction.
