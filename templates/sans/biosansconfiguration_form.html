@@ -61,55 +61,58 @@
 	<script src='{% static "thirdparty/bootstrap3-dialog/js/bootstrap-dialog.min.js" %}'></script>
 	<!-- page script -->
 	<script>
-	
-	// keeps the selector to assign the selected file
-	var selector;
+
 	// Setting up jQuery to pass csrf tokens to Django when using ajax.
 	$.ajaxSetup({
 	  data: {
 	    csrfmiddlewaretoken: '{{ csrf_token }}'
 	  }
 	});
+
 	// Create the modal dialog to show the browser
-	var dialog = new BootstrapDialog({
-	    title: 'Pick a file',
-	    message: $("#dirlist_wrapper"),
-	    onhidden: function() {
-	      $("#dirlist_wrapper").appendTo('#dirlist_container'); // Put the dirlist back
-	    },
-	    buttons: [{
-	      label: 'Close',
-	      action: function(dialogRef) {
-	        dialogRef.close();
-	      }
-	    }]
-	  });
-	
-	// Loads the file browser
-	$(document)
-	  .ready(
-	    function() {
-	      $('.dirlist')
-	        .fileTree({
-	          script: "{% url 'util:dirlist' %}",
-	          expandSpeed: 50,
-	          collapseSpeed: 50,
-	          multiFolder: false
-	        }, function(file) {
-	          $(selector).val(file);
-	          // When the file is selected, close the modal
-	          dialog.close();
-	        }).on('filetreeclicked',
-	          function(e, data) {
-	            console.log(data);
-	          });
-	    });
-	//All input fields ending in file will open the dialog:
-	$("input[name$='file']").on('click', function(event) {
-	  selector = this;
-	  dialog.open();
+	var dialog_server_side_browser = new BootstrapDialog({
+		title: '{{request.session.instrument.drive_path}} : Pick a file',
+	  message: $("#dirlist_wrapper"),
+	  onhidden: function() {
+	    $("#dirlist_wrapper").appendTo('#dirlist_container'); // Put the dirlist back
+	  },
+	  buttons: [{
+	  	label: 'Close',
+	    action: function(dialogRef) {
+	    	dialogRef.close();
+	    }
+	  }]
 	});
 
+	// keeps the selector to assign the selected file
+	var selector;
+	// Puts the file browser in the dialog
+	$(function() {
+		$('.dirlist')
+			.fileTree({
+				script: "{% url 'util:dirlist' %}",
+				expandSpeed: 50,
+				collapseSpeed: 50,
+				multiFolder: false
+			}, function(file) {
+				$(selector).val(file);
+				// When the file is selected, close the modal
+				//console.log(file);
+				dialog_server_side_browser.close();
+			})
+	 });
+	
+	// Add a button to fields ending with file 	
+	$("input[name$='file']").wrap( "<div class='input-group'></div>" );
+	$("input[name$='file']").after("<span class='input-group-btn'> \
+		<button class='btn btn-primary server_side_browse_btn' \
+			title='Browse server side {{request.session.instrument.drive_path}}.' type='button'>\
+		<span class='glyphicon glyphicon-search'></span></button></span>");
+	// Add click event to the button
+	$(".server_side_browse_btn").on('click', function(event) {
+	  dialog_server_side_browser.open();
+		selector = $(this).parent().parent().find("input")
+	});
 
 	</script>
 {% endblock %}
