@@ -14,6 +14,9 @@ django-environ
 django-smart-selects
 
 
+# Only for DEV
 # To have a nice ./manage.py shell
 ipython
 
+# Only for production
+uwsgi

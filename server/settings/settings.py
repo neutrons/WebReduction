@@ -129,10 +129,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Where default server looks for static files
 STATICFILES_DIRS = [
     ROOT_DIR("static"),
-    '/var/www/static/',
 ]
+# Folder where we put the collected static content: ./manage.py collectstatic
+STATIC_ROOT = env("STATIC_ROOT", default='/var/www/sns-reduction/static')
 
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
