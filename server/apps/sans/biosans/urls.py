@@ -20,5 +20,7 @@ urlpatterns = [
     url(r'^reduction/(?P<pk>\d+)/$', ReductionDetail.as_view(), name='reduction_detail'),
     url(r'^reduction/create$', ReductionCreate.as_view(), name='reduction_create'),
     url(r'^reduction/update/(?P<pk>\d+)$', ReductionUpdate.as_view(), name='reduction_update'),
+    url(r'^reduction/delete/(?P<pk>\d+)$', ReductionDelete.as_view(), name='reduction_delete'),
+    url(r'^reduction/clone/(?P<pk>\d+)$', ReductionClone.as_view(), name='reduction_clone'),
 ]
 

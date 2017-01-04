@@ -85,7 +85,7 @@ table.dataTable tbody tr.selected {
 
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="cancel" class="btn btn-default" onclick="window.history.back()" >Cancel</button>
-        {% if form.title.value|length > 0 %}<button type="submit" name="add_form" class="btn btn-default">Add form...</button>{% endif %}    
+        {#{% if form.title.value|length > 0 %}<button type="submit" name="add_form" class="btn btn-default">Add form...</button>{% endif %}#}    
     </form>
 </div>
 {% endblock %}
@@ -150,10 +150,9 @@ function set_autocomplete(selector, jsonurl) {
 	$.ajax({
 		url : jsonurl,
 		type : 'get',
-		dataType : 'json',
 		async : true,
 		success : function(data) {
-			// console.log(data);
+			//console.log(data);
 			$(selector).autocomplete({
 				source : data,
 				minLength : 0,
@@ -171,7 +170,7 @@ function set_autocomplete(selector, jsonurl) {
 		},
 	});
 }
-
+// Set autocomplete for ipts form field
 set_autocomplete("#id_ipts", "{% url 'users:group_list_json' %}");
 
 

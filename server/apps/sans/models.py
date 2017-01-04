@@ -74,6 +74,7 @@ class ConfigurationManager(models.Manager):
         '''
         obj = self.get(id=pk)
         obj.pk = None  # setting to None, clones the object!
+        obj.title += " (cloned)"
         obj.save() 
         return obj
     
@@ -147,9 +148,24 @@ class ReductionManager(models.Manager):
 
     def clone(self, pk):
         '''
-        Clones the Reduction object and related entries
+        Clones the Reduction object and related regions
         '''
-        pass
+
+        obj = self.get(id=pk)
+        # Let's clone the related entries
+        new_regions = []
+        for region in obj.regions.all():
+            region.pk = None
+            region.save()
+            new_regions.append(region)
+
+        obj.pk = None # setting to None, clones the object!
+        obj.save()
+        obj.regions = new_regions
+        obj.title += " (cloned)"
+        obj.save()
+        return obj
+
     
     
 class Reduction(models.Model, ModelMixin):

@@ -84,9 +84,13 @@ class ConfigurationDelete(LoginRequiredMixin, DeleteView):
         obj = super(ConfigurationDelete, self).get_object()
         if not obj.user  == self.request.user:
             raise Http404
-        logger.debug("Deleting %s"%obj)
-        messages.success(self.request, 'Configuration %s deleted.'%(obj))
         return obj
+
+    def delete(self, request, *args, **kwargs):
+        logger.debug("Deleting Configuration %s"%self.get_object())
+        messages.success(request, 'Configuration %s deleted.'%(self.get_object()))
+        return super(ConfigurationDelete, self).delete(request, *args, **kwargs)
+    
 
 class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
     '''
@@ -95,7 +99,7 @@ class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
     def get_object(self):
         obj = BioSANSConfiguration.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
-        messages.success(self.request, 'Configuration %s cloned. New id = %s'%(obj, obj.pk))
+        messages.success(self.request, "Configuration '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
         return obj
 
 class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin, TemplateView):
@@ -176,9 +180,8 @@ class ReductionMixin(object):
         Populates the context with the titled case names and names as in the model
         '''
         context = super(ReductionMixin, self).get_context_data(**kwargs)
-        entry_names = ["sample_scattering", "sample_transmission",
-                                  "backgroung_scattering", "backgroung_transmission"]
-        context["entry_headers"] = [i.title().replace("_"," ") for i in entry_names]
+        context["entry_headers"] = ["Sample Scattering", "Sample Transmission",
+                                    "Backgroung Scattering", "Backgroung Transmission"]
         return context
 
 
@@ -254,3 +257,32 @@ class ReductionUpdate(LoginRequiredMixin, ReductionMixin, FormsetMixin, UpdateVi
     template_name = 'sans/biosansreduction_form.html'
     form_class = ReductionForm
     formset_class = RegionInlineFormSetUpdate
+
+
+class ReductionDelete(LoginRequiredMixin, DeleteView):
+    model = BioSANSReduction
+    success_url = reverse_lazy('sans:biosans:reduction_list')
+
+    def get_object(self, queryset=None):
+        """
+        Hook to ensure object is owned by request.user.
+        """
+        obj = super(ReductionDelete, self).get_object()
+        if not obj.user  == self.request.user:
+            raise Http404
+        return obj
+    
+    def delete(self, request, *args, **kwargs):
+        logger.debug("Deleting reduction %s"%self.get_object())
+        messages.success(request, 'Reduction %s deleted.'%(self.get_object()))
+        return super(ReductionDelete, self).delete(request, *args, **kwargs)
+
+class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
+    '''
+    Clones the Object Configuration. Keeps the same user
+    '''
+    def get_object(self):
+        obj = BioSANSReduction.objects.clone(self.kwargs['pk'])
+        self.kwargs['pk'] = obj.pk
+        messages.success(self.request, "Reduction '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
+        return obj

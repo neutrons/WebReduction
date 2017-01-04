@@ -2,6 +2,12 @@
 
 {% load staticfiles %}
 
+{% block header %}
+	{{ block.super }}
+	<!-- handsontable -->
+	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.css" %}'>
+{% endblock %}
+
 {% block breadcrumbs %}
 <div class="container">
     <ol class="breadcrumb">
@@ -20,6 +26,7 @@
        <h1>Reduction<small>{{ object }}</small></h1>
     </div>
 
+	<!-- This is the reduction info -->
     <div class="container-fluid">
             <ul class="list-group">
                 {% for f in object.get_all_fields %}
@@ -33,7 +40,7 @@
             </ul>
     </div>
     <hr/>
-    
+    <!-- This is the region (low,med,high) info -->
     <div class="container-fluid">
 			{% for entry in object.regions.all %}
 			<h3>{{entry}}</h3>
@@ -41,7 +48,7 @@
                 {% for f in entry.get_all_fields %}
 	                <li class="list-group-item">
 						{% if f.name == "entries" %}
-							<div id="hot-{forloop.counter}}" value="{{f.value}}"></div>
+							<div id="hot-{{forloop.counter}}" value="{{f.value}}"></div>
 						{% else %}
 							<strong>{{f.label|capfirst}}</strong>
 							<span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
@@ -56,14 +63,14 @@
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_update' object.pk %}"
             title="Click to edit the details of this configuration.">Edit</a>
 
-        <a id="button_delete" class="btn btn-danger" data-toggle="tooltip" data-placement="top" href=""
-            title="Delete...">Delete...</a>
+        <a id="button_delete" class="btn btn-danger" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_delete' object.pk %}"
+            title="Delete this reduction and associated regions.">Delete...</a>
 
-        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href=""
-            title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_clone' object.pk %}"
+            title="Creates a copy of this reduction as you might need a few different parameters.">Duplicate</a>
 
         <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top" onclick="window.history.back()"
-        	href="#" title="If you would like to send this configuration to another user.">Cancel</a>
+        	href="#" title="Goes back....">Cancel</a>
     </p>
 </div>
 {% endblock %}
@@ -84,9 +91,7 @@ $.each( entriesSelectors, function( i, selector ) {
     var dataAsString = $(selector).attr('value');
 	dataAsString = dataAsString.replace(/\'/g,'"')
 	dataAsString = dataAsString.replace(/None/g,'null')
-	console.log(dataAsString);
 	var data =  JSON.parse(dataAsString);
-	console.log(data)
     //console.log(data);
     var options = {
         data: data,
@@ -103,23 +108,11 @@ $.each( entriesSelectors, function( i, selector ) {
 		readOnly: true
     };
     $(selector).handsontable(options);
+    //remove it from the <ul>
+    //$(selector).parent().parent().append($(selector));
 
 });
 
-/*
- Let's map the spreasheet contents into the form entries field
- */
-function populateFormWithHotContents() {
-    // the selectors are ordered by the order they are in the DOM
-    // entries are first, hot are after
-    var hotSelectors = $('[id ^=hot-],[id ^=id_regions][id $=entries]');
-    for(i = 0; i < hotSelectors.length; i=i+2) {
-        //console.log(hotSelectors[i]);
-        var hotContents = JSON.stringify($(hotSelectors[i+1]).handsontable('getData'));
-        $(hotSelectors[i]).val(hotContents);
-    }
-    return true;
-};
 
 </script>
 {% endblock %}

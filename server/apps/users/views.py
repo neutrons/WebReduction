@@ -137,7 +137,9 @@ class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,CreateView):
         self.request.session['instrument'] = form.instance.instrument
         return super(ProfileCreate, self).form_valid(form)
 
-
+#
+# JSON Methods
+#
 
 class GroupMixin(object):
     def get_queryset(self):
@@ -148,14 +150,22 @@ class GroupMixin(object):
 
 class GroupListJson(LoginRequiredMixin, GroupMixin, ListView):
     '''
-    List all groups for this user.
+    List all groups for in json for this user.
     '''
-    def get_queryset(self):
-        return super(GroupListJson, self).get_queryset()
-    
     def get(self, request, *args, **kwargs):
+        '''
+        @return: a list for automplete in the form of:
+                    [{
+                      "value": 1,
+                      "label": "hfir_cg3_team"
+                    }, {
+                      "value": 2,
+                      "label": "adara"
+                    }]
+        '''
         qs = self.get_queryset()
         # Rename to value and label
         qs = qs.annotate(value=F('pk'), label=F('name')).values('value','label')
+        # Needs safe=False because I'm returning a list not a dict!
         return JsonResponse(list(qs), safe=False)
 
