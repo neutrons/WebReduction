@@ -24,5 +24,5 @@ from .views import dirlist
 # admin.autodiscover()
 
 urlpatterns = [
-    url(r'^dirlist/(?P<instrument>[\w\-]+)/$', dirlist, name='dirlist'),
+    url(r'^dirlist$', dirlist, name='dirlist'),
 ]

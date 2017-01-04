@@ -2,27 +2,29 @@
     Util
 """
 
-from django.http import HttpResponse
+import logging
+import os
+import urllib
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-import urllib
-import os
-import logging
+from django.http import HttpResponse
+
 
 logger = logging.getLogger('util.views')
 
 @login_required
-def dirlist(request, instrument):
+def dirlist(request):
     '''
     This wil be called by the server side file browser
 
     '''
-    default_dir = settings.SERVER_FILES_PREFIX%({"instrument":instrument})
+    default_dir = request.session['instrument'].drive_path
     
     r = ['<ul class="jqueryFileTree" style="display: none;">']
     try:
         r = ['<ul class="jqueryFileTree" style="display: none;">']
-        post_dir = urllib.unquote(request.POST.get('dir'))
+        post_dir = urllib.parse.unquote(request.POST.get('dir'))
         if post_dir == '/':
             d = default_dir
         else:
@@ -37,7 +39,7 @@ def dirlist(request, instrument):
                 r.append(
                     '<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (e, ff, f))
         r.append('</ul>')
-    except Exception, e:
+    except Exception as e:
         r.append('Could not load directory: %s' % str(e))
         logger.exception(e)
     r.append('</ul>')

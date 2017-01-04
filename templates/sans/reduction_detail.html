@@ -5,7 +5,7 @@
 {% block header %}
 	{{ block.super }}
 	<!-- handsontable -->
-	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.css" %}'>
+	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -77,7 +77,7 @@
 
 {% block footer_js%}
 {{ block.super }}
-<script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
+<script src='{% static "thirdparty/handsontable/handsontable.full.min.js" %}'></script>
 <!-- page script -->
 <script>
 

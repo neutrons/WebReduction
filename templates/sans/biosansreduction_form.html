@@ -7,9 +7,9 @@
  {% block header %}
 	{{ block.super }}
 	<!-- handsontable -->
-	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.css" %}'>
+	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
 	<!-- For the IPTS autocomplete-->
-	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.css" %}'>
+	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui/jquery-ui.min.css" %}'>
 <style>
 /*jQuery UI autocomplete for bootstrap*/
 .ui-autocomplete {
@@ -92,9 +92,9 @@ table.dataTable tbody tr.selected {
 
 {% block footer_js%}
 {{ block.super }}
-<script src='{% static "thirdparty/handsontable-0.29.1-dist/handsontable.full.min.js" %}'></script>
+<script src='{% static "thirdparty/handsontable/handsontable.full.min.js" %}'></script>
 <!-- For the IPTS autocomplete-->
-<script src='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.js" %}'></script>
+<script src='{% static "thirdparty/jquery-ui/jquery-ui.min.js" %}'></script>
 <!-- page script -->
 <script>
 

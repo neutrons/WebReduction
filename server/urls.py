@@ -14,20 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from django.urls import reverse_lazy
 from django.contrib import admin
-from django.views.generic import TemplateView
-from django.conf import settings
-from django.conf.urls.static import static
+from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^users/', include('server.apps.users.urls', namespace='users') ),
-    url(r'^sans/', include('server.apps.sans.urls', namespace='sans') ),
+    url(r'^users/', include('server.apps.users.urls', namespace='users')),
+    url(r'^sans/', include('server.apps.sans.urls', namespace='sans')),
+    url(r'^util/', include('server.util.urls', namespace='util')),
     # For smart_selects
     url(r'^chaining/', include('smart_selects.urls')),
-    # test homepage
-    url(r'^.*$', RedirectView.as_view(url=reverse_lazy('users:profile_view'), permanent=False), name='index')
+    # Redirects all to Homepage
+    url(r'^.*$', RedirectView.as_view(url=reverse_lazy('users:profile_view'),
+                                      permanent=False), name='index')
 
 ]
