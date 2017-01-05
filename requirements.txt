@@ -13,6 +13,9 @@ django-environ
 # Chained Selects (e.g. Pick facility then the associated instrument)
 django-smart-selects
 
+#For deploy
+Fabric3>=1.13.1
+python-dotenv
 
 # Only for DEV
 # To have a nice ./manage.py shell

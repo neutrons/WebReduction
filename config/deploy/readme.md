@@ -1,3 +1,9 @@
+# Concepts
+
+- Dev: Local machine no SSL
+- Pre-prod: Same as prod in RHEL
+- Prod: Production in  RHEL Virtual Machine
+
 # TODO
 
 Make file for deploy using the .env

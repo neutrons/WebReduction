@@ -25,8 +25,8 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS',
-                         default=['reduction.sns.gov',
-                                  'lealpc.ornl.gov'])
+                         default=['localhost',
+                                  '127.0.0.1'])
 
 # Application definition
 
@@ -161,7 +161,7 @@ AUTH_USER_MODEL = 'users.User'
 #
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-ADMIN_URL = env('ADMIN_URL')
+ADMIN_URL = env('ADMIN_URL', default='/admin/')
 
 # needed to make this work with bootstrap labels
 from django.contrib.messages import constants as messages
