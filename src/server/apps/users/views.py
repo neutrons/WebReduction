@@ -66,7 +66,7 @@ class LoginView(FormView):
 
     def get_success_url(self):
         try:
-            UserProfile.objects.get(user__username = self.request.user)
+            UserProfile.objects.get(user = self.request.user)
         except ObjectDoesNotExist:
             logger.info("Redirecting to create user profile!")
             return self.create_profile_url
@@ -91,18 +91,16 @@ class LogoutView(RedirectView):
         response = super(LogoutView, self).get(request, *args, **kwargs)
         return response
 
-
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "index.html"
-    
     def get(self, request, *args, **kwargs):
-        
-        if 'instrument' not in self.request.session:
-            # Has no default instrument! Go to profile!
-            return redirect(reverse_lazy('users:profile_create'))
-        else:
+        if UserProfile.objects.filter(user = request.user).count() > 0:
+            if 'instrument' not in self.request.session:
+                print("instrument not in session *"*80)
+                self.request.session['instrument'] = UserProfile.objects.get(user = request.user).instrument
             return super(ProfileView, self).get(request, *args, **kwargs)
-
+        else:
+            return redirect(reverse_lazy('users:profile_create'))
 
 class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
     '''

@@ -1,6 +1,20 @@
 # sns-reduction
 sns-reduction
 
+## Launching with fab file:
+
+```
+fab deploy_dev
+fab deploy_dev_ssl
+
+### within virtualenv
+ps -ef | grep uwsgi
+killall -s INT $(which uwsgi)
+
+ps -ef | grep nginx
+killall -s INT $(which nginx)
+```
+
 
 ## Running
 

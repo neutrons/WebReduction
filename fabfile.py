@@ -25,7 +25,7 @@ env.roledefs = {
         'project_root': '/home/rhf/git/sns-reduction',
     },
     'dev_ssl': {
-        'hosts': ['localhost'],
+        'hosts': ['lealpc.ornl.gov'],
         'user': 'rhf',
         'project_root': '/home/rhf/git/sns-reduction',
     },
@@ -41,23 +41,28 @@ env.roledefs = {
     }
 }
 
-# Dev
-env.roledefs['dev'].update({'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_dev_template.conf' ) })
-env.roledefs['dev'].update({'nginx_conf_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'nginx.conf' ) })
-env.roledefs['dev'].update({'uwsgi_ini_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_template.ini' ) })
-env.roledefs['dev'].update({'uwsgi_ini_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini' ) })
-env.roledefs['dev'].update({'requirements_file' : os.path.join(env.roledefs['dev']['project_root'], 'requirements.txt' ) })
+
+dev_roles = {'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_dev_template.conf'),
+             'nginx_conf_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'nginx.conf'),
+             'uwsgi_ini_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_template.ini' ),
+             'uwsgi_ini_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'),
+             'requirements_file' : os.path.join(env.roledefs['dev']['project_root'], 'requirements.txt')}
+env.roledefs['dev_ssl'].update(dev_roles)
+
 # Dev_SSL
-env.roledefs['dev_ssl'].update(env.roledefs['dev'])
-env.roledefs['dev_ssl'].update({'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_staging_template.conf' ) })
+dev_ssl_roles = dev_roles
+dev_ssl_roles.update({'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_staging_template.conf' ) })
+env.roledefs['dev_ssl'].update(dev_ssl_roles)
 
 # Staging
-env.roledefs['staging'].update(env.roledefs['dev_ssl'])
+staging_roles = dev_ssl_roles
+env.roledefs['staging'].update(staging_roles)
 
 # Production
-env.roledefs['production'].update(env.roledefs['staging'])
-env.roledefs['production'].update({'ssl_certificate_file' : '/etc/ssl/certs/wildcard.sns.gov.crt'})
-env.roledefs['production'].update({'ssl_certificate_key_file' : '/etc/pki/tls/private/wildcard.sns.gov.key'})
+production_roles = staging_roles
+production_roles.update({'ssl_certificate_file' : '/etc/ssl/certs/wildcard.sns.gov.crt',
+                         'ssl_certificate_key_file' : '/etc/pki/tls/private/wildcard.sns.gov.key'})
+env.roledefs['production'].update(production_roles)
 
 #
 # Aux functions
@@ -121,7 +126,7 @@ def deploy():
 
     with prefix('. ' + venv_root + '/bin/activate'), settings(warn_only=True):
         run("killall -w -q -s INT $(which uwsgi)")
-        run_background("uwsgi --ini %(uwsgi_ini_file)s"%env)
+        run("uwsgi --ini %(uwsgi_ini_file)s"%env)
 
 
 #

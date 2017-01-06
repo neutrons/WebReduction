@@ -3,6 +3,8 @@ Created on Sep 21, 2016
 @author: rhf
 '''
 
+from .env import ROOT_DIR
+
 # LOGGING CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -11,6 +13,7 @@ Created on Sep 21, 2016
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -35,17 +38,25 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
         },
+        'file':{
+            'level':'DEBUG',
+            'class':'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'standard',
+            'filename':  ROOT_DIR('../dist/django.log'),
+            'when': 'D',
+            'backupCount' : 3
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['console'],
             'level': 'ERROR',
-            'propagate': True
+            'propagate': True,
         },
         'django.security.DisallowedHost': {
             'level': 'ERROR',
             'handlers': ['console'],
-            'propagate': True
+            'propagate': True,
         },
         # Mine:
         'django': {
@@ -56,24 +67,28 @@ LOGGING = {
         'django.db.backends': {
             'handlers': ['console'],
             'level': 'INFO',
-            'propagate': False,
+            'propagate': True,
         },
         'django_auth_ldap': {
             'handlers': ['console'],
             'level': 'INFO',
+            'propagate': True,
         },
         # My apps
         'users': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
+            'propagate': True,
         },
         'sans': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
+            'propagate': True,
         },
         'util': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
+            'propagate': True,
         },
     }
 }
