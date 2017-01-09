@@ -1,0 +1,6 @@
+# Only for DEV
+
+-r base.txt
+
+# To have a nice ./manage.py shell
+ipython

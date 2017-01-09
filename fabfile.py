@@ -5,15 +5,21 @@ Use the command `fab`
 If running this for the first time or without vietualenv:
 pip3 install Fabric3  --user
 
-fab -f fabfile_back2.py -R dev deploy_dev
-
+# using file name and rules
+fab -f fabfile.py -R dev deploy_dev
+# or just the task and the default fabfile.py:
+fab deploy_dev
 '''
+
+# To run with python2
 from __future__ import print_function, with_statement
+
+import os
+import time
 
 from fabric.api import task, run, env, local, path, prefix, cd, hosts, roles, parallel, settings, sudo
 from fabric.contrib import files
-import os
-import time
+
 
 # Fabric hangs without this
 env.shell = "/bin/bash -c"
@@ -46,12 +52,14 @@ dev_roles = {'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_r
              'nginx_conf_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'nginx.conf'),
              'uwsgi_ini_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_template.ini' ),
              'uwsgi_ini_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'),
-             'requirements_file' : os.path.join(env.roledefs['dev']['project_root'], 'requirements.txt')}
+             'requirements_file' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'requirements', 'dev.txt'),
+             }
 env.roledefs['dev_ssl'].update(dev_roles)
 
 # Dev_SSL
 dev_ssl_roles = dev_roles
-dev_ssl_roles.update({'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_staging_template.conf' ) })
+dev_ssl_roles.update({'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_staging_template.conf' ),
+                      })
 env.roledefs['dev_ssl'].update(dev_ssl_roles)
 
 # Staging
@@ -61,7 +69,9 @@ env.roledefs['staging'].update(staging_roles)
 # Production
 production_roles = staging_roles
 production_roles.update({'ssl_certificate_file' : '/etc/ssl/certs/wildcard.sns.gov.crt',
-                         'ssl_certificate_key_file' : '/etc/pki/tls/private/wildcard.sns.gov.key'})
+                         'ssl_certificate_key_file' : '/etc/pki/tls/private/wildcard.sns.gov.key',
+                        'requirements_file' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'requirements', 'prod.txt'),
+                        })
 env.roledefs['production'].update(production_roles)
 
 #
@@ -82,7 +92,10 @@ def run_background(command, run_as_sudo=False):
 #
 
 def restart_nginx(run_as_sudo=False):
-    # Start nginx
+    '''
+    Re-Start nginx
+    If using port 80 needs to run as Root
+    '''
     with settings(warn_only=True):
         command = "killall -w -q -s INT $(which nginx)"
         if run_as_sudo:
@@ -94,8 +107,8 @@ def restart_nginx(run_as_sudo=False):
 def update_env():
     context = env.roledefs[env.effective_roles[0]]
     env.update(context)
-    from pprint import pprint
-    pprint(env)
+#     from pprint import pprint
+#     pprint(env)
 
 
 def deploy():
@@ -149,9 +162,11 @@ def deploy_dev_ssl():
 @task
 @roles('staging')
 def deploy_staging():
+    print("TODO")
     pass
 
 @task
 @roles('production')
 def deploy_prod():
+    print("TODO")
     pass
