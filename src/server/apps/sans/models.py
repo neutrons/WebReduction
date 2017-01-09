@@ -165,7 +165,20 @@ class ReductionManager(models.Manager):
         obj.title += " (cloned)"
         obj.save()
         return obj
-
+    
+    def to_json(self, pk):
+        '''
+        Gets this reduction object in json format
+        serializes: reduction and related regions and associated configuration
+        '''
+        obj = self.select_related().get(pk = pk)
+        obj_json = model_to_dict(obj)
+        obj_json["regions"] = []
+        for region in obj.regions.select_related('configuration'):
+            d = model_to_dict(region)
+            d['configuration'] = model_to_dict(region.configuration)
+            obj_json["regions"].append(d)
+        return obj_json
     
     
 class Reduction(models.Model, ModelMixin):
@@ -177,6 +190,8 @@ class Reduction(models.Model, ModelMixin):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     
+    script = models.TextField(blank=True,
+                              help_text="Python script generated from the reduction entry.")
     
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
                                related_name="%(class)s_instruments",
@@ -194,8 +209,6 @@ class Reduction(models.Model, ModelMixin):
 
     def __str__(self):
         return self.title
-    
-
 
 class RegionManager(models.Manager):
     '''

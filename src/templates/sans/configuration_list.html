@@ -30,19 +30,19 @@
                 <th>Title</th>
                 <th>Date created</th>
                 <th>Date modified</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
             {% for object in object_list %}
             <tr>
                 <td>{{object.id}}</td>
-                <td>{{object.title}}</td>
+                <td>
+                <a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_detail' object.id %}"
+                   title="Click to see the details of this configuration."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a>
+                </td>
                 <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>
                 <td>{{object.modified_date | date:"DATETIME_FORMAT" }}</td>
-                <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
-                    href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_detail' object.id %}"
-                    title="Click to see the details of this configuration.">View</a></td>
+                
             </tr>
             {% endfor %}
         </tbody>
@@ -52,7 +52,6 @@
                 <th>Title</th>
                 <th>Date created</th>
                 <th>Date modified</th>
-                <th></th>
             </tr>
         </tfoot>
     </table>

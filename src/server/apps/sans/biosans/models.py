@@ -5,7 +5,47 @@
 from ..models import *
 
 class BioSANSConfiguration(Configuration):
+
+    wavelength = models.DecimalField(
+        u'Wavelength (\u212B)',
+        max_digits=4,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text= "If empty uses the value set in the data file."
+    )
+
+    wavelength_spread = models.DecimalField(
+        'Wavelength Spread (%)',
+        max_digits=3,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="If empty uses the value set in the data file."
+    )
     
+    sample_detector_distance = models.DecimalField(
+        'Sample Detector Distance (m)',
+        max_digits=5,
+        decimal_places=3,
+        blank=True,
+        null=True,
+        help_text="(in meters) If empty uses the value set in the data file."
+    )
+    
+    SOLID_ANGLE_CHOICES = (
+        ("", "None"), #
+        ("detector_tubes=False, detector_wing=False", "Regular"),
+        ("detector_tubes=Tubes, detector_wing=False", "Tubes"),
+        ("detector_tubes=False, detector_wing=True", "Wing")
+    )
+    
+    solid_angle_correction = models.CharField(
+        max_length=50,
+        choices=SOLID_ANGLE_CHOICES,
+        default=SOLID_ANGLE_CHOICES[0][0],
+    )
+        
     absolute_scale_factor = models.DecimalField(
         max_digits=10, decimal_places=2, default=1.0)
     

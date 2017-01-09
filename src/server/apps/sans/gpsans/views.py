@@ -17,7 +17,7 @@ from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 from server.util.formsets import FormsetMixin
 
-from .forms import GPSANSConfigurationForm, GPSANSReductionForm, GPSANSRegionForm, \
+from .forms import GPSANSConfigurationForm, GPSANSReductionForm, GPSANSRegionForm, GPSANSReductionScriptForm, \
     GPSANSRegionInlineFormSetCreate, GPSANSRegionInlineFormSetUpdate
 from .models import GPSANSConfiguration, GPSANSReduction, GPSANSRegion
 from ..models import Region
@@ -264,8 +264,7 @@ class ReductionUpdate(LoginRequiredMixin, ReductionMixin, FormsetMixin, UpdateVi
     Edit a Reduction
     '''
     template_name = 'sans/gpsansreduction_form.html'
-    form_class = GPSANSReductionForm
-    formset_class = GPSANSRegionInlineFormSetUpdate
+    form_class = GPSANSReductionScriptForm
 
 
 class ReductionDelete(LoginRequiredMixin, DeleteView):
@@ -295,3 +294,12 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
         self.kwargs['pk'] = obj.pk
         messages.success(self.request, "Reduction '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
         return obj
+
+class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
+    '''
+    Edit a Reduction
+    '''
+    template_name = 'sans/gpsansreduction_script_form.html'
+    form = GPSANSReductionScriptForm
+    formset_class = GPSANSRegionInlineFormSetUpdate
+
