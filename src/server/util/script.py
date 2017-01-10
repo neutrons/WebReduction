@@ -3,6 +3,7 @@ from django.template import Template, Context
 from pprint import pformat
 import os
 import logging
+import errno
 
 logger = logging.getLogger('util.script')
 
@@ -13,7 +14,9 @@ def build_script(script_template_file_path, data):
     @data is a dictionary
     @return script as string
     '''
-    logger.debug(pformat(data))
+    if not os.path.exists(script_template_file_path):
+         raise FileNotFoundError(
+             errno.ENOENT, os.strerror(errno.ENOENT), script_template_file_path)
     script_filtered = ""
     if os.path.isfile(script_template_file_path):
         with open(script_template_file_path) as f:

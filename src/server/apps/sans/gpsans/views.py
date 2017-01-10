@@ -15,12 +15,14 @@ from django.views.generic import CreateView, ListView, DetailView, UpdateView, D
 
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
+from server.util import script
 from server.util.formsets import FormsetMixin
 
+from ..models import Region
 from .forms import GPSANSConfigurationForm, GPSANSReductionForm, GPSANSRegionForm, GPSANSReductionScriptForm, \
     GPSANSRegionInlineFormSetCreate, GPSANSRegionInlineFormSetUpdate
 from .models import GPSANSConfiguration, GPSANSReduction, GPSANSRegion
-from ..models import Region
+
 
 logger = logging.getLogger('sans.GPSANS')
 
@@ -312,8 +314,17 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         TODO!!!
         '''
         obj = super(ReductionScriptUpdate, self).get_object()
+        
+        obj_json = GPSANSReduction.objects.to_json(self.kwargs['pk'])
+        
         # todo! Generate the script here
         # obj.script = 
+        
+        python_script = script.build_script(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                         "script.tpl")
+            , obj_json)
+        obj.script = python_script
         return obj
     
     def form_valid(self, form):
