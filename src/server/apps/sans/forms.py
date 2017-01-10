@@ -3,7 +3,7 @@ Created on Jan 8, 2016
 @author: rhf
 '''
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Button, Layout, Fieldset
+from crispy_forms.layout import Submit, Button, Layout, Fieldset, HTML, Field
 
 from django.forms import HiddenInput
 
@@ -39,10 +39,12 @@ class ReductionScriptForm(object):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
-        self.helper.render_required_fields = True
-        self.helper.form_tag = False
+        self.helper.layout.append(Submit('submit', 'Save Script & Submit job'))
+        self.helper.layout.append(Button('cancel', 'Cancel', css_class='btn-default',
+                                         onclick="window.history.back()"))
     class Meta:
         fields = ['script']
+        #exclude = ['user', 'instrument']
         
 class RegionForm(object):
     def __init__(self, *args, **kwargs):

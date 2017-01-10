@@ -19,7 +19,7 @@ class GPSANSReductionForm(ReductionForm, ModelForm):
         model = GPSANSReduction
 
 class GPSANSReductionScriptForm(ReductionScriptForm, ModelForm):
-    class Meta(ReductionForm.Meta):
+    class Meta(ReductionScriptForm.Meta):
         model = GPSANSReduction
 
 class GPSANSRegionForm(RegionForm, ModelForm):

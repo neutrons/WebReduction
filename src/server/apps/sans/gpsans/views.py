@@ -264,12 +264,13 @@ class ReductionUpdate(LoginRequiredMixin, ReductionMixin, FormsetMixin, UpdateVi
     Edit a Reduction
     '''
     template_name = 'sans/gpsansreduction_form.html'
-    form_class = GPSANSReductionScriptForm
+    form_class = GPSANSReductionForm
+    formset_class = GPSANSRegionInlineFormSetUpdate
 
 
 class ReductionDelete(LoginRequiredMixin, DeleteView):
     model = GPSANSReduction
-    success_url = reverse_lazy('sans:GPSANS:reduction_list')
+    success_url = reverse_lazy('sans:gpsans:reduction_list')
 
     def get_object(self, queryset=None):
         """
@@ -297,9 +298,30 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
 
 class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
     '''
-    Edit a Reduction
+    Edit a Reduction Script
+    This View will generate the script, show it to the user and 
+    on save save it to db and enevutally submit a job
     '''
-    template_name = 'sans/gpsansreduction_script_form.html'
-    form = GPSANSReductionScriptForm
-    formset_class = GPSANSRegionInlineFormSetUpdate
-
+    template_name = 'sans/reduction_script_form.html'
+    form_class = GPSANSReductionScriptForm
+    success_url = reverse_lazy('sans:gpsans:reduction_list')
+    
+    def get_object(self):
+        '''
+        Generate the script and added to editable object!
+        TODO!!!
+        '''
+        obj = super(ReductionScriptUpdate, self).get_object()
+        # todo! Generate the script here
+        # obj.script = 
+        return obj
+    
+    def form_valid(self, form):
+        """
+        Sends the script to the custer
+        TODO
+        """
+        script = form.instance.script
+        logger.debug(script)
+        messages.success(self.request, "Reduction submitted to the cluster")
+        return super(ReductionScriptUpdate, self).form_valid(form)

@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from .views import *
+from server.apps.sans.gpsans.views import ReductionScriptUpdate
 
 
 urlpatterns = [
@@ -22,5 +23,6 @@ urlpatterns = [
     url(r'^reduction/update/(?P<pk>\d+)$', ReductionUpdate.as_view(), name='reduction_update'),
     url(r'^reduction/delete/(?P<pk>\d+)$', ReductionDelete.as_view(), name='reduction_delete'),
     url(r'^reduction/clone/(?P<pk>\d+)$', ReductionClone.as_view(), name='reduction_clone'),
+    #url(r'^reduction/script/(?P<pk>\d+)$', ReductionScriptUpdate.as_view(), name='reduction_script'),
 ]
 

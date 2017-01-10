@@ -1,0 +1,66 @@
+ {% extends "base.html" %}
+ 
+ {% load staticfiles %}
+
+ {% load crispy_forms_tags %}
+ 
+ {% block header %}
+{{ block.super }}
+<style type="text/css" media="screen">
+    #editor {
+		height: 600px;
+		border-style: groove;
+    }
+</style>
+
+{% endblock %}
+
+ 
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_list' %}">Reduction</a></li>
+        <li class="active">{{object}}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Reduction<small> script</small></h1>
+    </div>
+    
+    {% crispy form  %}
+    
+    </form>
+</div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/ace/ace.js" %}' type="text/javascript" charset="utf-8"></script>
+<script src='{% static "thirdparty/ace/theme-github.js" %}' type="text/javascript" charset="utf-8"></script>
+<script src='{% static "thirdparty/ace/mode-python.js" %}' type="text/javascript" charset="utf-8"></script>
+<script>
+	// set up Ace editor
+	$('<div id="editor"></div>').insertBefore('#id_script');
+	$('#id_script' ).css("display", "none")
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/github");
+    editor.getSession().setMode("ace/mode/python");
+   	 
+    
+    // set editor value to what I have in the form field script
+    var textarea = $('#id_script');
+    editor.setValue(textarea.val(), -1); // -1 is at the document start
+    editor.session.getUndoManager().markClean();
+    
+    $('#submit-id-submit').on('click', function() {
+        var editor_content = editor.getSession().getValue();
+    	textarea.val(editor_content);
+    });
+    
+</script>
+{% endblock %}
