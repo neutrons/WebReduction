@@ -2,7 +2,6 @@
 Created on Jan 8, 2016
 @author: rhf
 '''
-
 from django.forms import ModelForm, inlineformset_factory, HiddenInput
 
 from crispy_forms.layout import Fieldset, HTML

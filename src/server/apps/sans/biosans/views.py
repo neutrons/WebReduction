@@ -15,9 +15,10 @@ from django.views.generic import CreateView, ListView, DetailView, UpdateView, D
 
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
+from server.util import script
 from server.util.formsets import FormsetMixin
 
-from .forms import BioSANSConfigurationForm, BioSANSReductionForm, BioSANSRegionForm, \
+from .forms import BioSANSConfigurationForm, BioSANSReductionForm, BioSANSRegionForm, BioSANSReductionScriptForm, \
     BioSANSRegionInlineFormSetCreate, BioSANSRegionInlineFormSetUpdate
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
 from ..models import Region
@@ -296,3 +297,36 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
         self.kwargs['pk'] = obj.pk
         messages.success(self.request, "Reduction '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
         return obj
+
+class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
+    '''
+    Edit a Reduction Script
+    This View will generate the script, show it to the user and 
+    on save save it to db and enevutally submit a job
+    '''
+    template_name = 'sans/reduction_script_form.html'
+    form_class = BioSANSReductionScriptForm
+    success_url = reverse_lazy('sans:biosans:reduction_list')
+    
+    def get_object(self):
+        '''
+        Generate the script and added to object shown on the form
+        '''
+        obj = super(ReductionScriptUpdate, self).get_object()
+        obj_json = BioSANSReduction.objects.to_json(self.kwargs['pk'])
+        python_script = script.build_script(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                         "script.tpl")
+            , obj_json)
+        obj.script = python_script
+        return obj
+    
+    def form_valid(self, form):
+        """
+        Sends the script to the custer
+        TODO
+        """
+        script = form.instance.script
+        logger.debug(script)
+        messages.success(self.request, "Reduction submitted to the cluster")
+        return super(ReductionScriptUpdate, self).form_valid(form)

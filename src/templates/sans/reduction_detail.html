@@ -30,12 +30,14 @@
     <div class="container-fluid">
             <ul class="list-group">
                 {% for f in object.get_all_fields %}
-                	{% comment %}{% if value %}{% endcomment %}
 	                <li class="list-group-item">
-	                    <strong>{{f.label|capfirst}}</strong>
-	                    <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+						{% if f.name == "script" %}
+							<pre><code>{{f.value}}</code></pre>
+						{% else %}
+							<strong>{{f.label|capfirst}}</strong>
+							<span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+						{% endif %}
 	                </li>
-	                {% comment %}{% endif %}{% endcomment %}
 	            {% endfor %}
             </ul>
     </div>

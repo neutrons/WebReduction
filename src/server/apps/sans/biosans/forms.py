@@ -2,10 +2,11 @@
 Created on Jan 8, 2016
 @author: rhf
 '''
-from django.forms import ModelForm
-from django.forms import inlineformset_factory, HiddenInput
+from django.forms import ModelForm, inlineformset_factory, HiddenInput
 
-from ..forms import ConfigurationForm, ReductionForm, RegionForm
+from crispy_forms.layout import Fieldset, HTML
+
+from ..forms import ConfigurationForm, ReductionForm, RegionForm, ReductionScriptForm
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
 
 class BioSANSConfigurationForm(ConfigurationForm, ModelForm):
@@ -14,6 +15,10 @@ class BioSANSConfigurationForm(ConfigurationForm, ModelForm):
 
 class BioSANSReductionForm(ReductionForm, ModelForm):
     class Meta(ReductionForm.Meta):
+        model = BioSANSReduction
+
+class BioSANSReductionScriptForm(ReductionScriptForm, ModelForm):
+    class Meta(ReductionScriptForm.Meta):
         model = BioSANSReduction
 
 class BioSANSRegionForm(RegionForm, ModelForm):
