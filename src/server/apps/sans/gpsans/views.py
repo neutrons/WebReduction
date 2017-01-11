@@ -310,16 +310,10 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
     
     def get_object(self):
         '''
-        Generate the script and added to editable object!
-        TODO!!!
+        Generate the script and added to object shown on the form
         '''
         obj = super(ReductionScriptUpdate, self).get_object()
-        
         obj_json = GPSANSReduction.objects.to_json(self.kwargs['pk'])
-        
-        # todo! Generate the script here
-        # obj.script = 
-        
         python_script = script.build_script(
             os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                          "script.tpl")
