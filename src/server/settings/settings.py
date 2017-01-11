@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'smart_selects',
     'dal',
     'dal_select2',
+    #
+    'django_remote_submission',
 ]
 
 MIDDLEWARE = [

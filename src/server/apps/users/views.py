@@ -3,6 +3,7 @@
 """
 import json
 import logging
+import os
 
 from django.db.models import F
 from django.contrib import messages
@@ -24,6 +25,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import CreateView, UpdateView, FormView, RedirectView, ListView, TemplateView
 from django.http import JsonResponse
 from django.core import serializers
+from server.settings.env import env
 
 from .forms import UserProfileForm
 from .models import UserProfile
@@ -51,19 +53,24 @@ class LoginView(FormView):
 
     def form_valid(self, form):
         # Mathieu athentication
-#        username = form.cleaned_data["username"]
-#        password = form.cleaned_data["password"]
-#         user = authenticate(username=username, password=password)
-#         if user is not None and not user.is_anonymous():
-#             auth_login(self.request, user)
-#         else:
-#             messages.error(self.request, "Django Authenticate Failed. Invalid username or password!")
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password"]
+        user = authenticate(username=username, password=password)
+        if user is not None and not user.is_anonymous():
+            logger.debug("Authenticating user %s..."%username)
+            auth_login(self.request, user)
+            logger.debug("User %s authenticated."%username)
+            # let's drop the key
+            self._drop_the_public_key_on_the_cluster()
+        else:
+            messages.error(self.request, "Django Authenticate Failed. Invalid username or password!")
 
         # Default authentication (NO PASSWORD!)
-        auth_login(self.request, form.get_user())
+#         auth_login(self.request, form.get_user())
 
         return super(LoginView, self).form_valid(form)
 
+    
     def get_success_url(self):
         try:
             UserProfile.objects.get(user = self.request.user)
@@ -79,6 +86,17 @@ class LoginView(FormView):
     def form_invalid(self, form):
         messages.error(self.request, "Invalid username or password!")
         return super(LoginView, self).form_invalid(form)
+    
+    def _drop_the_public_key_on_the_cluster(self):
+        server_hostname = env("JOB_SERVER_HOSTNAME")
+        server_port = env("JOB_SERVER_PORT")
+        public_key_path = env("JOB_PUBLIC_KEY_PATH")
+        
+        with open(os.path.expanduser(public_key_path), 'rt') as f:
+            key = f.read().strip()
+        
+        
+        
 
 class LogoutView(RedirectView):
     """

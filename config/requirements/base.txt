@@ -13,6 +13,9 @@ django-environ
 # Chained Selects (e.g. Pick facility then the associated instrument)
 django-smart-selects
 
+#
+django-remote-submission
+
 #For deploy
 Fabric3>=1.13.1
 python-dotenv

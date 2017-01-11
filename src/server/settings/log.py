@@ -71,7 +71,7 @@ LOGGING = {
         },
         'django_auth_ldap': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True,
         },
         # My apps

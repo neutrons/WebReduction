@@ -1,13 +1,16 @@
-from .env import *
+from .env import * #@UnusedWildImport
 from django_auth_ldap.config import LDAPSearch, PosixGroupType
 import ldap
 
 # Server to search on
-AUTH_LDAP_SERVER_URI = 'ldap://data.sns.gov'
+AUTH_LDAP_SERVER_URI = 'ldaps://ldap-vip.sns.gov'
 
 # Anonymous login
 AUTH_LDAP_BIND_DN = ''
 AUTH_LDAP_BIND_PASSWORD = ''
+
+#
+AUTH_LDAP_GLOBAL_OPTIONS = { ldap.OPT_X_TLS_REQUIRE_CERT : ldap.OPT_X_TLS_NEVER,}
 
 # Direct bind to user's username
 AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=Users,dc=sns,dc=ornl,dc=gov'
@@ -46,3 +49,4 @@ AUTHENTICATION_BACKENDS = (
     'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
