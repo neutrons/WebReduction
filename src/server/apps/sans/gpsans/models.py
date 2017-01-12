@@ -102,11 +102,6 @@ class GPSANSReduction(Reduction):
     def get_absolute_url(self):
         return ('sans:gpsans:reduction_detail', [self.pk])
 
-    # Needed to generate the script from this object
-    script_file = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "scripts", "template.py")
-
-
 class GPSANSRegion(Region):
     # We can not have ForeignKey for abstract models. It has to be here!!
     empty_beam = models.CharField(max_length=256)

@@ -26,6 +26,8 @@ from django.views.generic import CreateView, UpdateView, FormView, RedirectView,
 from django.http import JsonResponse
 from django.core import serializers
 from server.settings.env import env
+from django_remote_submission.remote import RemoteWrapper
+from django_remote_submission.models import Server
 
 from .forms import UserProfileForm
 from .models import UserProfile
@@ -61,7 +63,7 @@ class LoginView(FormView):
             auth_login(self.request, user)
             logger.debug("User %s authenticated."%username)
             # let's drop the key
-            self._drop_the_public_key_on_the_cluster()
+            self._drop_the_public_key_on_the_cluster(username, password)
         else:
             messages.error(self.request, "Django Authenticate Failed. Invalid username or password!")
 
@@ -87,16 +89,19 @@ class LoginView(FormView):
         messages.error(self.request, "Invalid username or password!")
         return super(LoginView, self).form_invalid(form)
     
-    def _drop_the_public_key_on_the_cluster(self):
-        server_hostname = env("JOB_SERVER_HOSTNAME")
-        server_port = env("JOB_SERVER_PORT")
+    def _drop_the_public_key_on_the_cluster(self, username, password):
+        '''
+        Drops the public key in the cluster
+        So Job submissionn will be done without password 
+        '''
+        server_name = env("JOB_SERVER_NAME")
         public_key_path = env("JOB_PUBLIC_KEY_PATH")
-        
-        with open(os.path.expanduser(public_key_path), 'rt') as f:
-            key = f.read().strip()
-        
-        
-        
+        logger.debug("Dropping the key %s in %s.", public_key_path, server_name)
+        server = get_object_or_404(Server, title=server_name)
+        logger.debug("Server: %s.", server.hostname)
+        wrapper = RemoteWrapper(hostname=server.hostname, username=username)
+        wrapper.connect(password, public_key_path)
+        wrapper.close()
 
 class LogoutView(RedirectView):
     """

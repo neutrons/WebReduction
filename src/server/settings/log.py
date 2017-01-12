@@ -74,6 +74,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'django_remote_submission': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         # My apps
         'users': {
             'handlers': ['console', 'file'],

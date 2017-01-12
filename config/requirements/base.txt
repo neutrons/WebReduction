@@ -13,8 +13,11 @@ django-environ
 # Chained Selects (e.g. Pick facility then the associated instrument)
 django-smart-selects
 
-#
+# Remote job submission
 django-remote-submission
+celery[redis]
+django-celery-results
+django_celery_results
 
 #For deploy
 Fabric3>=1.13.1

@@ -30,7 +30,7 @@ class ReductionForm(object):
         self.helper.form_tag = False
 
     class Meta:
-        exclude = ['user', 'instrument', 'script']
+        exclude = ['user', 'instrument', 'script', 'script_interpreter']
         #widgets = {'script': HiddenInput()}
 
 class ReductionScriptForm(object):
@@ -43,7 +43,7 @@ class ReductionScriptForm(object):
         self.helper.layout.append(Button('cancel', 'Cancel', css_class='btn-default',
                                          onclick="window.history.back()"))
     class Meta:
-        fields = ['script']
+        fields = ['script_interpreter', 'script']
         #exclude = ['user', 'instrument']
         
 class RegionForm(object):
@@ -63,3 +63,4 @@ class RegionForm(object):
 
     class Meta:
         fields = '__all__'
+        widgets = {'entries': HiddenInput()}

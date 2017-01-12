@@ -319,6 +319,18 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                                          "script.tpl")
             , obj_json)
         obj.script = python_script
+        obj.script = """from __future__ import print_function
+import sys
+import time
+
+f = open('workfile.txt', 'w')
+for i in range(5):
+    print(i, file=sys.stdout)
+    sys.stdout.flush()
+    f.write(str(i) + '\n')
+    time.sleep(.35)
+f.close()
+        """
         return obj
     
     def form_valid(self, form):
@@ -328,5 +340,33 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         """
         script = form.instance.script
         logger.debug(script)
-        messages.success(self.request, "Reduction submitted to the cluster")
+        
+        
+        from django_remote_submission.models import Job, Server
+        from django_remote_submission.tasks import submit_job_to_server, LogPolicy
+        from server.settings.env import env
+        from datetime import datetime
+        
+        try:
+            server_name = env("JOB_SERVER_NAME")
+            server = get_object_or_404(Server, title=server_name)
+            job = Job.objects.create(
+                title= form.instance.title,
+                program=form.instance.script,
+                remote_directory ="/SNS/users/rhf/tmp",
+                remote_filename= "reduction_" + datetime.now().strftime("%Y%m%d-%H%M%S.%f") + ".py",
+                server=server,
+                owner=self.request.user,
+                interpreter=form.instance.script_interpreter,
+            )
+            
+            submit_job_to_server(job.pk, None,
+                                 log_policy=LogPolicy.LOG_TOTAL,
+                                 store_results=["*.txt"])
+            messages.success(self.request, "Reduction submitted to the cluster")
+        except Exception as e:
+            logger.exception(e)
+            messages.error(self.request, "Reduction not submitted to the cluster: %s"%(str(e)))
+        
+        
         return super(ReductionScriptUpdate, self).form_valid(form)

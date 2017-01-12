@@ -46,8 +46,9 @@ INSTALLED_APPS = [
     'smart_selects',
     'dal',
     'dal_select2',
-    #
+    # job sumbission
     'django_remote_submission',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -186,4 +187,9 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 USE_L10N = False
 DATETIME_FORMAT = 'Y-m-d H:i:s'
 
+ # 'django_remote_submission.tasks.submit_job_to_server': <@task: django_remote_submission.tasks.submit_job_to_server of server:0x7f5e87b5f2b0>}
 
+# Celery configuration
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_IMPORTS = ('django_remote_submission.tasks',)

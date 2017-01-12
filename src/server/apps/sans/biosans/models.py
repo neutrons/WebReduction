@@ -42,6 +42,8 @@ class BioSANSConfiguration(Configuration):
     
     solid_angle_correction = models.CharField(
         max_length=50,
+        blank=True,
+        null=True,
         choices=SOLID_ANGLE_CHOICES,
         default=SOLID_ANGLE_CHOICES[0][0],
     )
@@ -72,9 +74,6 @@ class BioSANSReduction(Reduction):
     @models.permalink
     def get_absolute_url(self):
         return ('sans:biosans:reduction_detail', [self.pk])
-
-    # Needed to generate the script from this object
-    script_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),"scripts","template.py")
 
 
 class BioSANSRegion(Region):

@@ -14,11 +14,13 @@ from django.contrib.postgres.fields import JSONField
 from server.util.script import build_script
 from pprint import pformat
 
+from django_remote_submission.models import Interpreter
 from server.apps.users.ldap_util import LdapSns
 from django_auth_ldap.backend import LDAPBackend
 import ldap
 
 import logging
+from pyasn1.compat.octets import null
 logger = logging.getLogger('sans.models')
 
 '''
@@ -191,12 +193,18 @@ class Reduction(models.Model, ModelMixin):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     
+    script_interpreter = models.ForeignKey(Interpreter,
+                                           null=True,
+                                           on_delete=models.CASCADE,
+                                           related_name="%(class)s_interpreters",
+                                           related_query_name="%(class)s_interpreter",)
+    
     script = models.TextField(blank=True,
                               help_text="Python script generated from the reduction entry.")
     
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
-                               related_name="%(class)s_instruments",
-                               related_query_name="%(class)s_instrument",)
+                                   related_name="%(class)s_instruments",
+                                   related_query_name="%(class)s_instrument",)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                              related_name="%(class)s_users",
                              related_query_name="%(class)s_user",)

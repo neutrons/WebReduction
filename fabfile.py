@@ -52,6 +52,8 @@ dev_roles = {'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_r
              'nginx_conf_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'nginx.conf'),
              'uwsgi_ini_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_template.ini' ),
              'uwsgi_ini_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'),
+             'redis_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_template.conf'),
+             'redis_conf_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'redis.conf'),
              'requirements_file' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'requirements', 'dev.txt'),
              }
 env.roledefs['dev_ssl'].update(dev_roles)
@@ -140,7 +142,15 @@ def deploy():
     with prefix('. ' + venv_root + '/bin/activate'), settings(warn_only=True):
         run("killall -w -q -s INT $(which uwsgi)")
         run("uwsgi --ini %(uwsgi_ini_file)s"%env)
-
+    
+    run("killall -w -q -s INT $(which redis-server)")
+    run("redis-server %(uwsgi_ini_file)s"%env)
+    
+    with cd(src_root), prefix('. ' + venv_root + '/bin/activate'):
+        run("killall -w -q -s INT $(which celery)")
+        run_background("celery -A server.celery worker --loglevel=info --logfile=%(project_root)s/dist/celery.log"%env)
+    
+    
 
 #
 # Tasks

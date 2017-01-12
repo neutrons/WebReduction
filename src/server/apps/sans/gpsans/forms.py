@@ -24,7 +24,6 @@ class GPSANSReductionScriptForm(ReductionScriptForm, ModelForm):
 class GPSANSRegionForm(RegionForm, ModelForm):
     class Meta(RegionForm.Meta):
         model = GPSANSRegion
-        widgets = {'entries': HiddenInput()}
 
  # New
 GPSANSRegionInlineFormSetCreate = inlineformset_factory(GPSANSReduction, GPSANSRegion, form=GPSANSRegionForm, extra=3, can_delete=False)

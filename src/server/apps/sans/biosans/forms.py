@@ -24,7 +24,6 @@ class BioSANSReductionScriptForm(ReductionScriptForm, ModelForm):
 class BioSANSRegionForm(RegionForm, ModelForm):
     class Meta(RegionForm.Meta):
         model = BioSANSRegion
-        widgets = {'entries': HiddenInput()}
 
  # New
 BioSANSRegionInlineFormSetCreate = inlineformset_factory(BioSANSReduction, BioSANSRegion, form=BioSANSRegionForm, extra=2, can_delete=False)
