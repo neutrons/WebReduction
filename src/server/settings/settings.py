@@ -44,8 +44,6 @@ INSTALLED_APPS = [
     # Django addons
     'crispy_forms',
     'smart_selects',
-    'dal',
-    'dal_select2',
     # job sumbission
     'django_remote_submission',
     'django_celery_results',
@@ -192,4 +190,4 @@ DATETIME_FORMAT = 'Y-m-d H:i:s'
 # Celery configuration
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
-CELERY_IMPORTS = ('django_remote_submission.tasks',)
+#CELERY_IMPORTS = ('django_remote_submission.tasks',)

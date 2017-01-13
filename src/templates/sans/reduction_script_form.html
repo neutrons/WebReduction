@@ -53,6 +53,7 @@
     // set editor value to what I have in the form field script
     var textarea = $('#id_script');
     editor.setValue(textarea.val(), -1); // -1 is at the document start
+    console.log(textarea.val());
     editor.session.getUndoManager().markClean();
     
     $('#submit-id-submit').on('click', function() {

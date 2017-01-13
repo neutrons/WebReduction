@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from pprint import pformat
+from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,20 +12,27 @@ from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, RedirectView, TemplateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, \
+    DeleteView, RedirectView, TemplateView
 
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 from server.util import script
 from server.util.formsets import FormsetMixin
 
+from django_remote_submission.models import Job, Server
+from django_remote_submission.tasks import submit_job_to_server, LogPolicy
+from server.settings.env import env
+
 from ..models import Region
 from .forms import GPSANSConfigurationForm, GPSANSReductionForm, GPSANSRegionForm, GPSANSReductionScriptForm, \
     GPSANSRegionInlineFormSetCreate, GPSANSRegionInlineFormSetUpdate
 from .models import GPSANSConfiguration, GPSANSReduction, GPSANSRegion
 
-
 logger = logging.getLogger('sans.GPSANS')
+
+# It works here!
+from server.celery import app
 
 
 class ConfigurationMixin(object):
@@ -319,7 +327,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                                          "script.tpl")
             , obj_json)
         obj.script = python_script
-        obj.script = """from __future__ import print_function
+        obj.script = r"""from __future__ import print_function
 import sys
 import time
 
@@ -342,11 +350,6 @@ f.close()
         logger.debug(script)
         
         
-        from django_remote_submission.models import Job, Server
-        from django_remote_submission.tasks import submit_job_to_server, LogPolicy
-        from server.settings.env import env
-        from datetime import datetime
-        
         try:
             server_name = env("JOB_SERVER_NAME")
             server = get_object_or_404(Server, title=server_name)
@@ -360,7 +363,7 @@ f.close()
                 interpreter=form.instance.script_interpreter,
             )
             
-            submit_job_to_server(job.pk, None,
+            submit_job_to_server.delay(job.pk, None,
                                  log_policy=LogPolicy.LOG_TOTAL,
                                  store_results=["*.txt"])
             messages.success(self.request, "Reduction submitted to the cluster")
