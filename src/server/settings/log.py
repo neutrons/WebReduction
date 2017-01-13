@@ -79,6 +79,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'celery': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         # My apps
         'users': {
             'handlers': ['console', 'file'],

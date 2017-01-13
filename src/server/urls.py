@@ -17,6 +17,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -27,7 +29,11 @@ urlpatterns = [
     # For smart_selects
     url(r'^chaining/', include('smart_selects.urls')),
     # Redirects all to Homepage
-    url(r'^.*$', RedirectView.as_view(url=reverse_lazy('users:profile_view'),
+    url(r'^$', RedirectView.as_view(url=reverse_lazy('users:profile_view'),
                                       permanent=False), name='index')
 
 ]
+
+if settings.DEBUG:
+    # Serving files uploaded by a user during development
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

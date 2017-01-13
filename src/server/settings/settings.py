@@ -135,7 +135,11 @@ STATICFILES_DIRS = [
     ROOT_DIR("static"),
 ]
 # Folder where we put the collected static content: ./manage.py collectstatic
-STATIC_ROOT = env("STATIC_ROOT", default='/var/www/sns-reduction/static')
+STATIC_ROOT = env("STATIC_ROOT", default=ROOT_DIR('../dist/static'))
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = env("MEDIA_ROOT", default=ROOT_DIR('../dist/media'))
+
 
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -190,4 +194,8 @@ DATETIME_FORMAT = 'Y-m-d H:i:s'
 # Celery configuration
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
-#CELERY_IMPORTS = ('django_remote_submission.tasks',)
+CELERY_ACCEPT_CONTENT = ['pickle'] # also experimented with "json" alone and ['json','pickle']  as well
+CELERY_EVENT_SERIALIZER = 'pickle'
+CELERY_TASK_SERIALIZER = 'pickle'  
+CELERY_RESULT_SERIALIZER = 'pickle'
+

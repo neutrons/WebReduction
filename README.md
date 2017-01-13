@@ -41,6 +41,16 @@ find . -iname "$????_*.py*" | grep migrations | xargs rm
 ./manage.py runserver
 ```
 
+Also for celery & redis:
+
+```
+
+redis-server
+
+celery -A server.celery worker -B --loglevel=debug
+
+```
+
 ## DB
 
 ```
