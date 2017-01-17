@@ -31,73 +31,89 @@ from .gpsans.models import GPSANSConfiguration, GPSANSReduction, GPSANSRegion
 
 logger = logging.getLogger(__name__)
 
-CONFIGURATION = {
-    "eqsans" : {},
-    "biosans" : {},
-    "gpsans" : {
-        "models" :
-        {
-            "configuration" : GPSANSConfiguration,
-            "reduction" : GPSANSReduction,
-            "region" : GPSANSRegion,
-        },
-        "forms" :
-        {
-            "configuration" : GPSANSConfigurationForm,
-            "reduction" : GPSANSReductionForm,
-            "reduction_script" : GPSANSReductionScriptForm,
-            "region" : GPSANSRegionForm,
-            "region_formset_create" : GPSANSRegionInlineFormSetCreate,
-            "region_formset_update" : GPSANSRegionInlineFormSetUpdate,
-        },
-        "templates" : {
-
-        }
-    }
-}
-
-def get_instrument_name(request):
-    instrument = request.session['instrument']
-    return instrument.name
 
 class ConfigurationMixin(object):
     '''
+    Base for all the Instruments
     '''
+    params = {
+        "eqsans" : {},
+        "biosans" : {},
+        "gpsans" : {
+            "models" :
+            {
+                "configuration" : GPSANSConfiguration,
+                "reduction" : GPSANSReduction,
+                "region" : GPSANSRegion,
+            },
+            "forms" :
+            {
+                "configuration" : GPSANSConfigurationForm,
+                "reduction" : GPSANSReductionForm,
+                "reduction_script" : GPSANSReductionScriptForm,
+                "region" : GPSANSRegionForm,
+                "region_formset_create" : GPSANSRegionInlineFormSetCreate,
+                "region_formset_update" : GPSANSRegionInlineFormSetUpdate,
+            },
+            "templates" : {
+
+            },
+            "urls" : {
+                "" : reverse_lazy('sans:GPSANS:configuration_list'),
+
+            },
+        }
+    }
 
     instrument_name = None
+
+    def _set_instrument_name(self, request):
+        '''
+        Get instrument name from the session
+        '''
+        instrument = request.session['instrument']
+        self.instrument_name = instrument.name
 
     def dispatch(self, request, *args, **kwargs):
         '''
         Overload
         '''
-        self.instrument_name = get_instrument_name(request)
-        self.model = CONFIGURATION[instrument_name]["models"]["configuration"]
-        self.form_class = CONFIGURATION[instrument_name]["forms"]["configuration"]
-        try:
-            ret = super(ConfigurationMixin, self).dispatch(request, *args, **kwargs)
-        except AttributeError:
-            raise  Http404("ConfigurationMixin problems...")
-        return ret
+        self._set_instrument_name(request)
+        return super(ConfigurationMixin, self).dispatch(request, *args, **kwargs)
+
+class ConfigurationMixinModel(ConfigurationMixin):
+    '''
+    Specialization of ConfigurationMixin
+    '''
+    model = None
+
+    def dispatch(self, request, *args, **kwargs):
+        '''
+        Overload
+        '''
+        handler = super(ConfigurationMixinModel, self).dispatch(request, *args, **kwargs)
+        self.model = self.params[self.instrument_name]["models"]["configuration"]
+        return handler
 
     def get_queryset(self):
         '''
         Make sure the user only accesses its configurations
         '''
-        return self.model.objects.filter(user = self.request.user)
+        return self.model.objects.filter(user=self.request.user)
 
 
 #
 # Configuration class based views
 #
 
-class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
+class ConfigurationList(LoginRequiredMixin, ConfigurationMixinModel, ListView):
     '''
     List all configurations.
     '''
     def get_queryset(self):
         return super(ConfigurationList, self).get_queryset()
 
-class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixin, DetailView):
+class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixinModel, DetailView):
     '''
     Detail of a configuration
     '''
@@ -105,7 +121,7 @@ class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixin, DetailView):
         queryset = super(ConfigurationDetail, self).get_queryset()
         return queryset.filter(id=self.kwargs['pk'])
 
-class ConfigurationCreate(LoginRequiredMixin, CConfigurationMixin, reateView):
+class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, CreateView):
     '''
     Detail of a configuration
     '''
@@ -116,7 +132,32 @@ class ConfigurationCreate(LoginRequiredMixin, CConfigurationMixin, reateView):
         Sets initial values which are hidden in the form
         """
         form.instance.user = self.request.user
-        form.instance.instrument = get_object_or_404(Instrument,
-            name=self.instrument_name)
+        form.instance.instrument = get_object_or_404(Instrument, name=self.instrument_name)
         return CreateView.form_valid(self, form)
 
+
+class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, UpdateView):
+    '''
+    Detail of a configuration
+    '''
+    template_name = 'sans/configuration_form.html'
+
+class ConfigurationDelete(LoginRequiredMixin, DeleteView):
+    
+    success_url = reverse_lazy('sans:GPSANS:configuration_list')
+
+    def get_object(self, queryset=None):
+        """
+        Hook to ensure object is owned by request.user.
+        """
+        obj = super(ConfigurationDelete, self).get_object()
+        if not obj.user  == self.request.user:
+            raise Http404
+        return obj
+
+    def delete(self, request, *args, **kwargs):
+        logger.debug("Deleting Configuration %s"%self.get_object())
+        messages.success(request, 'Configuration %s deleted.'%(self.get_object()))
+        return super(ConfigurationDelete, self).delete(request, *args, **kwargs)
+    
+    
