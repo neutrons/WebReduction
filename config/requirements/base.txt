@@ -15,7 +15,7 @@ django-smart-selects
 
 # Remote job submission
 #django-remote-submission
-/home/rhf/git/django-remote-submission/dist/django-remote-submission-0.3.1.tar.gz
+../django-remote-submission/dist/django-remote-submission-0.3.1.tar.gz
 celery[redis]
 django-celery-results
 django_celery_results

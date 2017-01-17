@@ -37,16 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # My apps
-    'server.apps.sans',
-    'server.apps.users',
-    'server.apps.catalog',
     # Django addons
     'crispy_forms',
     'smart_selects',
     # job sumbission
     'django_remote_submission',
     'django_celery_results',
+    # My apps
+    'server.apps.sans',
+    'server.apps.users',
+    'server.apps.catalog',
 ]
 
 MIDDLEWARE = [
