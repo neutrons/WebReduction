@@ -11,7 +11,7 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_detail' object.id %}">{{object}}</a></li>
+        <li><a href="{% url 'sans:configuration_detail' object.id %}">{{object}}</a></li>
         <li class="active">User Assignement</li>
     </ol>
 </div>
@@ -39,7 +39,7 @@
                 <td>{{user.uid}}</td>
                 <td>{{user.name}}</td>
                 <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
-                    href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_assign_uid' object.id user.uid %}"
+                    href="{% url 'sans:configuration_assign_uid' object.id user.uid %}"
                     title="Assign to this user.">Assign to this user</a></td>
             </tr>
             {% endfor %}

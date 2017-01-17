@@ -67,13 +67,13 @@ class BioSANSConfiguration(Configuration):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:biosans:configuration_detail', [self.pk])
+        return ('sans:configuration_detail', [self.pk])
 
 class BioSANSReduction(Reduction):
     
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:biosans:reduction_detail', [self.pk])
+        return ('sans:reduction_detail', [self.pk])
 
 
 class BioSANSRegion(Region):

@@ -37,7 +37,7 @@
             <tr>
                 <td>{{object.id}}</td>
                 <td>
-                <a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_detail' object.id %}"
+                <a href="{% url 'sans:configuration_detail' object.id %}"
                    title="Click to see the details of this configuration."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a>
                 </td>
                 <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>

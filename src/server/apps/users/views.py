@@ -119,8 +119,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         if UserProfile.objects.filter(user = request.user).count() > 0:
             if 'instrument' not in self.request.session:
-                print("instrument not in session *"*80)
-                self.request.session['instrument'] = UserProfile.objects.get(user = request.user).instrument
+                self.request.session['instrument'] = UserProfile.objects.get(user=request.user).instrument
             return super(ProfileView, self).get(request, *args, **kwargs)
         else:
             return redirect(reverse_lazy('users:profile_create'))

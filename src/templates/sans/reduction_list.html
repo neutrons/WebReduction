@@ -36,7 +36,7 @@
             {% for object in object_list %}
             <tr>
                 <td>{{object.id}}</td>
-                <td><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_detail' object.id %}"
+                <td><a href="{% url 'sans:reduction_detail' object.id %}"
                     title="Click to see the details of this reduction."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a>
                 	</td>
                 <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>

@@ -93,14 +93,14 @@ class GPSANSConfiguration(Configuration):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:gpsans:configuration_detail', [self.pk])
+        return ('sans:configuration_detail', [self.pk])
 
 
 class GPSANSReduction(Reduction):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:gpsans:reduction_detail', [self.pk])
+        return ('sans:reduction_detail', [self.pk])
 
 class GPSANSRegion(Region):
     # We can not have ForeignKey for abstract models. It has to be here!!

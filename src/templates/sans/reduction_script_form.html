@@ -20,7 +20,7 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_list' %}">Reduction</a></li>
+        <li><a href="{% url 'sans:reduction_list' %}">Reduction</a></li>
         <li class="active">{{object}}</li>
     </ol>
 </div>

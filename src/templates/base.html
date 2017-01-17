@@ -40,18 +40,18 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th-list"></span> &nbsp;Configuration <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{%if request.session.instrument %}{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_list' %}{% endif %}">List</a></li>
+                            <li><a href="{%if request.session.instrument %}{% url 'sans:configuration_list' %}{% endif %}">List</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="{%if request.session.instrument %}{% url 'sans:'|add:request.session.instrument.name|lower|add:':configuration_create' %}{% endif %}">New</a></li>
+                            <li><a href="{%if request.session.instrument %}{% url 'sans:configuration_create' %}{% endif %}">New</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th"></span> &nbsp;Reduction <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{%if request.session.instrument %}{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_list' %}{% endif %}">List</a></li>
+                            <li><a href="{%if request.session.instrument %}{% url 'sans:reduction_list' %}{% endif %}">List</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="{%if request.session.instrument %}{% url 'sans:'|add:request.session.instrument.name|lower|add:':reduction_create' %}{% endif %}">New</a></li>
+                            <li><a href="{%if request.session.instrument %}{% url 'sans:reduction_create' %}{% endif %}">New</a></li>
                         </ul>
                     </li>
 
