@@ -118,7 +118,7 @@ class Configuration(models.Model, ModelMixin):
     '''
 
     '''
-    title = models.CharField(max_length=256, blank=True)
+    title = models.CharField(max_length=256)
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
@@ -251,7 +251,7 @@ class Region(models.Model, ModelMixin):
     comments = models.CharField(max_length=256, blank=True,
                                 help_text="Any necessary comments...")
     # This will be the json for sample / backgroun sample/transmission
-    entries = JSONField(default=[[None, None, None, None]])
+    entries = JSONField(default=[[None, None, None, None, None, None]])
 
     class Meta:
         abstract = True

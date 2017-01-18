@@ -91,4 +91,5 @@ ENV/
 .DS_Store
 *~
 dump.rdb
+nohup.out
 

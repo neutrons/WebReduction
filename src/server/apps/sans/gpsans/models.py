@@ -44,6 +44,7 @@ class GPSANSConfiguration(Configuration):
     
     solid_angle_correction = models.CharField(
         max_length=50,
+        blank=True,
         choices=SOLID_ANGLE_CHOICES,
         default=SOLID_ANGLE_CHOICES[0][0],
     )

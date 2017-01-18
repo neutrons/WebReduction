@@ -302,7 +302,7 @@ class ReductionMixin(SANSMixin):
         Populates the context with the titled case names and names as in the model
         '''
         context = super(ReductionMixin, self).get_context_data(**kwargs)
-        context["entry_headers"] = ["Sample Scattering", "Sample Transmission",
+        context["entry_headers"] = ["Name", "Thickness", "Sample Scattering", "Sample Transmission",
                                     "Backgroung Scattering", "Backgroung Transmission"]
         return context
 
