@@ -4,6 +4,9 @@ django>=1.10
 django-crispy-forms
 django-auth-ldap>=1.2.6
 
+# For icat
+requests
+
 # PostGres
 psycopg2>=2.6.1
 

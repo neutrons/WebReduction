@@ -31,6 +31,16 @@ class Facility(models.Model):
         return "{}".format(self.name)
 
 
+class InstrumentManager(models.Manager):
+    '''
+    Queries go here!!
+    '''
+
+    use_for_related_fields = True
+
+    def visible_instruments(self, **kwargs):
+        return self.filter(active="True", **kwargs)
+    
 class Instrument(models.Model):
     name = models.CharField(
         'instrument name',
@@ -106,6 +116,9 @@ class Instrument(models.Model):
         on_delete=models.CASCADE,
         related_name='instruments',
     )
+    
+     # Manager
+    objects = InstrumentManager()
 
     class Meta:
         ordering = ('beamline',)

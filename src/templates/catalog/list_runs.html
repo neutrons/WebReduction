@@ -1,0 +1,90 @@
+ {% extends "base.html" %}
+ 
+ {% load staticfiles %}
+ 
+ {% block header %}
+ {{ block.super }}
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'catalog:list_instruments'%}">Catalog</a></li>
+        <li><a href="{% url 'catalog:list_iptss' instrument %}">{{instrument}}</a></li>
+		<li class="active">{{ipts}}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	
+    <div class="page-header">
+        <h1>Catalog {{instrument}} <small>{{ipts}}</small></h1>
+    </div>
+
+<table id="tableruns" class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>Run</th>
+								<th>Title</th>
+								<th>Proton Charge</th>
+								<th>Start Time</th>
+								<th>End Time</th>
+								<th>Duration (s)</th>
+								<th>Total Counts</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for run in runs.proposal.runs.run %}
+							<tr>
+								<td>{{run.id}}</td>
+								<td>{{run.title}}</td>
+								<td class="text-right">{{ run.protonCharge }}</td>
+								<td>{{run.startTime | date}}</td>
+								<td>{{run.endTime | date}}</td>
+								<td class="text-right">{{run.duration | floatformat }}</td>
+								<td class="text-right">{{run.totalCounts }}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th>Run</th>
+								<th>Title</th>
+								<th>Proton Charge</th>
+								<th>Start Time</th>
+								<th>End Time</th>
+								<th>Duration</th>
+								<th>Total Counts</th>
+							</tr>
+						</tfoot>
+					</table>
+</div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<!-- page script -->
+<script>
+        $(function () {
+            $("#tableruns").DataTable({
+                "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+                //"order": [[ 3, 'desc' ]],
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true,
+    			"initComplete": function( settings, json ) {
+   					 $('div.loading').remove();
+ 				}
+            });
+            
+        });
+    </script>
+{% endblock %}
