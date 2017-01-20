@@ -15,19 +15,18 @@
 <div class="container">
 	
     <div class="page-header">
-        <h1>Catalog<small></small></h1>
+        <h1>Catalog <small>Intruments for {{user.profile.instrument.facility}}</small></h1>
     </div>
 
     <table class="table table-hover">
 		{% for instrument in instruments %}
 		<tr>
-			<td>{{instrument.facility}}</td>
-			<td><a class="btn-block btn-default" data-toggle="tooltip"
+			<td><a data-toggle="tooltip"
 				data-placement="right"
 				title="Click to see all experiments for {{instrument.name}}."
 				href="{% url 'catalog:list_iptss' instrument=instrument.icat_name|upper %}">
 					{{instrument.beamline}}</a></td>
-			<td><a class="btn-block btn-default" data-toggle="tooltip"
+			<td><a data-toggle="tooltip"
 				data-placement="right"
 				title="Click to see all experiments for {{instrument.name}}."
 				href="{% url 'catalog:list_iptss' instrument=instrument.icat_name|upper %}"><strong>{{instrument.name}}</strong></a></td>

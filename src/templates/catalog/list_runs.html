@@ -22,7 +22,7 @@
 <div class="container">
 	
     <div class="page-header">
-        <h1>Catalog {{instrument}} <small>{{ipts}}</small></h1>
+        <h1>Catalog {{instrument}} <small> Runs for {{ipts}}</small></h1>
     </div>
 
 <table id="tableruns" class="table table-bordered table-striped">
@@ -43,8 +43,8 @@
 								<td>{{run.id}}</td>
 								<td>{{run.title}}</td>
 								<td class="text-right">{{ run.protonCharge }}</td>
-								<td>{{run.startTime | date}}</td>
-								<td>{{run.endTime | date}}</td>
+								<td>{{run.startTime}}</td>
+								<td>{{run.endTime}}</td>
 								<td class="text-right">{{run.duration | floatformat }}</td>
 								<td class="text-right">{{run.totalCounts }}</td>
 							</tr>
@@ -73,7 +73,12 @@
         $(function () {
             $("#tableruns").DataTable({
                 "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                //"order": [[ 3, 'desc' ]],
+                "order": [[ 0, 'desc' ]],
+                "columnDefs": [
+                	{ "type": "scientific", "targets": 2 },
+    				{ "type": "date", "targets": 3 },
+    				{ "type": "date", "targets": 4 }
+  				],
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,

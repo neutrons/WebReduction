@@ -59,9 +59,11 @@ class UserProfile(models.Model):
         Instrument, 
         chained_field="facility",
         chained_model_field="facility", 
-        # show_all=False, 
-        # auto_choose=True,
+        show_all=False, 
+        auto_choose=True,
         # sort=True
+        # This will show only instruments with the field: 
+        limit_choices_to={'reduction_available': True},
     )
     
     def __str__(self):

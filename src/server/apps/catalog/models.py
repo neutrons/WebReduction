@@ -39,7 +39,7 @@ class InstrumentManager(models.Manager):
     use_for_related_fields = True
 
     def visible_instruments(self, **kwargs):
-        return self.filter(active="True", **kwargs)
+        return self.filter(active="True", **kwargs).order_by("beamline")
     
 class Instrument(models.Model):
     name = models.CharField(

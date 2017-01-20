@@ -37,8 +37,7 @@ class Instruments(LoginRequiredMixin,View):
     List of visible instruments in the database
     '''
     def get(self, request):
-        instruments = Instrument.objects.visible_instruments()
-        logger.debug(pformat(instruments.values()))
+        instruments = Instrument.objects.visible_instruments(facility=request.user.profile.instrument.facility)
         return render(request, 'catalog/list_instruments.html',
                       {'instruments' : instruments})
 
