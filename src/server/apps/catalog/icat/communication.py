@@ -312,16 +312,16 @@ class SNSICat(ICat):
 if __name__ == "__main__":
 
     icat = SNSICat()
-    pprint(icat.get_instruments())
-    pprint(icat.get_experiments("EQSANS"))
-    pprint(icat.get_experiments_meta("EQSANS"))
-    pprint(icat.get_user_experiments("m2d"))
-    pprint(icat.get_run_ranges("EQSANS","IPTS-16890"))
-    pprint(icat.get_run_ranges_meta("EQSANS","IPTS-16890"))
-    #pprint(icat.get_runs_all("EQSANS","IPTS-16890"))
-    #pprint(icat.get_run_info("EQSANS", "74872"))
-    pprint(icat.get_run_info_meta_only("EQSANS", "74872"))
+#     pprint(icat.get_instruments())
+#     pprint(icat.get_experiments("EQSANS"))
+#     pprint(icat.get_experiments_meta("EQSANS"))
+#     pprint(icat.get_user_experiments("m2d"))
+#     pprint(icat.get_run_ranges("EQSANS","IPTS-16890"))
+#     pprint(icat.get_run_ranges_meta("EQSANS","IPTS-16890"))
+#     pprint(icat.get_runs_all("EQSANS","IPTS-16890"))
+#     pprint(icat.get_run_info("EQSANS", "74872")) # HEAVY
+#     pprint(icat.get_run_info_meta_only("EQSANS", "74872"))
     pprint(icat.get_run_info_lite("EQSANS", "74872"))
-    pprint(icat.get_last_run("EQSANS"))
-    pprint(icat.get_run_files("EQSANS", "74872"))
+#     pprint(icat.get_last_run("EQSANS"))
+#     pprint(icat.get_run_files("EQSANS", "74872"))
     

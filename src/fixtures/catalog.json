@@ -77,6 +77,7 @@
 			"facility": 2
 		}
 	},
+
 	{
 		"model": "catalog.instrument",
 		"pk": 4,
@@ -90,6 +91,348 @@
 			"ldap_group_name": "sns_usans_team",
 			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/HFIR/USANS",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 5,
+		"fields": 
+		{
+			"name": "NOMAD",
+			"description": "Nanoscale-Ordered Materials Diffractometer",
+			"beamline": "BL-1B ",
+			"type": "Diffraction",
+			"icat_name": "NOM",
+			"ldap_group_name": "sns_nomad_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/NOMAD",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 6,
+		"fields": 
+		{
+			"name": "BASIS",
+			"description": "Backscattering Spectrometer",
+			"beamline": "BL-2",
+			"type": "Spectroscopy",
+			"icat_name": "BSS",
+			"ldap_group_name": "sns_basis_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/BASIS",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 7,
+		"fields": 
+		{
+			"name": "SNAP",
+			"description": "Spallation Neutrons and Pressure Diffractometer",
+			"beamline": "BL-3",
+			"type": "Diffraction",
+			"icat_name": "SNAP",
+			"ldap_group_name": "sns_snap_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/SNAP",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 8,
+		"fields": 
+		{
+			"name": "MR",
+			"description": "Magnetism Reflectometer",
+			"beamline": "BL-4A",
+			"type": "Reflectometry",
+			"icat_name": "REF_M",
+			"ldap_group_name": "sns_mr_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/MR",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 9,
+		"fields": 
+		{
+			"name": "LR",
+			"description": "Liquids Reflectometer",
+			"beamline": "BL-4B",
+			"type": "Reflectometry",
+			"icat_name": "REF_L",
+			"ldap_group_name": "sns_lr_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/LR",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 10,
+		"fields": 
+		{
+			"name": "CNCS",
+			"description": "Cold Neutron Chopper Spectrometer",
+			"beamline": "BL-5",
+			"type": "Spectroscopy",
+			"icat_name": "CNCS",
+			"ldap_group_name": "sns_cncs_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/CNCS",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 11,
+		"fields": 
+		{
+			"name": "VULCAN",
+			"description": "Engineering Materials Diffractometer",
+			"beamline": "BL-7",
+			"type": "Diffraction",
+			"icat_name": "VULCAN",
+			"ldap_group_name": "sns_vulcan_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/VULCAN",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 12,
+		"fields": 
+		{
+			"name": "CORELLI",
+			"description": "Elastic Diffuse Scattering Spectrometer",
+			"beamline": "BL-9",
+			"type": "Spectroscopy",
+			"icat_name": "CORELLI",
+			"ldap_group_name": "sns_corelli_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/CORELLI",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 13,
+		"fields": 
+		{
+			"name": "VENUS",
+			"description": "Versatile Neutron Imaging Instrument",
+			"beamline": "BL-10",
+			"type": "Imaging",
+			"icat_name": "VENUS",
+			"ldap_group_name": "sns_venus_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/VENUS",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 14,
+		"fields": 
+		{
+			"name": "POWGEN",
+			"description": "Powder Diffractometer",
+			"beamline": "BL-11A",
+			"type": "Diffraction",
+			"icat_name": "POWGEN",
+			"ldap_group_name": "sns_powgen_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/POWGEN",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 15,
+		"fields": 
+		{
+			"name": "MANDI",
+			"description": "Macromolecular Neutron Diffractometer",
+			"beamline": "BL-11B",
+			"type": "Diffraction",
+			"icat_name": "MANDI",
+			"ldap_group_name": "sns_mandi_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/MANDI",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 16,
+		"fields": 
+		{
+			"name": "TOPAZ",
+			"description": "Single-Crystal Diffractometer",
+			"beamline": "BL-12",
+			"type": "Diffraction",
+			"icat_name": "TOPAZ",
+			"ldap_group_name": "sns_topaz_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/TOPAZ",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 17,
+		"fields": 
+		{
+			"name": "FNPB",
+			"description": "Fundamental Neutron Physics Beam Line",
+			"beamline": "BL-13",
+			"type": "Spectroscopy",
+			"icat_name": "FNPB",
+			"ldap_group_name": "sns_fnpb_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/FNPB",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 18,
+		"fields": 
+		{
+			"name": "HYSPEC",
+			"description": "Hybrid Spectrometer",
+			"beamline": "BL-14B",
+			"type": "Spectroscopy",
+			"icat_name": "HYS",
+			"ldap_group_name": "sns_hyspec_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/HYSPEC",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 19,
+		"fields": 
+		{
+			"name": "NSE",
+			"description": "Neutron Spin Echo Spectrometer",
+			"beamline": "BL-15",
+			"type": "Spectroscopy",
+			"icat_name": "NSE",
+			"ldap_group_name": "sns_nse_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/NSE",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 20,
+		"fields": 
+		{
+			"name": "VISION",
+			"description": "Vibrational Spectrometer",
+			"beamline": "BL-16B",
+			"type": "Spectroscopy",
+			"icat_name": "VIS",
+			"ldap_group_name": "sns_vision_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/VISION",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 21,
+		"fields": 
+		{
+			"name": "SEQUOIA",
+			"description": "Fine-Resolution Fermi Chopper Spectrometer",
+			"beamline": "BL-17",
+			"type": "Spectroscopy",
+			"icat_name": "SEQ",
+			"ldap_group_name": "sns_sequoia_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/SEQUOIA",
+			"reduction_available": false,
+			"active": true,
+			"facility": 2
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 22,
+		"fields": 
+		{
+			"name": "ARCS",
+			"description": "Wide Angular-Range Chopper Spectrometer",
+			"beamline": "BL-18",
+			"type": "Spectroscopy",
+			"icat_name": "ARCS",
+			"ldap_group_name": "sns_arcs_team",
+			"icat_url": "http://icat.sns.gov:2080/",
+			"drive_path": "/SNS/ARCS",
 			"reduction_available": false,
 			"active": true,
 			"facility": 2
