@@ -78,6 +78,7 @@ class BioSANSReduction(Reduction):
 
 class BioSANSRegion(Region):
     # We can not have ForeignKey for abstract models. It has to be here!!
+    
     empty_beam = models.CharField(max_length=256)
 
     reduction = models.ForeignKey(BioSANSReduction,
@@ -89,4 +90,4 @@ class BioSANSRegion(Region):
                                       related_name="regions",
                                       related_query_name="region")
     def __str__(self):
-        return "Reduction {} -> Entry {}".format(self.reduction.title, self.region)
+        return "Reduction {}".format(self.reduction.title)

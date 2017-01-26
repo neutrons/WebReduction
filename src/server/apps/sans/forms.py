@@ -57,7 +57,7 @@ class RegionForm(object):
         self.helper.layout = Layout(
             Fieldset(
                 '', # TITLE
-                'region', 'comments', 'configuration', 'empty_beam', 'entries',
+                'comments', 'configuration', 'empty_beam', 'entries',
             )
         )
 

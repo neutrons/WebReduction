@@ -322,7 +322,7 @@ class ReductionMixin(SANSMixin):
         Sets the initial values for the regions formsets
         '''
         kwargs = super(ReductionMixin,self).get_formset_kwargs()
-        kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
+#         kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
         return kwargs
 
 #

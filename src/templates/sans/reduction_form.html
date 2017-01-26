@@ -74,7 +74,8 @@ table.dataTable tbody tr.selected {
                 <div class="tab-content">
                 {% for f in formset %}
                     <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
-                        {% crispy f f.helper %}    
+                        {% crispy f f.helper %}
+                        <a href="#" class="btn btn-default" role="button" data-toggle="tooltip" title="Click to auto-populate the spreadsheet with info from ICat">Populate from ICat</a>
                     </div>
                 {% endfor %}
                 </div>
@@ -85,8 +86,7 @@ table.dataTable tbody tr.selected {
 
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="cancel" class="btn btn-default" onclick="window.history.back()" >Cancel</button>
-        
-        {#{% if form.title.value|length > 0 %}<button type="submit" name="add_form" class="btn btn-default">Add form...</button>{% endif %}#}    
+
     </form>
 </div>
 {% endblock %}
@@ -119,10 +119,12 @@ $.each( entriesSelectors, function( i, selector ) {
         columnSorting: true,
         contextMenu: true,
         autoWrapRow: true,
-        rowHeaders: false,
+        rowHeaders: true,
         colHeaders: {{entry_headers | safe}},
         contextMenu: true,
-        outsideClickDeselects: false
+        outsideClickDeselects: false,
+        formulas: true,
+        manualColumnResize: true
     };
     $div.handsontable(options);
 });
@@ -175,6 +177,14 @@ function set_autocomplete(selector, jsonurl) {
 set_autocomplete("#id_ipts", "{% url 'users:group_list_json' %}");
 
 
+/*
+ This will re-render the spreadsheet on the visible tab!
+ */
+$('.nav-tabs a').on('shown.bs.tab', function(event){
+//     console.log($(event.target).text());         // active tab
+//     console.log($(event.relatedTarget).text());  // previous tab
+    $(event.target.hash + ' div.handsontable').handsontable('render');
+});
 </script>
 
 {# This is for django-autocomplete-light:  jquery is loaded before #}

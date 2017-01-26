@@ -26,6 +26,6 @@ class GPSANSRegionForm(RegionForm, ModelForm):
         model = GPSANSRegion
 
  # New
-GPSANSRegionInlineFormSetCreate = inlineformset_factory(GPSANSReduction, GPSANSRegion, form=GPSANSRegionForm, extra=3, can_delete=False)
+GPSANSRegionInlineFormSetCreate = inlineformset_factory(GPSANSReduction, GPSANSRegion, form=GPSANSRegionForm, extra=1, can_delete=False)
 # Edit
-GPSANSRegionInlineFormSetUpdate = inlineformset_factory(GPSANSReduction, GPSANSRegion, form=GPSANSRegionForm, extra=0, can_delete=True)
+GPSANSRegionInlineFormSetUpdate = inlineformset_factory(GPSANSReduction, GPSANSRegion, form=GPSANSRegionForm, extra=0, can_delete=False)

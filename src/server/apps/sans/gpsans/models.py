@@ -117,4 +117,4 @@ class GPSANSRegion(Region):
                                       related_query_name="region")
 
     def __str__(self):
-        return "Reduction {} -> Entry {}".format(self.reduction.title, self.region)
+        return "Reduction {}".format(self.reduction.title)

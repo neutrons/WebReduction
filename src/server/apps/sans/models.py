@@ -234,25 +234,17 @@ class Region(models.Model, ModelMixin):
     This will be a formset from Reduction
     '''
 
-    # Manager
-    objects = RegionManager()
-
-    REGION_CHOICES = (
-        ("L", _("Low Q")),
-        ("M", _("Medium Q")),
-        ("H", _("High Q"))
-    )
-    region = models.CharField(
-        max_length=1,
-        choices=REGION_CHOICES,
-        default=REGION_CHOICES[1][0],
-    )
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
 
     comments = models.CharField(max_length=256, blank=True,
                                 help_text="Any necessary comments...")
     # This will be the json for sample / backgroun sample/transmission
     entries = JSONField(default=[[None, None, None, None, None, None]])
 
+    # Manager
+    objects = RegionManager()
+    
     class Meta:
         abstract = True
         ordering = ["id"]
