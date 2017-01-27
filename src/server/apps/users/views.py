@@ -124,8 +124,16 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         else:
             return redirect(reverse_lazy('users:profile_create'))
 
+class ProfileMixin(object):
+    def get_form(self, form_class=None):
+        '''
+        Make sure the user only see in the his IPTSs
+        '''
+        form_class = super(UpdateView, self).get_form(form_class)
+        form_class.fields['ipts'].queryset = Group.objects.filter(name__istartswith="IPTS").filter(user = self.request.user)
+        return form_class
 
-class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin, UpdateView):
+class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,ProfileMixin,UpdateView):
     '''
     I'm using form_class to test crispy forms
     '''
@@ -135,20 +143,14 @@ class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
 
-    def get_form(self, form_class=None):
-        form_class = super(UpdateView, self).get_form(form_class)
-        form_class.fields['ipts'].queryset = Group.objects.filter(name__istartswith="SNS").filter(user = self.request.user)
-        return form_class
-
     def form_valid(self, form):
         '''
         Add instrument to session
         '''
-        print("Instance:", form.instance)
         self.request.session['instrument'] = form.instance.instrument
         return super(ProfileUpdate, self).form_valid(form)
 
-class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,CreateView):
+class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,ProfileMixin,CreateView):
     model = UserProfile
     form_class = UserProfileForm
     #fields = ['home_institution', 'email_address']
@@ -163,36 +165,5 @@ class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,CreateView):
         form.instance.user = user
         self.request.session['instrument'] = form.instance.instrument
         return super(ProfileCreate, self).form_valid(form)
-
-#
-# JSON Methods
-#
-
-class GroupMixin(object):
-    def get_queryset(self):
-        '''
-        Make sure the user only accesses its groups
-        '''
-        return Group.objects.filter(user = self.request.user)
-
-class GroupListJson(LoginRequiredMixin, GroupMixin, ListView):
-    '''
-    List all groups for in json for this user.
-    '''
-    def get(self, request, *args, **kwargs):
-        '''
-        @return: a list for automplete in the form of:
-                    [{
-                      "value": 1,
-                      "label": "hfir_cg3_team"
-                    }, {
-                      "value": 2,
-                      "label": "adara"
-                    }]
-        '''
-        qs = self.get_queryset()
-        # Rename to value and label
-        qs = qs.annotate(value=F('pk'), label=F('name')).values('value','label')
-        # Needs safe=False because I'm returning a list not a dict!
-        return JsonResponse(list(qs), safe=False)
-
+    
+    

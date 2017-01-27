@@ -8,5 +8,4 @@ urlpatterns = [
     url(r'^profile$', views.ProfileView.as_view(), name="profile_view"),
     url(r'^profile/create$', views.ProfileCreate.as_view(), name="profile_create"),
     url(r'^profile/(?P<pk>\d+)/$', views.ProfileUpdate.as_view(), name="profile_update"),
-    url(r'^group_list_json$', views.GroupListJson.as_view(), name="group_list_json"),
 ]
