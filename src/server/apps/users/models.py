@@ -4,6 +4,7 @@ from django.db import models
 from django.conf import settings
 
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import Group
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from server.apps.catalog.models import Facility, Instrument
@@ -66,6 +67,11 @@ class UserProfile(models.Model):
         limit_choices_to={'reduction_available': True},
     )
     
+    ipts = models.ForeignKey(Group, null=True, blank=True,
+        help_text="This IPTS will be used to find your data on ICat.\
+         If you leave it empty the ICat lookup will not work!",
+         verbose_name = "Integrated Proposal Tracking System (IPTS) number")
+
     def __str__(self):
         return self.user.username
 

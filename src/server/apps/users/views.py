@@ -124,7 +124,8 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         else:
             return redirect(reverse_lazy('users:profile_create'))
 
-class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
+
+class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin, UpdateView):
     '''
     I'm using form_class to test crispy forms
     '''
@@ -134,10 +135,16 @@ class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,UpdateView):
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
 
+    def get_form(self, form_class=None):
+        form_class = super(UpdateView, self).get_form(form_class)
+        form_class.fields['ipts'].queryset = Group.objects.filter(name__istartswith="SNS").filter(user = self.request.user)
+        return form_class
+
     def form_valid(self, form):
         '''
         Add instrument to session
         '''
+        print("Instance:", form.instance)
         self.request.session['instrument'] = form.instance.instrument
         return super(ProfileUpdate, self).form_valid(form)
 
