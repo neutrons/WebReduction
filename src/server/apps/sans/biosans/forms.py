@@ -4,12 +4,17 @@ Created on Jan 8, 2016
 '''
 from django.forms import ModelForm, inlineformset_factory, HiddenInput
 
-from crispy_forms.layout import Fieldset, HTML
+from crispy_forms.layout import Fieldset, HTML, Div
 
 from ..forms import ConfigurationForm, ReductionForm, RegionForm, ReductionScriptForm
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
 
 class BioSANSConfigurationForm(ConfigurationForm, ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(BioSANSConfigurationForm, self).__init__(*args, **kwargs)
+        self.helper.layout.insert(0, HTML("""<div class="alert alert-warning">
+                    <strong>Note: </strong> Two separate configurations have to be created for Main and Wing detector!.
+                </div>"""))
     class Meta(ConfigurationForm.Meta):
         model = BioSANSConfiguration
 

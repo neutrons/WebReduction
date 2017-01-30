@@ -129,7 +129,7 @@ class ProfileMixin(object):
         '''
         Make sure the user only see in the his IPTSs
         '''
-        form_class = super(UpdateView, self).get_form(form_class)
+        form_class = super(ProfileMixin, self).get_form(form_class)
         form_class.fields['ipts'].queryset = Group.objects.filter(name__istartswith="IPTS").filter(user = self.request.user)
         return form_class
 

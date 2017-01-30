@@ -206,7 +206,7 @@ class Reduction(models.Model, ModelMixin):
 
     # Manager
     objects = ReductionManager()
-    
+
     class Meta:
         ordering = ["id"]
         abstract = True
@@ -218,9 +218,7 @@ class RegionManager(models.Manager):
     '''
     Queries go here!!
     '''
-    
     use_for_related_fields = True
-
 
 
 class Region(models.Model, ModelMixin):
@@ -228,6 +226,19 @@ class Region(models.Model, ModelMixin):
     Region can be low, medium or high Q
     This will be a formset from Reduction
     '''
+
+    empty_beam_run = models.CharField(
+        "Empty Beam Transmission",
+        max_length=64,
+        blank=False,
+    )
+    
+    beam_center_run = models.CharField(
+        "Beam Center",
+        max_length=64,
+        blank=True,
+        help_text="If empty, uses the empty beam as beam center."
+    )
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
@@ -239,7 +250,7 @@ class Region(models.Model, ModelMixin):
 
     # Manager
     objects = RegionManager()
-    
+
     class Meta:
         abstract = True
         ordering = ["id"]

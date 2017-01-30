@@ -105,8 +105,7 @@ class GPSANSReduction(Reduction):
 
 class GPSANSRegion(Region):
     # We can not have ForeignKey for abstract models. It has to be here!!
-    empty_beam = models.CharField(max_length=256)
-
+   
     reduction = models.ForeignKey(GPSANSReduction,
                                   on_delete=models.CASCADE,
                                   related_name="regions",
