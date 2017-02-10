@@ -194,8 +194,16 @@ DATETIME_FORMAT = 'Y-m-d H:i:s'
 # Celery configuration
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
-CELERY_ACCEPT_CONTENT = ['pickle'] # also experimented with "json" alone and ['json','pickle']  as well
-CELERY_EVENT_SERIALIZER = 'pickle'
-CELERY_TASK_SERIALIZER = 'pickle'  
-CELERY_RESULT_SERIALIZER = 'pickle'
+
+
+# Django Channels
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'asgi_redis.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+        'ROUTING': 'server.routing.channel_routing',
+    },
+}
 

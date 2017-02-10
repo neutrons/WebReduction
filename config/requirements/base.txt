@@ -17,11 +17,11 @@ django-environ
 django-smart-selects
 
 # Remote job submission
-#django-remote-submission
-../django-remote-submission/dist/django-remote-submission-0.3.1.tar.gz
+django-remote-submission
+#../django-remote-submission/dist/django-remote-submission-0.3.1.tar.gz
 celery[redis]
 django-celery-results
-django_celery_results
+asgi_redis
 
 #For deploy
 Fabric3>=1.13.1
