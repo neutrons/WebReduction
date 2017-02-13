@@ -31,3 +31,13 @@ class JobDetail(LoginRequiredMixin, JobMixin, DetailView):
     def get_queryset(self):
         queryset = super(JobDetail, self).get_queryset()
         return queryset.filter(id=self.kwargs['pk'])
+
+class JobLiveLog(LoginRequiredMixin, JobMixin, DetailView):
+    '''
+    Detail of a configuration
+    '''
+    template_name = 'results/log_live.html'
+    
+    def get_queryset(self):
+        queryset = super(JobLiveLog, self).get_queryset()
+        return queryset.filter(id=self.kwargs['pk'])

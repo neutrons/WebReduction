@@ -10,7 +10,8 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li class="active">Live results</li>
+        <li><a href="{% url 'results:detail' object.id %}">Job {{object}}</a></li>
+        <li class="active">Log live</li>
     </ol>
 </div>
 {% endblock %}
@@ -19,40 +20,42 @@
 <div class="container">
 	
     <div class="page-header">
-        <h1>Live results for <small>{{user.profile.instrument}}</small></h1>
+        <h1>Live Log results for <small>{{object}}</small></h1>
     </div>
     <table class="table table-hover">
         <thead>
             <th>ID</th>
-            <th>Title</th>
-            <th>Status</th>
+            <th>Time</th>
+            <th>Stream</th>
+            <th>Content</th>
         </thead>
-        <tbody id="job-status-rows"></tbody>
-	</table>
+        <tbody id="job-log-rows"></tbody>
+            </table>
 </div>
 {% endblock %}
 
 {% block footer_js%}
 {{ block.super }}
+<script src='{% static "thirdparty/reconnecting-websocket/reconnecting-websocket.min.js" %}'></script>
 <script>
-
-socket = new WebSocket("ws://" + window.location.host + "/job-user/");
-
+socket = new ReconnectingWebSocket("ws://" + window.location.host + "/job-log/{{ object.id }}/");
 socket.onmessage = function(e) {
-  var { job_id, title, status } = JSON.parse(e.data);
-  $('#job-status-rows').append(
+  var { log_id, time, content, stream } = JSON.parse(e.data);
+  $('#job-log-rows').append(
     $('<tr>').append(
-      $('<td>').text('' + job_id)
+      $('<td>').text('' + log_id)
     ).append(
-      $('<td>').text('' + title)
+      $('<td>').text('' + time)
     ).append(
-      //$('<td>').text('' + status)
-      $('<td>').append('<span class="label label-' + status + '">' + status + '</span>')
+      $('<td>').text('' + stream)
+    ).append(
+      $('<td>').append(
+        $('<pre>').text('' + content)
+      )
     )
   );
 }
 socket.onopen = function() { }
-
 // Call onopen directly if socket is already open
 if (socket.readyState == WebSocket.OPEN) socket.onopen();
 

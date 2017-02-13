@@ -39,7 +39,7 @@
     <div class="container-fluid">
         {% for result in object.results.all %}
         <div class="panel panel-default">
-            <div class="panel-heading">Result</div>
+            <div class="panel-heading">Result {{ result.id }}</div>
             <div class="panel-body">{{ result.remote_filename }}
                 <a href="{{result.local_file.url}}">{{ result.local_file }}</a>
             </div>
@@ -48,14 +48,12 @@
     </div>
     
     <div class="container-fluid">
-        {% for log in object.logs.all %}
         <div class="panel panel-default">
             <div class="panel-heading">Log</div>
             <div class="panel-body">
-               <pre><code>{{ log.content}}</code></pre>
+               <pre><code>{% for log in object.logs.all %}{{ log.content }}{% endfor %}</code></pre>
             </div>
         </div>
-        {% endfor %}
     </div>
 
     <p>
