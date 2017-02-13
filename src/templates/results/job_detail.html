@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'results:list' %}">Job List</a></li>
+        <li class="active">{{ object }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+	<div class="page-header">
+        <h1>Job<small> {{ object }}</small></h1>
+    </div>
+
+	<!-- This is the reduction info -->
+    <div class="container-fluid">
+        <ul class="list-group">
+            {% for f in object.get_all_fields %}
+                <li class="list-group-item">
+                    {% if f.name == "program" %}
+                        <pre><code>{{f.value}}</code></pre>
+                    {% else %}
+                        <strong>{{f.label|capfirst}}</strong>
+                        <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <hr/>
+
+    <div class="container-fluid">
+        {% for result in object.results.all %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Result</div>
+            <div class="panel-body">{{ result.remote_filename }}
+                <a href="{{result.local_file.url}}">{{ result.local_file }}</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="container-fluid">
+        {% for log in object.logs.all %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Log</div>
+            <div class="panel-body">
+               <pre><code>{{ log.content}}</code></pre>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p>
+        <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top" onclick="window.history.back()"
+            href="#" title="Go back.">Go Back</a>
+    </p>
+</div>
+{% endblock %}
