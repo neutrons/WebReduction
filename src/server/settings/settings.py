@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # job sumbission
     'django_remote_submission',
     'django_celery_results',
+    'channels',
     # My apps
     'server.apps.sans',
     'server.apps.users',

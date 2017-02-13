@@ -1,6 +1,32 @@
- {% extends "base.html" %}
- 
- {% load staticfiles %}
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block header %}
+{{ block.super }}
+<style>
+.label-initial {
+  background-color: #777777;
+}
+.label-initial[href]:hover,
+.label-initial[href]:focus {
+  background-color: #777777;
+}
+.label-submitted {
+  background-color: #00451d;
+}
+.label-submitted[href]:hover,
+.label-submitted[href]:focus {
+  background-color: #00451d;
+}
+.label-failure {
+  background-color: #d9534f;
+}
+.label-failure[href]:hover,
+.label-failure[href]:focus {
+  background-color: #c9302c;
+}
+</style>
+{% endblock %}
 
 {% block breadcrumbs %}
 <div class="container">
@@ -15,12 +41,43 @@
 <div class="container">
 	
     <div class="page-header">
-        <h1>Live results for <small>Intruments for {{user.profile.instrument}}</small></h1>
+        <h1>Live results for <small>{{user.profile.instrument}}</small></h1>
     </div>
-
     <table class="table table-hover">
-        TODO
+        <thead>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Status</th>
+        </thead>
+        <tbody id="job-status-rows"></tbody>
 	</table>
 </div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script>
+
+socket = new WebSocket("ws://" + window.location.host + "/job-user/");
+
+socket.onmessage = function(e) {
+  var { job_id, title, status } = JSON.parse(e.data);
+  $('#job-status-rows').append(
+    $('<tr>').append(
+      $('<td>').text('' + job_id)
+    ).append(
+      $('<td>').text('' + title)
+    ).append(
+      //$('<td>').text('' + status)
+      $('<td>').append('<span class="label label-' + status + '">' + status + '</span>')
+    )
+  );
+}
+socket.onopen = function() { }
+
+// Call onopen directly if socket is already open
+if (socket.readyState == WebSocket.OPEN) socket.onopen();
+
+</script>
 {% endblock %}
 
