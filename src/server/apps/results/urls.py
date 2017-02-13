@@ -1,9 +1,10 @@
 from django.conf.urls import url
-
-from . import views
 from django.views.generic import TemplateView
+
+from .views import *
 
 urlpatterns = [
      # Configurations
+    url(r'^$', JobsList.as_view(), name='list'),
     url(r'^live$', TemplateView.as_view(template_name='results/live.html'), name='live'),
 ]

@@ -3,29 +3,7 @@
 
 {% block header %}
 {{ block.super }}
-<style>
-.label-initial {
-  background-color: #777777;
-}
-.label-initial[href]:hover,
-.label-initial[href]:focus {
-  background-color: #777777;
-}
-.label-submitted {
-  background-color: #00451d;
-}
-.label-submitted[href]:hover,
-.label-submitted[href]:focus {
-  background-color: #00451d;
-}
-.label-failure {
-  background-color: #d9534f;
-}
-.label-failure[href]:hover,
-.label-failure[href]:focus {
-  background-color: #c9302c;
-}
-</style>
+<link rel="stylesheet" type="text/css" href='{% static "css/results.css" %}'>
 {% endblock %}
 
 {% block breadcrumbs %}
