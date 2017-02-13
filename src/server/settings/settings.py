@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'server.apps.sans',
     'server.apps.users',
     'server.apps.catalog',
+    'server.apps.results',
 ]
 
 MIDDLEWARE = [

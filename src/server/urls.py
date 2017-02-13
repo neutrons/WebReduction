@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^users/', include('server.apps.users.urls', namespace='users')),
     url(r'^catalog/', include('server.apps.catalog.urls', namespace='catalog')),
     url(r'^sans/', include('server.apps.sans.urls', namespace='sans')),
+    url(r'^results/', include('server.apps.results.urls', namespace='results')),
     url(r'^util/', include('server.util.urls', namespace='util')),
     # For smart_selects
     url(r'^chaining/', include('smart_selects.urls')),
