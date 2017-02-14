@@ -25,8 +25,8 @@
         <thead>
             <th>ID</th>
             <th>Title</th>
-            <th>Modified</th>
             <th>Status</th>
+            <th>Modified</th>
         </thead>
         <tbody id="job-status-rows"></tbody>
 	</table>
@@ -56,7 +56,7 @@ socket.onmessage = function(e) {
         //$('<td>').text('' + status)
         $('<td>').append('<span class="label label-' + status + '">' + status + '</span>')
       ).append(
-        $('<td>').text('' + modified)
+        $('<td>').text('' + (new Date(Date.parse(modified))).toLocaleString())
       ),
       found = false;
   trs.each((i, el) => {

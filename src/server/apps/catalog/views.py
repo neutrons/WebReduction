@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.shortcuts import render
 from django.contrib import messages
 from django.views.generic import View, TemplateView
@@ -12,7 +10,7 @@ from pprint import pformat
 import logging
 import json
 
-from .icat.facade import Catalog
+from .icat.sns.facade import Catalog
 from .permissions import user_has_permission_to_see_this_ipts, \
     filter_user_permission
 from .models import Instrument
@@ -81,7 +79,7 @@ class Runs(LoginRequiredMixin,InstrumentMixin,TemplateView):
 
 
 @login_required
-@cache_page(20)
+@cache_page(120)
 def get_iptss_json(request, instrument):
     """
          Ajax call to get all the possible experiments (retrieved from ICAT)
@@ -98,7 +96,7 @@ def get_iptss_json(request, instrument):
 
 
 @login_required
-@cache_page(20)
+@cache_page(120)
 def get_runs_json(request, instrument, ipts):
     """
          Ajax call to get all the possible runs (retrieved from ICAT)

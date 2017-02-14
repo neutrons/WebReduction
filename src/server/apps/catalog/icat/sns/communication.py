@@ -10,43 +10,9 @@ import logging
 
 from pprint import pformat, pprint
 
+from server.apps.catalog.icat.icat import ICat
+
 logger = logging.getLogger(__name__)
-
-"""
-
-ICAT Json interface
-
-This just communicate with ICAT
-
-Do not implement here any filtering to the output json!!!
-
-"""
-
-TIMEOUT = 5
-HEADERS = {"Accept": "application/json"}
-
-
-class ICat(object):
-    '''
-    ICAT rest interface
-    '''
-    def __init__(self, url_prefix):
-        self.url_prefix = url_prefix
-
-    def __del__(self):
-        '''
-        Just makes sure the HTTP connection will be closed
-        '''
-        pass
-
-    def _request(self, url_suffix=""):
-        try:
-            request_str = self.url_prefix + url_suffix
-            response = requests.get(request_str, headers=HEADERS)
-            return response.json()
-        except Exception as e:
-            logger.exception(e)
-            return None
 
 class SNSICat(ICat):
 
@@ -95,8 +61,7 @@ class SNSICat(ICat):
         '''
         logger.debug("get_experiments")
         return self._request("/icat-rest-ws/experiment/SNS/" + instrument)
-    
- 
+
     def get_experiments_meta(self, instrument):
         '''
         @param instrument: Valid instrument as string
@@ -115,10 +80,10 @@ class SNSICat(ICat):
                 u'createTime': u'2015-12-15T15:53:34.576-05:00',
                 u'title': u'CaRuTiO; T=4K; Ei=120 meV; Fch1=300 Hz T0=90 Hz'}]}
         '''
- 
+
         logger.debug("get_experiments_meta")
         return self._request("/icat-rest-ws/experiment/SNS/" + instrument + "/meta")
- 
+
     def get_user_experiments(self, ucams_uid):
         '''
         @param ucams_uid: valid 3 characters ORNL ucams user uid
@@ -139,11 +104,9 @@ class SNSICat(ICat):
             ]
         }
         '''
-        
         logger.debug("get_user_experiments")
         return self._request('/prpsl_ws/getProposalNumbersByUser/%s' % (ucams_uid))
-    
- 
+
     def get_run_ranges(self, instrument, experiment):
         '''
         @param instrument: Valid instrument as string
@@ -151,11 +114,12 @@ class SNSICat(ICat):
         {u'runRange': u'40136-40174, 40211-40246, 42375-42403'}
         '''
         request_str = '/icat-rest-ws/experiment/SNS/%s/%s' % (
-                                                     instrument,
-                                                     experiment)
+            instrument,
+            experiment
+        )
         return self._request(request_str)
- 
- 
+
+
     def get_run_ranges_meta(self, instrument, experiment):
         '''
         @param instrument: Valid instrument as string
@@ -170,12 +134,13 @@ class SNSICat(ICat):
             }
         }
         '''
- 
+
         request_str = '/icat-rest-ws/experiment/SNS/%s/%s/meta' % (
-                                                     instrument,
-                                                     experiment)
+            instrument,
+            experiment
+        )
         return self._request(request_str)
- 
+
     def get_runs_all(self, instrument, experiment):
         '''
         @param instrument: Valid instrument as string
@@ -212,12 +177,13 @@ class SNSICat(ICat):
                                    u'totalCounts': u'129560.0'}]},
                u'title': u'Vanadium 5x5 White beam><E=110meV, T0=150Hz, Att1\n slitPacks: FC1=SEQ-700-3.5-AST FC2=SEQ-100-2.0-AST'}}
         '''
- 
+
         request_str = '/icat-rest-ws/experiment/SNS/%s/%s/all' % (
-                                                     instrument,
-                                                     experiment)
+            instrument,
+            experiment
+        )
         return self._request(request_str)
-# 
+
     def get_run_info(self, instrument, run_number):
         '''
         @param instrument: Valid instrument as string
@@ -236,11 +202,12 @@ class SNSICat(ICat):
          u'totalCounts': u'6920258.0'}
         '''
         request_str = '/icat-rest-ws/dataset/SNS/%s/%s' % (
-                                                     instrument,
-                                                     run_number)
-        
+            instrument,
+            run_number
+        )
+
         return self._request(request_str)
-    
+
     def get_run_info_meta_only(self, instrument, run_number):
         '''
         @param instrument: Valid instrument as string
@@ -252,10 +219,11 @@ class SNSICat(ICat):
          u'protonCharge': u'4.00066404949e+12',
          u'startTime': u'2013-09-30T22:21:37.715-04:00',
          u'totalCounts': u'6920258.0'}
-        ''' 
+        '''
         request_str = '/icat-rest-ws/dataset/SNS/%s/%s/metaOnly' % (
-                                                     instrument,
-                                                     run_number)
+            instrument,
+            run_number
+        )
         return self._request(request_str)
  
     def get_run_info_lite(self, instrument, run_number):
@@ -275,13 +243,13 @@ class SNSICat(ICat):
          u'startTime': u'2013-09-30T22:21:37.715-04:00',
          u'totalCounts': u'6920258.0'}
         '''
- 
+
         request_str = '/icat-rest-ws/dataset/SNS/%s/%s/lite' % (
-                                                     instrument,
-                                                     run_number)
-        
+            instrument,
+            run_number
+        )
         return self._request(request_str)
- 
+
     def get_last_run(self, instrument):
         '''
         Gets the last run mumber for a certain instrument
@@ -291,7 +259,7 @@ class SNSICat(ICat):
         '''
         request_str = '/icat-rest-ws/datafile/SNS/%s' % (instrument)
         return self._request(request_str)
-# 
+
     def get_run_files(self, instrument, run_number):
         '''
         @param instrument: Valid instrument as string
@@ -303,8 +271,9 @@ class SNSICat(ICat):
                u'/SNS/SEQ/IPTS-9868/shared/autoreduce/SEQ_42401_autoreduced.nxspe']}
         '''
         request_str = '/icat-rest-ws/datafile/SNS/%s/%s' % (
-                                                     instrument,
-                                                     run_number)
+            instrument,
+            run_number
+        )
         return self._request(request_str)
 
 
@@ -313,7 +282,7 @@ if __name__ == "__main__":
 
     icat = SNSICat()
 #     pprint(icat.get_instruments())
-#     pprint(icat.get_experiments("EQSANS"))
+    pprint(icat.get_experiments("EQSANS"))
 #     pprint(icat.get_experiments_meta("EQSANS"))
 #     pprint(icat.get_user_experiments("m2d"))
 #     pprint(icat.get_run_ranges("EQSANS","IPTS-16890"))
@@ -321,7 +290,7 @@ if __name__ == "__main__":
 #     pprint(icat.get_runs_all("EQSANS","IPTS-16890"))
 #     pprint(icat.get_run_info("EQSANS", "74872")) # HEAVY
 #     pprint(icat.get_run_info_meta_only("EQSANS", "74872"))
-    pprint(icat.get_run_info_lite("EQSANS", "74872"))
+#     pprint(icat.get_run_info_lite("EQSANS", "74872"))
 #     pprint(icat.get_last_run("EQSANS"))
 #     pprint(icat.get_run_files("EQSANS", "74872"))
     

@@ -6,6 +6,12 @@ import os, sys
 import xml.etree.ElementTree as ET
 import numpy as np
 
+'''
+This parses the HFIR XML File
+
+will probably only be used for Data Analysis
+
+'''
 
 import logging
 logger = logging.getLogger('catalog.hfir')
