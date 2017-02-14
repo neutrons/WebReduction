@@ -3,14 +3,28 @@
 
 {% block header %}
 {{ block.super }}
-<link rel="stylesheet" type="text/css" href='{% static "css/results.css" %}'>
+<style>
+pre {
+  display:block;
+  font:normal 12px/22px Monaco,Monospace !important;
+  color:#CFDBEC;
+  background-color:#2f2f2f;
+  background-image:-webkit-repeating-linear-gradient(top, #444 0px, #444 22px, #2f2f2f 22px, #2f2f2f 44px);
+  background-image:-moz-repeating-linear-gradient(top, #444 0px, #444 22px, #2f2f2f 22px, #2f2f2f 44px);
+  background-image:-ms-repeating-linear-gradient(top, #444 0px, #444 22px, #2f2f2f 22px, #2f2f2f 44px);
+  background-image:-o-repeating-linear-gradient(top, #444 0px, #444 22px, #2f2f2f 22px, #2f2f2f 44px);
+  background-image:repeating-linear-gradient(top, #444 0px, #444 22px, #2f2f2f 22px, #2f2f2f 44px);
+  padding:0em 1em;
+  overflow:auto;
+}
+</style>
 {% endblock %}
 
 {% block breadcrumbs %}
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'results:detail' object.id %}">Job {{object}}</a></li>
+        <li><a href="{% url 'results:job_list_live'%}">Jobs Live list</a></li>
         <li class="active">Log live</li>
     </ol>
 </div>
@@ -22,37 +36,35 @@
     <div class="page-header">
         <h1>Live Log results for <small>{{object}}</small></h1>
     </div>
-    <table class="table table-hover">
-        <thead>
-            <th>ID</th>
-            <th>Time</th>
-            <th>Stream</th>
-            <th>Content</th>
-        </thead>
-        <tbody id="job-log-rows"></tbody>
-            </table>
+
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">Log for Job :: <a href="{% url 'results:job_detail' object.id %}"
+                   title="Click to see the details of this Job."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a></div>
+            <div class="panel-body">
+               <pre id="job-log-rows"></pre>
+            </div>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
 
 {% block footer_js%}
 {{ block.super }}
+
 <script src='{% static "thirdparty/reconnecting-websocket/reconnecting-websocket.min.js" %}'></script>
 <script>
+
 socket = new ReconnectingWebSocket("ws://" + window.location.host + "/job-log/{{ object.id }}/");
 socket.onmessage = function(e) {
-  var { log_id, time, content, stream } = JSON.parse(e.data);
-  $('#job-log-rows').append(
-    $('<tr>').append(
-      $('<td>').text('' + log_id)
-    ).append(
-      $('<td>').text('' + time)
-    ).append(
-      $('<td>').text('' + stream)
-    ).append(
-      $('<td>').append(
-        $('<pre>').text('' + content)
-      )
-    )
+    var { log_id, time, content, stream } = JSON.parse(e.data);
+    $('#job-log-rows').text(
+        $('#job-log-rows').text() + '\n' +
+        log_id + " -\t" +
+        (new Date(Date.parse(time))).toLocaleString()  + "\t" +
+        stream + "\t" +
+        content
   );
 }
 socket.onopen = function() { }

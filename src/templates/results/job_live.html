@@ -40,6 +40,7 @@
 
 socket = new ReconnectingWebSocket("ws://" + window.location.host + "/job-user/");
 
+
 socket.onmessage = function(e) {
   var { job_id, title, status, modified } = JSON.parse(e.data),
       tbody = $('#job-status-rows'),
@@ -47,7 +48,10 @@ socket.onmessage = function(e) {
       tr = $('<tr>').append(
         $('<td>').text('' + job_id)
       ).append(
-        $('<td>').text('' + title)
+        //$('<td>').text('' + title)
+          $('<td>').append('<a href="' + "{% url 'results:job_log_live' 999 %}".replace (999, job_id) +
+                   '" title="Click to see the log of this Job."><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> ' +
+                   title + ' {{object.title}}</a>')
       ).append(
         //$('<td>').text('' + status)
         $('<td>').append('<span class="label label-' + status + '">' + status + '</span>')

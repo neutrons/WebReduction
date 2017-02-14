@@ -12,8 +12,7 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="">Results</a></li>
-        <li class="active">List</li>
+        <li class="active">Job List</li>
     </ol>
 </div>
 {% endblock %}
@@ -38,7 +37,7 @@
             <tr>
                 <td>{{object.id}}</td>
                 <td>
-                <a href="{% url 'results:detail' object.id %}"
+                <a href="{% url 'results:job_detail' object.id %}"
                    title="Click to see the details of this Job."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a>
                 </td>
                 <td><span class="label label-{{object.status}}">{{object.status }}</span></td>
