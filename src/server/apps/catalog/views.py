@@ -12,7 +12,7 @@ import json
 
 from .icat.sns.facade import Catalog
 
-from .icat.facade import get_expriments
+from .icat.facade import get_expriments, get_runs
 
 from .permissions import user_has_permission_to_see_this_ipts, \
     filter_user_permission
@@ -70,14 +70,19 @@ class Runs(LoginRequiredMixin,InstrumentMixin,TemplateView):
     List of runs for a given instrument
     '''
 
-    template_name = 'catalog/list_runs.html'
+    template_name = 'list_runs.html'
 
     def get_context_data(self, **kwargs):
+
+        facility = self.request.user.profile.instrument.facility.name
+        self.template_name = 'catalog/' + facility.lower() + '/' + self.template_name
+
         instrument = kwargs['instrument']
         ipts = kwargs['ipts']
-        if user_has_permission_to_see_this_ipts(self.request.user,instrument,ipts):
-            icat = Catalog()
-            runs = icat.get_runs_all(instrument, ipts)
+        exp = kwargs.get('exp')
+        logger.debug('Getting: %s %s %s %s', facility, instrument, ipts, exp )
+        if user_has_permission_to_see_this_ipts(self.request.user, instrument, ipts):
+            runs = get_runs(facility, instrument, ipts, exp)
         else:
             # from django.http import HttpResponseForbidden
             # return HttpResponseForbidden()
