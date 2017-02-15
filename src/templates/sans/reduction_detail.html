@@ -3,9 +3,14 @@
 {% load staticfiles %}
 
 {% block header %}
-	{{ block.super }}
-	<!-- handsontable -->
-	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
+{{ block.super }}
+<!-- handsontable -->
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
+<style>
+.list-group > li:nth-child(even) {
+  background: #f5f5f5;
+}
+</style>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -23,7 +28,7 @@
 <div class="container">
 
     <div class="page-header">
-       <h1>Reduction<small>{{ object }}</small></h1>
+       <h1>Reduction details <small> {{ object }}</small></h1>
     </div>
 
 	<!-- This is the reduction info -->

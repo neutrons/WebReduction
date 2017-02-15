@@ -11,6 +11,9 @@ import logging
 import json
 
 from .icat.sns.facade import Catalog
+
+from .icat.facade import get_expriments
+
 from .permissions import user_has_permission_to_see_this_ipts, \
     filter_user_permission
 from .models import Instrument
@@ -45,11 +48,18 @@ class IPTSs(LoginRequiredMixin,InstrumentMixin, TemplateView):
     List of IPTSs for a given instrument
     '''
 
-    template_name = 'catalog/list_iptss.html'
+    template_name = 'list_iptss.html'
 
     def get_context_data(self, **kwargs):
-        icat = Catalog()
-        iptss = icat.get_experiments_meta(kwargs['instrument'])
+        # icat = Catalog()
+        # iptss = icat.get_experiments_meta(kwargs['instrument'])
+        facility = self.request.user.profile.instrument.facility.name
+        iptss = get_expriments(
+            facility,
+            kwargs['instrument']
+        )
+        self.template_name = 'catalog/' + facility.lower() + '/' + self.template_name
+
         context = super(IPTSs, self).get_context_data(**kwargs)
         context['iptss'] = iptss
         return context
@@ -77,6 +87,7 @@ class Runs(LoginRequiredMixin,InstrumentMixin,TemplateView):
         context['runs'] = runs
         return context
 
+######### Not used
 
 @login_required
 @cache_page(120)

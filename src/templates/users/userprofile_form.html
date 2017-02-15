@@ -27,3 +27,23 @@
 </div>
 
 {% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script>
+    function show_hide_experiment_number(){
+        if($("#id_facility option:selected").text() == 'HFIR'){
+            console.log("HFIR");
+            $('#div_id_experiment_number').show();
+        }
+        else {
+            console.log("Other");
+            $('#div_id_experiment_number').hide();
+        }
+    }
+    show_hide_experiment_number();
+    $( "#id_facility" ).change(function() {
+        show_hide_experiment_number();
+    });
+</script>
+{% endblock %}

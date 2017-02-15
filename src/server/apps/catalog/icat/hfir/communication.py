@@ -2,7 +2,7 @@ import logging
 
 from pprint import pformat, pprint
 
-from server.apps.catalog.icat.icat import ICat
+from server.apps.catalog.icat.communication import ICat
 
 
 logger = logging.getLogger(__name__)

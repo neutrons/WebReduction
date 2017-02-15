@@ -70,7 +70,13 @@ class UserProfile(models.Model):
     ipts = models.ForeignKey(Group, null=True, blank=True,
         help_text="This IPTS will be used to find your data on ICat.\
          If you leave it empty the ICat lookup will not work!",
-         verbose_name = "Integrated Proposal Tracking System (IPTS) number")
+         verbose_name = "Integrated Proposal Tracking System (IPTS) number",
+    )
+
+    experiment_number =  models.IntegerField(
+        default = 0,
+        help_text = "HFIR Experiment Number (expXXX)",
+    )
 
     def __str__(self):
         return self.user.username

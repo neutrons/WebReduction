@@ -19,7 +19,7 @@ Do not implement here any filtering to the output json!!!
 
 class ICat(object):
     '''
-    ICAT rest interface
+    ICAT generic communication
     '''
     def __init__(self, url_prefix, headers = {}):
         self._url_prefix = url_prefix
@@ -47,3 +47,4 @@ class ICat(object):
         except Exception as e:
             logger.exception(e)
             return None
+
