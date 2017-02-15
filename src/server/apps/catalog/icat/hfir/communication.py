@@ -66,8 +66,9 @@ class HFIRICat(ICat):
             'ext' : 'xml',
             'projection' : [
                 'location',
-                'metadata.spicerack.header.scan_title',
-                'metadata.spicerack.@end_time',
+                'metadata.spicerack.@filename',
+                'metadata.spicerack.header',
+                'metadata.spicerack.sample_info',
                 'thumbnails',
             ],
         }
