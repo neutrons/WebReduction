@@ -80,7 +80,7 @@ class Runs(LoginRequiredMixin,InstrumentMixin,TemplateView):
         instrument = kwargs['instrument']
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
-        logger.debug('Getting: %s %s %s %s', facility, instrument, ipts, exp )
+        logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
         if user_has_permission_to_see_this_ipts(self.request.user, instrument, ipts):
             runs = get_runs(facility, instrument, ipts, exp)
         else:

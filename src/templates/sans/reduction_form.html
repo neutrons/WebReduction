@@ -33,7 +33,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-8">
             <form method="post" action="" class="form-horizontal" onsubmit="return populateFormWithHotContents();">
                 {{ formset.management_form }}
                 <div class="well">
@@ -72,11 +72,12 @@
             </form>
         </div>
         <!-- File List collumn -->
-        <div class="col-md-2">
+        <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">Files for this IPTS</div>
                 <div class="panel-body">
-
+                    <table id="icat_table" class="display table table-striped table-hover" cellspacing="0" width="100%">
+                    </table>
                 </div>
             </div>
         </div>
@@ -86,9 +87,9 @@
 
 {% block footer_js%}
 {{ block.super }}
-<script src='{% static "thirdparty/handsontable/handsontable.full.min.js" %}'></script>
-<!-- For the IPTS autocomplete-->
 <script src='{% static "thirdparty/jquery-ui/jquery-ui.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<script src='{% static "thirdparty/handsontable/handsontable.full.min.js" %}'></script>
 <!-- page script -->
 <script>
 
@@ -146,8 +147,108 @@ $('.nav-tabs a').on('shown.bs.tab', function(event){
 //     console.log($(event.relatedTarget).text());  // previous tab
     $(event.target.hash + ' div.handsontable').handsontable('render');
 });
-</script>
 
+/****** ICAT TABLE ************/
+
+    var dataSet = [{% for run in runs %}{% if forloop.last or runs.count == 1 %}
+                    ["{{run.filename}}", '{{run.metadata.scan_type}}', '{{run.thumbnails.Detector}}' ]
+                    {% else %}
+                    ["{{run.filename}}", '{{run.metadata.scan_type}}', '{{run.thumbnails.Detector}}' ],
+                    {% endif %}{% endfor %}];
+
+
+    $(document).ready(function () {
+        $('#icat_table').DataTable({
+            data: dataSet,
+            //dom: '<"top"i>rt<"bottom"flp><"clear">',
+            columns: [{
+                title: "Title",
+                render: function (data, type, row, meta) {
+                    return '<a data-toggle="tooltip" title="' +
+                        //'<img src=\'data:image/png;base64,' + row[2] + '\' />'  +
+                        '<p>' + data + '</p>' +
+                        '<ul>  <li>Metdata 0</li><li>Metdata 1</li><li>Metdata 123</li></ul>' +
+                        '">' +
+                        '<span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;</a>' + data;
+                }
+            },
+            {
+                title: "Type"
+            },
+            {
+                title: "Image",
+            }
+            ],
+            "columnDefs": [
+                {
+                    "targets": [1],
+                    "visible": false,
+                    "searchable": true
+                },
+                {
+                    "targets": [2],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            "lengthMenu": [
+                [10, 20, 50, -1],
+                [10, 20, 50, "All"]
+            ],
+            "order": [
+                [0, 'asc']
+            ], //default sort
+            "pageLength": 20,
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": true,
+            initComplete: function () {
+                var api = this.api();
+                var titles = api.column(0);
+                var types = api.column(1);
+
+                var select = $('<select class="form-control"><option value=""></option></select>')
+                    .appendTo($(titles.header()).empty())
+                    .on('change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+                        types.search(val ? '^' + val + '$' : '', true, false).draw();
+                        set_tooltip_as_image();
+                    });
+                // populates the drop down
+                types.data().unique().sort().each(function (d, j) {
+                    select.append('<option value="' + d + '">' + d + '</option>')
+                });
+                //set_tooltip_as_image();
+
+                $(this.fnGetNodes()).draggable({
+                    revert: 'invalid',
+                    helper: 'clone'
+                });
+            },
+            "fnDrawCallback": function (oSettings) {
+                // When table is redrawn!! E.g. page changes
+                set_tooltip_as_image();
+            }
+        })
+    });
+
+    function set_tooltip_as_image() {
+        // Tool tip options
+        $('#icat_table a[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'left',
+            html: true
+        });
+    }
+
+
+
+</script>
 {# This is for django-autocomplete-light:  jquery is loaded before #}
 {{ form.media }}
 

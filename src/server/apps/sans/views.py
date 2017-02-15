@@ -36,7 +36,10 @@ from .biosans.forms import BioSANSConfigurationForm, BioSANSReductionForm, BioSA
     BioSANSReductionScriptForm, BioSANSRegionInlineFormSetCreate, BioSANSRegionInlineFormSetUpdate
 from .biosans.models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
 
-logger = logging.getLogger(__name__)
+from server.apps.catalog.icat.facade import get_runs
+
+
+logger = logging.getLogger("sans")
 
 
 class SANSMixin(object):
@@ -368,6 +371,23 @@ class ReductionCreate(LoginRequiredMixin, ReductionMixin, FormsetMixin, CreateVi
         form.instance.instrument = get_object_or_404(Instrument,
             name=self.instrument_name)
         return FormsetMixin.form_valid(self, form, formset)
+
+
+    def get_context_data(self, **kwargs):
+        '''
+        Get RUNs from the catalog
+        '''
+        context = ReductionMixin.get_context_data(self,**kwargs)
+        
+        facility = self.request.user.profile.instrument.facility.name
+        instrument = self.request.user.profile.instrument.icat_name
+        ipts = self.request.user.profile.ipts
+        exp = "exp{}".format(self.request.user.profile.experiment_number)
+        logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
+        runs = get_runs(facility, instrument, ipts, exp)
+        context['runs'] = runs
+        return context
+    
 
 
 class ReductionUpdate(LoginRequiredMixin, ReductionMixin, FormsetMixin, UpdateView):

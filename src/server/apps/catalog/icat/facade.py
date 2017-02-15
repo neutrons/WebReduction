@@ -26,7 +26,7 @@ def get_expriments(facility, instrument):
     return experiments
 
 def get_runs(facility, instrument, ipts, exp=None):
-    if exp is None:
+    if exp is None or exp == "exp0":
         runs = REGISTRY[facility]['get_runs'](instrument, ipts)
     else:
         runs = REGISTRY[facility]['get_runs'](instrument, ipts, exp)
