@@ -8,10 +8,22 @@
 	{{ block.super }}
 	<!-- handsontable -->
 	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
-	<!-- For the IPTS autocomplete-->
-	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui/jquery-ui.min.css" %}'>
 <style>
-    
+.ui-tooltip { 
+    overflow: visible;
+}
+.ui-tooltip-content { 
+    overflow: visible;
+}
+.ui-draggable {
+    cursor: pointer;
+    background: transparent;
+}
+
+.ui-draggable-dragging {
+    position: relative;
+    z-index: 1000000000;
+}
 </style>
 {% endblock %}
 
@@ -33,7 +45,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-9">
             <form method="post" action="" class="form-horizontal" onsubmit="return populateFormWithHotContents();">
                 {{ formset.management_form }}
                 <div class="well">
@@ -72,9 +84,9 @@
             </form>
         </div>
         <!-- File List collumn -->
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="panel panel-default">
-                <div class="panel-heading">Files for this IPTS</div>
+                <div class="panel-heading">Files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} </div>
                 <div class="panel-body">
                     <table id="icat_table" class="display table table-striped table-hover" cellspacing="0" width="100%">
                     </table>
@@ -87,7 +99,6 @@
 
 {% block footer_js%}
 {{ block.super }}
-<script src='{% static "thirdparty/jquery-ui/jquery-ui.min.js" %}'></script>
 <script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
 <script src='{% static "thirdparty/handsontable/handsontable.full.min.js" %}'></script>
 <!-- page script -->
@@ -149,12 +160,8 @@ $('.nav-tabs a').on('shown.bs.tab', function(event){
 });
 
 /****** ICAT TABLE ************/
-
-    var dataSet = [{% for run in runs %}{% if forloop.last or runs.count == 1 %}
-                    ["{{run.filename}}", '{{run.metadata.scan_type}}', '{{run.thumbnails.Detector}}' ]
-                    {% else %}
-                    ["{{run.filename}}", '{{run.metadata.scan_type}}', '{{run.thumbnails.Detector}}' ],
-                    {% endif %}{% endfor %}];
+var dataSet = [{% for run in runs %}["{{run.filename}}", '{{run.metadata.scan_type}}', {{run.thumbnails | safe}} ]
+    {% if not forloop.last and not runs.count == 1 %},{% endif %}{% endfor %}];
 
 
     $(document).ready(function () {
@@ -164,8 +171,18 @@ $('.nav-tabs a').on('shown.bs.tab', function(event){
             columns: [{
                 title: "Title",
                 render: function (data, type, row, meta) {
+                    // Let's see how many thumbnails we have:
+                    var p = row[2];
+                    var thumbs_html = "";
+                    for (var key in p) {
+                        if (p.hasOwnProperty(key)) {
+                            //console.log(key);
+                            thumbs_html += '<img alt=\'' + key + '\' src=\'data:image/png;base64,' + p[key] + '\' /><p>' + key +'</p>';
+                        }
+                    }
                     return '<a data-toggle="tooltip" title="' +
                         //'<img src=\'data:image/png;base64,' + row[2] + '\' />'  +
+                        thumbs_html +
                         '<p>' + data + '</p>' +
                         '<ul>  <li>Metdata 0</li><li>Metdata 1</li><li>Metdata 123</li></ul>' +
                         '">' +
@@ -191,20 +208,24 @@ $('.nav-tabs a').on('shown.bs.tab', function(event){
                     "searchable": false
                 }
             ],
-            "lengthMenu": [
-                [10, 20, 50, -1],
-                [10, 20, 50, "All"]
-            ],
             "order": [
                 [0, 'asc']
-            ], //default sort
-            "pageLength": 20,
-            "paging": true,
+            ],
+            //"lengthMenu": [
+            //    [10, 20, 50, -1],
+            //    [10, 20, 50, "All"]
+            //],
+            //"pageLength": 20,
+            //"paging": true,
+            "scrollY":        "800px",
+            "scrollCollapse": true,
+            "paging":         false,
             "lengthChange": true,
             "searching": true,
             "ordering": true,
             "info": true,
             "autoWidth": true,
+            "bInfo" : false, // hide "Showing x on n"
             initComplete: function () {
                 var api = this.api();
                 var titles = api.column(0);
@@ -227,13 +248,14 @@ $('.nav-tabs a').on('shown.bs.tab', function(event){
 
                 $(this.fnGetNodes()).draggable({
                     revert: 'invalid',
-                    helper: 'clone'
+                    helper: 'clone',
+                    appendTo: 'body'
                 });
             },
             "fnDrawCallback": function (oSettings) {
                 // When table is redrawn!! E.g. page changes
                 set_tooltip_as_image();
-            }
+            },
         })
     });
 
@@ -242,11 +264,50 @@ $('.nav-tabs a').on('shown.bs.tab', function(event){
         $('#icat_table a[data-toggle="tooltip"]').tooltip({
             animated: 'fade',
             placement: 'left',
-            html: true
+            html: true,
+            container: 'body' // To avoid tooltip clipping by the container overflow:auto
         });
     }
 
 
+/**** let's Make the spreasheet droppable */
+
+// All handsomtables starting with id hot
+$("[id^='hot']").droppable({
+    accept: ".ui-draggable",
+    drop: function (event, ui) {
+        // Get a reference to this handsontable instance
+        var ht = $(this).handsontable('getInstance');
+        // Hide the helper, so that we can use .elementFromPoint
+        // to grab the item beneath the cursor by coordinate
+        ui.helper.hide();
+        var $destination = $(document.elementFromPoint(event.clientX, event.clientY));
+        var $cell = $destination.closest('td');
+
+        // Grab the parent tr, then the parent tbody so that we
+        // can use their index to find the row and column of the
+        // destination object
+        var $tr = $destination.closest('tr');
+        var $tbody = $tr.closest('tbody');
+
+        //var col = $tr.children().index($destination);
+        var col = $cell.index() - 1;
+        var row = $tbody.children().index($tr);
+
+        // Use the setDataAtCell method, which takes a row and
+        // col number, to adjust the data 
+        console.log("Setting i,j:", row, col, "with value = ", ui.draggable.val())
+        if (row >= 0 && col >= 0)
+            ht.setDataAtCell(row, col, ui.draggable.text());
+        $cell.css("background-color", "yellow");
+    },
+    over: function (event, elem) {
+        $(this).addClass("over");
+    },
+    out: function (event, elem) {
+        $(this).removeClass("over");
+    }
+});
 
 </script>
 {# This is for django-autocomplete-light:  jquery is loaded before #}

@@ -4,6 +4,7 @@
 
 <head>
     {% block header %}
+    <link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui/jquery-ui.min.css" %}'>
     <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap3/css/bootstrap.min.css" %}'>
     <link rel="stylesheet" type="text/css" href='{% static "css/ornl-bootstrap-theme.css" %}'>
     <style>
@@ -137,6 +138,7 @@
     {% endblock %}
     {% block footer_js%}
     <script src='{% static "thirdparty/jquery.min.js" %}'></script>
+    <script src='{% static "thirdparty/jquery-ui/jquery-ui.min.js" %}'></script>
     <script src='{% static "thirdparty/bootstrap3/js/bootstrap.min.js" %}'></script>
      {% endblock footer_js%}
 </body>
