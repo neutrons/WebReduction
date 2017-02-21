@@ -18,6 +18,13 @@
     position: relative;
     z-index: 1000000000;
 }
+
+
+.tooltip .tool-content {
+  width:100%;
+  height:100%;
+}
+
 </style>
 {% endblock %}
 
@@ -177,11 +184,15 @@ $('.nav-tabs a').on('shown.bs.tab', function(event){
 });
 
 /****** ICAT TABLE ************/
-
-// Set ICAT contents into a JS array
-var dataSet = [{% for run in runs %}["{{run.title}}", '{{run.metadata.scan_type}}', {{run.thumbnails | safe}}, '{{run.location}}' ]
-    {% if not forloop.last and not runs.count == 1 %},{% endif %}{% endfor %}];
-
+// Sets the value from djnago into a js array
+var fullDataSet = {{runs|safe}};
+// Let's get what we need for the table'
+var dataSet = fullDataSet.map(function(run) {
+    return [run.title, //0
+            run.metadata.scan_type,
+            run.thumbnails, 
+            run.location]; //3
+});
 
 // Make a datatable with icat contents
 $(document).ready(function () {
@@ -203,10 +214,12 @@ $(document).ready(function () {
                 }
                 thumbs_html += "</tr></table>";
                 return '<a data-toggle="tooltip" title="' +
-                    //'<img src=\'data:image/png;base64,' + row[2] + '\' />'  +
                     thumbs_html +
-                    '<p>' + data + '</p>' +
-                    '<ul>  <li>Metdata 0</li><li>Metdata 1</li><li>Metdata 123</li></ul>' +
+                    + '<ul>' + 
+                        '<li><strong>Sample</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_info).replace(/\"|\'/g, "\'")  + '</li>' +
+                        '<li><strong>Background</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_background).replace(/\"|\'/g, "\'")  + '</li>' +
+                        '<li><strong>Parameters</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_parameters).replace(/\"|\'/g, "\'")  + '</li>' +
+                    '</ul>' +
                     '">' +
                     '<span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;</a>' + data;
                 }
@@ -348,7 +361,7 @@ function set_spreadsheet_cell_properties_and_value(hot_instance, file_path, i, j
     hot_instance.setDataAtCell(i, j, file_info[scan_or_frame]);
 
 }
-// TODO
+
 function spreadsheet_cell_properties(hot_instance, file_path, i, j){
     var cell_properties = hot_instance.getCellMeta(i, j);
     var file_info = filepath_to_scan_and_frame(file_path);

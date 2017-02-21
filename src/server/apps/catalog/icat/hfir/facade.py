@@ -43,7 +43,7 @@ class Catalog(object):
                            for tag in entry['tags'] ])}
                       for entry in  response]
         return result
-    
+
     def get_runs(self, instrument, ipts, exp):
         '''
         return a list of:
@@ -72,17 +72,19 @@ class Catalog(object):
                     'end_time':  entry['metadata']['spicerack']['header']['end_time'],
                     'title': entry['metadata']['spicerack']['header']['scan_title'],
                     'sample_info': entry['metadata']['spicerack']['sample_info']['sample']['field']
-                                   if entry['metadata']['spicerack']['sample_info']['sample'] else None,
+                                   if entry['metadata']['spicerack']['sample_info']['sample'] else "",
                     'sample_background': entry['metadata']['spicerack']['sample_info']['background']['field']
-                                         if entry['metadata']['spicerack']['sample_info']['background'] else None,
+                                         if entry['metadata']['spicerack']['sample_info']['background'] else "",
                     'sample_parameters': entry['metadata']['spicerack']['sample_info']['parameters']['field']
-                                         if entry['metadata']['spicerack']['sample_info']['parameters'] else None,
-                    'metadata' : entry['metadata']['spicerack']['header']
+                                         if entry['metadata']['spicerack']['sample_info']['parameters'] else "",
+                    # This gets rid of None values in the metadata
+                    'metadata' : { (key):(value if value is not None else "") for key, value in
+                                   entry['metadata']['spicerack']['header'].items() }
                 })
                       for entry in response
                      ]
         return result
-    
+
     def run_info(self, instrument, ipts, file_location):
         '''
 

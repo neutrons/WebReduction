@@ -355,8 +355,23 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
         queryset = super(ReductionDetail, self).get_queryset()
         return queryset.filter(id=self.kwargs['pk'])
 
+class ReductionFormMixin(ReductionMixin):
+    def get_context_data(self, **kwargs):
+        '''
+        Get RUNs from the catalog
+        '''
+        context = ReductionMixin.get_context_data(self,**kwargs)
+        facility = self.request.user.profile.instrument.facility.name
+        instrument = self.request.user.profile.instrument.icat_name
+        ipts = self.request.user.profile.ipts
+        exp = "exp{}".format(self.request.user.profile.experiment_number)
+        logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
+        runs = get_runs(facility, instrument, ipts, exp)
+        context['runs'] = runs
+        #if len(runs) > 0 : logger.debug(pformat(runs[0])
+        return context
 
-class ReductionCreate(LoginRequiredMixin, ReductionMixin, FormsetMixin, CreateView):
+class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, CreateView):
     '''
     Create a new entry!
     '''
@@ -368,29 +383,11 @@ class ReductionCreate(LoginRequiredMixin, ReductionMixin, FormsetMixin, CreateVi
         Sets initial values which are hidden in the form
         """
         form.instance.user = self.request.user
-        form.instance.instrument = get_object_or_404(Instrument,
-            name=self.instrument_name)
+        form.instance.instrument = get_object_or_404(Instrument,name=self.instrument_name)
         return FormsetMixin.form_valid(self, form, formset)
 
 
-    def get_context_data(self, **kwargs):
-        '''
-        Get RUNs from the catalog
-        '''
-        context = ReductionMixin.get_context_data(self,**kwargs)
-        
-        facility = self.request.user.profile.instrument.facility.name
-        instrument = self.request.user.profile.instrument.icat_name
-        ipts = self.request.user.profile.ipts
-        exp = "exp{}".format(self.request.user.profile.experiment_number)
-        logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
-        runs = get_runs(facility, instrument, ipts, exp)
-        context['runs'] = runs
-        return context
-    
-
-
-class ReductionUpdate(LoginRequiredMixin, ReductionMixin, FormsetMixin, UpdateView):
+class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, UpdateView):
     '''
     Edit a Reduction
     '''
