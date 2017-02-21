@@ -9,7 +9,15 @@
 	<!-- handsontable -->
 	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
 <style>
+.ui-draggable {
+    cursor: pointer;
+    background: transparent;
+}
 
+.ui-draggable-dragging {
+    position: relative;
+    z-index: 1000000000;
+}
 </style>
 {% endblock %}
 
@@ -27,7 +35,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="page-header">
-        <h1>Reduction<small> new</small></h1>
+        <h1>Reduction <small> <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} :: new</small></h1>
     </div>
 
     <div class="row">
@@ -62,7 +70,7 @@
                         <!-- dropdown scan / frame -->
                         <div class="form-group form-inline pull-right">
                             <label for="sel1">Numbers in the spreadsheet are Scans or Frames: <tt>scan[scan nr]_[frame nr]</tt>?</label>
-                            <select class="form-control" id="sel1">
+                            <select class="form-control" id="scan_or_frame">
                                 <option value="scan">Scans</option>
                                 <option value="frame">Frames</option>
                             </select>
@@ -99,6 +107,13 @@
 <script>
 
 /******************* handsontable *************************/
+/* We can do json here:
+var columns = [
+      { data: 'title',type: 'text'},
+      { data: 'content', type: 'text'}
+var data = [{title: 'foo', content: 'sdsdsd'},
+  {title: 'foo2', content: 'sdsdsd2'}];
+*/
 
 // Let's get the entries: id_regions-0-entries
 var entriesSelectors = $('[id ^=id_regions][id $=entries]');
@@ -132,7 +147,7 @@ $.each( entriesSelectors, function( i, selector ) {
             { type: 'numeric'}
         ],
         colHeaders: {{entry_headers | safe}}
-    };
+    }; 
     $div.handsontable(options);
 });
 
@@ -194,17 +209,11 @@ $(document).ready(function () {
                     '<ul>  <li>Metdata 0</li><li>Metdata 1</li><li>Metdata 123</li></ul>' +
                     '">' +
                     '<span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;</a>' + data;
-            }
-        },
-        {
-            title: "Type"
-        },
-        {
-            title: "Image",
-        },
-        {
-            title: "FilePath",
-        }
+                }
+            },
+            {title: "Type"},
+            {title: "Image"},
+            {title: "FilePath"}
         ],
         "columnDefs": [
             {
@@ -291,13 +300,17 @@ function set_tooltip_as_image() {
 
 // All handsomtables starting with id hot
 $("[id^='hot']").droppable({
+    //#hot-0 > div.ht_master.handsontable > div > div > div > table > tbody > tr:nth-child(8) > td:nth-child(5)
+
     accept: ".ui-draggable",
-    drop: function (event, ui) {
+    activeClass: "ui-state-highlight",
+    tolerance: "pointer",
+    drop: function (event, ui) {    
         // Get a reference to this handsontable instance
-        var ht = $(this).handsontable('getInstance');
+        var ht = $(this).closest("[id^='hot']").handsontable('getInstance');
         // Hide the helper, so that we can use .elementFromPoint
         // to grab the item beneath the cursor by coordinate
-        //ui.helper.hide();
+        ui.helper.hide();
         var $destination = $(document.elementFromPoint(event.clientX, event.clientY));
         var $cell = $destination.closest('td');
 
@@ -311,40 +324,48 @@ $("[id^='hot']").droppable({
         var col = $cell.index() - 1;
         var row = $tbody.children().index($tr);
 
-        // Use the setDataAtCell method, which takes a row and
-        // col number, to adjust the data 
-        console.log("Setting i,j:", row, col, "with value = ", ui.draggable.val())
-        if (row >= 0 && col >= 0)
-            ht.setDataAtCell(row, col, ui.draggable.val());
-        $cell.css("background-color", "yellow");
+        if (row >= 0 && col >= 0) {
+            console.log("Setting i,j:", row, col, "with value = ", ui.draggable.val());
+            set_spreadsheet_cell_properties_and_value(ht, ui.draggable.val(), row, col);
+            $cell.css("background-color", "yellow");
+        }
+        console.log("done", $cell);
     },
     over: function (event, elem) {
-        $(this).addClass("over");
+        //$(this).addClass("over");
+        console.log("OVER:", elem);
     },
     out: function (event, elem) {
-        $(this).removeClass("over");
+        //$(this).removeClass("over");
+        console.log("OUT:", elem);
     }
 });
 
 
+function set_spreadsheet_cell_properties_and_value(hot_instance, file_path, i, j){
+    var file_info = spreadsheet_cell_properties(hot_instance, file_path, i, j);
+    var scan_or_frame = $("#scan_or_frame").val();
+    hot_instance.setDataAtCell(i, j, file_info[scan_or_frame]);
+
+}
 // TODO
-function spreadsheet_cell_change(hot_instance, i, j){
-    
-    var cell_properties = hot_instance.getCellMeta(0, 0);
-    cell_properties.scan = '';
-    cell_properties.frame = '';
-    cell_properties.filename = '';
-    cell_properties.filepath = '';
-    //hot.render();
-    
+function spreadsheet_cell_properties(hot_instance, file_path, i, j){
+    var cell_properties = hot_instance.getCellMeta(i, j);
+    var file_info = filepath_to_scan_and_frame(file_path);
+    cell_properties.scan = file_info.scan;
+    cell_properties.frame = file_info.frame;
+    cell_properties.filename = file_info.filename;
+    cell_properties.filepath = file_info.filepath;
+    cell_properties.background = '#CEC';
+    return file_info;
 }
 
 /*
  * Expect a filepath of the form: '/HFIR/CG3/IPTS-17241/exp381/Datafiles/BioSANS_exp381_scan0030_0001.xml
  */
 function filepath_to_scan_and_frame(filepath){
-    var ret = filepath.match(/.*_scan(\d+)_(\d+)\.xml/);
-    return { scan : parseInt(ret[1]), frame : parseInt(ret[2])}
+    var ret = filepath.match(/\/.*\/(.*_scan(\d+)_(\d+)\.xml)/);
+    return { filepath: ret[0], filename : ret[1],  scan : ret[2], frame : ret[3]}
 }
 
 </script>
