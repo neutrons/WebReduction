@@ -44,7 +44,7 @@ My groups: rhf
 "sns_usans_team"
 '''
 
-logger = logging.getLogger('catalog.permissions')
+logger = logging.getLogger(__name__)
 
 def user_has_permission_to_see_this_ipts(user,instrument,ipts):
     """

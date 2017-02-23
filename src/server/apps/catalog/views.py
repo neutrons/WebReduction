@@ -18,7 +18,7 @@ from .permissions import user_has_permission_to_see_this_ipts, \
     filter_user_permission
 from .models import Instrument
 
-logger = logging.getLogger('catalog')
+logger = logging.getLogger(__name__)
 
 class InstrumentMixin(object):
     '''

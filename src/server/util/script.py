@@ -5,7 +5,7 @@ import os
 import logging
 import errno
 
-logger = logging.getLogger('util.script')
+logger = logging.getLogger(__name__)
 
 
 def build_script(script_template_file_path, data):

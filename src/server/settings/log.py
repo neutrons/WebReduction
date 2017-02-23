@@ -85,22 +85,7 @@ LOGGING = {
             'propagate': True,
         },
         # My apps
-        'users': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'sans': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'util': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'catalog': {
+        'server.apps': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,

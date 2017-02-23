@@ -39,7 +39,7 @@ from .biosans.models import BioSANSConfiguration, BioSANSReduction, BioSANSRegio
 from server.apps.catalog.icat.facade import get_runs
 
 
-logger = logging.getLogger("sans")
+logger = logging.getLogger(__name__)
 
 
 class SANSMixin(object):
@@ -298,16 +298,6 @@ class ReductionMixin(SANSMixin):
         Make sure the user only accesses its configurations
         '''
         return self.model.objects.filter(user=self.request.user)
-    
-
-    def get_context_data(self, **kwargs):
-        '''
-        Populates the context with the titled case names and names as in the model
-        '''
-        context = super(ReductionMixin, self).get_context_data(**kwargs)
-        context["entry_headers"] = ["Name", "Thickness", "Sample Scattering", "Sample Transmission",
-                                    "Backgroung Scattering", "Backgroung Transmission"]
-        return context
 
 
     def get_formset(self, form_class=None):
@@ -360,15 +350,14 @@ class ReductionFormMixin(ReductionMixin):
         '''
         Get RUNs from the catalog
         '''
-        context = ReductionMixin.get_context_data(self,**kwargs)
+        context = context = super(ReductionFormMixin, self).get_context_data(**kwargs)
         facility = self.request.user.profile.instrument.facility.name
         instrument = self.request.user.profile.instrument.icat_name
         ipts = self.request.user.profile.ipts
         exp = "exp{}".format(self.request.user.profile.experiment_number)
         logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
         runs = get_runs(facility, instrument, ipts, exp)
-        context['runs'] = runs
-        #if len(runs) > 0 : logger.debug(pformat(runs[0])
+        context['runs'] = json.dumps(runs) #Converts dict to string and None to null: Good for JS
         return context
 
 class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, CreateView):
@@ -426,7 +415,6 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
     '''
 
     template_name = 'sans/reduction_detail.html'
-
 
     def get_object(self):
         obj = self.model.objects.clone(self.kwargs['pk'])

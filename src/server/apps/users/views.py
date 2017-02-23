@@ -33,7 +33,7 @@ from .forms import UserProfileForm
 from .models import UserProfile
 
 
-logger = logging.getLogger('users')
+logger = logging.getLogger(__name__)
 
 class LoginView(FormView):
     """

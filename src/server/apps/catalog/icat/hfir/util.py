@@ -14,7 +14,7 @@ will probably only be used for Data Analysis
 '''
 
 import logging
-logger = logging.getLogger('catalog.hfir')
+logger = logging.getLogger(__name__)
 
 class Parser(object):
     '''

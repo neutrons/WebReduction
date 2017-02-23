@@ -1,27 +1,26 @@
 from __future__ import unicode_literals
 
+import logging
 import os
-
-from django.db import models
-from django.contrib.auth import get_user_model
-from server.apps.catalog.models import Instrument
-from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
-from django.contrib.contenttypes.fields import GenericRelation
-from django.forms.models import model_to_dict
-from django.contrib.postgres.fields import JSONField
-
-from server.util.script import build_script
 from pprint import pformat
 
-from django_remote_submission.models import Interpreter
-from server.apps.users.ldap_util import LdapSns
-from django_auth_ldap.backend import LDAPBackend
 import ldap
-
-import logging
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.postgres.fields import JSONField
+from django.db import models
+from django.forms.models import model_to_dict
+from django.utils.translation import ugettext_lazy as _
+from django_auth_ldap.backend import LDAPBackend
+from django_remote_submission.models import Interpreter
 from pyasn1.compat.octets import null
-logger = logging.getLogger('sans.models')
+
+from server.apps.catalog.models import Instrument
+from server.apps.users.ldap_util import LdapSns
+from server.util.script import build_script
+
+logger = logging.getLogger(__name__)
 
 '''
 
@@ -246,7 +245,7 @@ class Region(models.Model, ModelMixin):
     comments = models.CharField(max_length=256, blank=True,
                                 help_text="Any necessary comments...")
     # This will be the json for sample / backgroun sample/transmission
-    entries = JSONField(default=[[None, None, None, None, None, None]])
+    entries = JSONField()
 
     # Manager
     objects = RegionManager()

@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
 
-logger = logging.getLogger('util.views')
+logger = logging.getLogger(__name__)
 
 @login_required
 def dirlist(request):

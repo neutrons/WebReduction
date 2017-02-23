@@ -7,7 +7,7 @@ import json
 import logging
 
 
-logger = logging.getLogger('catalog.icat.sns')
+logger = logging.getLogger(__name__)
 
 class Catalog(object):
     '''

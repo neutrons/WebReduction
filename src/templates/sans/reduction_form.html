@@ -1,13 +1,12 @@
- {% extends "base.html" %}
- 
- {% load staticfiles %}
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
 
- {% load crispy_forms_tags %}
- 
- {% block header %}
-	{{ block.super }}
-	<!-- handsontable -->
-	<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
+{% block header %}
+{{ block.super }}
+<!-- handsontable -->
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
+
 <style>
 .ui-draggable {
     cursor: pointer;
@@ -17,12 +16,6 @@
 .ui-draggable-dragging {
     position: relative;
     z-index: 1000000000;
-}
-
-
-.tooltip .tool-content {
-  width:100%;
-  height:100%;
 }
 
 </style>
@@ -114,23 +107,56 @@
 <script>
 
 /******************* handsontable *************************/
-/* We can do json here:
-var columns = [
-      { data: 'title',type: 'text'},
-      { data: 'content', type: 'text'}
-var data = [{title: 'foo', content: 'sdsdsd'},
-  {title: 'foo2', content: 'sdsdsd2'}];
-*/
-
-// Let's get the entries: id_regions-0-entries
+// Let's get the form entries: id_regions-#-entries
+// starts with id_regions and finishes with entries
 var entriesSelectors = $('[id ^=id_regions][id $=entries]');
 
-// For every input field add a div anchor to place the spreadsheet
-$.each( entriesSelectors, function( i, selector ) {
+function hotNumericRendered(hotInstance, TD, row, col, prop, value, cellProperties) {
+    
+    Handsontable.renderers.TextRenderer.apply(this, arguments);
+    //console.log(TD, row, col, prop, value, cellProperties);
+}
+
+function set_spreadsheet_cell_properties_and_value(hot_instance, file_path, i, j) {
+    var file_info = spreadsheet_cell_properties(hot_instance, file_path, i, j);
+    var scan_or_frame = $("#scan_or_frame").val();
+    hot_instance.setDataAtCell(i, j, file_info[scan_or_frame]);
+
+}
+
+function spreadsheet_cell_properties(hot_instance, file_path, i, j) {
+    var cell_properties = hot_instance.getCellMeta(i, j);
+    var file_info = filepath_to_scan_and_frame(file_path);
+    cell_properties.scan = file_info.scan;
+    cell_properties.frame = file_info.frame;
+    cell_properties.filename = file_info.filename;
+    cell_properties.filepath = file_info.filepath;
+    cell_properties.background = '#CEC';
+    return file_info;
+}
+
+/*
+ * Expect a filepath of the form: '/HFIR/CG3/IPTS-17241/exp381/Datafiles/BioSANS_exp381_scan0030_0001.xml
+ */
+function filepath_to_scan_and_frame(filepath) {
+    var ret = filepath.match(/\/.*\/(.*_scan(\d+)_(\d+)\.xml)/);
+    return { filepath: ret[0], filename: ret[1], scan: ret[2], frame: ret[3] }
+}
+
+
+// For every entry input field add a div anchor to place the spreadsheet
+$.each(entriesSelectors, function (i, selector) {
     var data =  JSON.parse(selector.value);
+    
+    // var data = [{ name: "Test",
+    //               thickness: 1, 
+    //               sample_scattering: 10,
+    //               sample_transmission: 10,
+    //               backgroung_scattering: 10, backgroung_transmission: 10, }
+    // ];
     // Add the anchor: <div id="hot-?" />
-    var $div = $("<div>", {id: "hot-" + i, class: "hot handsontable" });
-    $div.insertAfter( selector );
+    var $div = $("<div>", { id: "hot-" + i, class: "hot handsontable" });
+    $div.insertAfter(selector);
     //console.log(data);
     var options = {
         data: data,
@@ -138,23 +164,32 @@ $.each( entriesSelectors, function( i, selector ) {
         minSpareRows: 10,
         stretchH: 'all',
         columnSorting: true,
-        contextMenu: true,
         autoWrapRow: true,
         rowHeaders: true,
-        contextMenu: true,
         outsideClickDeselects: false,
         formulas: true,
         manualColumnResize: true,
         columns: [
-            { type: 'text'},
-            { type: 'numeric'},
-            { type: 'numeric'},
-            { type: 'numeric'},
-            { type: 'numeric'},
-            { type: 'numeric'}
+            { type: 'text', data: "name" },
+            { type: 'numeric', data: "thickness" },
+            {
+                type: 'numeric', data: "sample_scattering",
+                renderer: hotNumericRendered
+            },
+            { type: 'numeric', data: "sample_transmission" },
+            { type: 'numeric', data: "backgroung_scattering" },
+            { type: 'numeric', data: "backgroung_transmission" }
         ],
-        colHeaders: {{entry_headers | safe}}
-    }; 
+        colHeaders: ["Name", "Thickness", "Sample Scattering", "Sample Transmission", "Backgroung Scattering", "Backgroung Transmission"],
+        renderAllRows: false,
+        contextMenu: {
+            items: {
+                "row_above": {},
+                "row_below": {},
+                "remove_row": {},
+            }
+        }
+    };
     $div.handsontable(options);
 });
 
@@ -165,9 +200,18 @@ function populateFormWithHotContents() {
     // the selectors are ordered by the order they are in the DOM
     // entries are first, hot are after
     var hotSelectors = $('[id ^=hot-],[id ^=id_regions][id $=entries]');
-    for(i = 0; i < hotSelectors.length; i=i+2) {
+    for (i = 0; i < hotSelectors.length; i = i + 2) {
         //console.log(hotSelectors[i]);
-        var hotContents = JSON.stringify($(hotSelectors[i+1]).handsontable('getData'));
+        //var hotContents = JSON.stringify($(hotSelectors[i+1]).handsontable('getData'));
+        // getSourceData gets the data in the same format it was input. e.g. json
+        var hotContents = $(hotSelectors[i + 1]).handsontable('getSourceData');
+        for (var i = 0; i < hotContents.length; ++i) {
+            for (var key in hotContents[i]) {
+                if (hotContents[i].hasOwnProperty(key)) {
+                    //console.log(i, key + " -> " + hotContents[i][key]);
+                }
+            }
+        }
         $(hotSelectors[i]).val(hotContents);
     }
     return true;
@@ -177,21 +221,21 @@ function populateFormWithHotContents() {
 /*
  This will re-render the spreadsheet on the visible tab!
  */
-$('.nav-tabs a').on('shown.bs.tab', function(event){
-//     console.log($(event.target).text());         // active tab
-//     console.log($(event.relatedTarget).text());  // previous tab
+$('.nav-tabs a').on('shown.bs.tab', function (event) {
+    //     console.log($(event.target).text());         // active tab
+    //     console.log($(event.relatedTarget).text());  // previous tab
     $(event.target.hash + ' div.handsontable').handsontable('render');
 });
 
 /****** ICAT TABLE ************/
 // Sets the value from djnago into a js array
-var fullDataSet = {{runs|safe}};
+var fullDataSet = JSON.parse("{{runs|escapejs}}");
 // Let's get what we need for the table'
-var dataSet = fullDataSet.map(function(run) {
+var dataSet = fullDataSet.map(function (run) {
     return [run.title, //0
-            run.metadata.scan_type,
-            run.thumbnails, 
-            run.location]; //3
+    run.metadata.scan_type,
+    run.thumbnails,
+    run.location]; //3
 });
 
 // Make a datatable with icat contents
@@ -209,24 +253,24 @@ $(document).ready(function () {
                 for (var key in thumbs_dictionary) {
                     if (thumbs_dictionary.hasOwnProperty(key)) {
                         //console.log(key);
-                        thumbs_html += '<td><img alt=\'' + key + '\' src=\'data:image/png;base64,' + thumbs_dictionary[key] + '\' /><p>' + key +'</p></td>';
+                        thumbs_html += '<td><img src=&quot;data:image/png;base64,' + thumbs_dictionary[key] + '&quot; /><p>' + key + '</p></td>';
                     }
                 }
                 thumbs_html += "</tr></table>";
-                return '<a data-toggle="tooltip" title="' +
+                return '<a href="#" data-toggle="tooltip" title="' +
                     thumbs_html +
-                    + '<ul>' + 
-                        '<li><strong>Sample</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_info).replace(/\"|\'/g, "\'")  + '</li>' +
-                        '<li><strong>Background</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_background).replace(/\"|\'/g, "\'")  + '</li>' +
-                        '<li><strong>Parameters</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_parameters).replace(/\"|\'/g, "\'")  + '</li>' +
+                    + '<ul>' + // Below I'm escaping' quotes because this is the tooltip
+                    '<li><strong>Sample</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_info).replace(/\"|\'/g, "\'") + '</li>' +
+                    '<li><strong>Background</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_background).replace(/\"|\'/g, "\'") + '</li>' +
+                    '<li><strong>Parameters</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_parameters).replace(/\"|\'/g, "\'") + '</li>' +
                     '</ul>' +
-                    '">' +
+                    '" >' +
                     '<span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;</a>' + data;
-                }
-            },
-            {title: "Type"},
-            {title: "Image"},
-            {title: "FilePath"}
+            }
+        },
+        { title: "Type" },
+        { title: "Image" },
+        { title: "FilePath" }
         ],
         "columnDefs": [
             {
@@ -248,21 +292,21 @@ $(document).ready(function () {
         "order": [
             [0, 'asc']
         ],
-        //"lengthMenu": [
+        //"lengthMenu": [cell metadata
         //    [10, 20, 50, -1],
         //    [10, 20, 50, "All"]
         //],
         //"pageLength": 20,
         //"paging": true,
-        "scrollY":        "800px",
+        "scrollY": "800px",
         "scrollCollapse": true,
-        "paging":         false,
+        "paging": false,
         "lengthChange": true,
         "searching": true,
         "ordering": true,
         "info": true,
         "autoWidth": true,
-        "bInfo" : false, // hide "Showing x on n"
+        "bInfo": false, // hide "Showing x on n"
         initComplete: function () {
             var api = this.api();
             var titles = api.column(0);
@@ -318,7 +362,7 @@ $("[id^='hot']").droppable({
     accept: ".ui-draggable",
     activeClass: "ui-state-highlight",
     tolerance: "pointer",
-    drop: function (event, ui) {    
+    drop: function (event, ui) {
         // Get a reference to this handsontable instance
         var ht = $(this).closest("[id^='hot']").handsontable('getInstance');
         // Hide the helper, so that we can use .elementFromPoint
@@ -338,7 +382,7 @@ $("[id^='hot']").droppable({
         var row = $tbody.children().index($tr);
 
         if (row >= 0 && col >= 0) {
-            console.log("Setting i,j:", row, col, "with value = ", ui.draggable.val());
+            //console.log("Setting i,j:", row, col, "with value = ", ui.draggable.val());
             set_spreadsheet_cell_properties_and_value(ht, ui.draggable.val(), row, col);
             $cell.css("background-color", "yellow");
         }
@@ -346,40 +390,17 @@ $("[id^='hot']").droppable({
     },
     over: function (event, elem) {
         //$(this).addClass("over");
-        console.log("OVER:", elem);
+        //console.log("OVER:", elem);
     },
     out: function (event, elem) {
         //$(this).removeClass("over");
-        console.log("OUT:", elem);
+        //console.log("OUT:", elem);
     }
 });
 
 
-function set_spreadsheet_cell_properties_and_value(hot_instance, file_path, i, j){
-    var file_info = spreadsheet_cell_properties(hot_instance, file_path, i, j);
-    var scan_or_frame = $("#scan_or_frame").val();
-    hot_instance.setDataAtCell(i, j, file_info[scan_or_frame]);
 
-}
 
-function spreadsheet_cell_properties(hot_instance, file_path, i, j){
-    var cell_properties = hot_instance.getCellMeta(i, j);
-    var file_info = filepath_to_scan_and_frame(file_path);
-    cell_properties.scan = file_info.scan;
-    cell_properties.frame = file_info.frame;
-    cell_properties.filename = file_info.filename;
-    cell_properties.filepath = file_info.filepath;
-    cell_properties.background = '#CEC';
-    return file_info;
-}
-
-/*
- * Expect a filepath of the form: '/HFIR/CG3/IPTS-17241/exp381/Datafiles/BioSANS_exp381_scan0030_0001.xml
- */
-function filepath_to_scan_and_frame(filepath){
-    var ret = filepath.match(/\/.*\/(.*_scan(\d+)_(\d+)\.xml)/);
-    return { filepath: ret[0], filename : ret[1],  scan : ret[2], frame : ret[3]}
-}
 
 </script>
 

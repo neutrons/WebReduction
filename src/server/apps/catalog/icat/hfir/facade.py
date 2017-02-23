@@ -1,24 +1,23 @@
 #from .communication import HFIRICat
-from server.apps.catalog.icat.hfir.communication import HFIRICat
-
-import json
 import logging
-
-from django.utils import dateparse
 from pprint import pformat, pprint
 
+from django.utils import dateparse
 
-logger = logging.getLogger('catalog.icat.hfir')
+from server.apps.catalog.icat.hfir.communication import HFIRICat
+
+logger = logging.getLogger(__name__)
+
 
 class Catalog(object):
     '''
     Custom functionality to ICAT!
     '''
+
     def __init__(self):
         '''
         '''
         self.icat = HFIRICat()
-
 
     def get_experiments(self, instrument):
         '''
@@ -37,11 +36,16 @@ class Catalog(object):
         response = self.icat.get_experiments(instrument)
         result = None
         if response is not None:
-            result = [{'ipts': entry['name'],
-                       'exp' : sorted([
-                           tag.split('/')[1]
-                           for tag in entry['tags'] ])}
-                      for entry in  response]
+            try:
+                result = [{
+                    'ipts': entry['name'],
+                    'exp': sorted([
+                        tag.split('/')[1] for tag in entry['tags']])}
+                          for entry in response]
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
         return result
 
     def get_runs(self, instrument, ipts, exp):
@@ -61,28 +65,32 @@ class Catalog(object):
         response = self.icat.get_runs(instrument, ipts, exp)
         result = None
         if response is not None:
-            #result = response
-            result = [dict(
-                {
-                    # subset
-                    k: entry[k] for k in ('location', 'thumbnails')
-                }, **{
-                    # Metadata here:
-                    'filename': entry['metadata']['spicerack']['@filename'],
-                    'end_time':  entry['metadata']['spicerack']['header']['end_time'],
-                    'title': entry['metadata']['spicerack']['header']['scan_title'],
-                    'sample_info': entry['metadata']['spicerack']['sample_info']['sample']['field']
-                                   if entry['metadata']['spicerack']['sample_info']['sample'] else "",
-                    'sample_background': entry['metadata']['spicerack']['sample_info']['background']['field']
-                                         if entry['metadata']['spicerack']['sample_info']['background'] else "",
-                    'sample_parameters': entry['metadata']['spicerack']['sample_info']['parameters']['field']
-                                         if entry['metadata']['spicerack']['sample_info']['parameters'] else "",
-                    # This gets rid of None values in the metadata
-                    'metadata' : { (key):(value if value is not None else "") for key, value in
-                                   entry['metadata']['spicerack']['header'].items() }
-                })
-                      for entry in response
-                     ]
+            try:
+                result = [dict(
+                    {
+                        # subset
+                        k: entry[k] for k in ('location', 'thumbnails')
+                    }, **{
+                        # Metadata here:
+                        'filename': entry['metadata']['spicerack']['@filename'],
+                        'end_time':  entry['metadata']['spicerack']['header']['end_time'],
+                        'title': entry['metadata']['spicerack']['header']['scan_title'],
+                        'sample_info': entry['metadata']['spicerack']['sample_info']['sample']['field']
+                        if entry['metadata']['spicerack']['sample_info']['sample'] else "",
+                        'sample_background': entry['metadata']['spicerack']['sample_info']['background']['field']
+                        if entry['metadata']['spicerack']['sample_info']['background'] else "",
+                        'sample_parameters': entry['metadata']['spicerack']['sample_info']['parameters']['field']
+                        if entry['metadata']['spicerack']['sample_info']['parameters'] else "",
+                        # This gets rid of None values in the metadata
+                        'metadata': {(key): (value if value is not None else "") for key, value in
+                                     entry['metadata']['spicerack']['header'].items()}
+                    })
+                    for entry in response# if entry['ext'] == 'xml'
+                ]
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
         return result
 
     def run_info(self, instrument, ipts, file_location):
@@ -93,17 +101,21 @@ class Catalog(object):
         response = self.icat.run_info(instrument, ipts, file_location)
         result = None
         if response is not None:
-            # result = response
-            entry = response
-            result = dict(
-                {
-                    # subset
-                    k: entry[k] for k in ('location', 'thumbnails')
-                }, **{
-                    # Metadata here:
-                    'filename': entry['metadata']['spicerack']['@filename'],
-                    'metadata' : entry['metadata']['spicerack']['header']
-                })
+            try:
+                entry = response
+                result = dict(
+                    {
+                        # subset
+                        k: entry[k] for k in ('location', 'thumbnails')
+                    }, **{
+                        # Metadata here:
+                        'filename': entry['metadata']['spicerack']['@filename'],
+                        'metadata': entry['metadata']['spicerack']['header']
+                    })
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
         return result
 
 
@@ -111,7 +123,8 @@ if __name__ == "__main__":
     icat = Catalog()
     # res = icat.get_experiments("CG3")
     # pprint(res)
-    # res = icat.get_runs("CG3", 'IPTS-18347','exp379') 
+    # res = icat.get_runs("CG3", 'IPTS-18347','exp379')
     # pprint(res)
-    res = icat.run_info("CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml') 
+    res = icat.run_info(
+        "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
     pprint(res)

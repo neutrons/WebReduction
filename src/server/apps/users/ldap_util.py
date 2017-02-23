@@ -6,7 +6,7 @@ from django.conf import settings
 import ldap
 
 
-logger = logging.getLogger('users.util')
+logger = logging.getLogger(__name__)
 
 '''
 

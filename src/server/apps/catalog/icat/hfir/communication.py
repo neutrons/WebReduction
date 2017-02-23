@@ -1,9 +1,7 @@
 import logging
-
-from pprint import pformat, pprint
+from pprint import pformat
 
 from server.apps.catalog.icat.communication import ICat
-
 
 logger = logging.getLogger(__name__)
 
@@ -13,14 +11,16 @@ SANS_TOKEN = \
     'zX2FkbWluIjp0cnVlLCJjb21wYW55IjoiVG9wdGFsIiwiYXdlc29tZSI6dHJ1ZX0' \
     '.yRQYnWzskCZUxPwaQupWkiUzKELZ49eM7oWxAQK_ZXw'
 
+
 class HFIRICat(ICat):
 
     def __init__(self):
         super(HFIRICat, self).__init__(
-            url_prefix = 'https://hfir-icat.ornl.gov/api',
-            headers = {
-                'Authorization' : 'Bearer {}'.format(SANS_TOKEN)
-            }
+            url_prefix='https://hfir-icat.ornl.gov/api',
+            headers={
+                'Authorization': 'Bearer {}'.format(SANS_TOKEN)
+            },
+            http_method='get',
         )
 
     def get_experiments(self, instrument):
@@ -39,7 +39,7 @@ class HFIRICat(ICat):
         '''
         logger.debug("get_experiments")
         return self._request("/facilities/HFIR/instruments/{}/experiments".format(instrument),
-                             params_json = { 'projection' : ['tags'] }
+                             params_json={'projection': ['tags']}
                             )
 
     def get_runs(self, instrument, ipts, exp):
@@ -62,9 +62,9 @@ class HFIRICat(ICat):
         '''
         logger.debug("get_runs")
         json_params = {
-            'tags' : ['spice/{}'.format(exp)],
-            'ext' : 'xml',
-            'projection' : [
+            'tags': ['spice/{}'.format(exp)],
+            'ext': 'xml',
+            'projection': [
                 'location',
                 'metadata.spicerack.@filename',
                 'metadata.spicerack.header',
@@ -73,10 +73,10 @@ class HFIRICat(ICat):
             ],
         }
         return self._request("/facilities/HFIR/instruments/{}/experiments/{}/datafiles".format(
-                instrument, ipts),
-            params_json = json_params,
+            instrument, ipts),
+            params_json=json_params,
         )
-    
+
     def run_info(self, instrument, ipts, file_location):
         '''
 
@@ -92,16 +92,15 @@ class HFIRICat(ICat):
                                                                                    'Banjo'}},
                                             'parameters': {'field': {'Chiller Temp (C)': '20.000000'}},
                                             'sample': {'field': {'content': 'ground'}}}}},
- 
+
         '''
         logger.debug("get_experiments")
         return self._request("/facilities/HFIR/instruments/{}/experiments/{}/datafiles{}".format(
-                                 instrument,
-                                 ipts,
-                                 file_location
-                             ),
-                            )
-
+            instrument,
+            ipts,
+            file_location
+        ),
+        )
 
 
 if __name__ == "__main__":
@@ -110,5 +109,6 @@ if __name__ == "__main__":
     pprint(res)
     res = icat.get_runs("CG3", "IPTS-18265", "exp359")
     pprint(res)
-    res = icat.run_info("CG3", "IPTS-18265", "/HFIR/CG3/IPTS-18265/exp359/Datafiles/BioSANS_exp359_scan0014_0001.xml")
+    res = icat.run_info(
+        "CG3", "IPTS-18265", "/HFIR/CG3/IPTS-18265/exp359/Datafiles/BioSANS_exp359_scan0014_0001.xml")
     pprint(res)

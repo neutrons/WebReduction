@@ -13,7 +13,7 @@ from smart_selects.db_fields import ChainedForeignKey
 
 
 import logging
-logger = logging.getLogger('users.models')
+logger = logging.getLogger(__name__)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
