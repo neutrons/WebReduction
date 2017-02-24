@@ -68,11 +68,14 @@
                         {% endfor %}
                         </div>
                         <!-- dropdown scan / frame -->
-                        <div class="form-group form-inline pull-right">
-                            <label for="sel1">Numbers in the spreadsheet are Scans or Frames: <tt>scan[scan nr]_[frame nr]</tt>?</label>
+                        <div class="form-group pull-right">
+                            <label for="sel1">Numbers in the spreadsheet are Scans or Frames: <tt>[INSTRUMENT]_exp[EXPERIMENT]_scan[SCAN]_[FRAME].xml</tt>?</label>
                             <select class="form-control" id="scan_or_frame">
                                 <option value="scan">Scans</option>
                                 <option value="frame">Frames</option>
+                                <option value="abrv">Abreviated: [Scan]_[Frame]</option>
+                                <option value="filename">Filename (E.g.: BioSANS_exp379_scan0020_0001.xml)</option>
+                                <option value="filepath">Full file path</option>
                             </select>
                         </div>
                     </div>
@@ -111,6 +114,26 @@
 // starts with id_regions and finishes with entries
 var entriesSelectors = $('[id ^=id_regions][id $=entries]');
 
+// Builds a dictionary from the full file path
+function filepathToDictionary(filepath) {
+    var ret = filepath.match(/\/.*\/(.*_scan(\d+)_(\d+)\.xml)/);
+    return {    
+        filepath: ret[0], 
+        filename: ret[1], 
+        scan: ret[2], // numeric
+        frame: ret[3], // numeric
+        abrv: ret[2] + "_" + ret[3]
+    }
+}
+
+function setCellMetadata(hot_instance, ditionary, i, j) {
+    var cell_properties = hot_instance.getCellMeta(i, j);
+    cell_properties.info = ditionary;
+}
+
+
+
+
 function hotNumericRendered(hotInstance, TD, row, col, prop, value, cellProperties) {
     
     Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -131,17 +154,10 @@ function spreadsheet_cell_properties(hot_instance, file_path, i, j) {
     cell_properties.frame = file_info.frame;
     cell_properties.filename = file_info.filename;
     cell_properties.filepath = file_info.filepath;
-    cell_properties.background = '#CEC';
     return file_info;
 }
 
-/*
- * Expect a filepath of the form: '/HFIR/CG3/IPTS-17241/exp381/Datafiles/BioSANS_exp381_scan0030_0001.xml
- */
-function filepath_to_scan_and_frame(filepath) {
-    var ret = filepath.match(/\/.*\/(.*_scan(\d+)_(\d+)\.xml)/);
-    return { filepath: ret[0], filename: ret[1], scan: ret[2], frame: ret[3] }
-}
+
 
 
 // For every entry input field add a div anchor to place the spreadsheet
@@ -265,7 +281,7 @@ $(document).ready(function () {
                     '<li><strong>Parameters</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_parameters).replace(/\"|\'/g, "\'") + '</li>' +
                     '</ul>' +
                     '" >' +
-                    '<span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;</a>' + data;
+                    '<span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;</a>' + fullDataSet[meta.row].metadata.scan_number + ": " + data.substring(0, 30);
             }
         },
         { title: "Type" },
