@@ -30,3 +30,5 @@ uwsgi
 
 # For visualizing data
 numpy>=1.12.0
+plotly>=2.0.2
+

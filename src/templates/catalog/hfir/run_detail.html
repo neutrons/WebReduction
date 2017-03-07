@@ -3,6 +3,7 @@
 
 {% block header %}
 {{ block.super }}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <style>
 .list-group-item:hover{
     background-color: #007833 !important;
@@ -21,7 +22,8 @@
         <li><a href="{% url 'index' %}">Home</a></li>
         <li><a href="{% url 'catalog:list_instruments'%}">Catalog</a></li>
         <li><a href="{% url 'catalog:list_iptss' instrument %}">{{instrument}}</a></li>
-		<li class="active">{{ipts}}</li>
+        <li><a href="{% url 'catalog:list_runs' instrument ipts exp %}">{{ipts}}</a></li>        
+		<li class="active">{{run.filename}}</li>
     </ol>
 </div>
 {% endblock %}
@@ -33,17 +35,50 @@
         <h1>Run Detail <small> {{ run.metadata.scan_title }}</small></h1>
     </div>
 
+    {% for key, value in run.data.items %}
     <div class="container-fluid">
-            <ul class="list-group">
-                {% for key, value in run.metadata.items %}
-                	{% comment %}{% if value %}{% endcomment %}
-	                <li class="list-group-item">
-	                    <strong>{{key|capfirst}}</strong>
-	                    <span class="pull-right">{{value|escape|urlize|linebreaks}}</span>
-	                </li>
-	                {% comment %}{% endif %}{% endcomment %}
-	            {% endfor %}
-            </ul>
+        <h2>{{key}}</h2>
+        <div id="plot-{{forloop.counter}}"></div>
+        <script>
+        var data = [{
+            z: {{value|safe}},
+            type: 'heatmap',
+            //colorscale: 'Viridis',
+            'colorscale': [ // This is the only to have this in log so far
+                [0, 'rgb(68.353024,   1.247744,  84.33024)'],        
+                [1./10000, 'rgb(65.44512 ,   66.739968,  135.247872)'], 
+                [1./1000, 'rgb(42.653952,  118.709248,  142.878464)'], 
+                [1./100, 'rgb(32.790272,  165.823744,  134.013696)'],   
+                [1./10, 'rgb(112.675072,  207.651328,   87.287552)'],       
+                [1., 'rgb( 254.271488,  231.976192,   36.847616)'],            
+            ],
+            'colorbar': {
+                'tick0': 0,
+                'tickmode': 'array',
+                'tickvals': [0, 1000, 10000, 100000]
+            }
+        }];
+        var layout = {
+            autosize: false,
+            width: 600,
+            height: 600
+        };
+        Plotly.newPlot('plot-{{forloop.counter}}', data, layout);
+        </script>
+    </div>
+    {% endfor %}
+
+    <div class="container-fluid">
+        <ul class="list-group">
+            {% for key, value in run.metadata.items|dictsort:"0.lower" %}
+                {% comment %}{% if value %}{% endcomment %}
+                <li class="list-group-item">
+                    <strong>{{key|capfirst}}</strong>
+                    <span class="pull-right">{{value|escape|urlize|linebreaks}}</span>
+                </li>
+                {% comment %}{% endif %}{% endcomment %}
+            {% endfor %}
+        </ul>
     </div>
     <hr/>
 

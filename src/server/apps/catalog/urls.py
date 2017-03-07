@@ -10,7 +10,7 @@ urlpatterns = [
     
     # HFIR has exp field
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/$',  views.Runs.as_view(), name='list_runs'),
-    url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<filename>/HFIR/[^\.]+\.[A-Za-z]{3})/$',  views.RunDetail.as_view(), name='run_detail'),
+    url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/(?P<filename>/HFIR/[^\.]+\.[A-Za-z]{3})/$',  views.RunDetail.as_view(), name='run_detail'),
     
     # I probably will remove this
     url(r'^(?P<instrument>[\w\-]+)/json$', views.get_iptss_json, name='list_iptss_json'),

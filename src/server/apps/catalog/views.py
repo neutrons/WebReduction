@@ -91,10 +91,10 @@ class Runs(LoginRequiredMixin,InstrumentMixin,TemplateView):
         context = super(Runs, self).get_context_data(**kwargs)
         context['runs'] = runs
         return context
-    
+
 class RunDetail(LoginRequiredMixin,InstrumentMixin,TemplateView):
     '''
-    List of runs for a given instrument
+    Detail of run
     '''
 
     template_name = 'run_detail.html'
@@ -106,8 +106,9 @@ class RunDetail(LoginRequiredMixin,InstrumentMixin,TemplateView):
 
         instrument = kwargs['instrument']
         ipts = kwargs['ipts']
+        exp = kwargs.get('exp')
         filename = kwargs['filename']
-        logger.debug('Getting run detail from catalog: %s %s %s %s', facility, instrument, ipts, filename)
+        logger.debug('Getting run detail from catalog: %s %s %s %s %s', facility, instrument, ipts, exp, filename)
         if user_has_permission_to_see_this_ipts(self.request.user, instrument, ipts):
             run = get_run(facility, instrument, ipts, filename)
         else:

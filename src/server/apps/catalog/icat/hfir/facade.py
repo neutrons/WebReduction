@@ -115,13 +115,13 @@ class Catalog(object):
        [0, 0, 0, ..., 0, 0, 0]])}]
 
         '''
-        res = []
+        res = {}
         p = Parser(filename)
         data_main_detector = p.getData("Data/Detector")
         data_wing_detector = p.getData("Data/DetectorWing")
-        res.append({'Detector' : data_main_detector})
+        res['Detector'] = data_main_detector.tolist()
         if data_wing_detector is not None:
-            res.append({'DetectorWing' : data_wing_detector})
+            res['DetectorWing'] = data_wing_detector.tolist()
         return res
 
 
