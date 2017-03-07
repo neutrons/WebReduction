@@ -116,6 +116,7 @@ class Catalog(object):
 
         '''
         res = {}
+        logger.debug("Parsing: {}.".format(filename))
         p = Parser(filename)
         data_main_detector = p.getData("Data/Detector")
         data_wing_detector = p.getData("Data/DetectorWing")

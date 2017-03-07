@@ -23,8 +23,8 @@ class Parser(object):
     def __init__(self, filename):
         if not os.path.exists(filename):
             logger.error("File {} does not exist!".format(filename))
-            sys.exit()
-        self._root = self._parse(filename)
+        else:
+            self._root = self._parse(filename)
     
     def _parse(self, filename):
         logger.info("Parsing: %s."%filename)
@@ -38,7 +38,7 @@ class Parser(object):
         '''
         elems = self._root.findall(xpath)
         if not elems:
-            logger.error("xpath %s is not valid!"%xpath)
+            logger.warning("xpath %s is not valid!"%xpath)
             return None
         elif len(elems) >1:
             logger.warning("xpath %s has more than one element (len = %d)! Returning first!"%(xpath,len(elems)))
@@ -55,12 +55,15 @@ class Parser(object):
         Parses the XML xpath data into a 2D Xarray
         '''
         data_str = self.getMetadata(xpath)
-        data_list_of_chars = [line.split("\t") for line in data_str.strip().split("\n")]
-        data = [list(map(int, line)) for line in data_list_of_chars]
-        data_np = np.array(data)
-        data_np = np.rot90(data_np)
-        data_np = np.flipud(data_np)
-        return data_np
+        if data_str:
+            data_list_of_chars = [line.split("\t") for line in data_str.strip().split("\n")]
+            data = [list(map(int, line)) for line in data_list_of_chars]
+            data_np = np.array(data)
+            data_np = np.rot90(data_np)
+            data_np = np.flipud(data_np)
+            return data_np
+        else:
+            return None
 
 
 if __name__ == "__main__":
