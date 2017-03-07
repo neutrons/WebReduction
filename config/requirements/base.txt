@@ -28,3 +28,5 @@ Fabric3>=1.13.1
 python-dotenv
 uwsgi
 
+# For visualizing data
+numpy>=1.12.0

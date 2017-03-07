@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block header %}
+{{ block.super }}
+<style>
+.list-group-item:hover{
+    background-color: #007833 !important;
+    border-color: #aed248;
+    color: white;
+}
+.list-group > li:nth-child(even) {
+  background: #f5f5f5;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'catalog:list_instruments'%}">Catalog</a></li>
+        <li><a href="{% url 'catalog:list_iptss' instrument %}">{{instrument}}</a></li>
+		<li class="active">{{ipts}}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+	<div class="page-header">
+        <h1>Run Detail <small> {{ run.metadata.scan_title }}</small></h1>
+    </div>
+
+    <div class="container-fluid">
+            <ul class="list-group">
+                {% for key, value in run.metadata.items %}
+                	{% comment %}{% if value %}{% endcomment %}
+	                <li class="list-group-item">
+	                    <strong>{{key|capfirst}}</strong>
+	                    <span class="pull-right">{{value|escape|urlize|linebreaks}}</span>
+	                </li>
+	                {% comment %}{% endif %}{% endcomment %}
+	            {% endfor %}
+            </ul>
+    </div>
+    <hr/>
+
+    
+</div>
+{% endblock %}

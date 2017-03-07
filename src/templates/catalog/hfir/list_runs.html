@@ -28,6 +28,7 @@
 <table id="tableruns" class="table table-bordered table-striped">
 	<thead>
 		<tr>
+			<th>Thumbnails</th>
 			<th>File Name</th>
 			<th>Title</th>
 			<th>End Time</th>
@@ -36,7 +37,14 @@
 	<tbody>
 		{% for run in runs %}
 		<tr>
-			<td>{{run.filename}}</td>
+			<td>
+				<table><tr>
+				{% for thumb_name, thumb_base64  in run.thumbnails.items %}
+				<td><img alt="{{thumb_name}}" title="{{thumb_name}}. Click for full size" src="data:image/png;base64,{{thumb_base64}}" /></td>
+				{% endfor %}
+				</tr></table>
+			</td>
+			<td><a href="{% url 'catalog:run_detail' instrument  ipts  run.location %}">{{run.filename}}</a></td>
 			<td>{{run.title}}</td>
 			<td>{{run.end_time}}</td>
 		</tr>
@@ -44,6 +52,7 @@
 	</tbody>
 	<tfoot>
 		<tr>
+			<th>Thumbnails</th>
 			<th>File Name</th>
 			<th>Title</th>
 			<th>End Time</th>

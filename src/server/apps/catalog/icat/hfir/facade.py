@@ -5,6 +5,7 @@ from pprint import pformat, pprint
 from django.utils import dateparse
 
 from server.apps.catalog.icat.hfir.communication import HFIRICat
+from server.apps.catalog.icat.hfir.util import Parser
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +93,37 @@ class Catalog(object):
             except IndexError as this_exception:
                 logger.exception(this_exception)
         return result
+    
+    
+    def _get_data(self, filename):
+        '''
+        Only for HFIR we need to have the real detector XML paths
+       @returns:
+        {'data': [{'Detector': array([[0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       ..., 
+       [0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0]])},
+          {'DetectorWing': array([[0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       ..., 
+       [0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0]])}]
+
+        '''
+        res = []
+        p = Parser(filename)
+        data_main_detector = p.getData("Data/Detector")
+        data_wing_detector = p.getData("Data/DetectorWing")
+        res.append({'Detector' : data_main_detector})
+        if data_wing_detector is not None:
+            res.append({'DetectorWing' : data_wing_detector})
+        return res
+
 
     def run_info(self, instrument, ipts, file_location):
         '''
@@ -118,6 +150,16 @@ class Catalog(object):
                 logger.exception(this_exception)
         return result
 
+    def get_run(self, instrument, ipts, file_location):
+        '''
+        Gets run_info and adds the data
+        '''
+        run_info = self.run_info(instrument, ipts, file_location)
+        run_info.pop('thumbnails', None) # remove the thumbnails
+        run_info['data'] = self._get_data(file_location)
+        return run_info
+
+
 
 if __name__ == "__main__":
     icat = Catalog()
@@ -125,6 +167,6 @@ if __name__ == "__main__":
     # pprint(res)
     # res = icat.get_runs("CG3", 'IPTS-18347','exp379')
     # pprint(res)
-    res = icat.run_info(
+    res = icat.get_run(
         "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
     pprint(res)

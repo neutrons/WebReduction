@@ -12,7 +12,7 @@ import json
 
 from .icat.sns.facade import Catalog
 
-from .icat.facade import get_expriments, get_runs
+from .icat.facade import get_expriments, get_runs, get_run
 
 from .permissions import user_has_permission_to_see_this_ipts, \
     filter_user_permission
@@ -90,6 +90,33 @@ class Runs(LoginRequiredMixin,InstrumentMixin,TemplateView):
             runs = []
         context = super(Runs, self).get_context_data(**kwargs)
         context['runs'] = runs
+        return context
+    
+class RunDetail(LoginRequiredMixin,InstrumentMixin,TemplateView):
+    '''
+    List of runs for a given instrument
+    '''
+
+    template_name = 'run_detail.html'
+
+    def get_context_data(self, **kwargs):
+
+        facility = self.request.user.profile.instrument.facility.name
+        self.template_name = 'catalog/' + facility.lower() + '/' + self.template_name
+
+        instrument = kwargs['instrument']
+        ipts = kwargs['ipts']
+        filename = kwargs['filename']
+        logger.debug('Getting run detail from catalog: %s %s %s %s', facility, instrument, ipts, filename)
+        if user_has_permission_to_see_this_ipts(self.request.user, instrument, ipts):
+            run = get_run(facility, instrument, ipts, filename)
+        else:
+            # from django.http import HttpResponseForbidden
+            # return HttpResponseForbidden()
+            messages.error(self.request, "You do not have permission to see the details of the %s from %s."%(ipts,instrument))
+            run = None
+        context = super(RunDetail, self).get_context_data(**kwargs)
+        context['run'] = run
         return context
 
 ######### Not used
