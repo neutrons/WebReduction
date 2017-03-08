@@ -38,7 +38,6 @@
 
     {% for key, value in run.data.items %}
     <div class="container-fluid">
-        <h2>{{key}}</h2>
         <div id="plot-{{forloop.counter}}"></div>
         <script>
         var data = [{
@@ -60,11 +59,14 @@
             }
         }];
         var layout = {
+            title: "{{key}}",
+            //xaxis: {title: 'Pixel'},
+            //yaxis: {title: 'Tube'},
             autosize: false,
             width: 600,
             height: 600
         };
-        Plotly.newPlot('plot-{{forloop.counter}}', data, layout);
+        Plotly.newPlot('plot-{{forloop.counter}}', data, layout, {showLink: true});
         </script>
     </div>
     {% endfor %}

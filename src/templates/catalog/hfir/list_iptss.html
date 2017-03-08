@@ -55,6 +55,8 @@
 {% block footer_js%}
 {{ block.super }}
 <script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<!-- This CDN is for natural sorting : see columnDefs type: 'natural' -->
+<script src='https://cdn.datatables.net/plug-ins/1.10.13/sorting/natural.js'></script>
 <!-- page script -->
 <script>
         $(function () {
@@ -67,9 +69,10 @@
                 "ordering": true,
                 "info": true,
                 "autoWidth": true,
-    			"initComplete": function( settings, json ) {
-   					 $('div.loading').remove();
- 				}
+                columnDefs: [
+                    { type: 'natural', targets: 0 },
+                    { type: 'natural', targets: 1 }
+                ]
             });
             
         });

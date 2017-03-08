@@ -38,11 +38,13 @@
 		{% for run in runs %}
 		<tr>
 			<td>
+				<a href="{% url 'catalog:run_detail' instrument  ipts  exp run.location %}">
 				<table><tr>
 				{% for thumb_name, thumb_base64  in run.thumbnails.items %}
 				<td><img alt="{{thumb_name}}" title="{{thumb_name}}. Click for full size" src="data:image/png;base64,{{thumb_base64}}" /></td>
 				{% endfor %}
 				</tr></table>
+				</a>
 			</td>
 			<td><a href="{% url 'catalog:run_detail' instrument  ipts  exp run.location %}">{{run.filename}}</a></td>
 			<td>{{run.title}}</td>
@@ -71,9 +73,9 @@
         $(function () {
             $("#tableruns").DataTable({
                 "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 0, 'desc' ]],
+                "order": [[ 3, 'desc' ]],
                 "columnDefs": [
-    				{ "type": "date", "targets": 2 },
+    				{ "type": "date", "targets": 3 },
   				],
                 "paging": true,
                 "lengthChange": true,

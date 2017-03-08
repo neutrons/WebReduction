@@ -114,10 +114,37 @@
 // starts with id_regions and finishes with entries
 var entriesSelectors = $('[id ^=id_regions][id $=entries]');
 
+function experiment(facility, instrument, ipts, exp) {
+    this.facility = facility;
+    this.instrument = instrument;
+    this.ipts = ipts;
+    this.exp = exp;
+}
+var experimentInfo = new experiment(
+    "{{user.profile.facility.name}}",
+    "{{user.profile.instrument.name}}",
+    "{{user.profile.ipts}}",
+    "{{user.profile.experiment_number}}"
+);
+/* 1 -> 0001 */
+function padToFour(number) {
+  if (number<=9999) { number = ("000"+number).slice(-4); }
+  return number;
+}
+/* returns a full file path given scanNumber, frameNumber */
+function filePath(scanNumber, frameNumber) {
+    return "{{user.profile.instrument.drive_path}}/{{user.profile.ipts}}/" +
+        "exp{{user.profile.experiment_number}}/Datafiles/{{user.profile.instrument.filename_prefix}}" +
+        "_exp{{user.profile.experiment_number}}_scan" + padToFour(scanNumber)+ "_" + padToFour(frameNumber) +".xml"
+}
+
+
+
 // Builds a dictionary from the full file path
+// fullpath of the format: /HFIR/CG2/IPTS-18381/exp180/Datafiles/CG2_exp180_scan0068_0001.xml
 function filepathToDictionary(filepath) {
     var ret = filepath.match(/\/.*\/(.*_scan(\d+)_(\d+)\.xml)/);
-    return {    
+    return {
         filepath: ret[0], 
         filename: ret[1], 
         scan: ret[2], // numeric
@@ -126,18 +153,25 @@ function filepathToDictionary(filepath) {
     }
 }
 
+// hot
 function setCellMetadata(hot_instance, ditionary, i, j) {
     var cell_properties = hot_instance.getCellMeta(i, j);
     cell_properties.info = ditionary;
 }
 
+// hot
+function renderCellValue(hotInstance, TD, row, col, prop, value, cellProperties) {
+    Handsontable.renderers.TextRenderer.apply(this, arguments);
+
+    //console.log(TD, row, col, prop, value, cellProperties);
+}
 
 
 
 function hotNumericRendered(hotInstance, TD, row, col, prop, value, cellProperties) {
     
     Handsontable.renderers.TextRenderer.apply(this, arguments);
-    //console.log(TD, row, col, prop, value, cellProperties);
+    console.log(TD, row, col, prop, value, cellProperties);
 }
 
 function set_spreadsheet_cell_properties_and_value(hot_instance, file_path, i, j) {
@@ -189,8 +223,8 @@ $.each(entriesSelectors, function (i, selector) {
             { type: 'text', data: "name" },
             { type: 'numeric', data: "thickness" },
             {
-                type: 'numeric', data: "sample_scattering",
-                renderer: hotNumericRendered
+                type: 'text', data: "sample_scattering",
+                renderer: renderCellValue
             },
             { type: 'numeric', data: "sample_transmission" },
             { type: 'numeric', data: "backgroung_scattering" },
@@ -243,7 +277,11 @@ $('.nav-tabs a').on('shown.bs.tab', function (event) {
     $(event.target.hash + ' div.handsontable').handsontable('render');
 });
 
+
+/*******************************************/
 /****** ICAT TABLE ************/
+/*******************************************/
+
 // Sets the value from djnago into a js array
 var fullDataSet = JSON.parse("{{runs|escapejs}}");
 // Let's get what we need for the table'

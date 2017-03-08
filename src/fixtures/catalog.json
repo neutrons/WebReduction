@@ -34,6 +34,7 @@
 			"ldap_group_name": "hfir_cg3_team",
 			"icat_url": "https://hfir-icat-testing.ornl.gov",
 			"drive_path": "/HFIR/CG3",
+			"filename_prefix": "BioSANS",
 			"reduction_available": true,
 			"active": true,
 			"facility": 1
@@ -53,6 +54,7 @@
 			"ldap_group_name": "hfir_cg2_team",
 			"icat_url": "https://hfir-icat-testing.ornl.gov",
 			"drive_path": "/HFIR/CG2",
+			"filename_prefix": "CG2",
 			"reduction_available": true,
 			"active": true,
 			"facility": 1

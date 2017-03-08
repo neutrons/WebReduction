@@ -77,17 +77,17 @@ class Catalog(object):
                         'end_time':  entry['metadata']['spicerack']['header']['end_time'],
                         'title': entry['metadata']['spicerack']['header']['scan_title'],
                         'sample_info': entry['metadata']['spicerack']['sample_info']['sample']['field']
-                        if entry['metadata']['spicerack']['sample_info']['sample'] else "",
+                                       if entry['metadata']['spicerack']['sample_info']['sample'] else "",
                         'sample_background': entry['metadata']['spicerack']['sample_info']['background']['field']
-                        if entry['metadata']['spicerack']['sample_info']['background'] else "",
+                                             if entry['metadata']['spicerack']['sample_info']['background'] else "",
                         'sample_parameters': entry['metadata']['spicerack']['sample_info']['parameters']['field']
-                        if entry['metadata']['spicerack']['sample_info']['parameters'] else "",
+                                             if entry['metadata']['spicerack']['sample_info']['parameters'] else "",
                         # This gets rid of None values in the metadata
                         'metadata': {(key): (value if value is not None else "") for key, value in
                                      entry['metadata']['spicerack']['header'].items()}
                     })
-                    for entry in response# if entry['ext'] == 'xml'
-                ]
+                          for entry in response# if entry['ext'] == 'xml'
+                         ]
             except KeyError as this_exception:
                 logger.exception(this_exception)
             except IndexError as this_exception:
@@ -164,10 +164,10 @@ class Catalog(object):
 
 if __name__ == "__main__":
     icat = Catalog()
-    # res = icat.get_experiments("CG3")
+    res = icat.get_experiments("CG3")
     # pprint(res)
     # res = icat.get_runs("CG3", 'IPTS-18347','exp379')
     # pprint(res)
-    res = icat.get_run(
-        "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
+    #res = icat.get_run(
+    #    "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
     pprint(res)

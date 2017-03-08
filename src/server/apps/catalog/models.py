@@ -40,7 +40,8 @@ class InstrumentManager(models.Manager):
 
     def visible_instruments(self, **kwargs):
         return self.filter(active="True", **kwargs).order_by("beamline")
-    
+
+
 class Instrument(models.Model):
     name = models.CharField(
         'instrument name',
@@ -95,6 +96,13 @@ class Instrument(models.Model):
         max_length=256,
     )
 
+    filename_prefix = models.CharField(
+        'filename prefix',
+        help_text='Prefix for file name. E.g. HFIR uses the instrument name',
+        max_length=256,
+        blank=True,
+    )
+
     reduction_available = models.BooleanField(
         'instrument can do reductions',
         help_text='Whether the instrument can do reductions',
@@ -116,8 +124,8 @@ class Instrument(models.Model):
         on_delete=models.CASCADE,
         related_name='instruments',
     )
-    
-     # Manager
+
+    # Manager
     objects = InstrumentManager()
 
     class Meta:
