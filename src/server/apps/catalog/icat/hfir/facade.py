@@ -164,9 +164,9 @@ class Catalog(object):
 
 if __name__ == "__main__":
     icat = Catalog()
-    res = icat.get_experiments("CG3")
+    #res = icat.get_experiments("CG3")
     # pprint(res)
-    # res = icat.get_runs("CG3", 'IPTS-18347','exp379')
+    res = icat.get_runs("CG3", 'IPTS-18347','exp379')
     # pprint(res)
     #res = icat.get_run(
     #    "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')

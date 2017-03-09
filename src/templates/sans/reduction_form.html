@@ -67,17 +67,17 @@
                             </div>
                         {% endfor %}
                         </div>
-                        <!-- dropdown scan / frame -->
-                        <div class="form-group pull-right">
-                            <label for="sel1">Numbers in the spreadsheet are Scans or Frames: <tt>[INSTRUMENT]_exp[EXPERIMENT]_scan[SCAN]_[FRAME].xml</tt>?</label>
-                            <select class="form-control" id="scan_or_frame">
-                                <option value="scan">Scans</option>
-                                <option value="frame">Frames</option>
-                                <option value="abrv">Abreviated: [Scan]_[Frame]</option>
-                                <option value="filename">Filename (E.g.: BioSANS_exp379_scan0020_0001.xml)</option>
-                                <option value="filepath">Full file path</option>
-                            </select>
-                        </div>
+                        <hr/>
+                        <!-- status / error message  -->
+                        <p>You can input on the spreasheet:</p>
+                        <ul class="list-group">
+                            <li class="list-group-item">Full path (if file from other experiment).</li>
+                            <li class="list-group-item">File name (assumend from this experiement)</li>
+                            <li class="list-group-item">The scan number (integer)</li>
+                            <li class="list-group-item">Abreviated notation: [scan]_[frame]. E.g.: 2_123</li>
+                            <li class="list-group-item">If the frame number is needed, use abreviated notation</li>
+                            <li class="list-group-item">Separate multiple runs with ',' whatever notation you use.</li>
+                        </ul>
                     </div>
                 </div>
 
@@ -114,86 +114,50 @@
 // starts with id_regions and finishes with entries
 var entriesSelectors = $('[id ^=id_regions][id $=entries]');
 
-function experiment(facility, instrument, ipts, exp) {
-    this.facility = facility;
-    this.instrument = instrument;
-    this.ipts = ipts;
-    this.exp = exp;
-}
-var experimentInfo = new experiment(
-    "{{user.profile.facility.name}}",
-    "{{user.profile.instrument.name}}",
-    "{{user.profile.ipts}}",
-    "{{user.profile.experiment_number}}"
-);
-/* 1 -> 0001 */
-function padToFour(number) {
-  if (number<=9999) { number = ("000"+number).slice(-4); }
-  return number;
-}
-/* returns a full file path given scanNumber, frameNumber */
-function filePath(scanNumber, frameNumber) {
-    return "{{user.profile.instrument.drive_path}}/{{user.profile.ipts}}/" +
-        "exp{{user.profile.experiment_number}}/Datafiles/{{user.profile.instrument.filename_prefix}}" +
-        "_exp{{user.profile.experiment_number}}_scan" + padToFour(scanNumber)+ "_" + padToFour(frameNumber) +".xml"
-}
+/*
+There will be 3 options when filluing the table:
+- if full path: use full path
+- if filename: get full path from current ipts/full pat
+- if number: use scan
+- abr: use both
+*/
 
-
-
-// Builds a dictionary from the full file path
-// fullpath of the format: /HFIR/CG2/IPTS-18381/exp180/Datafiles/CG2_exp180_scan0068_0001.xml
-function filepathToDictionary(filepath) {
-    var ret = filepath.match(/\/.*\/(.*_scan(\d+)_(\d+)\.xml)/);
-    return {
-        filepath: ret[0], 
-        filename: ret[1], 
-        scan: ret[2], // numeric
-        frame: ret[3], // numeric
-        abrv: ret[2] + "_" + ret[3]
+function validateCellValue(hotInstance, TD, row, col, prop, value, cellProperties) {
+    // this validate what we have: gives color to the cell
+    if (value != null) {
+        if (value.includes(",")) // list! user responsability to make sure it is valid for now!
+            TD.style.backgroundColor = '#ffcccc';
+        else if (matchFullPath(value))
+            TD.style.backgroundColor = '#e6fff2';
+        else if (matchFilename(value))
+            TD.style.backgroundColor = '#e6e6ff';
+        else if (matchRunAndFrame(value))
+            TD.style.backgroundColor = '#f7e6ff';
+        else if (matchRun(value))
+            TD.style.backgroundColor = '#fff2e6';
+        else
+            return; // none of the valid choices: ignore the value!
+        Handsontable.renderers.TextRenderer.apply(this, arguments);
     }
 }
 
-// hot
-function setCellMetadata(hot_instance, ditionary, i, j) {
-    var cell_properties = hot_instance.getCellMeta(i, j);
-    cell_properties.info = ditionary;
+function matchFullPath(value){
+    var ret = value.match(/\/.*\/\w+_exp\d{3}_scan\d{4}\_\d{4}\.xml$/);
+    if (ret == null) return false; else return true;
 }
-
-// hot
-function renderCellValue(hotInstance, TD, row, col, prop, value, cellProperties) {
-    Handsontable.renderers.TextRenderer.apply(this, arguments);
-
-    //console.log(TD, row, col, prop, value, cellProperties);
+function matchFilename(value){
+    var ret = value.match(/\w+_exp\d{3}_scan\d{4}\_\d{4}\.xml$/);
+    if (ret == null) return false; else return true;
 }
-
-
-
-function hotNumericRendered(hotInstance, TD, row, col, prop, value, cellProperties) {
-    
-    Handsontable.renderers.TextRenderer.apply(this, arguments);
-    console.log(TD, row, col, prop, value, cellProperties);
+function matchRunAndFrame(value){
+    var ret = value.match(/\d+\_\d+$/);
+    if (ret == null) return false; else return true;
 }
-
-function set_spreadsheet_cell_properties_and_value(hot_instance, file_path, i, j) {
-    var file_info = spreadsheet_cell_properties(hot_instance, file_path, i, j);
-    var scan_or_frame = $("#scan_or_frame").val();
-    hot_instance.setDataAtCell(i, j, file_info[scan_or_frame]);
-
+function matchRun(value){
+    var ret = value.match(/\d+$/);
+    if (ret == null) return false; else return true;
 }
-
-function spreadsheet_cell_properties(hot_instance, file_path, i, j) {
-    var cell_properties = hot_instance.getCellMeta(i, j);
-    var file_info = filepath_to_scan_and_frame(file_path);
-    cell_properties.scan = file_info.scan;
-    cell_properties.frame = file_info.frame;
-    cell_properties.filename = file_info.filename;
-    cell_properties.filepath = file_info.filepath;
-    return file_info;
-}
-
-
-
-
+// Builds the spread sheet!
 // For every entry input field add a div anchor to place the spreadsheet
 $.each(entriesSelectors, function (i, selector) {
     var data =  JSON.parse(selector.value);
@@ -221,14 +185,11 @@ $.each(entriesSelectors, function (i, selector) {
         manualColumnResize: true,
         columns: [
             { type: 'text', data: "name" },
-            { type: 'numeric', data: "thickness" },
-            {
-                type: 'text', data: "sample_scattering",
-                renderer: renderCellValue
-            },
-            { type: 'numeric', data: "sample_transmission" },
-            { type: 'numeric', data: "backgroung_scattering" },
-            { type: 'numeric', data: "backgroung_transmission" }
+            { type: 'numeric', data: "thickness", format: '0.00' },
+            {  type: 'text', data: "sample_scattering", renderer: validateCellValue },
+            { type: 'text', data: "sample_transmission", renderer: validateCellValue },
+            { type: 'text', data: "backgroung_scattering", renderer: validateCellValue },
+            { type: 'text', data: "backgroung_transmission", renderer: validateCellValue }
         ],
         colHeaders: ["Name", "Thickness", "Sample Scattering", "Sample Transmission", "Backgroung Scattering", "Backgroung Transmission"],
         renderAllRows: false,
@@ -289,7 +250,7 @@ var dataSet = fullDataSet.map(function (run) {
     return [run.title, //0
     run.metadata.scan_type,
     run.thumbnails,
-    run.location]; //3
+    run.filename]; //3
 });
 
 // Make a datatable with icat contents
@@ -320,13 +281,13 @@ $(document).ready(function () {
                     '</ul>' +
                     '" >' +
                     '<span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;</a>' + fullDataSet[meta.row].metadata.scan_number + ": " + data.substring(0, 30);
-            }
-        },
-        { title: "Type" },
-        { title: "Image" },
-        { title: "FilePath" }
+                }
+            },
+            { title: "Type" },
+            { title: "Image" },
+            { title: "FilePath" }
         ],
-        "columnDefs": [
+        "columnDefs": [ // make the other collumns invisible
             {
                 "targets": [1],
                 "visible": false,
@@ -437,10 +398,10 @@ $("[id^='hot']").droppable({
 
         if (row >= 0 && col >= 0) {
             //console.log("Setting i,j:", row, col, "with value = ", ui.draggable.val());
-            set_spreadsheet_cell_properties_and_value(ht, ui.draggable.val(), row, col);
+            ht.setDataAtCell(row, col, ui.draggable.val());
             $cell.css("background-color", "yellow");
         }
-        console.log("done", $cell);
+        //console.log("done", $cell);
     },
     over: function (event, elem) {
         //$(this).addClass("over");
@@ -452,13 +413,6 @@ $("[id^='hot']").droppable({
     }
 });
 
-
-
-
-
 </script>
 
-
-{# This is for django-autocomplete-light:  jquery is loaded before #}
-{{ form.media }}
 {% endblock %}
