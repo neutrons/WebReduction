@@ -413,6 +413,18 @@ $("[id^='hot']").droppable({
     }
 });
 
+// Let's make the beam fields droppable as weel
+// id_regions-0-empty_beam_run
+// id_regions-0-beam_center_run
+$("[id^='id_regions'][id$='empty_beam_run'],[id^='id_regions'][id$='beam_center_run']").droppable({
+    accept: ".ui-draggable",
+    activeClass: "ui-state-highlight",
+    drop: function (event, ui) {
+        ui.helper.hide();
+        $(this).val(ui.draggable.val());
+    }
+});
+
 </script>
 
 {% endblock %}
