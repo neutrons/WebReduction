@@ -166,13 +166,17 @@ var entriesSelectors = $('[id ^=id_regions][id $=entries]');
 // For every entry input field add a div anchor to place the spreadsheet
 $.each(entriesSelectors, function (i, selector) {
     var data =  JSON.parse(selector.value);
-    console.log("entriesSelectors", data);
-    // var data = [{ name: "Test",
-    //               thickness: 1, 
-    //               sample_scattering: 10,
-    //               sample_transmission: 10,
-    //               backgroung_scattering: 10, backgroung_transmission: 10, }
-    // ];
+    if (data == null) {
+        // Note the key here and the name in the collumns below
+        data = [{ name: null,
+                  thickness: null, 
+                  sample_scattering: null,
+                  sample_transmission: null,
+                  backgroung_scattering: null,
+                  backgroung_transmission: null
+                }];
+    }
+    // console.log("Populating hot", i, data);
     // Add the anchor: <div id="hot-?" />
     var $div = $("<div>", { id: "hot-" + i, class: "hot handsontable" });
     $div.insertAfter(selector);
@@ -199,7 +203,7 @@ $.each(entriesSelectors, function (i, selector) {
         colHeaders: ["Name", "Thickness", "Sample Scattering", "Sample Transmission", "Backgroung Scattering", "Backgroung Transmission"],
         renderAllRows: false,
         contextMenu: {
-            items: {
+            items: { // Just give 3 actions to the context menu
                 "row_above": {},
                 "row_below": {},
                 "remove_row": {},
@@ -216,24 +220,17 @@ $.each(entriesSelectors, function (i, selector) {
 function populateFormWithHotContents() {
     // the selectors are ordered by the order they are in the DOM
     // entries are first, hot are after
-    // ,
     var entrySelectors = $('[id ^=id_regions][id $=entries]');
     var hotSelectors = $('[id ^=hot-]');
     // Let's iterate every tab
     for (tab = 0; tab < hotSelectors.length; tab++) {
         //console.log(hotSelectors[i]);
-        var hotContents = JSON.stringify($(hotSelectors[tab]).handsontable('getData'));
+        //var hotContents = JSON.stringify($(hotSelectors[tab]).handsontable('getData'));
         // getSourceData gets the data in the same format it was input. e.g. json
-        //var hotContents = $(hotSelectors[tab]).handsontable('getSourceData');
-        // for (var i = 0; i < hotContents.length; ++i) {
-        //     for (var key in hotContents[i]) {
-        //         if (hotContents[i].hasOwnProperty(key)) {
-        //             //console.log(i, key + " -> " + hotContents[i][key]);
-        //         }
-        //     }
-        // }
-        $(entrySelectors[tab]).val(hotContents);
-        console.log(tab, hotContents);
+        var hotContents = $(hotSelectors[tab]).handsontable('getSourceData');        
+        // Forms entries are strings!!
+        hotContentsStr = JSON.stringify(hotContents);
+        $(entrySelectors[tab]).val(hotContentsStr);
     }
     return true;
 };
