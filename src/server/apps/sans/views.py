@@ -47,7 +47,9 @@ class SANSMixin(object):
     Base for all the Instruments
     '''
     params = {
-        "EQSANS": {},
+        "EQSANS": {
+
+        },
         "BioSANS": {
             "models":
             {
@@ -266,7 +268,7 @@ class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin, DetailView
 
 
 #
-# Mixins for configuration
+# Mixins for Reduction
 #
 
 class ReductionMixin(SANSMixin):
@@ -278,14 +280,17 @@ class ReductionMixin(SANSMixin):
     model_configuration = None
     form_class = None
     formset_class = None
-    
+
     def dispatch(self, request,
                  form_to_use = "reduction", # or  "reduction_script"
                  formset_to_use = "region_formset_create", # or "region_formset_update"
-                  *args, **kwargs):
+                 *args, **kwargs):
         '''
         Overload
         '''
+        # if request.method == 'POST':
+        #     logger.debug("ReductionMixin dispatch POST content:\n%s", pformat(request.POST.dict()))
+
         self._set_instrument_name(request)
         self.model = self.params[self.instrument_name]["models"]["reduction"]
         self.model_configuration = self.params[self.instrument_name]["models"]["configuration"]
@@ -305,6 +310,7 @@ class ReductionMixin(SANSMixin):
         When creating/editing a formset, this will make sure the user only sees it's own
         configurations
         '''
+        logger.debug("ReductionMixin get_formset")
         formset = super(ReductionMixin,self).get_formset(form_class) #instantiate using parent
         for form in formset:
             form.fields['configuration'].queryset = self.model_configuration.objects.filter(user = self.request.user)
@@ -314,13 +320,14 @@ class ReductionMixin(SANSMixin):
         '''
         Sets the initial values for the regions formsets
         '''
+        logger.debug("ReductionMixin get_formset_kwargs")
         kwargs = super(ReductionMixin,self).get_formset_kwargs()
 #         kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
         return kwargs
 
 #
 # Reductions
-#  
+#
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
@@ -350,6 +357,7 @@ class ReductionFormMixin(ReductionMixin):
         '''
         Get RUNs from the catalog
         '''
+        logger.debug("ReductionFormMixin get_context_data")
         context = context = super(ReductionFormMixin, self).get_context_data(**kwargs)
         facility = self.request.user.profile.instrument.facility.name
         instrument = self.request.user.profile.instrument.icat_name
@@ -371,6 +379,7 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
         """
         Sets initial values which are hidden in the form
         """
+        logger.debug("ReductionCreate form_valid")
         form.instance.user = self.request.user
         form.instance.instrument = get_object_or_404(Instrument,name=self.instrument_name)
         return FormsetMixin.form_valid(self, form, formset)
@@ -404,7 +413,7 @@ class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
         return obj
     
     def delete(self, request, *args, **kwargs):
-        logger.debug("Deleting reduction %s"%self.get_object())
+        logger.debug("Deleting reduction %s", self.get_object())
         messages.success(request, 'Reduction %s deleted.'%(self.get_object()))
         return super(ReductionDelete, self).delete(request, *args, **kwargs)
 

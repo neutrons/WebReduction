@@ -23,9 +23,16 @@ class Parser(object):
     def __init__(self, filename):
         if not os.path.exists(filename):
             logger.error("File {} does not exist!".format(filename))
+            self._root = None
         else:
             self._root = self._parse(filename)
     
+    def is_valid(self):
+        if self._root:
+            return True
+        else:
+            return False
+
     def _parse(self, filename):
         logger.info("Parsing: %s."%filename)
         tree = ET.parse(filename)
@@ -36,6 +43,8 @@ class Parser(object):
         '''
         Given Xpath returns either float or string
         '''
+        if not self._root: return None
+
         elems = self._root.findall(xpath)
         if not elems:
             logger.warning("xpath %s is not valid!"%xpath)
@@ -54,6 +63,7 @@ class Parser(object):
         '''
         Parses the XML xpath data into a 2D Xarray
         '''
+        if not self._root: return None
         data_str = self.getMetadata(xpath)
         if data_str:
             data_list_of_chars = [line.split("\t") for line in data_str.strip().split("\n")]

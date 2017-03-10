@@ -118,11 +118,12 @@ class Catalog(object):
         res = {}
         logger.debug("Parsing: {}.".format(filename))
         p = Parser(filename)
-        data_main_detector = p.getData("Data/Detector")
-        data_wing_detector = p.getData("Data/DetectorWing")
-        res['Detector'] = data_main_detector.tolist()
-        if data_wing_detector is not None:
-            res['DetectorWing'] = data_wing_detector.tolist()
+        if p.is_valid():
+            data_main_detector = p.getData("Data/Detector")
+            data_wing_detector = p.getData("Data/DetectorWing")
+            res['Detector'] = data_main_detector.tolist()
+            if data_wing_detector is not None:
+                res['DetectorWing'] = data_wing_detector.tolist()
         return res
 
 

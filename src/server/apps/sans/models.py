@@ -14,7 +14,6 @@ from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 from django_auth_ldap.backend import LDAPBackend
 from django_remote_submission.models import Interpreter
-from pyasn1.compat.octets import null
 
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns

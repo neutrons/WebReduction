@@ -63,21 +63,25 @@
                             <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
                                 {% crispy f f.helper %}
                                 <div class="help-block"></div><!-- vertical spaces -->
-                                <a href="#" class="btn btn-default" role="button" data-toggle="tooltip" title="Click to auto-populate the spreadsheet with info from ICat">Populate from ICat</a>
+                                <a href="#" class="btn btn-default" role="button" data-toggle="tooltip" 
+                                    title="Click to auto-populate the spreadsheet with info from ICat"><span class="glyphicon glyphicon-search"></span> Populate from ICat</a>
                             </div>
                         {% endfor %}
                         </div>
-                        <hr/>
-                        <!-- status / error message  -->
-                        <p>You can input on the spreasheet:</p>
-                        <ul class="list-group">
-                            <li class="list-group-item">Full path (if file from other experiment).</li>
-                            <li class="list-group-item">File name (assumend from this experiement)</li>
-                            <li class="list-group-item">The scan number (integer)</li>
-                            <li class="list-group-item">Abreviated notation: [scan]_[frame]. E.g.: 2_123</li>
-                            <li class="list-group-item">If the frame number is needed, use abreviated notation</li>
-                            <li class="list-group-item">Separate multiple runs with ',' whatever notation you use.</li>
-                        </ul>
+                        <!-- help message  -->
+                        <button class="pull-right" data-toggle="collapse" data-target="#help" onclick="javascript:return false;">
+                            <span class="glyphicon glyphicon-question-sign"></span> Help</button>
+                            <div id="help" class="collapse">
+                                <p>Formats accepted on the spreadsheet:</p>
+                                <ul>
+                                    <li>Full path (if file from other experiment).</li>
+                                    <li>File name (assumend from this experiement)</li>
+                                    <li>The scan number (integer)</li>
+                                    <li>Abreviated notation: [scan]_[frame]. E.g.: 2_123</li>
+                                    <li>If the frame number is needed, use abreviated notation</li>
+                                    <li>Separate multiple runs with ',' whatever notation you use.</li>
+                                </ul>
+                            </div>
                     </div>
                 </div>
 
@@ -109,11 +113,6 @@
 <!-- page script -->
 <script>
 
-/******************* handsontable *************************/
-// Let's get the form entries: id_regions-#-entries
-// starts with id_regions and finishes with entries
-var entriesSelectors = $('[id ^=id_regions][id $=entries]');
-
 /*
 There will be 3 options when filluing the table:
 - if full path: use full path
@@ -142,26 +141,32 @@ function validateCellValue(hotInstance, TD, row, col, prop, value, cellPropertie
 }
 
 function matchFullPath(value){
-    var ret = value.match(/\/.*\/\w+_exp\d{3}_scan\d{4}\_\d{4}\.xml$/);
+    var ret = value.match(/^\/.*\/\w+_exp\d{3}_scan\d{4}\_\d{4}\.xml$/);
     if (ret == null) return false; else return true;
 }
 function matchFilename(value){
-    var ret = value.match(/\w+_exp\d{3}_scan\d{4}\_\d{4}\.xml$/);
+    var ret = value.match(/^\w+_exp\d{3}_scan\d{4}\_\d{4}\.xml$/);
     if (ret == null) return false; else return true;
 }
 function matchRunAndFrame(value){
-    var ret = value.match(/\d+\_\d+$/);
+    var ret = value.match(/^\d+\_\d+$/);
     if (ret == null) return false; else return true;
 }
 function matchRun(value){
-    var ret = value.match(/\d+$/);
+    var ret = value.match(/^\d+$/);
     if (ret == null) return false; else return true;
 }
+
+/******************* handsontable *************************/
+// Let's get the form entries: id_regions-#-entries
+// starts with id_regions and finishes with entries
+var entriesSelectors = $('[id ^=id_regions][id $=entries]');
+
 // Builds the spread sheet!
 // For every entry input field add a div anchor to place the spreadsheet
 $.each(entriesSelectors, function (i, selector) {
     var data =  JSON.parse(selector.value);
-    
+    console.log("entriesSelectors", data);
     // var data = [{ name: "Test",
     //               thickness: 1, 
     //               sample_scattering: 10,
@@ -206,24 +211,29 @@ $.each(entriesSelectors, function (i, selector) {
 
 /*
  Let's map the spreasheet contents into the form entries field
+ This is called by form submit
  */
 function populateFormWithHotContents() {
     // the selectors are ordered by the order they are in the DOM
     // entries are first, hot are after
-    var hotSelectors = $('[id ^=hot-],[id ^=id_regions][id $=entries]');
-    for (i = 0; i < hotSelectors.length; i = i + 2) {
+    // ,
+    var entrySelectors = $('[id ^=id_regions][id $=entries]');
+    var hotSelectors = $('[id ^=hot-]');
+    // Let's iterate every tab
+    for (tab = 0; tab < hotSelectors.length; tab++) {
         //console.log(hotSelectors[i]);
-        //var hotContents = JSON.stringify($(hotSelectors[i+1]).handsontable('getData'));
+        var hotContents = JSON.stringify($(hotSelectors[tab]).handsontable('getData'));
         // getSourceData gets the data in the same format it was input. e.g. json
-        var hotContents = $(hotSelectors[i + 1]).handsontable('getSourceData');
-        for (var i = 0; i < hotContents.length; ++i) {
-            for (var key in hotContents[i]) {
-                if (hotContents[i].hasOwnProperty(key)) {
-                    //console.log(i, key + " -> " + hotContents[i][key]);
-                }
-            }
-        }
-        $(hotSelectors[i]).val(hotContents);
+        //var hotContents = $(hotSelectors[tab]).handsontable('getSourceData');
+        // for (var i = 0; i < hotContents.length; ++i) {
+        //     for (var key in hotContents[i]) {
+        //         if (hotContents[i].hasOwnProperty(key)) {
+        //             //console.log(i, key + " -> " + hotContents[i][key]);
+        //         }
+        //     }
+        // }
+        $(entrySelectors[tab]).val(hotContents);
+        console.log(tab, hotContents);
     }
     return true;
 };

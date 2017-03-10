@@ -33,4 +33,4 @@ class BioSANSRegionForm(RegionForm, ModelForm):
  # New
 BioSANSRegionInlineFormSetCreate = inlineformset_factory(BioSANSReduction, BioSANSRegion, form=BioSANSRegionForm, extra=2, can_delete=False)
 # Edit
-BioSANSRegionInlineFormSetUpdate = inlineformset_factory(BioSANSReduction, BioSANSRegion, form=BioSANSRegionForm, extra=0, can_delete=True)
+BioSANSRegionInlineFormSetUpdate = inlineformset_factory(BioSANSReduction, BioSANSRegion, form=BioSANSRegionForm, extra=0, can_delete=False)

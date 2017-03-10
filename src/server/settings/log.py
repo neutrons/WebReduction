@@ -90,5 +90,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'server.util': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
     }
 }
