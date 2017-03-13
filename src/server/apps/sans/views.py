@@ -436,30 +436,34 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
 class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
     '''
     Edit a Reduction Script
-    This View will generate the script, show it to the user and 
+    This View will generate the script, show it to the user and
     on save save it to db and enevutally submit a job
     '''
     template_name = 'sans/reduction_script_form.html'
-    
     success_url = reverse_lazy('sans:reduction_list')
-    
+
     def dispatch(self, request, *args, **kwargs):
-        return super(ReductionScriptUpdate,
-                     self).dispatch(request,form_to_use = "reduction_script",
-                                    *args, **kwargs)
-                     
-    def get_object(self):
+        return super(
+            ReductionScriptUpdate,
+            self).dispatch(
+                request,
+                form_to_use = "reduction_script",
+                *args, **kwargs)
+
+    def get_object(self, queryset=None):
         '''
         Generate the script and added to object shown on the form
         '''
         obj = super(ReductionScriptUpdate, self).get_object()
         obj_json = self.model.objects.to_json(self.kwargs['pk'])
+        logger.debug(pformat(obj_json))
         python_script = script.build_script(
             os.path.join(os.path.dirname(os.path.realpath(__file__)),
                          self.instrument_name.lower(),
-                         "script.tpl")
-            , obj_json)
+                         "script.tpl"),
+                         obj_json)
         obj.script = python_script
+        logger.debug(python_script)
         obj.script = r"""from __future__ import print_function
 import sys
 import time
@@ -473,7 +477,7 @@ for i in range(5):
 f.close()
         """
         return obj
-    
+
     def form_valid(self, form):
         """
         Sends the script to the custer
@@ -481,8 +485,7 @@ f.close()
         """
         script = form.instance.script
         logger.debug(script)
-        
-        
+
         try:
             server_name = env("JOB_SERVER_NAME")
             server = get_object_or_404(Server, title=server_name)

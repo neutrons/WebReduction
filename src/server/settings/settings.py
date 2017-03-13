@@ -191,14 +191,13 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 USE_L10N = False
 DATETIME_FORMAT = 'Y-m-d H:i:s'
 
- # 'django_remote_submission.tasks.submit_job_to_server': <@task: django_remote_submission.tasks.submit_job_to_server of server:0x7f5e87b5f2b0>}
-
 # Celery configuration
+# For job submission
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 
-
 # Django Channels
+# For live results
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'asgi_redis.RedisChannelLayer',

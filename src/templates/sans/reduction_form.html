@@ -6,7 +6,7 @@
 {{ block.super }}
 <!-- handsontable -->
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
-
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap3-dialog/css/bootstrap-dialog.min.css" %}'>
 <style>
 .ui-draggable {
     cursor: pointer;
@@ -63,13 +63,13 @@
                             <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
                                 {% crispy f f.helper %}
                                 <div class="help-block"></div><!-- vertical spaces -->
-                                <a href="#" class="btn btn-default" role="button" data-toggle="tooltip" 
+                                <a href="#" class="btn btn-default pull-right" role="button" data-toggle="tooltip" 
                                     title="Click to auto-populate the spreadsheet with info from ICat"><span class="glyphicon glyphicon-search"></span> Populate from ICat</a>
                             </div>
                         {% endfor %}
                         </div>
                         <!-- help message  -->
-                        <button class="pull-right" data-toggle="collapse" data-target="#help" onclick="javascript:return false;">
+                        <button class="" data-toggle="collapse" data-target="#help" onclick="javascript:return false;">
                             <span class="glyphicon glyphicon-question-sign"></span> Help</button>
                             <div id="help" class="collapse">
                                 <p>Formats accepted on the spreadsheet:</p>
@@ -110,7 +110,8 @@
 {{ block.super }}
 <script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
 <script src='{% static "thirdparty/handsontable/handsontable.full.min.js" %}'></script>
-<!-- page script -->
+<!-- boot strap dialog for errors -->
+<script src='{% static "thirdparty/bootstrap3-dialog/js/bootstrap-dialog.min.js" %}'></script>
 <script>
 
 /*
@@ -223,11 +224,43 @@ function populateFormWithHotContents() {
     var entrySelectors = $('[id ^=id_regions][id $=entries]');
     var hotSelectors = $('[id ^=hot-]');
     // Let's iterate every tab
-    for (tab = 0; tab < hotSelectors.length; tab++) {
+    for (var tab = 0; tab < hotSelectors.length; ++tab) {
         //console.log(hotSelectors[i]);
         //var hotContents = JSON.stringify($(hotSelectors[tab]).handsontable('getData'));
         // getSourceData gets the data in the same format it was input. e.g. json
-        var hotContents = $(hotSelectors[tab]).handsontable('getSourceData');        
+        var hotContents = $(hotSelectors[tab]).handsontable('getSourceData');
+        // Remove empty rows first
+
+        //iterate all rows
+        for (var rowIdx = 0; rowIdx < hotContents.length; ++rowIdx) {
+            var thisRow = hotContents[rowIdx];
+            var nAttrNull = 0; // number of null atrributes
+            for (key in thisRow) {
+                if (thisRow[key] == null || thisRow[key].length <=0 ){
+                    nAttrNull++;
+                }
+            }
+            // Check all cells for any empty
+            if (nAttrNull > 0 && nAttrNull < Object.keys(thisRow).length ){
+                BootstrapDialog.show({
+                        title: 'ERROR',
+                        message: 'Check if you have any empty fields on your spredsheet - check in all tabs!',
+                        type: BootstrapDialog.TYPE_DANGER,
+                        buttons: [{
+                            label: 'Close',
+                            action: function(dialogRef){
+                                dialogRef.close();
+                            }
+                        }]
+                });
+                return false;
+            }
+            // if all empties, delete this row
+            else if (nAttrNull == Object.keys(thisRow).length){
+                // Splice(start, deleteCount) 
+                hotContents.splice(rowIdx, hotContents.length - rowIdx);
+            }
+        }
         // Forms entries are strings!!
         hotContentsStr = JSON.stringify(hotContents);
         $(entrySelectors[tab]).val(hotContentsStr);

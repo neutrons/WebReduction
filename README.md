@@ -60,3 +60,7 @@ psql reduction reduction
 drop owned by reduction;
 
 ```
+
+## TODO
+
+- cache sessions : get rid of the `authorized_keys`.

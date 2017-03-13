@@ -105,16 +105,17 @@ $.each( entriesSelectors, function( i, selector ) {
     //console.log(data);
     var options = {
         data: data,
-        height: 300,
-        minSpareRows: 10,
+        height: 200,
+        minSpareRows: 0,
         stretchH: 'all',
         columnSorting: true,
         contextMenu: true,
         autoWrapRow: true,
-        rowHeaders: false,
+        rowHeaders: true,
         contextMenu: true,
         outsideClickDeselects: false,
 		readOnly: true
+        
     };
     $(selector).handsontable(options);
     //remove it from the <ul>
