@@ -17,7 +17,6 @@
     position: relative;
     z-index: 1000000000;
 }
-
 </style>
 {% endblock %}
 
@@ -123,7 +122,10 @@ There will be 3 options when filluing the table:
 */
 
 function validateCellValue(hotInstance, TD, row, col, prop, value, cellProperties) {
+    // Custom render for spreadsheet
     // this validate what we have: gives color to the cell
+    // This TextRenderer has to here. Otherwise the delete cell does not work!
+    Handsontable.renderers.TextRenderer.apply(this, arguments);
     if (value != null) {
         if (value.includes(",")) // list! user responsability to make sure it is valid for now!
             TD.style.backgroundColor = '#ffcccc';
@@ -135,9 +137,11 @@ function validateCellValue(hotInstance, TD, row, col, prop, value, cellPropertie
             TD.style.backgroundColor = '#f7e6ff';
         else if (matchRun(value))
             TD.style.backgroundColor = '#fff2e6';
-        else
+        else {
+            value = null;
+            Handsontable.renderers.TextRenderer.apply(this, arguments);
             return; // none of the valid choices: ignore the value!
-        Handsontable.renderers.TextRenderer.apply(this, arguments);
+        }   
     }
 }
 

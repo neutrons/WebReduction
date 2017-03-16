@@ -22,6 +22,8 @@ class ICat(object):
     ICAT generic communication
     '''
 
+    timeout = 5
+
     def __init__(self, url_prefix, headers={}, http_method='get'):
         '''
         @param http_method :: either get or post
@@ -50,6 +52,7 @@ class ICat(object):
                 headers=self._headers,
                 params=params_json,
                 verify=False,
+                timeout=self.timeout
             )
             response.raise_for_status()
             logger.debug("ICat response: %s", response.status_code)

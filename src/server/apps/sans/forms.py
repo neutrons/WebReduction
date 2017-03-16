@@ -30,7 +30,7 @@ class ReductionForm(object):
         self.helper.form_tag = False
 
     class Meta:
-        exclude = ['user', 'instrument', 'script', 'script_interpreter']
+        exclude = ['user', 'instrument', 'script', 'script_interpreter', 'job']
         #widgets = {'script': HiddenInput()}
 
 class ReductionScriptForm(object):

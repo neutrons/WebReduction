@@ -78,7 +78,10 @@
 
 		<a class="btn btn-info" data-toggle="tooltip" data-placement="top" href="{% url 'sans:reduction_script' object.id  %}"
 		    title="Generates a python script and prepare the job submission.">Run...</a>
-		
+        {% if object.job is not None %}
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'results:job_detail' object.job.id  %}"
+		    title="See the Job info and Results for this reduction.">Results...</a>
+		{% endif %}
         <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top" onclick="window.history.back()"
         	href="#" title="Goes back....">Cancel</a>
     </p>

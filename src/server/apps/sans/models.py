@@ -13,7 +13,7 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 from django_auth_ldap.backend import LDAPBackend
-from django_remote_submission.models import Interpreter
+from django_remote_submission.models import Interpreter, Job
 
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
@@ -176,8 +176,7 @@ class ReductionManager(models.Manager):
             d['configuration'] = model_to_dict(region.configuration)
             obj_json["regions"].append(d)
         return obj_json
-    
-    
+
 class Reduction(models.Model, ModelMixin):
     '''
     '''
@@ -185,22 +184,29 @@ class Reduction(models.Model, ModelMixin):
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
-    
+
     script_interpreter = models.ForeignKey(Interpreter,
                                            null=True,
                                            on_delete=models.CASCADE,
                                            related_name="%(class)s_interpreters",
                                            related_query_name="%(class)s_interpreter",)
-    
+
     script = models.TextField(blank=True,
-                              help_text="Python script generated from the reduction entry.")
-    
+                              help_text="Python script generated from the reduction entry. \
+                              If the script was generated already just shows it!")
+
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
                                    related_name="%(class)s_instruments",
                                    related_query_name="%(class)s_instrument",)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                              related_name="%(class)s_users",
                              related_query_name="%(class)s_user",)
+
+    job = models.ForeignKey(Job,
+                            null=True,
+                            on_delete=models.CASCADE,
+                            related_name="%(class)s_job",
+                            related_query_name="%(class)s_job",)
 
     # Manager
     objects = ReductionManager()

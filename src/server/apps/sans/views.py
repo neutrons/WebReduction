@@ -443,6 +443,9 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
     success_url = reverse_lazy('sans:reduction_list')
 
     def dispatch(self, request, *args, **kwargs):
+        '''
+        This only gets the form to use
+        '''
         return super(
             ReductionScriptUpdate,
             self).dispatch(
@@ -452,30 +455,35 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
 
     def get_object(self, queryset=None):
         '''
+        We get the object already in the DB
         Generate the script and added to object shown on the form
         '''
         obj = super(ReductionScriptUpdate, self).get_object()
-        obj_json = self.model.objects.to_json(self.kwargs['pk'])
-        logger.debug(pformat(obj_json))
-        python_script = script.build_script(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                         self.instrument_name.lower(),
-                         "script.tpl"),
-                         obj_json)
-        obj.script = python_script
-        logger.debug(python_script)
-        obj.script = r"""from __future__ import print_function
-import sys
-import time
+        if obj.script is None or obj.script == "":
+            # if the script does not exist, let's generate it!
+            obj_json = self.model.objects.to_json(self.kwargs['pk'])
+            logger.debug(pformat(obj_json))
+            python_script = script.build_script(
+                os.path.join(
+                    os.path.dirname(
+                        os.path.realpath(__file__)),
+                        self.instrument_name.lower(),
+                        "script.tpl"),
+                        obj_json)
+            obj.script = python_script
+            logger.debug(python_script)
+            obj.script = r"""from __future__ import print_function
+    import sys
+    import time
 
-f = open('workfile.txt', 'w')
-for i in range(5):
-    print(i, file=sys.stdout)
-    sys.stdout.flush()
-    f.write(str(i) + '\n')
-    time.sleep(.35)
-f.close()
-        """
+    f = open('workfile.txt', 'w')
+    for i in range(5):
+        print(i, file=sys.stdout)
+        sys.stdout.flush()
+        f.write(str(i) + '\n')
+        time.sleep(.35)
+    f.close()
+            """
         return obj
 
     def form_valid(self, form):
@@ -498,14 +506,13 @@ f.close()
                 owner=self.request.user,
                 interpreter=form.instance.script_interpreter,
             )
-            
-            submit_job_to_server.delay(job.pk, None,
-                                 log_policy=LogPolicy.LOG_TOTAL,
-                                 store_results=["*.txt"])
+            form.instance.job = job
+            submit_job_to_server.delay(
+                job.pk, None,
+                log_policy=LogPolicy.LOG_TOTAL,
+                store_results=["*.txt"])
             messages.success(self.request, "Reduction submitted to the cluster")
         except Exception as e:
             logger.exception(e)
             messages.error(self.request, "Reduction not submitted to the cluster: %s"%(str(e)))
-        
-        
         return super(ReductionScriptUpdate, self).form_valid(form)
