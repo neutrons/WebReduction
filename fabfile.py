@@ -15,9 +15,9 @@ fab deploy_dev
 from __future__ import print_function, with_statement
 
 import os
-import time
 
-from fabric.api import task, run, env, local, path, prefix, cd, hosts, roles, parallel, settings, sudo
+from fabric.api import task, run, env, local, path, prefix, cd, \
+    hosts, roles, parallel, settings, sudo
 from fabric.contrib import files
 
 

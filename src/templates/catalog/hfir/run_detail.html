@@ -23,7 +23,7 @@
         <li><a href="{% url 'index' %}">Home</a></li>
         <li><a href="{% url 'catalog:list_instruments'%}">Catalog</a></li>
         <li><a href="{% url 'catalog:list_iptss' instrument %}">{{instrument}}</a></li>
-        <li><a href="{% url 'catalog:list_runs' instrument ipts exp %}">{{ipts}}</a></li>        
+        <li><a href="{% url 'catalog:list_runs' instrument ipts exp %}">{{ipts}} :: {{exp}}</a></li>        
 		<li class="active">{{run.filename}}</li>
     </ol>
 </div>

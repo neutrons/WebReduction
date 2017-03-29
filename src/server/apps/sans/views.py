@@ -473,17 +473,17 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
             obj.script = python_script
             logger.debug(python_script)
             obj.script = r"""from __future__ import print_function
-    import sys
-    import time
+import sys
+import time
 
-    f = open('workfile.txt', 'w')
-    for i in range(5):
-        print(i, file=sys.stdout)
-        sys.stdout.flush()
-        f.write(str(i) + '\n')
-        time.sleep(.35)
-    f.close()
-            """
+f = open('workfile.txt', 'w')
+for i in range(5):
+    print(i, file=sys.stdout)
+    sys.stdout.flush()
+    f.write(str(i) + '\n')
+    time.sleep(.35)
+f.close()
+"""
         return obj
 
     def form_valid(self, form):
