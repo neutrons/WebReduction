@@ -139,6 +139,7 @@ STATICFILES_DIRS = [
 # Folder where we put the collected static content: ./manage.py collectstatic
 STATIC_ROOT = env("STATIC_ROOT", default=ROOT_DIR('../dist/static'))
 
+# Folder where uploaded files go
 MEDIA_URL = '/media/'
 MEDIA_ROOT = env("MEDIA_ROOT", default=ROOT_DIR('../dist/media'))
 

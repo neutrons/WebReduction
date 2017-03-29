@@ -59,23 +59,21 @@ class LoginView(FormView):
         password = form.cleaned_data["password"]
         user = authenticate(username=username, password=password)
         if user is not None and not user.is_anonymous():
-            logger.debug("Authenticating user %s..."%username)
+            logger.debug("Authenticating user %s...", username)
             auth_login(self.request, user)
-            logger.debug("User %s authenticated."%username)
-            # let's drop the key
-            self._drop_the_public_key_on_the_cluster(username, password)
+            logger.debug("User %s authenticated.", username)
+            # let's save the credentials to login on analysisis later
+            self._save_credentials_in_session(password)
         else:
             messages.error(self.request, "Django Authenticate Failed. Invalid username or password!")
 
         # Default authentication (NO PASSWORD!)
-#         auth_login(self.request, form.get_user())
-
+        # auth_login(self.request, form.get_user())
         return super(LoginView, self).form_valid(form)
 
-    
     def get_success_url(self):
         try:
-            UserProfile.objects.get(user = self.request.user)
+            UserProfile.objects.get(user=self.request.user)
         except ObjectDoesNotExist:
             logger.info("Redirecting to create user profile!")
             return self.create_profile_url
@@ -88,20 +86,12 @@ class LoginView(FormView):
     def form_invalid(self, form):
         messages.error(self.request, "Invalid username or password!")
         return super(LoginView, self).form_invalid(form)
-    
-    def _drop_the_public_key_on_the_cluster(self, username, password):
+
+    def _save_credentials_in_session(self, password):
         '''
-        Drops the public key in the cluster
-        So Job submissionn will be done without password 
         '''
-        server_name = env("JOB_SERVER_NAME")
-        public_key_path = env("JOB_PUBLIC_KEY_PATH")
-        logger.debug("Dropping the key %s in %s.", public_key_path, server_name)
-        server = get_object_or_404(Server, title=server_name)
-        logger.debug("Server: %s.", server.hostname)
-        wrapper = RemoteWrapper(hostname=server.hostname, username=username)
-        wrapper.connect(password, public_key_path)
-        wrapper.close()
+        logger.debug("Setting credentials in the session...")
+        self.request.session["password"] = password
 
 class LogoutView(RedirectView):
     """

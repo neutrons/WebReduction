@@ -364,7 +364,10 @@ class ReductionFormMixin(ReductionMixin):
         ipts = self.request.user.profile.ipts
         exp = "exp{}".format(self.request.user.profile.experiment_number)
         logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
-        runs = get_runs(facility, instrument, ipts, exp)
+        try:
+            runs = get_runs(facility, instrument, ipts, exp)
+        except Exception:
+            runs = []
         context['runs'] = json.dumps(runs) #Converts dict to string and None to null: Good for JS
         return context
 
@@ -508,8 +511,8 @@ f.close()
             )
             form.instance.job = job
             submit_job_to_server.delay(
-                job.pk, None,
-                log_policy=LogPolicy.LOG_TOTAL,
+                job.pk, password=self.request.session["password"],
+                log_policy=LogPolicy.LOG_LIVE,
                 store_results=["*.txt"])
             messages.success(self.request, "Reduction submitted to the cluster")
         except Exception as e:

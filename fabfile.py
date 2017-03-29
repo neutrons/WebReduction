@@ -141,16 +141,15 @@ def deploy():
     files.upload_template(env['nginx_conf_template'], env['nginx_conf_file'], context=env)
     files.upload_template(env['uwsgi_ini_template'], env['uwsgi_ini_file'], context=env)
     files.upload_template(env['redis_conf_template'], env['redis_conf_file'], context=env)
-    
 
     with prefix('. ' + venv_root + '/bin/activate'), settings(warn_only=True):
         run("killall -w -q -s INT $(which uwsgi)")
         run("$(which uwsgi) --ini %(uwsgi_ini_file)s"%env)
-    
+
     with settings(warn_only=True):
         run("killall -w -q -s INT $(which redis-server)")
     run_background("$(which redis-server) %(redis_conf_file)s"%env)
-    
+
     with cd(src_root), prefix('. ' + venv_root + '/bin/activate'), settings(warn_only=True):
         run("kill -9 $(ps -ef  | grep $(which celery) | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)")
         run_background("$(which celery) -A server.celery worker --loglevel=info --logfile=%(project_root)s/dist/celery.log"%env)
