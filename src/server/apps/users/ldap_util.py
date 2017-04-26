@@ -33,7 +33,8 @@ class LdapSns(object):
 
     def __init__(self):
         ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-        self.server = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+        #self.server = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+        self.server = ldap.initialize("ldaps://ldap-vip.sns.gov")
 
     def __del__(self):
         self.server.unbind()
@@ -69,6 +70,17 @@ class LdapSns(object):
                 uids.append(uid.decode('UTF-8'))
         return uids
 
+    def get_all_uids_for_a_list_of_iptss(self, iptss):
+        '''
+        @param iptss: list of iptss
+        @return list of uids: ['djk', 'jameshutchison', 'sandercr', 'hbd', 'q3n']
+        '''
+        results = []
+        for ipts in iptss:
+            res = self.get_all_uids_for_an_ipts(ipts)
+            results.extend(res)
+        return results
+
     def get_all_users_and_ipts(self):
         '''
         @return: lists of:   {'cn': [b'IPTS-17329'],
@@ -79,7 +91,6 @@ class LdapSns(object):
                                              b'yyc',
                                              b'ri2',
                                              b'j7t']})
-        Not used!!
 
         >>> all_users_and_ipts[-1]
         ('cn=IPTS-17329,ou=Groups,dc=sns,dc=ornl,dc=gov', {'cn': [b'IPTS-17329'], 'memberUid': [b'ckt', b'boehler', b'biancahaberl', b'l8d', b'yyc', b'ri2', b'j7t']})
@@ -95,6 +106,7 @@ class LdapSns(object):
         )
         return results
 
+
     def get_all_users_name_and_uid(self):
         '''
         @return: list of {'name': 'Whitaker, Tracy H', 'uid': 'twq'},
@@ -106,7 +118,22 @@ class LdapSns(object):
             "(objectClass=posixAccount)",
             ["cn", "uid"]
         )
-        return [{'uid': result[1]['uid'][0].decode('UTF-8'), 'name': result[1]['cn'][0].decode('UTF-8')} for result in results]
+        return [{'uid': result[1]['uid'][0].decode('UTF-8'),
+                 'name': result[1]['cn'][0].decode('UTF-8')}
+                for result in results]
+    
+    def get_user_name(self, uid):
+        '''
+        @return: list of {'Whitaker, Tracy H',  'Williamson, Richard L'...]
+        '''
+        results = self.server.search_s(
+            "ou=Users,dc=sns,dc=ornl,dc=gov",
+            ldap.SCOPE_SUBTREE,
+            "(&(objectClass=posixAccount)(uid=%s))" % uid,
+            ["cn",]
+        )
+        #return results
+        return results[0][1]['cn'][0].decode('UTF-8')
 
     def get_all_ipts_for_an_uid(self, uid):
         '''
@@ -125,13 +152,13 @@ if __name__ == '__main__':
     from pprint import pprint
     l = LdapSns()
 
-    #all_ipts = l.get_all_ipts()
+    # all_ipts = l.get_all_ipts()
     # pprint(all_ipts)
 
-    #all_uids_for_an_ipts = l.get_all_uids_for_an_ipts(all_ipts[-1])
+    # all_uids_for_an_ipts = l.get_all_uids_for_an_ipts(all_ipts[-1])
     # pprint(all_uids_for_an_ipts)
 
-    #all_users_and_ipts = l.get_all_users_and_ipts()
+    # all_users_and_ipts = l.get_all_users_and_ipts()
     # pprint(all_users_and_ipts)
 
     #all_users_name_and_uid = l.get_all_users_name_and_uid()
@@ -139,3 +166,10 @@ if __name__ == '__main__':
 
     #all_ipts_for_an_uid = l.get_all_ipts_for_an_uid("19g")
     # pprint(all_ipts_for_an_uid)
+
+    r = l.get_all_uids_for_a_list_of_iptss(['IPTS-15226', 'IPTS-15318', 'IPTS-17284'])
+    pprint(r)
+
+    for uid in r:
+        name = l.get_user_name(uid)
+        print(uid, name)
