@@ -503,27 +503,13 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 form_to_use="reduction_script",
                 *args, **kwargs)
 
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        initial = super(ReductionScriptUpdate, self).get_initial()
-        initial['script_execution_path'] = os.path.join(
-            self.request.user.profile.instrument.drive_path,
-            str(self.request.user.profile.ipts),
-            "exp-%s" % self.request.user.profile.experiment_number if \
-                self.request.user.profile.experiment_number  else "",
-            "Shared", "AutoRedution"
-        )
-        this_obj = self.model.objects.get(id=self.kwargs['pk'])
-        return initial
-
     def get_object(self, queryset=None):
         '''
         We get the object already in the DB
         This is called by get and post
         Generate the script (if the script field in the DB is empty!)
         and add it to object shown on the form
+        It does the same for sript path. It should work HFIR and SNS
         '''
         obj = super(ReductionScriptUpdate, self).get_object()
         if obj.script is None or obj.script == "":
@@ -550,7 +536,16 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
 #     f.write(str(i) + '\n')
 #     time.sleep(.35)
 # f.close()
-# """
+# """   
+        if obj.script_execution_path is None or \
+            obj.script_execution_path == "":
+            obj.script_execution_path = os.path.join(
+                self.request.user.profile.instrument.drive_path,
+                str(self.request.user.profile.ipts),
+                "exp-%s" % self.request.user.profile.experiment_number if \
+                    self.request.user.profile.experiment_number > 0  else "",
+                "Shared", "AutoRedution"
+            )
         return obj
 
     def form_valid(self, form):
@@ -571,7 +566,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 job = Job.objects.create(
                     title=form.instance.title,
                     program=form.instance.script,
-                    remote_directory="/SNS/users/rhf/tmp",
+                    remote_directory=form.instance.script_execution_path,
                     remote_filename="reduction_" + datetime.now().strftime("%Y%m%d-%H%M%S.%f") + ".py",
                     server=server,
                     owner=self.request.user,
