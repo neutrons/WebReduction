@@ -44,7 +44,7 @@ class ReductionScriptForm(object):
         self.helper.layout.append(Button('cancel', 'Cancel', css_class='btn-default',
                                          onclick="window.history.back()"))
     class Meta:
-        fields = ['script_interpreter', 'script']
+        fields = ['script_interpreter', 'script_execution_path', 'script']
         #exclude = ['user', 'instrument']
         
 class RegionForm(object):

@@ -43,7 +43,7 @@ class ModelMixin(object):
             if hasattr(self, get_choice):
                 value = getattr(self, get_choice)()
             else:
-                try :
+                try:
                     value = getattr(self, fname)
                 except AttributeError:
                     value = None
@@ -190,6 +190,8 @@ class Reduction(models.Model, ModelMixin):
                                            on_delete=models.CASCADE,
                                            related_name="%(class)s_interpreters",
                                            related_query_name="%(class)s_interpreter",)
+
+    script_execution_path = models.CharField(max_length=256)
 
     script = models.TextField(blank=True,
                               help_text="Python script generated from the reduction entry. \

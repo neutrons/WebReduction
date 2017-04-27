@@ -503,6 +503,21 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 form_to_use="reduction_script",
                 *args, **kwargs)
 
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(ReductionScriptUpdate, self).get_initial()
+        initial['script_execution_path'] = os.path.join(
+            self.request.user.profile.instrument.drive_path,
+            str(self.request.user.profile.ipts),
+            "exp-%s" % self.request.user.profile.experiment_number if \
+                self.request.user.profile.experiment_number  else "",
+            "Shared", "AutoRedution"
+        )
+        this_obj = self.model.objects.get(id=self.kwargs['pk'])
+        return initial
+
     def get_object(self, queryset=None):
         '''
         We get the object already in the DB
