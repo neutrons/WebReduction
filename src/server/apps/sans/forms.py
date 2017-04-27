@@ -39,7 +39,8 @@ class ReductionScriptForm(object):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
-        self.helper.layout.append(Submit('submit', 'Save Script & Submit job'))
+        self.helper.layout.append(Submit('save', 'Save & go back'))
+        self.helper.layout.append(Submit('submit', 'Save & Submit job'))
         self.helper.layout.append(Button('cancel', 'Cancel', css_class='btn-default',
                                          onclick="window.history.back()"))
     class Meta:

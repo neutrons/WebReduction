@@ -481,12 +481,14 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
         return obj
 
 
-
 class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
     '''
     Edit a Reduction Script
-    This View will generate the script, show it to the user and
-    on save save it to db and enevutally submit a job
+    on GET:
+    Generate the script and show it to the user
+    on POST:
+    - Save it
+    - Save it and submit the job to the cluster
     '''
     template_name = 'sans/reduction_script_form.html'
     success_url = reverse_lazy('sans:reduction_list')
@@ -496,72 +498,77 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         This only gets the form to use
         '''
         return super(
-            ReductionScriptUpdate,
-            self).dispatch(
+            ReductionScriptUpdate, self).dispatch(
                 request,
-                form_to_use = "reduction_script",
+                form_to_use="reduction_script",
                 *args, **kwargs)
 
     def get_object(self, queryset=None):
         '''
         We get the object already in the DB
-        Generate the script and added to object shown on the form
+        This is called by get and post
+        Generate the script (if the script field in the DB is empty!)
+        and add it to object shown on the form
         '''
         obj = super(ReductionScriptUpdate, self).get_object()
         if obj.script is None or obj.script == "":
             # if the script does not exist, let's generate it!
+            logger.debug("Getting object %s and generate the script.", obj)
             obj_json = self.model.objects.to_json(self.kwargs['pk'])
-            logger.debug(pformat(obj_json))
+            #logger.debug(pformat(obj_json))
             python_script = script.build_script(
                 os.path.join(
                     os.path.dirname(
                         os.path.realpath(__file__)),
-                        self.instrument_name.lower(),
-                        "script.tpl"),
-                        obj_json)
+                    self.instrument_name.lower(),
+                    "script.tpl"),
+                obj_json)
             obj.script = python_script
-            logger.debug(python_script)
-            obj.script = r"""from __future__ import print_function
-import sys
-import time
+#             obj.script = r"""from __future__ import print_function
+# import sys
+# import time
 
-f = open('workfile.txt', 'w')
-for i in range(5):
-    print(i, file=sys.stdout)
-    sys.stdout.flush()
-    f.write(str(i) + '\n')
-    time.sleep(.35)
-f.close()
-"""
+# f = open('workfile.txt', 'w')
+# for i in range(5):
+#     print(i, file=sys.stdout)
+#     sys.stdout.flush()
+#     f.write(str(i) + '\n')
+#     time.sleep(.35)
+# f.close()
+# """
         return obj
 
     def form_valid(self, form):
         """
-        Sends the script to the custer
-        TODO
+        If the form is valid this is called!
+        Checks what kind of button was pressed
         """
-        script = form.instance.script
-        logger.debug(script)
 
-        try:
-            server_name = env("JOB_SERVER_NAME")
-            server = get_object_or_404(Server, title=server_name)
-            job = Job.objects.create(
-                title= form.instance.title,
-                program=form.instance.script,
-                remote_directory ="/SNS/users/rhf/tmp",
-                remote_filename= "reduction_" + datetime.now().strftime("%Y%m%d-%H%M%S.%f") + ".py",
-                server=server,
-                owner=self.request.user,
-                interpreter=form.instance.script_interpreter,
-            )
-            form.instance.job = job
-            submit_job_to_server.delay(
-                job.pk, password=self.request.session["password"],
-                log_policy=LogPolicy.LOG_LIVE,
-                store_results=["*.txt"])
-            messages.success(self.request, "Reduction submitted to the cluster")
-        except Exception as e:
-            logger.exception(e)
-            messages.error(self.request, "Reduction not submitted to the cluster: %s"%(str(e)))
+        if 'save' in self.request.POST:
+            messages.success(self.request, "Reduction script saved.")
+            self.success_url = reverse_lazy('sans:reduction_detail',
+                                            args=[self.kwargs['pk']])
+        else:
+
+            try:
+                server_name = env("JOB_SERVER_NAME")
+                server = get_object_or_404(Server, title=server_name)
+                job = Job.objects.create(
+                    title=form.instance.title,
+                    program=form.instance.script,
+                    remote_directory="/SNS/users/rhf/tmp",
+                    remote_filename="reduction_" + datetime.now().strftime("%Y%m%d-%H%M%S.%f") + ".py",
+                    server=server,
+                    owner=self.request.user,
+                    interpreter=form.instance.script_interpreter,
+                )
+                form.instance.job = job
+                submit_job_to_server.delay(
+                    job.pk, password=self.request.session["password"],
+                    log_policy=LogPolicy.LOG_LIVE,
+                    store_results=["*.txt"])
+                messages.success(self.request, "Reduction submitted to the cluster")
+            except Exception as e:
+                logger.exception(e)
+                messages.error(self.request, "Reduction not submitted to the cluster: %s"%(str(e)))
         return super(ReductionScriptUpdate, self).form_valid(form)
