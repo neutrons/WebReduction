@@ -1,43 +1,38 @@
-from django.http import Http404
 import json
 import logging
 import os
-from pprint import pformat
 from datetime import datetime
+from pprint import pformat
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.contenttypes.models import ContentType
-from django.core.serializers.json import DjangoJSONEncoder
-from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, \
-    DeleteView, RedirectView, TemplateView
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  TemplateView, UpdateView)
+from django_remote_submission.models import Job, Server
+from django_remote_submission.tasks import LogPolicy, submit_job_to_server
 
+from server.apps.catalog.icat.facade import get_expriments, get_runs
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
+from server.settings.env import env
 from server.util import script
 from server.util.formsets import FormsetMixin
 
-from django_remote_submission.models import Job, Server
-from django_remote_submission.tasks import submit_job_to_server, LogPolicy
-from server.settings.env import env
-
-from .models import Region
-
+from .biosans.forms import (BioSANSConfigurationForm, BioSANSReductionForm,
+                            BioSANSReductionScriptForm, BioSANSRegionForm,
+                            BioSANSRegionInlineFormSetCreate,
+                            BioSANSRegionInlineFormSetUpdate)
+from .biosans.models import (BioSANSConfiguration, BioSANSReduction,
+                             BioSANSRegion)
 # GPSANS imports
-from .gpsans.forms import GPSANSConfigurationForm, GPSANSReductionForm, GPSANSRegionForm, \
-    GPSANSReductionScriptForm, GPSANSRegionInlineFormSetCreate, GPSANSRegionInlineFormSetUpdate
+from .gpsans.forms import (GPSANSConfigurationForm, GPSANSReductionForm,
+                           GPSANSReductionScriptForm, GPSANSRegionForm,
+                           GPSANSRegionInlineFormSetCreate,
+                           GPSANSRegionInlineFormSetUpdate)
 from .gpsans.models import GPSANSConfiguration, GPSANSReduction, GPSANSRegion
-
-from .biosans.forms import BioSANSConfigurationForm, BioSANSReductionForm, BioSANSRegionForm, \
-    BioSANSReductionScriptForm, BioSANSRegionInlineFormSetCreate, BioSANSRegionInlineFormSetUpdate
-from .biosans.models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
-
-from server.apps.catalog.icat.facade import get_runs
-
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +92,7 @@ class SANSMixin(object):
 # Mixin for configuration
 #
 
+
 class ConfigurationMixin(SANSMixin):
     '''
     Sets everything for configuration
@@ -104,7 +100,7 @@ class ConfigurationMixin(SANSMixin):
     '''
     model = None
     form_class = None
-    
+
     def dispatch(self, request, *args, **kwargs):
         '''
         Overload
@@ -119,10 +115,11 @@ class ConfigurationMixin(SANSMixin):
         Make sure the user only accesses its configurations
         '''
         return self.model.objects.filter(user=self.request.user)
-    
+
 #
 # Configuration
 #
+
 
 class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
     '''
@@ -131,24 +128,25 @@ class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
     No need for any definitions 
     '''
     template_name = 'sans/configuration_list.html'
-    
+
 
 class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixin, DetailView):
     '''
     Detail of a configuration
     '''
     template_name = 'sans/configuration_detail.html'
-    
+
     def get_queryset(self):
         queryset = super(ConfigurationDetail, self).get_queryset()
         return queryset.filter(id=self.kwargs['pk'])
+
 
 class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, CreateView):
     '''
     Detail of a configuration
     '''
     template_name = 'sans/configuration_form.html'
-    
+
     success_url = reverse_lazy('sans:configuration_list')
 
     def form_valid(self, form):
@@ -157,7 +155,7 @@ class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, CreateView):
         """
         form.instance.user = self.request.user
         form.instance.instrument = get_object_or_404(Instrument,
-            name= self.instrument_name)
+            name=self.instrument_name)
         return CreateView.form_valid(self, form)
 
 
@@ -167,10 +165,10 @@ class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, UpdateView):
     '''
     template_name = 'sans/configuration_form.html'
     success_url = reverse_lazy('sans:configuration_list')
-    
+
 
 class ConfigurationDelete(LoginRequiredMixin, ConfigurationMixin, DeleteView):
-    
+
     template_name = 'sans/configuration_confirm_delete.html'
     success_url = reverse_lazy('sans:configuration_list')
 
@@ -179,33 +177,35 @@ class ConfigurationDelete(LoginRequiredMixin, ConfigurationMixin, DeleteView):
         Hook to ensure object is owned by request.user.
         """
         obj = super(ConfigurationDelete, self).get_object()
-        if not obj.user  == self.request.user:
+        if not obj.user == self.request.user:
             raise Http404("The user {} is not the owner of {}.".format(
                 self.request.user, obj))
         return obj
 
     def delete(self, request, *args, **kwargs):
-        logger.debug("Deleting Configuration %s"%self.get_object())
-        messages.success(request, 'Configuration %s deleted.'%(self.get_object()))
+        logger.debug("Deleting Configuration %s " % self.get_object())
+        messages.success(request,
+                         'Configuration %s deleted.' % self.get_object())
         return super(ConfigurationDelete, self).delete(request, *args, **kwargs)
 
 
-    
 class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
     '''
     Clones the Object Configuration. Keeps the same user
     '''
-    
+
     template_name = 'sans/configuration_detail.html'
-    
+
     def get_object(self):
         obj = self.model.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
-        messages.success(self.request, "Configuration '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
+        messages.success(self.request, "Configuration '%s' cloned. New id is \
+            '%s'. Click Edit below to change it." % (obj, obj.pk))
         return obj
 
 
-class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin, TemplateView):
+class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin,
+                                 TemplateView):
     '''
     List all UIDS + names and provides a link to assign a Configuration
     to a user.
@@ -214,15 +214,45 @@ class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin, Templat
     template_name = 'sans/configuration_list_uid.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ConfigurationAssignListUid, self).get_context_data(**kwargs)
+        '''
+        Fromat of the object_list:
+        ..., {'name': 'Durniak, Celine', 'uid': 'celine_durniak'},
+            {'name': 'Legg, Max', 'uid': 'mlegg'}]
+        '''
+        context = super(ConfigurationAssignListUid,
+                        self).get_context_data(**kwargs)
         ldap_server = LdapSns()
-        users_and_uids = ldap_server.get_all_users_name_and_uid()
-        context['object_list'] = users_and_uids
+        # This get's all users from LDAP
+        # users_and_uids = ldap_server.get_all_users_name_and_uid()
+        # This only gets users that have IPTS for this beamline
+        this_instrument_ipts = get_expriments(
+            facility=self.request.user.profile.instrument.facility.name,
+            instrument=self.request.user.profile.instrument.icat_name
+        )
+        this_instrument_ipts = [d['ipts'] for d in this_instrument_ipts]
+        # logger.debug(this_instrument_ipts)
+        users_and_uids = []
+        uids = ldap_server.get_all_uids_for_a_list_of_iptss(
+            this_instrument_ipts)
+        # logger.debug(uids)
+        for uid in uids:
+            try:
+                if not any(uid == d['uid'] for d in users_and_uids):
+                    name = ldap_server.get_user_name(uid)
+                    users_and_uids.append({'name': name, 'uid': uid})
+            except IndexError:
+                # Don't ask me why but some uids don't exist in the LDAP
+                pass
+
+        logger.debug(users_and_uids)
+        context['object_list'] = list(users_and_uids)
         obj = self.model.objects.get(pk=kwargs['pk'])
         context['object'] = obj
         return context
 
-class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin, TemplateView):
+
+class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin,
+                                  TemplateView):
     '''
     List all IPTSs and provides a link to assign a Configuration
     to all users to that IPTS.
@@ -231,10 +261,19 @@ class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin, Templa
     template_name = 'sans/configuration_list_ipts.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ConfigurationAssignListIpts, self).get_context_data(**kwargs)
-        ldap_server = LdapSns()
-        ipts = ldap_server.get_all_ipts()
-        context['object_list'] = ipts
+        context = super(ConfigurationAssignListIpts,
+                        self).get_context_data(**kwargs)
+        # Get IPTSs from LDAP
+        # ldap_server = LdapSns()
+        # all_ipts = ldap_server.get_all_ipts()
+        # logger.debug(all_ipts)
+        # For now, I'm getting the IPTSs from ICAT
+        this_instrument_ipts = get_expriments(
+            facility=self.request.user.profile.instrument.facility.name,
+            instrument=self.request.user.profile.instrument.icat_name
+        )
+        logger.debug(this_instrument_ipts)
+        context['object_list'] = [d['ipts'] for d in this_instrument_ipts]
         obj = self.model.objects.get(pk=kwargs['pk'])
         context['object'] = obj
         return context
@@ -248,22 +287,29 @@ class ConfigurationAssignUid(LoginRequiredMixin, ConfigurationMixin, DetailView)
     '''
     template_name = 'sans/configuration_detail.html'
 
-    
     def get(self, request, *args, **kwargs):
-        obj = self.model.objects.clone_and_assign_new_uid(kwargs['pk'],kwargs['uid'])
-        messages.success(request, "Configuration %s assigned to the user %s. New configuration id = %s."%(obj, obj.user, obj.pk))
+        obj = self.model.objects.clone_and_assign_new_uid(
+            kwargs['pk'], kwargs['uid'])
+        messages.success(request, "Configuration %s assigned to the user %s. \
+            New configuration id = %s." % (obj, obj.user, obj.pk))
         return super(ConfigurationAssignUid, self).get(request, *args, **kwargs)
 
-class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin, DetailView):
+
+class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin,
+                              DetailView):
     '''
     
     '''
     template_name = 'sans/configuration_detail.html'
     
     def get(self, request, *args, **kwargs):
-        cloned_objs = self.model.objects.clone_and_assign_new_uids_based_on_ipts(kwargs['pk'],kwargs['ipts'])
+        cloned_objs = self.model.objects.clone_and_assign_new_uids_based_on_ipts(
+            kwargs['pk'], kwargs['ipts'])
         for obj in cloned_objs:
-            messages.success(request, "Configuration %s assigned to the user %s. New configuration id = %s."%(obj, obj.user, obj.pk))
+            messages.success(
+                request,
+                "Configuration %s assigned to the user "
+                "%s. New configuration id = %s." % (obj, obj.user, obj.pk))
         return super(ConfigurationAssignIpts, self).get(request, *args, **kwargs)
 
 
