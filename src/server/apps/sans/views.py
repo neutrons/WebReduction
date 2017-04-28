@@ -531,7 +531,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 obj.script_execution_path = os.path.join(
                     self.request.user.profile.instrument.drive_path,
                     str(self.request.user.profile.ipts),
-                    "exp-%s" % self.request.user.profile.experiment_number if \
+                    "exp%s" % self.request.user.profile.experiment_number if \
                         self.request.user.profile.experiment_number > 0  else "",
                     "Shared", "AutoRedution"
                 )
