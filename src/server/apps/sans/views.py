@@ -512,41 +512,47 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         It does the same for sript path. It should work HFIR and SNS
         '''
         obj = super(ReductionScriptUpdate, self).get_object()
-        if obj.script is None or obj.script == "":
-            # if the script does not exist, let's generate it!
-            logger.debug("Getting object %s and generate the script.", obj)
+        # If we are generating thr form fill in empty bits
+        if self.request.method == 'GET':
+            if obj.script is None or obj.script == "":
+                # if the script does not exist, let's generate it!
+                logger.debug("Generate the script for %s.", obj)
+                obj_json = self.model.objects.to_json(self.kwargs['pk'])
+                #logger.debug(pformat(obj_json))
+                python_script = script.build_script(
+                    os.path.join(
+                        os.path.dirname(
+                            os.path.realpath(__file__)),
+                        self.instrument_name.lower(),
+                        "script.tpl"),
+                    obj_json)
+                obj.script = python_script
+            if obj.script_execution_path is None or obj.script_execution_path == "":
+                obj.script_execution_path = os.path.join(
+                    self.request.user.profile.instrument.drive_path,
+                    str(self.request.user.profile.ipts),
+                    "exp-%s" % self.request.user.profile.experiment_number if \
+                        self.request.user.profile.experiment_number > 0  else "",
+                    "Shared", "AutoRedution"
+                )
+        logger.debug(obj.script)
+        return obj
+
+    def post(self, request, **kwargs):
+        if 'generate' in self.request.POST:
+            request.POST = request.POST.copy()
             obj_json = self.model.objects.to_json(self.kwargs['pk'])
-            #logger.debug(pformat(obj_json))
-            python_script = script.build_script(
+            request.POST['script'] = script.build_script(
                 os.path.join(
                     os.path.dirname(
                         os.path.realpath(__file__)),
                     self.instrument_name.lower(),
                     "script.tpl"),
                 obj_json)
-            obj.script = python_script
-#             obj.script = r"""from __future__ import print_function
-# import sys
-# import time
+        return super(ReductionScriptUpdate, self).post(request, **kwargs)
 
-# f = open('workfile.txt', 'w')
-# for i in range(5):
-#     print(i, file=sys.stdout)
-#     sys.stdout.flush()
-#     f.write(str(i) + '\n')
-#     time.sleep(.35)
-# f.close()
-# """   
-        if obj.script_execution_path is None or \
-            obj.script_execution_path == "":
-            obj.script_execution_path = os.path.join(
-                self.request.user.profile.instrument.drive_path,
-                str(self.request.user.profile.ipts),
-                "exp-%s" % self.request.user.profile.experiment_number if \
-                    self.request.user.profile.experiment_number > 0  else "",
-                "Shared", "AutoRedution"
-            )
-        return obj
+
+    
 
     def form_valid(self, form):
         """
@@ -558,8 +564,11 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
             messages.success(self.request, "Reduction script saved.")
             self.success_url = reverse_lazy('sans:reduction_detail',
                                             args=[self.kwargs['pk']])
+        elif 'generate' in self.request.POST:
+            messages.success(self.request, "Reduction script re-generated from scratch.")
+            self.success_url = reverse_lazy('sans:reduction_script',
+                                            args=[self.kwargs['pk']])
         else:
-
             try:
                 server_name = env("JOB_SERVER_NAME")
                 server = get_object_or_404(Server, title=server_name)

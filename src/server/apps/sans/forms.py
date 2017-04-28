@@ -2,10 +2,21 @@
 Created on Jan 8, 2016
 @author: rhf
 '''
+from crispy_forms.bootstrap  import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Button, Layout, Fieldset, HTML, Field
 
 from django.forms import HiddenInput
+
+
+class SubmitWithCss(Submit):
+    '''
+    Overries the Submit button to remove the default css:
+    btn btn-primary
+    '''
+    def __init__(self, *args, **kwargs):
+        self.field_classes = 'btn'
+        super(Submit, self).__init__(*args, **kwargs)
 
 class ConfigurationForm(object):
 
@@ -39,10 +50,15 @@ class ReductionScriptForm(object):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
-        self.helper.layout.append(Submit('save', 'Save & go back'))
-        self.helper.layout.append(Submit('submit', 'Save & Submit job'))
-        self.helper.layout.append(Button('cancel', 'Cancel', css_class='btn-default',
-                                         onclick="window.history.back()"))
+        self.helper.layout.append(
+            # FormActions just groups the buttons
+            FormActions(
+                # Submit all have type="submit" in the html
+                SubmitWithCss(name='save', value='Save & go back', css_class='btn-info'),
+                Submit('generate', 'Regenerate the script'),
+                SubmitWithCss('submit', 'Save & Submit job', css_class='btn-warning'),
+                Button('cancel', 'Cancel', css_class='btn-default',
+                       onclick="window.history.back()")))
     class Meta:
         fields = ['script_interpreter', 'script_execution_path', 'script']
         #exclude = ['user', 'instrument']
