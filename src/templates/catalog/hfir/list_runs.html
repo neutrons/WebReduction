@@ -29,8 +29,12 @@
 	<thead>
 		<tr>
 			<th>Thumbnails</th>
-			<th>File Name</th>
 			<th>Title</th>
+			<th>Scan Type</th>
+			<th>Sample</th>
+			<th>Background</th>
+			<th>Parameters</th>
+			<th>Thickness</th>
 			<th>End Time</th>
 		</tr>
 	</thead>
@@ -45,9 +49,27 @@
 				{% endfor %}
 				</tr></table>
 				</a>
+				<br/>
+				<a href="{% url 'catalog:run_detail' instrument  ipts  exp run.location %}">{{run.filename}}</a>
 			</td>
-			<td><a href="{% url 'catalog:run_detail' instrument  ipts  exp run.location %}">{{run.filename}}</a></td>
 			<td>{{run.title}}</td>
+			<td>{{run.scan_type}}</td>
+			<td>
+			{% for key, value in run.sample_info.items %}
+				<p><strong>{{key|capfirst}}</strong>: {{value}}</p>
+			{% endfor %}
+			</td>
+			<td>
+			{% for key, value in run.sample_background.items %}
+				<p><strong>{{key|capfirst}}</strong>: {{value}}</p>
+			{% endfor %}
+			</td>
+			<td>
+			{% for key, value in run.sample_parameters.items %}
+				<p><strong>{{key|capfirst}}</strong>: {{value}}</p>
+			{% endfor %}				
+			</td>
+			<td>{{run.sample_thickness}}</td>
 			<td>{{run.end_time}}</td>
 		</tr>
 		{% endfor %}
@@ -55,10 +77,13 @@
 	<tfoot>
 		<tr>
 			<th>Thumbnails</th>
-			<th>File Name</th>
 			<th>Title</th>
+			<th>Scan Type</th>
+			<th>Sample</th>
+			<th>Background</th>
+			<th>Parameters</th>
+			<th>Thickness</th>
 			<th>End Time</th>
-
 		</tr>
 	</tfoot>
 </table>
@@ -73,9 +98,9 @@
         $(function () {
             $("#tableruns").DataTable({
                 "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 3, 'desc' ]],
+                "order": [[ 7, 'desc' ]],
                 "columnDefs": [
-    				{ "type": "date", "targets": 3 },
+    				{ "type": "date", "targets": 7 },
   				],
                 "paging": true,
                 "lengthChange": true,

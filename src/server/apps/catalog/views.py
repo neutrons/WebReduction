@@ -85,8 +85,8 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
         logger.debug('Getting runs from catalog: %s %s %s %s',
                      facility, instrument, ipts, exp)
         if user_has_permission_to_see_this_ipts(
-            self.request.user,
-            self.request.user.profile.instrument, ipts):
+                self.request.user,
+                self.request.user.profile.instrument, ipts):
             runs = get_runs(facility, instrument, ipts, exp)
         else:
             # from django.http import HttpResponseForbidden

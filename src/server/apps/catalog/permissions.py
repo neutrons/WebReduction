@@ -79,9 +79,7 @@ def user_has_permission_to_see_this_ipts(user, instrument, ipts):
     - Or be in this IPTS group!
 
     """
-
-    logger.debug(dir(instrument))
-
+    
     logger.debug("Checking if user %s has permissions to access %s",
                  user, ipts)
 
@@ -103,4 +101,5 @@ def filter_user_permission(user, instrument, ipts_list):
     Iterates the ipts_list and returns a new ipts_list width
     ipts whose user is allowed to see
     '''
-    return [ ipts for  ipts in ipts_list if user_has_permission_to_see_this_ipts(user,instrument,ipts) ]
+    return [ipts for ipts in ipts_list
+            if user_has_permission_to_see_this_ipts(user, instrument, ipts)]
