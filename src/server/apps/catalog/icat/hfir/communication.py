@@ -1,7 +1,7 @@
 import logging
 from pprint import pformat
 
-from server.apps.catalog.icat.communication import ICat
+from ..communication import ICat
 
 logger = logging.getLogger(__name__)
 

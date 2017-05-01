@@ -507,6 +507,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         '''
         We get the object already in the DB
         This is called by get and post
+        Get:
         Generate the script (if the script field in the DB is empty!)
         and add it to object shown on the form
         It does the same for sript path. It should work HFIR and SNS
@@ -539,6 +540,11 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         return obj
 
     def post(self, request, **kwargs):
+        '''
+        When the form is posted if we clicked in generate, it will
+        regenerate the form and fill it in the respective field
+        Note: We need to modify the previously posted form (POST)!
+        '''
         if 'generate' in self.request.POST:
             request.POST = request.POST.copy()
             obj_json = self.model.objects.to_json(self.kwargs['pk'])

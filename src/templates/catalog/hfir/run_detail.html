@@ -71,6 +71,42 @@
     </div>
     {% endfor %}
 
+    <h2>Sample info</h2> 
+    <div class="container-fluid">
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for key, value in run.sample_info.items|dictsort:"0.lower" %}
+                    <th>{{key|capfirst}}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for key, value in run.sample_info.items %}
+                        <td>
+                        {% if value %}
+                            <ul class="list-group">
+                            {% for key2, value2 in value.items %}
+                                {% if key2 == "field" %}
+                                    {% for key3, value3 in value2.items %}
+                                        <li class="list-group-item">
+                                            <strong>{{key3|capfirst}}</strong>
+                                            <span class="pull-right">{{value3|escape|urlize|linebreaks}}</span>
+                                        </li>
+                                    {% endfor %}
+                                {% endif %}        
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Metadata</h2> 
     <div class="container-fluid">
         <ul class="list-group">
             {% for key, value in run.metadata.items|dictsort:"0.lower" %}
@@ -83,8 +119,7 @@
             {% endfor %}
         </ul>
     </div>
-    <hr/>
 
-    
+    <hr/>
 </div>
 {% endblock %}

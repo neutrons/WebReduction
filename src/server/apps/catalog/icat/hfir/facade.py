@@ -1,11 +1,10 @@
-#from .communication import HFIRICat
 import logging
 from pprint import pformat, pprint
 
 from django.utils import dateparse
 
-from server.apps.catalog.icat.hfir.communication import HFIRICat
-from server.apps.catalog.icat.hfir.util import Parser
+from .communication import HFIRICat
+from .util import Parser
 
 logger = logging.getLogger(__name__)
 
@@ -144,7 +143,8 @@ class Catalog(object):
                     }, **{
                         # Metadata here:
                         'filename': entry['metadata']['spicerack']['@filename'],
-                        'metadata': entry['metadata']['spicerack']['header']
+                        'metadata': entry['metadata']['spicerack']['header'],
+                        'sample_info': entry['metadata']['spicerack']['sample_info'],
                     })
             except KeyError as this_exception:
                 logger.exception(this_exception)
@@ -167,8 +167,9 @@ if __name__ == "__main__":
     icat = Catalog()
     #res = icat.get_experiments("CG3")
     # pprint(res)
-    res = icat.get_runs("CG3", 'IPTS-18347','exp379')
+    # res = icat.get_runs("CG3", 'IPTS-18347','exp379')
     # pprint(res)
-    #res = icat.get_run(
-    #    "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
+    res = icat.get_run(
+        "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
+    res.pop('data')
     pprint(res)

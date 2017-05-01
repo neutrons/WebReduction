@@ -66,7 +66,8 @@ ucams
 
 logger = logging.getLogger(__name__)
 
-def user_has_permission_to_see_this_ipts(user,instrument,ipts):
+
+def user_has_permission_to_see_this_ipts(user, instrument, ipts):
     """
     @param user: user object
     @param instrument : string
@@ -79,13 +80,20 @@ def user_has_permission_to_see_this_ipts(user,instrument,ipts):
 
     """
 
-    if user.groups.filter(name = 'SNS_Neutron_dev'):
+    logger.debug(dir(instrument))
+
+    logger.debug("Checking if user %s has permissions to access %s",
+                 user, ipts)
+
+    if user.groups.filter(name='SNS_Neutron_dev'):
         return True
-    elif user.groups.filter(name = 'hfir_%s_team'%instrument.ldap_group_name.lower()):
+    elif user.groups.filter(name='hfir_%s_team' %
+                            instrument.ldap_group_name.lower()):
         return True
-    elif user.groups.filter(name = 'sns_%s_team'%instrument.ldap_group_name.lower()):
+    elif user.groups.filter(name='sns_%s_team' %
+                            instrument.ldap_group_name.lower()):
         return True
-    elif user.groups.filter(name = ipts.upper()):
+    elif user.groups.filter(name=ipts.upper()):
         return True
     else:
         return False
