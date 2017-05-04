@@ -85,14 +85,46 @@ class Catalog(object):
                         'metadata': {(key): (value if value is not None else "") for key, value in
                                      entry['metadata']['spicerack']['header'].items()}
                     })
-                          for entry in response# if entry['ext'] == 'xml'
+                          for entry in response  # if entry['ext'] == 'xml'
                          ]
             except KeyError as this_exception:
                 logger.exception(this_exception)
             except IndexError as this_exception:
                 logger.exception(this_exception)
         return result
-    
+
+    def get_runs_as_table(self, instrument, ipts, exp):
+        '''
+        Same as get runs but split sample_* in tables
+        '''
+        raw_data = self.get_runs(instrument, ipts, exp)
+        data = []
+        header = ["Title", "Scan", "Frame", ]
+        # let's find the headers from the data in the sample fields
+        for entry in raw_data:
+            if entry["sample_info"] != "":
+                for k, _ in entry["sample_info"].items():
+                    key = "sample_info_" + k
+                    if key not in header:
+                        header.append(key)
+            if entry["sample_background"] != "":
+                print("->", entry["sample_background"])
+                for k, _ in entry["sample_background"].items():
+                    key = "sample_background_" + k
+                    if key not in header:
+                        header.append(key)
+            if entry["sample_parameters"] != "":
+                for k, _ in entry["sample_parameters"].items():
+                    key = "sample_parameters_" + k
+                    if key not in header:
+                        header.append(key)
+            # Let's make the rest
+            for entry in raw_data:
+                pass
+                # TODO
+
+        
+
     
     def _get_data(self, filename):
         '''

@@ -32,23 +32,33 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container">
     <div class="page-header">
         <h1>Reduction <small> <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} :: new</small></h1>
     </div>
 
-    <div class="row">
-        <div class="col-md-9">
-            <form method="post" action="" class="form-horizontal" onsubmit="return populateFormWithHotContents();">
-                {{ formset.management_form }}
-                <div class="well">
-                    <div class="panel-body">
-                        {% crispy form  %}
-                    </div>
-                </div>
 
-                <hr />
-                
+    <form method="post" action="" class="form-horizontal" onsubmit="return populateFormWithHotContents();">
+        
+        <!-- The form part -->
+        {{ formset.management_form }}
+        <div class="well">
+            <div class="panel-body">
+                {% crispy form  %}
+            </div>
+        </div>
+        <hr />
+        
+        <!-- Either Reduction os Catalog -->
+        <ul class="nav nav-pills nav-justified">
+            <li class="active"><a data-toggle="tab" href="#tab-reduction"><span class="glyphicon glyphicon-th"></span> &nbsp;Reduction</a></li>
+            <li><a  data-toggle="tab" href="#tab-catalog"><span class="glyphicon glyphicon-book"></span> &nbsp;Data Catalog</a></li>
+        </ul>
+
+        <!-- The multiples formsets -->
+        <div class="tab-content">
+            <div id="tab-reduction" class="tab-pane fade in active">
+                <!-- The reduction regions  -->
                 <div class="well">
                     <div class="panel-body">
                         <ul class="nav nav-tabs nav-justified">
@@ -83,25 +93,25 @@
                             </div>
                     </div>
                 </div>
-
-                <hr />
-
-                <button type="submit" class="btn btn-primary">Save</button>
-                <button type="cancel" class="btn btn-default" onclick="window.history.back()" >Cancel</button>
-
-            </form>
-        </div>
-        <!-- File List collumn -->
-        <div class="col-md-3">
-            <div class="panel panel-default">
+            </div>
+            <!-- The catalog  -->
+            <div id="tab-catalog" class="tab-pane fade">
+                <div class="panel panel-default">
                 <div class="panel-heading">Files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} </div>
                 <div class="panel-body">
                     <table id="icat_table" class="display table table-striped table-hover" cellspacing="0" width="100%">
                     </table>
                 </div>
             </div>
+            </div>
         </div>
-    </div>
+        <hr />
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="cancel" class="btn btn-default" onclick="window.history.back()" >Cancel</button>
+
+    </form>
+
 </div>
 {% endblock %}
 
@@ -291,10 +301,12 @@ $('.nav-tabs a').on('shown.bs.tab', function (event) {
 var fullDataSet = JSON.parse("{{runs|escapejs}}");
 // Let's get what we need for the table'
 var dataSet = fullDataSet.map(function (run) {
-    return [run.title, //0
-    run.metadata.scan_type,
-    run.thumbnails,
-    run.filename]; //3
+    return [
+        run.title, //0
+        run.metadata.scan_type,
+        run.thumbnails,
+        run.filename
+    ]; //3
 });
 
 // Make a datatable with icat contents
