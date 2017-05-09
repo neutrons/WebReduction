@@ -310,7 +310,7 @@ CSIGNAL	../venv/lib/python3.5/plat-x86_64-linux-gnu/TYPES.py	/^CSIGNAL = 0x00000
 C_BUILTIN	../venv/lib/python3.5/imp.py	/^C_BUILTIN = 6$/;"	kind:variable	line:42
 C_EXTENSION	../venv/lib/python3.5/imp.py	/^C_EXTENSION = 3$/;"	kind:variable	line:39
 Callable	../venv/lib/python3.5/_collections_abc.py	/^class Callable(metaclass=ABCMeta):$/;"	kind:class	line:332
-Catalog	../src/server/apps/catalog/icat/hfir/facade.py	/^class Catalog(object):$/;"	kind:class	line:12
+Catalog	../src/server/apps/catalog/icat/hfir/facade.py	/^class Catalog(object):$/;"	kind:class	line:13
 Catalog	../src/server/apps/catalog/icat/sns/facade.py	/^class Catalog(object):$/;"	kind:class	line:12
 CatalogConfig	../src/server/apps/catalog/apps.py	/^class CatalogConfig(AppConfig):$/;"	kind:class	line:4
 ChainMap	../venv/lib/python3.5/collections/__init__.py	/^class ChainMap(MutableMapping):$/;"	kind:class	line:848
@@ -626,12 +626,12 @@ GPMODE_POWER_PAGE	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^GPMODE_
 GPMODE_R_W_ERROR_PAGE	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^GPMODE_R_W_ERROR_PAGE = 0x01$/;"	kind:variable	line:172
 GPMODE_TO_PROTECT_PAGE	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^GPMODE_TO_PROTECT_PAGE = 0x1d$/;"	kind:variable	line:177
 GPMODE_WRITE_PARMS_PAGE	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^GPMODE_WRITE_PARMS_PAGE = 0x05$/;"	kind:variable	line:173
-GPSANSConfiguration	../src/server/apps/sans/gpsans/models.py	/^class GPSANSConfiguration(Configuration):$/;"	kind:class	line:10
+GPSANSConfiguration	../src/server/apps/sans/gpsans/models.py	/^class GPSANSConfiguration(Configuration):$/;"	kind:class	line:8
 GPSANSConfigurationForm	../src/server/apps/sans/gpsans/forms.py	/^class GPSANSConfigurationForm(ConfigurationForm, ModelForm):        $/;"	kind:class	line:12
-GPSANSReduction	../src/server/apps/sans/gpsans/models.py	/^class GPSANSReduction(Reduction):$/;"	kind:class	line:100
+GPSANSReduction	../src/server/apps/sans/gpsans/models.py	/^class GPSANSReduction(Reduction):$/;"	kind:class	line:98
 GPSANSReductionForm	../src/server/apps/sans/gpsans/forms.py	/^class GPSANSReductionForm(ReductionForm, ModelForm):$/;"	kind:class	line:16
 GPSANSReductionScriptForm	../src/server/apps/sans/gpsans/forms.py	/^class GPSANSReductionScriptForm(ReductionScriptForm, ModelForm):$/;"	kind:class	line:20
-GPSANSRegion	../src/server/apps/sans/gpsans/models.py	/^class GPSANSRegion(Region):$/;"	kind:class	line:106
+GPSANSRegion	../src/server/apps/sans/gpsans/models.py	/^class GPSANSRegion(Region):$/;"	kind:class	line:104
 GPSANSRegionForm	../src/server/apps/sans/gpsans/forms.py	/^class GPSANSRegionForm(RegionForm, ModelForm):$/;"	kind:class	line:24
 GPSANSRegionInlineFormSetCreate	../src/server/apps/sans/gpsans/forms.py	/^GPSANSRegionInlineFormSetCreate = inlineformset_factory(GPSANSReduction, GPSANSRegion, form=GPSANSRegionForm, extra=3, can_delete=False)$/;"	kind:variable	line:29
 GPSANSRegionInlineFormSetUpdate	../src/server/apps/sans/gpsans/forms.py	/^GPSANSRegionInlineFormSetUpdate = inlineformset_factory(GPSANSReduction, GPSANSRegion, form=GPSANSRegionForm, extra=0, can_delete=False)/;"	kind:variable	line:31
@@ -1208,7 +1208,7 @@ NAME	../venv/lib/python3.5/token.py	/^NAME = 1$/;"	kind:variable	line:14
 NEWLINE	../venv/lib/python3.5/token.py	/^NEWLINE = 4$/;"	kind:variable	line:17
 NL	../venv/lib/python3.5/tokenize.py	/^NL = N_TOKENS + 1$/;"	kind:variable	line:46
 NORMALIZATION_CHOICES	../src/server/apps/sans/biosans/models.py	/^    NORMALIZATION_CHOICES = ($/;"	kind:variable	line:46
-NORMALIZATION_CHOICES	../src/server/apps/sans/gpsans/models.py	/^    NORMALIZATION_CHOICES = ($/;"	kind:variable	line:58
+NORMALIZATION_CHOICES	../src/server/apps/sans/gpsans/models.py	/^    NORMALIZATION_CHOICES = ($/;"	kind:variable	line:56
 NOTEQUAL	../venv/lib/python3.5/token.py	/^NOTEQUAL = 28$/;"	kind:variable	line:41
 NT_OFFSET	../venv/lib/python3.5/token.py	/^NT_OFFSET = 256$/;"	kind:variable	line:71
 NUL	../venv/lib/python3.5/tarfile.py	/^NUL = b"\\0"                     # the null character$/;"	kind:variable	line:72
@@ -1401,7 +1401,7 @@ SLASHEQUAL	../venv/lib/python3.5/token.py	/^SLASHEQUAL = 39$/;"	kind:variable	li
 SNSICat	../src/server/apps/catalog/icat/sns/communication.py	/^class SNSICat(ICat):$/;"	kind:class	line:17
 SOLARIS_XHDTYPE	../venv/lib/python3.5/tarfile.py	/^SOLARIS_XHDTYPE = b"X"          # Solaris extended header$/;"	kind:variable	line:98
 SOLID_ANGLE_CHOICES	../src/server/apps/sans/biosans/models.py	/^    SOLID_ANGLE_CHOICES = ($/;"	kind:variable	line:31
-SOLID_ANGLE_CHOICES	../src/server/apps/sans/gpsans/models.py	/^    SOLID_ANGLE_CHOICES = ($/;"	kind:variable	line:39
+SOLID_ANGLE_CHOICES	../src/server/apps/sans/gpsans/models.py	/^    SOLID_ANGLE_CHOICES = ($/;"	kind:variable	line:37
 SOL_AAL	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^SOL_AAL = 265$/;"	kind:variable	line:666
 SOL_ATM	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^SOL_ATM = 264$/;"	kind:variable	line:665
 SOL_DECNET	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^SOL_DECNET = 261$/;"	kind:variable	line:662
@@ -2533,7 +2533,7 @@ __imul__	../venv/lib/python3.5/operator.py	/^__imul__ = imul$/;"	kind:variable	l
 __index__	../venv/lib/python3.5/operator.py	/^__index__ = index$/;"	kind:variable	line:431
 __init__	../src/server/apps/catalog/icat/communication.py	/^    def __init__(self, url_prefix, headers={}, http_method='get'):$/;"	kind:member	line:27
 __init__	../src/server/apps/catalog/icat/hfir/communication.py	/^    def __init__(self):$/;"	kind:member	line:17
-__init__	../src/server/apps/catalog/icat/hfir/facade.py	/^    def __init__(self):$/;"	kind:member	line:17
+__init__	../src/server/apps/catalog/icat/hfir/facade.py	/^    def __init__(self):$/;"	kind:member	line:18
 __init__	../src/server/apps/catalog/icat/hfir/util.py	/^    def __init__(self, filename):$/;"	kind:member	line:23
 __init__	../src/server/apps/catalog/icat/sns/communication.py	/^    def __init__(self,):$/;"	kind:member	line:19
 __init__	../src/server/apps/catalog/icat/sns/facade.py	/^    def __init__(self):$/;"	kind:member	line:16
@@ -2891,7 +2891,7 @@ __slots__	../venv/lib/python3.5/weakref.py	/^    __slots__ = ()$/;"	kind:variabl
 __str__	../src/server/apps/catalog/models.py	/^    def __str__(self):$/;"	kind:member	line:134
 __str__	../src/server/apps/catalog/models.py	/^    def __str__(self):$/;"	kind:member	line:30
 __str__	../src/server/apps/sans/biosans/models.py	/^    def __str__(self):$/;"	kind:member	line:174
-__str__	../src/server/apps/sans/gpsans/models.py	/^    def __str__(self):$/;"	kind:member	line:118
+__str__	../src/server/apps/sans/gpsans/models.py	/^    def __str__(self):$/;"	kind:member	line:116
 __str__	../src/server/apps/sans/models.py	/^    def __str__(self):$/;"	kind:member	line:134
 __str__	../src/server/apps/sans/models.py	/^    def __str__(self):$/;"	kind:member	line:220
 __str__	../src/server/apps/users/models.py	/^    def __str__(self):$/;"	kind:member	line:45
@@ -3093,7 +3093,7 @@ _generate_overlap_table	../venv/lib/python3.5/sre_compile.py	/^def _generate_ove
 _get_bothseps	../venv/lib/python3.5/ntpath.py	/^def _get_bothseps(path):$/;"	kind:function	line:35
 _get_cached	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^def _get_cached(filename):$/;"	kind:function	line:342
 _get_candidate_names	../venv/lib/python3.5/tempfile.py	/^def _get_candidate_names():$/;"	kind:function	line:374
-_get_data	../src/server/apps/catalog/icat/hfir/facade.py	/^    def _get_data(self, filename):$/;"	kind:member	line:97
+_get_data	../src/server/apps/catalog/icat/hfir/facade.py	/^    def _get_data(self, filename):$/;"	kind:member	line:146
 _get_default_tempdir	../venv/lib/python3.5/tempfile.py	/^def _get_default_tempdir():$/;"	kind:function	line:327
 _get_exports_list	../venv/lib/python3.5/os.py	/^def _get_exports_list(module):$/;"	kind:function	line:40
 _get_gid	../venv/lib/python3.5/shutil.py	/^def _get_gid(name):$/;"	kind:function	line:565
@@ -3341,7 +3341,7 @@ abs	../venv/lib/python3.5/operator.py	/^def abs(a):$/;"	kind:function	line:71
 abs__file__	../venv/lib/python3.5/site.py	/^def abs__file__():$/;"	kind:function	line:100
 absolute_import	../venv/lib/python3.5/__future__.py	/^absolute_import = _Feature((2, 5, 0, "alpha", 1),$/;"	kind:variable	line:118
 absolute_scale_factor	../src/server/apps/sans/biosans/models.py	/^    absolute_scale_factor = models.DecimalField($/;"	kind:variable	line:24
-absolute_scale_factor	../src/server/apps/sans/gpsans/models.py	/^    absolute_scale_factor = models.DecimalField($/;"	kind:variable	line:52
+absolute_scale_factor	../src/server/apps/sans/gpsans/models.py	/^    absolute_scale_factor = models.DecimalField($/;"	kind:variable	line:50
 abspath	../venv/lib/python3.5/ntpath.py	/^    def abspath(path):$/;"	kind:function	line:519
 abspath	../venv/lib/python3.5/ntpath.py	/^    def abspath(path):$/;"	kind:function	line:530
 abspath	../venv/lib/python3.5/posixpath.py	/^def abspath(path):$/;"	kind:function	line:355
@@ -3456,11 +3456,11 @@ blank	../src/server/apps/catalog/models.py	/^        blank=True,$/;"	kind:variab
 blank	../src/server/apps/sans/biosans/models.py	/^        blank=False,$/;"	kind:variable	line:104
 blank	../src/server/apps/sans/biosans/models.py	/^        blank=False,$/;"	kind:variable	line:144
 blank	../src/server/apps/sans/biosans/models.py	/^        blank=True,$/;"	kind:variable	line:39
-blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:16
-blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:25
-blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:34
-blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:47
-blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:73
+blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:14
+blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:23
+blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:32
+blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:45
+blank	../src/server/apps/sans/gpsans/models.py	/^        blank=True,$/;"	kind:variable	line:71
 blank	../src/server/apps/sans/models.py	/^        blank=False,$/;"	kind:variable	line:239
 blank	../src/server/apps/sans/models.py	/^        blank=True,$/;"	kind:variable	line:245
 blank_re	../venv/lib/python3.5/tokenize.py	/^blank_re = re.compile(br'^[ \\t\\f]*(?:[#\\r\\n]|$)', re.ASCII)$/;"	kind:variable	line:37
@@ -3521,8 +3521,8 @@ choices	../src/server/apps/sans/biosans/models.py	/^        choices=COMPONENT_CH
 choices	../src/server/apps/sans/biosans/models.py	/^        choices=COMPONENT_CHOICES,$/;"	kind:variable	line:95
 choices	../src/server/apps/sans/biosans/models.py	/^        choices=NORMALIZATION_CHOICES,$/;"	kind:variable	line:53
 choices	../src/server/apps/sans/biosans/models.py	/^        choices=SOLID_ANGLE_CHOICES,$/;"	kind:variable	line:41
-choices	../src/server/apps/sans/gpsans/models.py	/^        choices=NORMALIZATION_CHOICES,$/;"	kind:variable	line:66
-choices	../src/server/apps/sans/gpsans/models.py	/^        choices=SOLID_ANGLE_CHOICES,$/;"	kind:variable	line:48
+choices	../src/server/apps/sans/gpsans/models.py	/^        choices=NORMALIZATION_CHOICES,$/;"	kind:variable	line:64
+choices	../src/server/apps/sans/gpsans/models.py	/^        choices=SOLID_ANGLE_CHOICES,$/;"	kind:variable	line:46
 chown	../venv/lib/python3.5/shutil.py	/^def chown(path, user=None, group=None):$/;"	kind:function	line:1007
 chown	../venv/lib/python3.5/tarfile.py	/^    def chown(self, tarinfo, targetpath, numeric_owner):$/;"	kind:member	line:2212
 cleandb	../fabfile.py	/^def cleandb():$/;"	kind:function	line:164
@@ -3691,7 +3691,7 @@ compile	../venv/lib/python3.5/sre_compile.py	/^def compile(p, flags=0):$/;"	kind
 complete	../venv/lib/python3.5/rlcompleter.py	/^    def complete(self, text, state):$/;"	kind:member	line:66
 concat	../venv/lib/python3.5/operator.py	/^def concat(a, b):$/;"	kind:function	line:146
 configuration	../src/server/apps/sans/biosans/models.py	/^    configuration = models.ForeignKey(BioSANSConfiguration, on_delete=models.CASCADE,$/;"	kind:variable	line:170
-configuration	../src/server/apps/sans/gpsans/models.py	/^    configuration = models.ForeignKey(GPSANSConfiguration, on_delete=models.CASCADE,$/;"	kind:variable	line:114
+configuration	../src/server/apps/sans/gpsans/models.py	/^    configuration = models.ForeignKey(GPSANSConfiguration, on_delete=models.CASCADE,$/;"	kind:variable	line:112
 constructor	../venv/lib/python3.5/copyreg.py	/^def constructor(object):$/;"	kind:function	line:22
 contains	../venv/lib/python3.5/operator.py	/^def contains(a, b):$/;"	kind:function	line:153
 cookie_re	../venv/lib/python3.5/tokenize.py	/^cookie_re = re.compile(r'^[ \\t\\f]*#.*?coding[:=][ \\t]*([-\\w.]+)', re.ASCII)$/;"	kind:variable	line:36
@@ -3787,16 +3787,16 @@ curdir	../venv/lib/python3.5/ntpath.py	/^curdir = '.'$/;"	kind:variable	line:24
 curdir	../venv/lib/python3.5/posixpath.py	/^curdir = '.'$/;"	kind:variable	line:30
 currency	../venv/lib/python3.5/locale.py	/^def currency(val, symbol=True, grouping=False, international=False):$/;"	kind:function	line:254
 dark_current_file	../src/server/apps/sans/biosans/models.py	/^    dark_current_file = models.CharField($/;"	kind:variable	line:119
-dark_current_file	../src/server/apps/sans/gpsans/models.py	/^    dark_current_file = models.CharField($/;"	kind:variable	line:71
+dark_current_file	../src/server/apps/sans/gpsans/models.py	/^    dark_current_file = models.CharField($/;"	kind:variable	line:69
 data_encoding	../venv/lib/python3.5/codecs.py	/^    data_encoding = 'unknown'$/;"	kind:variable	line:769
 datafiles	../src/server/util/hfir.py	/^    def datafiles(self):$/;"	kind:member	line:145
 date_joined	../src/server/apps/users/models.py	/^    date_joined = models.DateField(auto_now=True)$/;"	kind:variable	line:28
 debug	../venv/lib/python3.5/tarfile.py	/^    debug = 0                   # May be set from 0 (no msgs) to 3 (all msgs)$/;"	kind:variable	line:1379
 decimal_places	../src/server/apps/sans/biosans/models.py	/^        decimal_places=2,$/;"	kind:variable	line:26
-decimal_places	../src/server/apps/sans/gpsans/models.py	/^        decimal_places=2,$/;"	kind:variable	line:15
-decimal_places	../src/server/apps/sans/gpsans/models.py	/^        decimal_places=2,$/;"	kind:variable	line:24
-decimal_places	../src/server/apps/sans/gpsans/models.py	/^        decimal_places=2,$/;"	kind:variable	line:54
-decimal_places	../src/server/apps/sans/gpsans/models.py	/^        decimal_places=3,$/;"	kind:variable	line:33
+decimal_places	../src/server/apps/sans/gpsans/models.py	/^        decimal_places=2,$/;"	kind:variable	line:13
+decimal_places	../src/server/apps/sans/gpsans/models.py	/^        decimal_places=2,$/;"	kind:variable	line:22
+decimal_places	../src/server/apps/sans/gpsans/models.py	/^        decimal_places=2,$/;"	kind:variable	line:52
+decimal_places	../src/server/apps/sans/gpsans/models.py	/^        decimal_places=3,$/;"	kind:variable	line:31
 decode	../venv/lib/python3.5/base64.py	/^def decode(input, output):$/;"	kind:function	line:507
 decode	../venv/lib/python3.5/codecs.py	/^    def decode(self, input, errors='strict'):$/;"	kind:member	line:156
 decode	../venv/lib/python3.5/codecs.py	/^    def decode(self, input, errors='strict'):$/;"	kind:member	line:447
@@ -4137,9 +4137,9 @@ default	../src/server/apps/sans/biosans/models.py	/^        default=COMPONENT_CH
 default	../src/server/apps/sans/biosans/models.py	/^        default=COMPONENT_CHOICES[1][0],$/;"	kind:variable	line:96
 default	../src/server/apps/sans/biosans/models.py	/^        default=NORMALIZATION_CHOICES[2][0],$/;"	kind:variable	line:54
 default	../src/server/apps/sans/biosans/models.py	/^        default=SOLID_ANGLE_CHOICES[0][0],$/;"	kind:variable	line:42
-default	../src/server/apps/sans/gpsans/models.py	/^        default=1.0$/;"	kind:variable	line:55
-default	../src/server/apps/sans/gpsans/models.py	/^        default=NORMALIZATION_CHOICES[2][0],$/;"	kind:variable	line:67
-default	../src/server/apps/sans/gpsans/models.py	/^        default=SOLID_ANGLE_CHOICES[0][0],$/;"	kind:variable	line:49
+default	../src/server/apps/sans/gpsans/models.py	/^        default=1.0$/;"	kind:variable	line:53
+default	../src/server/apps/sans/gpsans/models.py	/^        default=NORMALIZATION_CHOICES[2][0],$/;"	kind:variable	line:65
+default	../src/server/apps/sans/gpsans/models.py	/^        default=SOLID_ANGLE_CHOICES[0][0],$/;"	kind:variable	line:47
 default	../src/server/apps/users/models.py	/^        default = 0,$/;"	kind:variable	line:77
 default	../src/server/settings/settings.py	/^                         default=['localhost',$/;"	kind:variable	line:28
 default_app_config	../src/server/apps/users/__init__.py	/^default_app_config = 'server.apps.users.apps.UsersConfig'$/;"	kind:variable	line:1
@@ -4183,7 +4183,7 @@ difference_update	../venv/lib/python3.5/_weakrefset.py	/^    def difference_upda
 digest	../venv/lib/python3.5/hmac.py	/^    def digest(self):$/;"	kind:member	line:117
 digest_size	../venv/lib/python3.5/hmac.py	/^digest_size = None$/;"	kind:variable	line:15
 digits	../venv/lib/python3.5/encodings/punycode.py	/^digits = b"abcdefghijklmnopqrstuvwxyz0123456789"$/;"	kind:variable	line:77
-direct_beam_file	../src/server/apps/sans/gpsans/models.py	/^    direct_beam_file = models.CharField($/;"	kind:variable	line:82
+direct_beam_file	../src/server/apps/sans/gpsans/models.py	/^    direct_beam_file = models.CharField($/;"	kind:variable	line:80
 dirlist	../dist/static/thirdparty/jqueryfiletree-2.1.4/connectors/jqueryFileTree.py	/^def dirlist(request):$/;"	kind:function	line:9
 dirlist	../dist/static/thirdparty/jqueryfiletree/connectors/jqueryFileTree.py	/^def dirlist(request):$/;"	kind:function	line:9
 dirlist	../src/server/util/views.py	/^def dirlist(request):$/;"	kind:function	line:17
@@ -4747,8 +4747,8 @@ getMetadata	../src/server/apps/catalog/icat/hfir/util.py	/^    def getMetadata(s
 getOptionalRelease	../venv/lib/python3.5/__future__.py	/^    def getOptionalRelease(self):$/;"	kind:member	line:84
 get_absolute_url	../src/server/apps/sans/biosans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:151
 get_absolute_url	../src/server/apps/sans/biosans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:158
-get_absolute_url	../src/server/apps/sans/gpsans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:103
-get_absolute_url	../src/server/apps/sans/gpsans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:96
+get_absolute_url	../src/server/apps/sans/gpsans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:101
+get_absolute_url	../src/server/apps/sans/gpsans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:94
 get_all_fields	../src/server/apps/sans/models.py	/^    def get_all_fields(self, fields_to_ignore=('id', 'user')):$/;"	kind:member	line:34
 get_all_ipts	../src/server/apps/users/ldap_util.py	/^    def get_all_ipts(self):$/;"	kind:member	line:42
 get_all_ipts_for_an_uid	../src/server/apps/users/ldap_util.py	/^    def get_all_ipts_for_an_uid(self, uid):$/;"	kind:member	line:138
@@ -4779,7 +4779,7 @@ get_data	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    def get_da
 get_data	../venv/lib/python3.5/importlib/abc.py	/^    def get_data(self, path):$/;"	kind:member	line:180
 get_exec_path	../venv/lib/python3.5/os.py	/^def get_exec_path(env=None):$/;"	kind:function	line:663
 get_experiments	../src/server/apps/catalog/icat/hfir/communication.py	/^    def get_experiments(self, instrument):$/;"	kind:member	line:26
-get_experiments	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_experiments(self, instrument):$/;"	kind:member	line:22
+get_experiments	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_experiments(self, instrument):$/;"	kind:member	line:23
 get_experiments	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_experiments(self, instrument):$/;"	kind:member	line:51
 get_experiments_id_and_title	../src/server/apps/catalog/icat/sns/facade.py	/^    def get_experiments_id_and_title(self, instrument):$/;"	kind:member	line:217
 get_experiments_meta	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_experiments_meta(self, instrument):$/;"	kind:member	line:65
@@ -4814,7 +4814,7 @@ get_queryset	../src/server/apps/sans/views.py	/^    def get_queryset(self):$/;"	
 get_queryset	../src/server/apps/sans/views.py	/^    def get_queryset(self):$/;"	kind:member	line:347
 get_queryset	../src/server/apps/sans/views.py	/^    def get_queryset(self):$/;"	kind:member	line:394
 get_run	../src/server/apps/catalog/icat/facade.py	/^def get_run(facility, instrument, ipts, file_location):$/;"	kind:function	line:45
-get_run	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_run(self, instrument, ipts, file_location):$/;"	kind:member	line:155
+get_run	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_run(self, instrument, ipts, file_location):$/;"	kind:member	line:204
 get_run_files	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_run_files(self, instrument, run_number):$/;"	kind:member	line:263
 get_run_info	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_run_info(self, instrument, run_number):$/;"	kind:member	line:187
 get_run_info_lite	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_run_info_lite(self, instrument, run_number):$/;"	kind:member	line:229
@@ -4824,10 +4824,11 @@ get_run_ranges	../src/server/apps/catalog/icat/sns/communication.py	/^    def ge
 get_run_ranges_meta	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_run_ranges_meta(self, instrument, experiment):$/;"	kind:member	line:123
 get_runs	../src/server/apps/catalog/icat/facade.py	/^def get_runs(facility, instrument, ipts, exp=None):$/;"	kind:function	line:38
 get_runs	../src/server/apps/catalog/icat/hfir/communication.py	/^    def get_runs(self, instrument, ipts, exp):$/;"	kind:member	line:45
-get_runs	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_runs(self, instrument, ipts, exp):$/;"	kind:member	line:51
+get_runs	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_runs(self, instrument, ipts, exp):$/;"	kind:member	line:52
 get_runs	../src/server/apps/catalog/icat/sns/facade.py	/^    def get_runs(self, instrument, experiment):$/;"	kind:member	line:169
 get_runs_all	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_runs_all(self, instrument, experiment):$/;"	kind:member	line:144
 get_runs_all	../src/server/apps/catalog/icat/sns/facade.py	/^    def get_runs_all(self, instrument, experiment):$/;"	kind:member	line:125
+get_runs_as_table	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_runs_as_table(self, instrument, ipts, exp):$/;"	kind:member	line:114
 get_runs_meta	../src/server/apps/catalog/icat/sns/facade.py	/^    def get_runs_meta(self, instrument, experiment):$/;"	kind:member	line:194
 get_short_name	../src/server/apps/users/models.py	/^    def get_short_name(self):$/;"	kind:member	line:42
 get_source	../venv/lib/python3.5/importlib/_bootstrap.py	/^    def get_source(cls, fullname):$/;"	kind:member	line:758
@@ -5062,10 +5063,10 @@ help_text	../src/server/apps/sans/biosans/models.py	/^        help_text = "Total
 help_text	../src/server/apps/sans/biosans/models.py	/^        help_text="File path"$/;"	kind:variable	line:105
 help_text	../src/server/apps/sans/biosans/models.py	/^        help_text="File path")$/;"	kind:variable	line:122
 help_text	../src/server/apps/sans/biosans/models.py	/^        subtracted from the sample data will also be subtracted from the flood data.",$/;"	kind:variable	line:138
-help_text	../src/server/apps/sans/gpsans/models.py	/^        help_text= "If empty uses the value set in the data file."$/;"	kind:variable	line:18
-help_text	../src/server/apps/sans/gpsans/models.py	/^        help_text="(in meters) If empty uses the value set in the data file."$/;"	kind:variable	line:36
-help_text	../src/server/apps/sans/gpsans/models.py	/^        help_text="File path"$/;"	kind:variable	line:74
-help_text	../src/server/apps/sans/gpsans/models.py	/^        help_text="If empty uses the value set in the data file."$/;"	kind:variable	line:27
+help_text	../src/server/apps/sans/gpsans/models.py	/^        help_text= "If empty uses the value set in the data file."$/;"	kind:variable	line:16
+help_text	../src/server/apps/sans/gpsans/models.py	/^        help_text="(in meters) If empty uses the value set in the data file."$/;"	kind:variable	line:34
+help_text	../src/server/apps/sans/gpsans/models.py	/^        help_text="File path"$/;"	kind:variable	line:72
+help_text	../src/server/apps/sans/gpsans/models.py	/^        help_text="If empty uses the value set in the data file."$/;"	kind:variable	line:25
 help_text	../src/server/apps/sans/models.py	/^                                help_text="Any necessary comments...")$/;"	kind:variable	line:253
 help_text	../src/server/apps/sans/models.py	/^                              If the script was generated already just shows it!")$/;"	kind:variable	line:198
 help_text	../src/server/apps/sans/models.py	/^        help_text="If empty, uses the empty beam as beam center."$/;"	kind:variable	line:246
@@ -5100,7 +5101,7 @@ hz.py	../venv/lib/python3.5/encodings/hz.py	1;"	kind:file	line:1
 iadd	../venv/lib/python3.5/operator.py	/^def iadd(a, b):$/;"	kind:function	line:337
 iand	../venv/lib/python3.5/operator.py	/^def iand(a, b):$/;"	kind:function	line:342
 icat	../src/server/apps/catalog/icat/hfir/communication.py	/^    icat = HFIRICat()$/;"	kind:variable	line:107
-icat	../src/server/apps/catalog/icat/hfir/facade.py	/^    icat = Catalog()$/;"	kind:variable	line:167
+icat	../src/server/apps/catalog/icat/hfir/facade.py	/^    icat = Catalog()$/;"	kind:variable	line:216
 icat	../src/server/apps/catalog/icat/sns/communication.py	/^    icat = SNSICat()$/;"	kind:variable	line:283
 icat_name	../src/server/apps/catalog/models.py	/^    icat_name = models.CharField($/;"	kind:variable	line:72
 icat_url	../src/server/apps/catalog/models.py	/^    icat_url = models.CharField($/;"	kind:variable	line:84
@@ -5315,7 +5316,7 @@ log.py	../src/server/settings/log.py	1;"	kind:file	line:1
 logger	../src/server/apps/catalog/icat/communication.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:7
 logger	../src/server/apps/catalog/icat/facade.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:11
 logger	../src/server/apps/catalog/icat/hfir/communication.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:6
-logger	../src/server/apps/catalog/icat/hfir/facade.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:9
+logger	../src/server/apps/catalog/icat/hfir/facade.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:10
 logger	../src/server/apps/catalog/icat/hfir/util.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:17
 logger	../src/server/apps/catalog/icat/sns/communication.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:15
 logger	../src/server/apps/catalog/icat/sns/facade.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:10
@@ -5378,7 +5379,7 @@ managers	../src/server/apps/users/migrations/0001_initial.py	/^            manag
 mappingproxy	../venv/lib/python3.5/_collections_abc.py	/^mappingproxy = type(type.__dict__)$/;"	kind:variable	line:53
 mask_bottom	../src/server/apps/sans/biosans/models.py	/^    mask_bottom = models.IntegerField($/;"	kind:variable	line:83
 mask_component_name	../src/server/apps/sans/biosans/models.py	/^    mask_component_name = models.CharField($/;"	kind:variable	line:68
-mask_file	../src/server/apps/sans/gpsans/models.py	/^    mask_file = models.CharField($/;"	kind:variable	line:84
+mask_file	../src/server/apps/sans/gpsans/models.py	/^    mask_file = models.CharField($/;"	kind:variable	line:82
 mask_left	../src/server/apps/sans/biosans/models.py	/^    mask_left = models.IntegerField($/;"	kind:variable	line:75
 mask_right	../src/server/apps/sans/biosans/models.py	/^    mask_right = models.IntegerField($/;"	kind:variable	line:79
 mask_top	../src/server/apps/sans/biosans/models.py	/^    mask_top = models.IntegerField($/;"	kind:variable	line:87
@@ -5387,10 +5388,10 @@ match	../venv/lib/python3.5/re.py	/^def match(pattern, string, flags=0):$/;"	kin
 match	../venv/lib/python3.5/sre_parse.py	/^    def match(self, char):$/;"	kind:member	line:242
 matmul	../venv/lib/python3.5/operator.py	/^def matmul(a, b):$/;"	kind:function	line:108
 max_digits	../src/server/apps/sans/biosans/models.py	/^        max_digits=10,$/;"	kind:variable	line:25
-max_digits	../src/server/apps/sans/gpsans/models.py	/^        max_digits=3,$/;"	kind:variable	line:23
-max_digits	../src/server/apps/sans/gpsans/models.py	/^        max_digits=3,$/;"	kind:variable	line:53
-max_digits	../src/server/apps/sans/gpsans/models.py	/^        max_digits=4,$/;"	kind:variable	line:14
-max_digits	../src/server/apps/sans/gpsans/models.py	/^        max_digits=5,$/;"	kind:variable	line:32
+max_digits	../src/server/apps/sans/gpsans/models.py	/^        max_digits=3,$/;"	kind:variable	line:21
+max_digits	../src/server/apps/sans/gpsans/models.py	/^        max_digits=3,$/;"	kind:variable	line:51
+max_digits	../src/server/apps/sans/gpsans/models.py	/^        max_digits=4,$/;"	kind:variable	line:12
+max_digits	../src/server/apps/sans/gpsans/models.py	/^        max_digits=5,$/;"	kind:variable	line:30
 max_length	../src/server/apps/catalog/models.py	/^        max_length=1024,$/;"	kind:variable	line:15
 max_length	../src/server/apps/catalog/models.py	/^        max_length=256,$/;"	kind:variable	line:102
 max_length	../src/server/apps/catalog/models.py	/^        max_length=256,$/;"	kind:variable	line:57
@@ -5408,9 +5409,9 @@ max_length	../src/server/apps/sans/biosans/models.py	/^        max_length=50,$/;
 max_length	../src/server/apps/sans/biosans/models.py	/^        max_length=50,$/;"	kind:variable	line:52
 max_length	../src/server/apps/sans/biosans/models.py	/^        max_length=50,$/;"	kind:variable	line:70
 max_length	../src/server/apps/sans/biosans/models.py	/^        max_length=50,$/;"	kind:variable	line:94
-max_length	../src/server/apps/sans/gpsans/models.py	/^        max_length=256,$/;"	kind:variable	line:72
-max_length	../src/server/apps/sans/gpsans/models.py	/^        max_length=50,$/;"	kind:variable	line:46
-max_length	../src/server/apps/sans/gpsans/models.py	/^        max_length=50,$/;"	kind:variable	line:65
+max_length	../src/server/apps/sans/gpsans/models.py	/^        max_length=256,$/;"	kind:variable	line:70
+max_length	../src/server/apps/sans/gpsans/models.py	/^        max_length=50,$/;"	kind:variable	line:44
+max_length	../src/server/apps/sans/gpsans/models.py	/^        max_length=50,$/;"	kind:variable	line:63
 max_length	../src/server/apps/sans/models.py	/^        max_length=64,$/;"	kind:variable	line:238
 max_length	../src/server/apps/sans/models.py	/^        max_length=64,$/;"	kind:variable	line:244
 maybe	../venv/lib/python3.5/tokenize.py	/^def maybe(*choices): return group(*choices) + '?'$/;"	kind:function	line:113
@@ -5524,7 +5525,7 @@ newlines	../venv/lib/python3.5/tempfile.py	/^    def newlines(self):$/;"	kind:me
 next	../venv/lib/python3.5/tarfile.py	/^    def next(self):$/;"	kind:member	line:2258
 nlargest	../venv/lib/python3.5/heapq.py	/^def nlargest(n, iterable, key=None):$/;"	kind:function	line:524
 normalization	../src/server/apps/sans/biosans/models.py	/^    normalization = models.CharField($/;"	kind:variable	line:51
-normalization	../src/server/apps/sans/gpsans/models.py	/^    normalization = models.CharField($/;"	kind:variable	line:64
+normalization	../src/server/apps/sans/gpsans/models.py	/^    normalization = models.CharField($/;"	kind:variable	line:62
 normalize	../venv/lib/python3.5/locale.py	/^def normalize(localename):$/;"	kind:function	line:375
 normalize_encoding	../venv/lib/python3.5/encodings/__init__.py	/^def normalize_encoding(encoding):$/;"	kind:function	line:42
 normalvariate	../venv/lib/python3.5/random.py	/^    def normalvariate(self, mu, sigma):$/;"	kind:member	line:370
@@ -5544,9 +5545,9 @@ ntohs	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^def ntohs(x):$/;"	kind
 ntpath.py	../venv/lib/python3.5/ntpath.py	1;"	kind:file	line:1
 nts	../venv/lib/python3.5/tarfile.py	/^def nts(s, encoding, errors):$/;"	kind:function	line:159
 null	../src/server/apps/sans/biosans/models.py	/^        null=True,$/;"	kind:variable	line:40
-null	../src/server/apps/sans/gpsans/models.py	/^        null=True,$/;"	kind:variable	line:17
-null	../src/server/apps/sans/gpsans/models.py	/^        null=True,$/;"	kind:variable	line:26
-null	../src/server/apps/sans/gpsans/models.py	/^        null=True,$/;"	kind:variable	line:35
+null	../src/server/apps/sans/gpsans/models.py	/^        null=True,$/;"	kind:variable	line:15
+null	../src/server/apps/sans/gpsans/models.py	/^        null=True,$/;"	kind:variable	line:24
+null	../src/server/apps/sans/gpsans/models.py	/^        null=True,$/;"	kind:variable	line:33
 null	../src/server/apps/sans/models.py	/^                                           null=True,$/;"	kind:variable	line:189
 null	../src/server/apps/sans/models.py	/^                            null=True,$/;"	kind:variable	line:208
 object	../src/server/util/formsets.py	/^    object = None$/;"	kind:variable	line:30
@@ -5562,7 +5563,7 @@ old_get_python_lib	../venv/lib/python3.5/distutils/__init__.py	/^old_get_python_
 old_os_path	../venv/bin/activate_this.py	/^old_os_path = os.environ.get('PATH', '')$/;"	kind:variable	line:16
 on_delete	../src/server/apps/catalog/models.py	/^        on_delete=models.CASCADE,$/;"	kind:variable	line:124
 on_delete	../src/server/apps/sans/biosans/models.py	/^                                  on_delete=models.CASCADE,$/;"	kind:variable	line:166
-on_delete	../src/server/apps/sans/gpsans/models.py	/^                                  on_delete=models.CASCADE,$/;"	kind:variable	line:110
+on_delete	../src/server/apps/sans/gpsans/models.py	/^                                  on_delete=models.CASCADE,$/;"	kind:variable	line:108
 on_delete	../src/server/apps/sans/models.py	/^                                           on_delete=models.CASCADE,$/;"	kind:variable	line:190
 on_delete	../src/server/apps/sans/models.py	/^                            on_delete=models.CASCADE,$/;"	kind:variable	line:209
 onceregistry	../venv/lib/python3.5/warnings.py	/^    onceregistry = _onceregistry$/;"	kind:variable	line:409
@@ -5611,6 +5612,7 @@ parents	../venv/lib/python3.5/collections/__init__.py	/^    def parents(self):  
 paretovariate	../venv/lib/python3.5/random.py	/^    def paretovariate(self, alpha):$/;"	kind:member	line:617
 paretovariate	../venv/lib/python3.5/random.py	/^paretovariate = _inst.paretovariate$/;"	kind:variable	line:735
 parse	../venv/lib/python3.5/sre_parse.py	/^def parse(str, flags=0, pattern=None):$/;"	kind:function	line:819
+parse_filename	../src/server/apps/catalog/icat/hfir/facade.py	/^    def parse_filename(self, filename):$/;"	kind:member	line:98
 parse_template	../venv/lib/python3.5/sre_parse.py	/^def parse_template(source, pattern):$/;"	kind:function	line:846
 partial	../venv/lib/python3.5/functools.py	/^def partial(func, *args, **keywords):$/;"	kind:function	line:240
 partialmethod	../venv/lib/python3.5/functools.py	/^class partialmethod(object):$/;"	kind:class	line:267
@@ -5708,7 +5710,7 @@ realpath	../venv/lib/python3.5/posixpath.py	/^def realpath(filename):$/;"	kind:f
 recursive_repr	../venv/lib/python3.5/reprlib.py	/^def recursive_repr(fillvalue='...'):$/;"	kind:function	line:12
 redirect_field_name	../src/server/apps/users/views.py	/^    redirect_field_name = REDIRECT_FIELD_NAME$/;"	kind:variable	line:44
 reduction	../src/server/apps/sans/biosans/models.py	/^    reduction = models.ForeignKey(BioSANSReduction,$/;"	kind:variable	line:165
-reduction	../src/server/apps/sans/gpsans/models.py	/^    reduction = models.ForeignKey(GPSANSReduction,$/;"	kind:variable	line:109
+reduction	../src/server/apps/sans/gpsans/models.py	/^    reduction = models.ForeignKey(GPSANSReduction,$/;"	kind:variable	line:107
 reduction_available	../src/server/apps/catalog/models.py	/^    reduction_available = models.BooleanField($/;"	kind:variable	line:106
 register	../venv/lib/python3.5/abc.py	/^    def register(cls, subclass):$/;"	kind:member	line:151
 register	../venv/lib/python3.5/functools.py	/^    def register(cls, func=None):$/;"	kind:function	line:727
@@ -5717,8 +5719,8 @@ register_unpack_format	../venv/lib/python3.5/shutil.py	/^def register_unpack_for
 related_name	../src/server/apps/catalog/models.py	/^        related_name='instruments',$/;"	kind:variable	line:125
 related_name	../src/server/apps/sans/biosans/models.py	/^                                      related_name="regions",$/;"	kind:variable	line:171
 related_name	../src/server/apps/sans/biosans/models.py	/^                                  related_name="regions",$/;"	kind:variable	line:167
-related_name	../src/server/apps/sans/gpsans/models.py	/^                                      related_name="regions",$/;"	kind:variable	line:115
-related_name	../src/server/apps/sans/gpsans/models.py	/^                                  related_name="regions",$/;"	kind:variable	line:111
+related_name	../src/server/apps/sans/gpsans/models.py	/^                                      related_name="regions",$/;"	kind:variable	line:113
+related_name	../src/server/apps/sans/gpsans/models.py	/^                                  related_name="regions",$/;"	kind:variable	line:109
 related_name	../src/server/apps/sans/models.py	/^                                           related_name="%(class)s_interpreters",$/;"	kind:variable	line:191
 related_name	../src/server/apps/sans/models.py	/^                                   related_name="%(class)s_instruments",$/;"	kind:variable	line:121
 related_name	../src/server/apps/sans/models.py	/^                                   related_name="%(class)s_instruments",$/;"	kind:variable	line:201
@@ -5727,8 +5729,8 @@ related_name	../src/server/apps/sans/models.py	/^                             re
 related_name	../src/server/apps/sans/models.py	/^                            related_name="%(class)s_job",$/;"	kind:variable	line:210
 related_query_name	../src/server/apps/sans/biosans/models.py	/^                                      related_query_name="region")$/;"	kind:variable	line:172
 related_query_name	../src/server/apps/sans/biosans/models.py	/^                                  related_query_name="region",)$/;"	kind:variable	line:168
-related_query_name	../src/server/apps/sans/gpsans/models.py	/^                                      related_query_name="region")$/;"	kind:variable	line:116
-related_query_name	../src/server/apps/sans/gpsans/models.py	/^                                  related_query_name="region",)$/;"	kind:variable	line:112
+related_query_name	../src/server/apps/sans/gpsans/models.py	/^                                      related_query_name="region")$/;"	kind:variable	line:114
+related_query_name	../src/server/apps/sans/gpsans/models.py	/^                                  related_query_name="region",)$/;"	kind:variable	line:110
 related_query_name	../src/server/apps/sans/models.py	/^                                           related_query_name="%(class)s_interpreter",)$/;"	kind:variable	line:192
 related_query_name	../src/server/apps/sans/models.py	/^                                   related_query_name="%(class)s_instrument",)  # , blank=True, null=True)$/;"	kind:variable	line:122
 related_query_name	../src/server/apps/sans/models.py	/^                                   related_query_name="%(class)s_instrument",)$/;"	kind:variable	line:202
@@ -5773,7 +5775,7 @@ reprlib.py	../venv/lib/python3.5/reprlib.py	1;"	kind:file	line:1
 res	../src/server/apps/catalog/icat/hfir/communication.py	/^    res = icat.get_experiments("CG3")$/;"	kind:variable	line:108
 res	../src/server/apps/catalog/icat/hfir/communication.py	/^    res = icat.get_runs("CG3", "IPTS-18265", "exp359")$/;"	kind:variable	line:110
 res	../src/server/apps/catalog/icat/hfir/communication.py	/^    res = icat.run_info($/;"	kind:variable	line:112
-res	../src/server/apps/catalog/icat/hfir/facade.py	/^    res = icat.get_run($/;"	kind:variable	line:172
+res	../src/server/apps/catalog/icat/hfir/facade.py	/^    res = icat.parse_filename('BioSANS_exp379_scan0500_0001.xml')$/;"	kind:variable	line:225
 reset	../venv/lib/python3.5/codecs.py	/^    def reset(self):$/;"	kind:member	line:202
 reset	../venv/lib/python3.5/codecs.py	/^    def reset(self):$/;"	kind:member	line:243
 reset	../venv/lib/python3.5/codecs.py	/^    def reset(self):$/;"	kind:member	line:275
@@ -5821,7 +5823,7 @@ rsplit	../venv/lib/python3.5/collections/__init__.py	/^    def rsplit(self, sep=
 rstrip	../venv/lib/python3.5/collections/__init__.py	/^    def rstrip(self, chars=None):$/;"	kind:member	line:1224
 run_background	../fabfile.py	/^def run_background(command, run_as_sudo=False):$/;"	kind:function	line:84
 run_info	../src/server/apps/catalog/icat/hfir/communication.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:80
-run_info	../src/server/apps/catalog/icat/hfir/facade.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:129
+run_info	../src/server/apps/catalog/icat/hfir/facade.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:178
 runs	../src/server/apps/catalog/icat/facade.py	/^    runs = get_runs('HFIR', 'CG3', 'IPTS-17241', 'exp381')$/;"	kind:variable	line:55
 sace_prefix	../venv/lib/python3.5/encodings/idna.py	/^sace_prefix = "xn--"$/;"	kind:variable	line:11
 samefile	../venv/lib/python3.5/genericpath.py	/^def samefile(f1, f2):$/;"	kind:function	line:88
@@ -5829,8 +5831,8 @@ sameopenfile	../venv/lib/python3.5/genericpath.py	/^def sameopenfile(fp1, fp2):$
 samestat	../venv/lib/python3.5/genericpath.py	/^def samestat(s1, s2):$/;"	kind:function	line:81
 sample	../venv/lib/python3.5/random.py	/^    def sample(self, population, k):$/;"	kind:member	line:280
 sample	../venv/lib/python3.5/random.py	/^sample = _inst.sample$/;"	kind:variable	line:726
-sample_aperture_diameter	../src/server/apps/sans/gpsans/models.py	/^    sample_aperture_diameter = models.DecimalField($/;"	kind:variable	line:79
-sample_detector_distance	../src/server/apps/sans/gpsans/models.py	/^    sample_detector_distance = models.DecimalField($/;"	kind:variable	line:30
+sample_aperture_diameter	../src/server/apps/sans/gpsans/models.py	/^    sample_aperture_diameter = models.DecimalField($/;"	kind:variable	line:77
+sample_detector_distance	../src/server/apps/sans/gpsans/models.py	/^    sample_detector_distance = models.DecimalField($/;"	kind:variable	line:28
 scan	../venv/lib/python3.5/re.py	/^    def scan(self, string):$/;"	kind:member	line:361
 script	../src/server/apps/sans/models.py	/^    script = models.TextField(blank=True,$/;"	kind:variable	line:196
 script.py	../src/server/util/script.py	1;"	kind:file	line:1
@@ -5855,11 +5857,11 @@ selective_len	../venv/lib/python3.5/encodings/punycode.py	/^def selective_len(st
 send	../venv/lib/python3.5/_collections_abc.py	/^    def send(self, value):$/;"	kind:member	line:108
 send	../venv/lib/python3.5/_collections_abc.py	/^    def send(self, value):$/;"	kind:member	line:254
 send	../venv/lib/python3.5/types.py	/^    def send(self, val):$/;"	kind:member	line:176
-sensitivity_file	../src/server/apps/sans/gpsans/models.py	/^    sensitivity_file = models.CharField($/;"	kind:variable	line:87
+sensitivity_file	../src/server/apps/sans/gpsans/models.py	/^    sensitivity_file = models.CharField($/;"	kind:variable	line:85
 sensitivity_max	../src/server/apps/sans/biosans/models.py	/^    sensitivity_max = models.DecimalField($/;"	kind:variable	line:109
-sensitivity_max	../src/server/apps/sans/gpsans/models.py	/^    sensitivity_max = models.DecimalField($/;"	kind:variable	line:92
+sensitivity_max	../src/server/apps/sans/gpsans/models.py	/^    sensitivity_max = models.DecimalField($/;"	kind:variable	line:90
 sensitivity_min	../src/server/apps/sans/biosans/models.py	/^    sensitivity_min = models.DecimalField($/;"	kind:variable	line:107
-sensitivity_min	../src/server/apps/sans/gpsans/models.py	/^    sensitivity_min = models.DecimalField($/;"	kind:variable	line:90
+sensitivity_min	../src/server/apps/sans/gpsans/models.py	/^    sensitivity_min = models.DecimalField($/;"	kind:variable	line:88
 sensitivity_use_sample_dc	../src/server/apps/sans/biosans/models.py	/^    sensitivity_use_sample_dc = models.BooleanField($/;"	kind:variable	line:111
 sep	../venv/lib/python3.5/ntpath.py	/^sep = '\\\\'$/;"	kind:variable	line:27
 sep	../venv/lib/python3.5/posixpath.py	/^sep = '\/'$/;"	kind:variable	line:33
@@ -5919,7 +5921,7 @@ site_packages	../venv/bin/activate_this.py	/^    site_packages = os.path.join(ba
 site_packages	../venv/bin/activate_this.py	/^    site_packages = os.path.join(base, 'lib', 'python%s' % sys.version[:3], 'site-packages')$/;"	kind:variable	line:22
 softspace	../venv/lib/python3.5/tempfile.py	/^    def softspace(self):$/;"	kind:member	line:889
 solid_angle_correction	../src/server/apps/sans/biosans/models.py	/^    solid_angle_correction = models.CharField($/;"	kind:variable	line:37
-solid_angle_correction	../src/server/apps/sans/gpsans/models.py	/^    solid_angle_correction = models.CharField($/;"	kind:variable	line:45
+solid_angle_correction	../src/server/apps/sans/gpsans/models.py	/^    solid_angle_correction = models.CharField($/;"	kind:variable	line:43
 sort	../venv/lib/python3.5/collections/__init__.py	/^    def sort(self, *args, **kwds): self.data.sort(*args, **kwds)$/;"	kind:member	line:1083
 source_from_cache	../venv/lib/python3.5/imp.py	/^def source_from_cache(path):$/;"	kind:function	line:91
 source_from_cache	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^def source_from_cache(path):$/;"	kind:function	line:290
@@ -6165,8 +6167,8 @@ walk	../venv/lib/python3.5/os.py	/^def walk(top, topdown=True, onerror=None, fol
 warn	../venv/lib/python3.5/warnings.py	/^def warn(message, category=None, stacklevel=1):$/;"	kind:function	line:188
 warn_explicit	../venv/lib/python3.5/warnings.py	/^def warn_explicit(message, category, filename, lineno,$/;"	kind:function	line:240
 warnings.py	../venv/lib/python3.5/warnings.py	1;"	kind:file	line:1
-wavelength	../src/server/apps/sans/gpsans/models.py	/^    wavelength = models.DecimalField($/;"	kind:variable	line:12
-wavelength_spread	../src/server/apps/sans/gpsans/models.py	/^    wavelength_spread = models.DecimalField($/;"	kind:variable	line:21
+wavelength	../src/server/apps/sans/gpsans/models.py	/^    wavelength = models.DecimalField($/;"	kind:variable	line:10
+wavelength_spread	../src/server/apps/sans/gpsans/models.py	/^    wavelength_spread = models.DecimalField($/;"	kind:variable	line:19
 weakref.py	../venv/lib/python3.5/weakref.py	1;"	kind:file	line:1
 weibullvariate	../venv/lib/python3.5/random.py	/^    def weibullvariate(self, alpha, beta):$/;"	kind:member	line:626
 weibullvariate	../venv/lib/python3.5/random.py	/^weibullvariate = _inst.weibullvariate$/;"	kind:variable	line:736

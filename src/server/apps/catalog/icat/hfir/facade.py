@@ -1,7 +1,7 @@
 import logging
 import re
 from pprint import pformat, pprint
-
+from collections import OrderedDict
 from django.utils import dateparse
 
 from .communication import HFIRICat
@@ -95,7 +95,7 @@ class Catalog(object):
         return result
 
 
-    def parse_filename(self, filename):
+    def _parse_filename(self, filename):
         '''
         filename of the form
         BioSANS_exp379_scan0500_0001.xml'
@@ -109,36 +109,26 @@ class Catalog(object):
             return None
 
 
-
-
     def get_runs_as_table(self, instrument, ipts, exp):
         '''
         Same as get runs but split sample_* in tables
         '''
-        raw_data = self.get_runs(instrument, ipts, exp)
-        data = []
-        header = ["Title", "Scan", "Frame", ]
-        # let's find the headers from the data in the sample fields
-        for entry in raw_data:
-            if entry["sample_info"] != "":
-                for k, _ in entry["sample_info"].items():
-                    key = "sample_info_" + k
-                    if key not in header:
-                        header.append(key)
-            if entry["sample_background"] != "":
-                for k, _ in entry["sample_background"].items():
-                    key = "sample_background_" + k
-                    if key not in header:
-                        header.append(key)
-            if entry["sample_parameters"] != "":
-                for k, _ in entry["sample_parameters"].items():
-                    key = "sample_parameters_" + k
-                    if key not in header:
-                        header.append(key)
-            logger.debug(header)
-            # Let's make the rest
-            for entry in raw_data:
-                pass
+
+        # Let's make a rubset first
+        data = self.get_runs(instrument, ipts, exp)
+        subset = []
+        for d in data:
+            entry = OrderedDict()
+            entry["title"] = d["metadata"]["scan_title"]
+            _, _, scan_number, frame_number = self._parse_filename(d["filename"])
+            entry["scan_number"] = scan_number
+            entry["frame_number"] = frame_number
+            entry["sample_info"] = d["sample_info"] if d["sample_info"] != "" else {}
+            entry["sample_background"] = d["sample_background"] if d["sample_background"] != "" else {}
+            entry["sample_parameters"] = d["sample_parameters"] if d["sample_parameters"] != "" else {}
+            subset.append(entry)
+
+        return subset
 
         
 
@@ -221,6 +211,6 @@ if __name__ == "__main__":
     # res = icat.get_run(
     #     "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
     # res.pop('data')
-    #res = icat.get_runs_as_table("CG3", "IPTS-18512", "exp394")
-    res = icat.parse_filename('BioSANS_exp379_scan0500_0001.xml')
+    res = icat.get_runs_as_table("CG3", "IPTS-18512", "exp394")
+    #res = icat._parse_filename('BioSANS_exp379_scan0500_0001.xml')
     pprint(res)
