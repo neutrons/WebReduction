@@ -2,8 +2,6 @@
 # GPSANS
 ##########################################################################
 
-from idlelib.IOBinding import blank_re
-
 from ..models import *
 
 

@@ -1,4 +1,5 @@
 import logging
+import re
 from pprint import pformat, pprint
 
 from django.utils import dateparse
@@ -93,6 +94,23 @@ class Catalog(object):
                 logger.exception(this_exception)
         return result
 
+
+    def parse_filename(self, filename):
+        '''
+        filename of the form
+        BioSANS_exp379_scan0500_0001.xml'
+        return: instrument, exp number, scan number, frame number
+        '''
+        regex = r"(\w+)_exp(\d+)_scan(\d+)_(\d+)\.xml"
+        match = re.search(regex, filename)
+        if match:
+            return match.group(1), int(match.group(2)), int(match.group(3)), int(match.group(4))
+        else:
+            return None
+
+
+
+
     def get_runs_as_table(self, instrument, ipts, exp):
         '''
         Same as get runs but split sample_* in tables
@@ -108,7 +126,6 @@ class Catalog(object):
                     if key not in header:
                         header.append(key)
             if entry["sample_background"] != "":
-                print("->", entry["sample_background"])
                 for k, _ in entry["sample_background"].items():
                     key = "sample_background_" + k
                     if key not in header:
@@ -118,10 +135,10 @@ class Catalog(object):
                     key = "sample_parameters_" + k
                     if key not in header:
                         header.append(key)
+            logger.debug(header)
             # Let's make the rest
             for entry in raw_data:
                 pass
-                # TODO
 
         
 
@@ -201,7 +218,9 @@ if __name__ == "__main__":
     # pprint(res)
     # res = icat.get_runs("CG3", 'IPTS-18347','exp379')
     # pprint(res)
-    res = icat.get_run(
-        "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
-    res.pop('data')
+    # res = icat.get_run(
+    #     "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
+    # res.pop('data')
+    #res = icat.get_runs_as_table("CG3", "IPTS-18512", "exp394")
+    res = icat.parse_filename('BioSANS_exp379_scan0500_0001.xml')
     pprint(res)
