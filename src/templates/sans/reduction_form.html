@@ -7,7 +7,48 @@
 <!-- handsontable -->
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap3-dialog/css/bootstrap-dialog.min.css" %}'>
-{% endblock %}
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+<style>
+#accordion {
+    position: fixed;
+    /*bottom: 0;*/
+    top: 50px;
+    left: 0px;
+    width: 100%;
+    z-index: 2147483647;    
+}
+
+.panel-default > .panel-heading{
+    background: #005725;
+}
+
+.panel-heading {
+    padding: 0;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.panel-group .panel {
+    border-radius: 0;
+}
+
+.panel-title a {
+    color: #FFFFFF;
+    text-align: center;
+    width: 100%;
+    display: block;
+    padding: 5px 5px;
+    font-size: 12px;
+    font-family: Helvetica,Arial,sans-serif;
+    outline: none;
+}
+
+.panel-title a:hover, .panel-title a:focus, .panel-title a:active {
+    text-decoration: none;
+    outline: none;
+}
+</style>
+{% endblock header %}
 
 {% block breadcrumbs %}
 <div class="container">
@@ -37,74 +78,41 @@
         </div>
         <hr />
         
-        <!-- Either Reduction os Catalog -->
-        <ul class="nav nav-pills nav-justified">
-            <li class="active"><a data-toggle="tab" href="#tab-reduction"><span class="glyphicon glyphicon-th"></span> &nbsp;Reduction</a></li>
-            <li><a  data-toggle="tab" href="#tab-catalog"><span class="glyphicon glyphicon-book"></span> &nbsp;Data Catalog</a></li>
-        </ul>
 
-        <!-- The multiples formsets -->
-        <div class="tab-content">
-            <div id="tab-reduction" class="tab-pane fade in active">
-                <!-- The reduction regions  -->
-                <div class="well">
-                    <div class="panel-body">
-                        <ul class="nav nav-tabs nav-justified">
-                        {% for f in formset %}
-                            <li class="{{ forloop.first|yesno:'active,'}}"><a data-toggle="tab" href="#tab{{forloop.counter}}">Region {{forloop.counter}}</a>
-                            </li>
-                        {% endfor %}
+
+        <!-- The multiples formsets : The reduction regions  -->
+        <div class="well">
+            <div class="panel-body">
+                <ul class="nav nav-tabs nav-justified">
+                {% for f in formset %}
+                    <li class="{{ forloop.first|yesno:'active,'}}"><a data-toggle="tab" href="#tab{{forloop.counter}}">Region {{forloop.counter}}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+                <div class="tab-content">
+                {% for f in formset %}
+                    <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
+                        {% crispy f f.helper %}
+                        <div class="help-block"></div><!-- vertical spaces -->
+                        <a href="#" class="btn btn-default pull-right" role="button" data-toggle="tooltip" 
+                            title="Click to auto-populate the spreadsheet with info from ICat"><span class="glyphicon glyphicon-search"></span> Populate from Data Catalog</a>
+                    </div>
+                {% endfor %}
+                </div>
+                <!-- help message  -->
+                <button class="" data-toggle="collapse" data-target="#help" onclick="javascript:return false;">
+                    <span class="glyphicon glyphicon-question-sign"></span> Help</button>
+                    <div id="help" class="collapse">
+                        <p>Formats accepted on the spreadsheet:</p>
+                        <ul>
+                            <li>Full path (if file from other experiment).</li>
+                            <li>File name (assumend from this experiement)</li>
+                            <li>The scan number (integer)</li>
+                            <li>Abreviated notation: [scan]_[frame]. E.g.: 2_123</li>
+                            <li>If the frame number is needed, use abreviated notation</li>
+                            <li>Separate multiple runs with ',' whatever notation you use.</li>
                         </ul>
-                        <div class="tab-content">
-                        {% for f in formset %}
-                            <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
-                                {% crispy f f.helper %}
-                                <div class="help-block"></div><!-- vertical spaces -->
-                                <a href="#" class="btn btn-default pull-right" role="button" data-toggle="tooltip" 
-                                    title="Click to auto-populate the spreadsheet with info from ICat"><span class="glyphicon glyphicon-search"></span> Populate from Data Catalog</a>
-                            </div>
-                        {% endfor %}
-                        </div>
-                        <!-- help message  -->
-                        <button class="" data-toggle="collapse" data-target="#help" onclick="javascript:return false;">
-                            <span class="glyphicon glyphicon-question-sign"></span> Help</button>
-                            <div id="help" class="collapse">
-                                <p>Formats accepted on the spreadsheet:</p>
-                                <ul>
-                                    <li>Full path (if file from other experiment).</li>
-                                    <li>File name (assumend from this experiement)</li>
-                                    <li>The scan number (integer)</li>
-                                    <li>Abreviated notation: [scan]_[frame]. E.g.: 2_123</li>
-                                    <li>If the frame number is needed, use abreviated notation</li>
-                                    <li>Separate multiple runs with ',' whatever notation you use.</li>
-                                </ul>
-                            </div>
                     </div>
-                </div>
-            </div>
-            <!-- The catalog  -->
-            <div id="tab-catalog" class="tab-pane fade">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} </div>
-                    <div class="panel-body">
-                        <table id="icat_table" class="table table-bordered table-striped" cellspacing="0" width="100%">
-                            <thead>
-                                <tr>
-                                    {% for h in header %}
-                                        <th>{{h}}</th>
-                                    {% endfor %}
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    {% for h in header %}
-                                        <th>{{h}}</th>
-                                    {% endfor %}
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
         <hr />
@@ -115,6 +123,45 @@
     </form>
 
 </div>
+
+<!-- The catalog  -->
+<div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+         <span class="caret"></span>  Catalog files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} <span class="caret"></span>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse">
+
+                <div class="panel-body">
+                    <table id="icat_table" class="table table-bordered table-striped" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                {% for h in header %}
+                                    <th>{{h}}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                {% for h in header %}
+                                    <th>{{h}}</th>
+                                {% endfor %}
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+
+
+      </div>
+    </div>            
+  </div>
+
+
 {% endblock %}
 
 {% block footer_js%}
@@ -301,22 +348,24 @@ $('.nav-tabs a').on('shown.bs.tab', function (event) {
 
 // Sets the value from djnago into a js array
 var dataSet = JSON.parse("{{runs|escapejs}}");
-console.log(JSON.stringify(dataSet));
+// console.log(JSON.stringify(dataSet));
 // Make a datatable with icat contents
 $(document).ready(function () {
     $('#icat_table').DataTable({
         data: dataSet,
-        lengthMenu : [ [ 20, 50, 100, -1 ], [ 20, 50, 100, "All" ] ],
+        //lengthMenu : [ [ 20, 50, 100, -1 ], [ 20, 50, 100, "All" ] ],
         order: [[ 4, 'desc' ]],
         columnDefs: [
             { width: "20%", targets: 0 },
             { type: "date", targets: 4 }
         ],
-        paging: true,
         lengthChange: true,
         searching: true,
         ordering: true,
         info: true,
+        scrollY:        "400px",
+        scrollCollapse: true,
+        paging:         false,
         //autoWidth: false,
         initComplete: function () {
             this.api().columns().every( function () {
@@ -339,8 +388,10 @@ $(document).ready(function () {
     })
 });
 
-
-
+// Redraw the icat table on accordinon
+$('#collapseOne').on('shown.bs.collapse', function() {
+  $('#icat_table').DataTable().draw();
+});
 </script>
 
 {% endblock %}
