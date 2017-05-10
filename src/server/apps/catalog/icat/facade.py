@@ -17,15 +17,17 @@ def not_implemented(fargs,*args,**kwargs):
 
 
 REGISTRY = {
-    'SNS' : {
-        'get_expriments' : SNSICat().get_experiments_meta,
-        'get_runs' : SNSICat().get_runs_all,
-        'get_run' : not_implemented,
+    'SNS': {
+        'get_expriments': SNSICat().get_experiments_meta,
+        'get_runs': SNSICat().get_runs_all,
+        'get_run': not_implemented,
+        'get_runs_as_table': not_implemented,
     },
-    'HFIR' : {
-        'get_expriments' : HFIRICat().get_experiments,
-        'get_runs' : HFIRICat().get_runs, #(instrument, ipts, exp):
-        'get_run' : HFIRICat().get_run,
+    'HFIR': {
+        'get_expriments': HFIRICat().get_experiments,
+        'get_runs': HFIRICat().get_runs, #(instrument, ipts, exp):
+        'get_runs_as_table': HFIRICat().get_runs_as_table,
+        'get_run': HFIRICat().get_run,
     }
 
 }
@@ -40,6 +42,13 @@ def get_runs(facility, instrument, ipts, exp=None):
         runs = REGISTRY[facility]['get_runs'](instrument, ipts)
     else:
         runs = REGISTRY[facility]['get_runs'](instrument, ipts, exp)
+    return runs
+
+def get_runs_as_table(facility, instrument, ipts, exp=None):
+    if exp is None or exp == "exp0":
+        runs = REGISTRY[facility]['get_runs_as_table'](instrument, ipts)
+    else:
+        runs = REGISTRY[facility]['get_runs_as_table'](instrument, ipts, exp)
     return runs
 
 def get_run(facility, instrument, ipts, file_location):

@@ -3093,7 +3093,7 @@ _generate_overlap_table	../venv/lib/python3.5/sre_compile.py	/^def _generate_ove
 _get_bothseps	../venv/lib/python3.5/ntpath.py	/^def _get_bothseps(path):$/;"	kind:function	line:35
 _get_cached	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^def _get_cached(filename):$/;"	kind:function	line:342
 _get_candidate_names	../venv/lib/python3.5/tempfile.py	/^def _get_candidate_names():$/;"	kind:function	line:374
-_get_data	../src/server/apps/catalog/icat/hfir/facade.py	/^    def _get_data(self, filename):$/;"	kind:member	line:146
+_get_data	../src/server/apps/catalog/icat/hfir/facade.py	/^    def _get_data(self, filename):$/;"	kind:member	line:136
 _get_default_tempdir	../venv/lib/python3.5/tempfile.py	/^def _get_default_tempdir():$/;"	kind:function	line:327
 _get_exports_list	../venv/lib/python3.5/os.py	/^def _get_exports_list(module):$/;"	kind:function	line:40
 _get_gid	../venv/lib/python3.5/shutil.py	/^def _get_gid(name):$/;"	kind:function	line:565
@@ -3200,6 +3200,7 @@ _optimize_charset	../venv/lib/python3.5/sre_compile.py	/^def _optimize_charset(c
 _override_localeconv	../venv/lib/python3.5/locale.py	/^_override_localeconv = {}$/;"	kind:variable	line:106
 _parse	../src/server/apps/catalog/icat/hfir/util.py	/^    def _parse(self, filename):$/;"	kind:member	line:36
 _parse	../venv/lib/python3.5/sre_parse.py	/^def _parse(source, state):$/;"	kind:function	line:491
+_parse_filename	../src/server/apps/catalog/icat/hfir/facade.py	/^    def _parse_filename(self, filename):$/;"	kind:member	line:98
 _parse_localename	../venv/lib/python3.5/locale.py	/^def _parse_localename(localename):$/;"	kind:function	line:458
 _parse_sub	../venv/lib/python3.5/sre_parse.py	/^def _parse_sub(source, state, nested=True):$/;"	kind:function	line:429
 _parse_sub_cond	../venv/lib/python3.5/sre_parse.py	/^def _parse_sub_cond(source, state, condgroup):$/;"	kind:function	line:479
@@ -4814,7 +4815,7 @@ get_queryset	../src/server/apps/sans/views.py	/^    def get_queryset(self):$/;"	
 get_queryset	../src/server/apps/sans/views.py	/^    def get_queryset(self):$/;"	kind:member	line:347
 get_queryset	../src/server/apps/sans/views.py	/^    def get_queryset(self):$/;"	kind:member	line:394
 get_run	../src/server/apps/catalog/icat/facade.py	/^def get_run(facility, instrument, ipts, file_location):$/;"	kind:function	line:45
-get_run	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_run(self, instrument, ipts, file_location):$/;"	kind:member	line:204
+get_run	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_run(self, instrument, ipts, file_location):$/;"	kind:member	line:194
 get_run_files	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_run_files(self, instrument, run_number):$/;"	kind:member	line:263
 get_run_info	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_run_info(self, instrument, run_number):$/;"	kind:member	line:187
 get_run_info_lite	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_run_info_lite(self, instrument, run_number):$/;"	kind:member	line:229
@@ -4828,7 +4829,7 @@ get_runs	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_runs(self,
 get_runs	../src/server/apps/catalog/icat/sns/facade.py	/^    def get_runs(self, instrument, experiment):$/;"	kind:member	line:169
 get_runs_all	../src/server/apps/catalog/icat/sns/communication.py	/^    def get_runs_all(self, instrument, experiment):$/;"	kind:member	line:144
 get_runs_all	../src/server/apps/catalog/icat/sns/facade.py	/^    def get_runs_all(self, instrument, experiment):$/;"	kind:member	line:125
-get_runs_as_table	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_runs_as_table(self, instrument, ipts, exp):$/;"	kind:member	line:114
+get_runs_as_table	../src/server/apps/catalog/icat/hfir/facade.py	/^    def get_runs_as_table(self, instrument, ipts, exp):$/;"	kind:member	line:112
 get_runs_meta	../src/server/apps/catalog/icat/sns/facade.py	/^    def get_runs_meta(self, instrument, experiment):$/;"	kind:member	line:194
 get_short_name	../src/server/apps/users/models.py	/^    def get_short_name(self):$/;"	kind:member	line:42
 get_source	../venv/lib/python3.5/importlib/_bootstrap.py	/^    def get_source(cls, fullname):$/;"	kind:member	line:758
@@ -5101,7 +5102,7 @@ hz.py	../venv/lib/python3.5/encodings/hz.py	1;"	kind:file	line:1
 iadd	../venv/lib/python3.5/operator.py	/^def iadd(a, b):$/;"	kind:function	line:337
 iand	../venv/lib/python3.5/operator.py	/^def iand(a, b):$/;"	kind:function	line:342
 icat	../src/server/apps/catalog/icat/hfir/communication.py	/^    icat = HFIRICat()$/;"	kind:variable	line:107
-icat	../src/server/apps/catalog/icat/hfir/facade.py	/^    icat = Catalog()$/;"	kind:variable	line:216
+icat	../src/server/apps/catalog/icat/hfir/facade.py	/^    icat = Catalog()$/;"	kind:variable	line:206
 icat	../src/server/apps/catalog/icat/sns/communication.py	/^    icat = SNSICat()$/;"	kind:variable	line:283
 icat_name	../src/server/apps/catalog/models.py	/^    icat_name = models.CharField($/;"	kind:variable	line:72
 icat_url	../src/server/apps/catalog/models.py	/^    icat_url = models.CharField($/;"	kind:variable	line:84
@@ -5612,7 +5613,6 @@ parents	../venv/lib/python3.5/collections/__init__.py	/^    def parents(self):  
 paretovariate	../venv/lib/python3.5/random.py	/^    def paretovariate(self, alpha):$/;"	kind:member	line:617
 paretovariate	../venv/lib/python3.5/random.py	/^paretovariate = _inst.paretovariate$/;"	kind:variable	line:735
 parse	../venv/lib/python3.5/sre_parse.py	/^def parse(str, flags=0, pattern=None):$/;"	kind:function	line:819
-parse_filename	../src/server/apps/catalog/icat/hfir/facade.py	/^    def parse_filename(self, filename):$/;"	kind:member	line:98
 parse_template	../venv/lib/python3.5/sre_parse.py	/^def parse_template(source, pattern):$/;"	kind:function	line:846
 partial	../venv/lib/python3.5/functools.py	/^def partial(func, *args, **keywords):$/;"	kind:function	line:240
 partialmethod	../venv/lib/python3.5/functools.py	/^class partialmethod(object):$/;"	kind:class	line:267
@@ -5775,7 +5775,7 @@ reprlib.py	../venv/lib/python3.5/reprlib.py	1;"	kind:file	line:1
 res	../src/server/apps/catalog/icat/hfir/communication.py	/^    res = icat.get_experiments("CG3")$/;"	kind:variable	line:108
 res	../src/server/apps/catalog/icat/hfir/communication.py	/^    res = icat.get_runs("CG3", "IPTS-18265", "exp359")$/;"	kind:variable	line:110
 res	../src/server/apps/catalog/icat/hfir/communication.py	/^    res = icat.run_info($/;"	kind:variable	line:112
-res	../src/server/apps/catalog/icat/hfir/facade.py	/^    res = icat.parse_filename('BioSANS_exp379_scan0500_0001.xml')$/;"	kind:variable	line:225
+res	../src/server/apps/catalog/icat/hfir/facade.py	/^    res = icat.get_runs_as_table("CG3", "IPTS-18512", "exp394")$/;"	kind:variable	line:214
 reset	../venv/lib/python3.5/codecs.py	/^    def reset(self):$/;"	kind:member	line:202
 reset	../venv/lib/python3.5/codecs.py	/^    def reset(self):$/;"	kind:member	line:243
 reset	../venv/lib/python3.5/codecs.py	/^    def reset(self):$/;"	kind:member	line:275
@@ -5823,7 +5823,7 @@ rsplit	../venv/lib/python3.5/collections/__init__.py	/^    def rsplit(self, sep=
 rstrip	../venv/lib/python3.5/collections/__init__.py	/^    def rstrip(self, chars=None):$/;"	kind:member	line:1224
 run_background	../fabfile.py	/^def run_background(command, run_as_sudo=False):$/;"	kind:function	line:84
 run_info	../src/server/apps/catalog/icat/hfir/communication.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:80
-run_info	../src/server/apps/catalog/icat/hfir/facade.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:178
+run_info	../src/server/apps/catalog/icat/hfir/facade.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:168
 runs	../src/server/apps/catalog/icat/facade.py	/^    runs = get_runs('HFIR', 'CG3', 'IPTS-17241', 'exp381')$/;"	kind:variable	line:55
 sace_prefix	../venv/lib/python3.5/encodings/idna.py	/^sace_prefix = "xn--"$/;"	kind:variable	line:11
 samefile	../venv/lib/python3.5/genericpath.py	/^def samefile(f1, f2):$/;"	kind:function	line:88

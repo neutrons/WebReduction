@@ -14,7 +14,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from django_remote_submission.models import Job, Server
 from django_remote_submission.tasks import LogPolicy, submit_job_to_server
 
-from server.apps.catalog.icat.facade import get_expriments, get_runs
+from server.apps.catalog.icat.facade import get_expriments, get_runs, get_runs_as_table
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 from server.settings.env import env
@@ -411,10 +411,12 @@ class ReductionFormMixin(ReductionMixin):
         exp = "exp{}".format(self.request.user.profile.experiment_number)
         logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
         try:
-            runs = get_runs(facility, instrument, ipts, exp)
+            header, runs = get_runs_as_table(facility, instrument, ipts, exp)
         except Exception:
+            header = []
             runs = []
         context['runs'] = json.dumps(runs) #Converts dict to string and None to null: Good for JS
+        context['header'] = header
         return context
 
 class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, CreateView):

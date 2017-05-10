@@ -7,20 +7,8 @@
 <!-- handsontable -->
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap3-dialog/css/bootstrap-dialog.min.css" %}'>
-<style>
-.ui-draggable {
-    cursor: pointer;
-    background: transparent;
-}
-
-.ui-draggable-dragging {
-    position: relative;
-    z-index: 1000000000;
-}
-</style>
 {% endblock %}
 
- 
 {% block breadcrumbs %}
 <div class="container">
     <ol class="breadcrumb">
@@ -97,12 +85,26 @@
             <!-- The catalog  -->
             <div id="tab-catalog" class="tab-pane fade">
                 <div class="panel panel-default">
-                <div class="panel-heading">Files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} </div>
-                <div class="panel-body">
-                    <table id="icat_table" class="display table table-striped table-hover" cellspacing="0" width="100%">
-                    </table>
+                    <div class="panel-heading">Files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} </div>
+                    <div class="panel-body">
+                        <table id="icat_table" class="table table-bordered table-striped" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    {% for h in header %}
+                                        <th>{{h}}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    {% for h in header %}
+                                        <th>{{h}}</th>
+                                    {% endfor %}
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
         <hr />
@@ -298,188 +300,46 @@ $('.nav-tabs a').on('shown.bs.tab', function (event) {
 /*******************************************/
 
 // Sets the value from djnago into a js array
-var fullDataSet = JSON.parse("{{runs|escapejs}}");
-// Let's get what we need for the table'
-var dataSet = fullDataSet.map(function (run) {
-    return [
-        run.title, //0
-        run.metadata.scan_type,
-        run.thumbnails,
-        run.filename
-    ]; //3
-});
-
+var dataSet = JSON.parse("{{runs|escapejs}}");
+console.log(JSON.stringify(dataSet));
 // Make a datatable with icat contents
 $(document).ready(function () {
     $('#icat_table').DataTable({
         data: dataSet,
-        //dom: '<"top"i>rt<"bottom"flp><"clear">',
-        columns: [{
-            title: "Title",
-            render: function (data, type, row, meta) {
-                // renders every row of the table
-                // Let's see how many thumbnails we have:
-                var thumbs_dictionary = row[2];
-                var thumbs_html = "<table><tr>";
-                for (var key in thumbs_dictionary) {
-                    if (thumbs_dictionary.hasOwnProperty(key)) {
-                        //console.log(key);
-                        thumbs_html += '<td><img src=&quot;data:image/png;base64,' + thumbs_dictionary[key] + '&quot; /><p>' + key + '</p></td>';
-                    }
-                }
-                thumbs_html += "</tr></table>";
-                return '<a href="#" data-toggle="tooltip" title="' +
-                    thumbs_html +
-                    + '<ul>' + // Below I'm escaping' quotes because this is the tooltip
-                    '<li><strong>Sample</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_info).replace(/\"|\'/g, "\'") + '</li>' +
-                    '<li><strong>Background</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_background).replace(/\"|\'/g, "\'") + '</li>' +
-                    '<li><strong>Parameters</strong>: ' + JSON.stringify(fullDataSet[meta.row].sample_parameters).replace(/\"|\'/g, "\'") + '</li>' +
-                    '</ul>' +
-                    '" >' +
-                    '<span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;</a>' + fullDataSet[meta.row].metadata.scan_number + ": " + data.substring(0, 30);
-                }
-            },
-            { title: "Type" },
-            { title: "Image" },
-            { title: "FilePath" }
+        lengthMenu : [ [ 20, 50, 100, -1 ], [ 20, 50, 100, "All" ] ],
+        order: [[ 4, 'desc' ]],
+        columnDefs: [
+            { width: "20%", targets: 0 },
+            { type: "date", targets: 4 }
         ],
-        "columnDefs": [ // make the other collumns invisible
-            {
-                "targets": [1],
-                "visible": false,
-                "searchable": true
-            },
-            {
-                "targets": [2],
-                "visible": false,
-                "searchable": false
-            },
-            {
-                "targets": [3],
-                "visible": false,
-                "searchable": false
-            }
-        ],
-        "order": [
-            [0, 'asc']
-        ],
-        //"lengthMenu": [cell metadata
-        //    [10, 20, 50, -1],
-        //    [10, 20, 50, "All"]
-        //],
-        //"pageLength": 20,
-        //"paging": true,
-        "scrollY": "800px",
-        "scrollCollapse": true,
-        "paging": false,
-        "lengthChange": true,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "autoWidth": true,
-        "bInfo": false, // hide "Showing x on n"
+        paging: true,
+        lengthChange: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        //autoWidth: false,
         initComplete: function () {
-            var api = this.api();
-            var titles = api.column(0);
-            var types = api.column(1);
-            var filepath = api.column(3);
-            // Add dropdown filltering
-            var select = $('<select class="form-control"><option value=""></option></select>')
-                .appendTo(".dataTables_filter")
-                .on('change', function () {
-                    var val = $.fn.dataTable.util.escapeRegex(
-                        $(this).val()
-                    );
-                    types.search(val ? '^' + val + '$' : '', true, false).draw();
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
                 });
-            // populates the drop down
-            types.data().unique().sort().each(function (d, j) {
-                select.append('<option value="' + d + '">' + d + '</option>')
             });
-            // Sets the id of the row to the file path
-            $(this.fnGetNodes()).each(function (idx, tr) {
-                $(tr).val(filepath.data()[idx]);
-            });
-            // Sets every row as draggable
-            $(this.fnGetNodes()).draggable({
-                revert: 'invalid',
-                helper: 'clone',
-                appendTo: 'body'
-            });
-        },
-        "fnDrawCallback": function (oSettings) {
-            // When table is redrawn!! E.g. page changes
-            set_tooltip_as_image();
-        },
+        }
     })
 });
 
-function set_tooltip_as_image() {
-    // Tool tip options
-    $('#icat_table a[data-toggle="tooltip"]').tooltip({
-        animated: 'fade',
-        placement: 'left',
-        html: true,
-        container: 'body' // To avoid tooltip clipping by the container overflow:auto
-    });
-}
 
-/**** let's Make the spreasheet droppable */
-
-// All handsomtables starting with id hot
-$("[id^='hot']").droppable({
-    //#hot-0 > div.ht_master.handsontable > div > div > div > table > tbody > tr:nth-child(8) > td:nth-child(5)
-
-    accept: ".ui-draggable",
-    activeClass: "ui-state-highlight",
-    tolerance: "pointer",
-    drop: function (event, ui) {
-        // Get a reference to this handsontable instance
-        var ht = $(this).closest("[id^='hot']").handsontable('getInstance');
-        // Hide the helper, so that we can use .elementFromPoint
-        // to grab the item beneath the cursor by coordinate
-        ui.helper.hide();
-        var $destination = $(document.elementFromPoint(event.clientX, event.clientY));
-        var $cell = $destination.closest('td');
-
-        // Grab the parent tr, then the parent tbody so that we
-        // can use their index to find the row and column of the
-        // destination object
-        var $tr = $destination.closest('tr');
-        var $tbody = $tr.closest('tbody');
-
-        //var col = $tr.children().index($destination);
-        var col = $cell.index() - 1;
-        var row = $tbody.children().index($tr);
-
-        if (row >= 0 && col >= 0) {
-            //console.log("Setting i,j:", row, col, "with value = ", ui.draggable.val());
-            ht.setDataAtCell(row, col, ui.draggable.val());
-            $cell.css("background-color", "yellow");
-        }
-        //console.log("done", $cell);
-    },
-    over: function (event, elem) {
-        //$(this).addClass("over");
-        //console.log("OVER:", elem);
-    },
-    out: function (event, elem) {
-        //$(this).removeClass("over");
-        //console.log("OUT:", elem);
-    }
-});
-
-// Let's make the beam fields droppable as weel
-// id_regions-0-empty_beam_run
-// id_regions-0-beam_center_run
-$("[id^='id_regions'][id$='empty_beam_run'],[id^='id_regions'][id$='beam_center_run']").droppable({
-    accept: ".ui-draggable",
-    activeClass: "ui-state-highlight",
-    drop: function (event, ui) {
-        ui.helper.hide();
-        $(this).val(ui.draggable.val());
-    }
-});
 
 </script>
 

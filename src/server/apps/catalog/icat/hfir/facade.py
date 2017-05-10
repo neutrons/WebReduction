@@ -112,6 +112,9 @@ class Catalog(object):
     def get_runs_as_table(self, instrument, ipts, exp):
         '''
         Same as get runs but split sample_* in tables
+        Returns 2 lists:
+        - headers
+        - list of rows
         '''
 
         # Let's make a rubset first
@@ -119,20 +122,51 @@ class Catalog(object):
         subset = []
         for d in data:
             entry = OrderedDict()
-            entry["title"] = d["metadata"]["scan_title"]
+            entry["Title"] = d["metadata"]["scan_title"]
             _, _, scan_number, frame_number = self._parse_filename(d["filename"])
-            entry["scan_number"] = scan_number
-            entry["frame_number"] = frame_number
-            entry["sample_info"] = d["sample_info"] if d["sample_info"] != "" else {}
-            entry["sample_background"] = d["sample_background"] if d["sample_background"] != "" else {}
-            entry["sample_parameters"] = d["sample_parameters"] if d["sample_parameters"] != "" else {}
+            entry["Scan"] = scan_number
+            entry["Frame"] = frame_number
+            entry["Type"] = d["metadata"]["scan_type"]
+            entry["End"] = d["end_time"]
+            entry["Sample"] = d["sample_info"] if d["sample_info"] != "" else None
+            entry["Background"] = d["sample_background"] if d["sample_background"] != "" else None
+            entry["Parameters"] = d["sample_parameters"] if d["sample_parameters"] != "" else None
             subset.append(entry)
 
-        return subset
+        # transform k,v where v is a dict in new key composed by k + k of the
+        # second dictionary
+        subset2 = []
+        for d in subset:
+            d2 = d.copy()
+            for k, v in d.items():
+                if v is None:
+                    d2.pop(k)
+                    continue
+                if type(v) == dict:
+                    for k2, v2 in v.items():
+                        if v2 is not None and v2 != "":
+                            d2[k + " " + k2] = v2
+                        d2.pop(k, None)
+            subset2.append(d2)
 
-        
+        # Get  all entries in the dict with common keys
+        # all_keys = set([k for d in subset2 for k in d.keys()])
+        # dict with all common keys set to none
+        empty = OrderedDict({})
+        for d in subset2:
+            for k in d.keys():
+                empty[k] = "None"
 
-    
+        subset3 = []
+        for d in subset2:
+            empty2 = empty.copy()
+            empty2.update(d)
+            subset3.append(empty2)
+
+        logger.debug(pformat(subset3))
+        return list(empty.keys()), [list(d.values()) for d in subset3]
+
+
     def _get_data(self, filename):
         '''
         Only for HFIR we need to have the real detector XML paths
