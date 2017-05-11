@@ -8,6 +8,7 @@
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/handsontable/handsontable.full.min.css" %}'>
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap3-dialog/css/bootstrap-dialog.min.css" %}'>
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+<!-- Style for the drawer catalog panel -->
 <style>
 #accordion {
     position: fixed;
@@ -15,7 +16,7 @@
     top: 50px;
     left: 0px;
     width: 100%;
-    z-index: 2147483647;    
+    z-index: 1001; /*2147483647;    */
 }
 
 .panel-default > .panel-heading{
@@ -366,6 +367,13 @@ $(document).ready(function () {
         scrollY:        "400px",
         scrollCollapse: true,
         paging:         false,
+        // For the headers to scroll in X
+        "bPaginate": false, 
+        "bFilter": false, 
+        "sScrollX": "100%", 
+        "sScrollXInner": "100%", 
+        "bScrollCollapse": true,
+
         //autoWidth: false,
         initComplete: function () {
             this.api().columns().every( function () {
@@ -392,6 +400,9 @@ $(document).ready(function () {
 $('#collapseOne').on('shown.bs.collapse', function() {
   $('#icat_table').DataTable().draw();
 });
+
+
+
 </script>
 
 {% endblock %}

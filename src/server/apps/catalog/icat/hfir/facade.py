@@ -67,6 +67,7 @@ class Catalog(object):
         result = None
         if response is not None:
             try:
+                # pprint(response)
                 result = [dict(
                     {
                         # subset
@@ -84,7 +85,9 @@ class Catalog(object):
                                              if entry['metadata']['spicerack']['sample_info']['parameters'] else "",
                         # This gets rid of None values in the metadata
                         'metadata': {(key): (value if value is not None else "") for key, value in
-                                     entry['metadata']['spicerack']['header'].items()}
+                                     entry['metadata']['spicerack']['header'].items()},
+                        'motor_positions': {(key): (value if value is not None else "") for key, value in
+                                     entry['metadata']['spicerack']['motor_positions'].items()}
                     })
                           for entry in response  # if entry['ext'] == 'xml'
                          ]
@@ -124,10 +127,14 @@ class Catalog(object):
             entry = OrderedDict()
             entry["Title"] = d["metadata"]["scan_title"]
             _, _, scan_number, frame_number = self._parse_filename(d["filename"])
-            entry["Scan"] = scan_number
-            entry["Frame"] = frame_number
-            entry["Type"] = d["metadata"]["scan_type"]
+            entry["Scan Nr"] = scan_number
+            entry["Frame Nr"] = frame_number
+            entry["Scan Type"] = d["metadata"]["scan_type"]
+            entry["Sample Type"] = d["metadata"]["sample_type"]
+            entry["Wavelength"] = d["metadata"]["wavelength"]
+            entry["SDD"] = d["motor_positions"]["sdd"]
             entry["End"] = d["end_time"]
+            entry["Thickness"] = d["metadata"]["sample_thickness"]
             entry["Sample"] = d["sample_info"] if d["sample_info"] != "" else None
             entry["Background"] = d["sample_background"] if d["sample_background"] != "" else None
             entry["Parameters"] = d["sample_parameters"] if d["sample_parameters"] != "" else None
@@ -163,7 +170,7 @@ class Catalog(object):
             empty2.update(d)
             subset3.append(empty2)
 
-        logger.debug(pformat(subset3))
+        # logger.debug(pformat(subset3))
         return list(empty.keys()), [list(d.values()) for d in subset3]
 
 
@@ -242,9 +249,10 @@ if __name__ == "__main__":
     # pprint(res)
     # res = icat.get_runs("CG3", 'IPTS-18347','exp379')
     # pprint(res)
-    # res = icat.get_run(
-    #     "CG3", 'IPTS-18347', '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml')
+    #res = icat.get_run(
+    #    "CG3", 'IPTS-18289', '/HFIR/CG3/IPTS-18289/exp400/Datafiles/BioSANS_exp400_scan0001_0001.xml')
     # res.pop('data')
-    res = icat.get_runs_as_table("CG3", "IPTS-18512", "exp394")
+    res = icat.get_runs("CG3", "IPTS-18512", "exp394")
     #res = icat._parse_filename('BioSANS_exp379_scan0500_0001.xml')
+
     pprint(res)

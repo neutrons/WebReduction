@@ -40,7 +40,7 @@ class HFIRICat(ICat):
         logger.debug("get_experiments")
         return self._request("/facilities/HFIR/instruments/{}/experiments".format(instrument),
                              params_json={'projection': ['tags']}
-                            )
+        )
 
     def get_runs(self, instrument, ipts, exp):
         '''
@@ -70,6 +70,7 @@ class HFIRICat(ICat):
                 'metadata.spicerack.header',
                 'metadata.spicerack.sample_info',
                 'thumbnails',
+                'metadata.spicerack.motor_positions',
             ],
         }
         return self._request("/facilities/HFIR/instruments/{}/experiments/{}/datafiles".format(
