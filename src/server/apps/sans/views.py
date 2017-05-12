@@ -408,7 +408,7 @@ class ReductionFormMixin(ReductionMixin):
         facility = self.request.user.profile.instrument.facility.name
         instrument = self.request.user.profile.instrument.icat_name
         ipts = self.request.user.profile.ipts
-        exp = "{}".format(self.request.user.profile.experiment)
+        exp = self.request.user.profile.experiment
         logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
         try:
             header, runs = get_runs_as_table(facility, instrument, ipts, exp)
