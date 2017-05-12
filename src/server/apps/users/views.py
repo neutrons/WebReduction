@@ -5,16 +5,19 @@ import json
 import logging
 import os
 
-from django.db.models import F
 from django.contrib import messages
-from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth import get_user_model
+from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import (REDIRECT_FIELD_NAME, authenticate,
+                                 get_user_model)
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
@@ -22,18 +25,18 @@ from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import CreateView, UpdateView, FormView, RedirectView, ListView, TemplateView
-from django.http import JsonResponse
-from django.core import serializers
-from server.settings.env import env
-from django_remote_submission.remote import RemoteWrapper
+from django.views.generic import (CreateView, FormView, ListView, RedirectView,
+                                  TemplateView, UpdateView)
 from django_remote_submission.models import Server
+from django_remote_submission.remote import RemoteWrapper
+
+from server.settings.env import env
 
 from .forms import UserProfileForm
-from .models import UserProfile
-
+from .models import UserProfile, Experiment
 
 logger = logging.getLogger(__name__)
+
 
 class LoginView(FormView):
     """
@@ -43,9 +46,7 @@ class LoginView(FormView):
     template_name = 'users/login.html'
     redirect_field_name = REDIRECT_FIELD_NAME
     success_url = reverse_lazy('index')
-    
     create_profile_url = reverse_lazy('users:profile_create')
-
 
     @method_decorator(sensitive_post_parameters('password'))
     @method_decorator(csrf_protect)
@@ -64,8 +65,13 @@ class LoginView(FormView):
             logger.debug("User %s authenticated.", username)
             # let's save the credentials to login on analysisis later
             self._save_credentials_in_session(password)
+            # Populates Icat into database
+            Experiment.objects.populate_experiments()
         else:
-            messages.error(self.request, "Django Authenticate Failed. Invalid username or password!")
+            messages.error(
+                self.request,
+                "Django Authenticate Failed. Invalid username or password!"
+            )
 
         # Default authentication (NO PASSWORD!)
         # auth_login(self.request, form.get_user())
@@ -93,6 +99,7 @@ class LoginView(FormView):
         logger.debug("Setting credentials in the session...")
         self.request.session["password"] = password
 
+
 class LogoutView(RedirectView):
     """
     Provides users the ability to logout
@@ -104,15 +111,20 @@ class LogoutView(RedirectView):
         response = super(LogoutView, self).get(request, *args, **kwargs)
         return response
 
+
 class ProfileView(LoginRequiredMixin, TemplateView):
+
     template_name = "index.html"
+
     def get(self, request, *args, **kwargs):
-        if UserProfile.objects.filter(user = request.user).count() > 0:
+        if UserProfile.objects.filter(user=request.user).count() > 0:
             if 'instrument' not in self.request.session:
-                self.request.session['instrument'] = UserProfile.objects.get(user=request.user).instrument
+                self.request.session['instrument'] = UserProfile.objects.get(
+                    user=request.user).instrument
             return super(ProfileView, self).get(request, *args, **kwargs)
         else:
             return redirect(reverse_lazy('users:profile_create'))
+
 
 class ProfileMixin(object):
     def get_form(self, form_class=None):
@@ -120,10 +132,13 @@ class ProfileMixin(object):
         Make sure the user only see in the his IPTSs
         '''
         form_class = super(ProfileMixin, self).get_form(form_class)
-        form_class.fields['ipts'].queryset = Group.objects.filter(name__istartswith="IPTS").filter(user = self.request.user)
+        form_class.fields['ipts'].queryset = \
+            UserProfile.objects.get_iptss_for_this_user(self.request.user)
         return form_class
 
-class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,ProfileMixin,UpdateView):
+
+class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin,
+                    ProfileMixin, UpdateView):
     '''
     I'm using form_class to test crispy forms
     '''
@@ -140,10 +155,12 @@ class ProfileUpdate(LoginRequiredMixin,SuccessMessageMixin,ProfileMixin,UpdateVi
         self.request.session['instrument'] = form.instance.instrument
         return super(ProfileUpdate, self).form_valid(form)
 
-class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,ProfileMixin,CreateView):
+
+class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin, ProfileMixin,
+                    CreateView):
     model = UserProfile
     form_class = UserProfileForm
-    #fields = ['home_institution', 'email_address']
+    # fields = ['home_institution', 'email_address']
     success_url = reverse_lazy('index')
     success_message = "Your profile was created successfully."
 
@@ -155,5 +172,3 @@ class ProfileCreate(LoginRequiredMixin,SuccessMessageMixin,ProfileMixin,CreateVi
         form.instance.user = user
         self.request.session['instrument'] = form.instance.instrument
         return super(ProfileCreate, self).form_valid(form)
-    
-    

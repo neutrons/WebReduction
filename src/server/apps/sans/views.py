@@ -408,7 +408,7 @@ class ReductionFormMixin(ReductionMixin):
         facility = self.request.user.profile.instrument.facility.name
         instrument = self.request.user.profile.instrument.icat_name
         ipts = self.request.user.profile.ipts
-        exp = "exp{}".format(self.request.user.profile.experiment_number)
+        exp = "{}".format(self.request.user.profile.experiment)
         logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
         try:
             header, runs = get_runs_as_table(facility, instrument, ipts, exp)
@@ -534,8 +534,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 obj.script_execution_path = os.path.join(
                     self.request.user.profile.instrument.drive_path,
                     str(self.request.user.profile.ipts),
-                    "exp%s" % self.request.user.profile.experiment_number if \
-                        self.request.user.profile.experiment_number > 0  else "",
+                    self.request.user.profile.experiment if self.request.user.profile.experiment else "",
                     "Shared", "AutoRedution"
                 )
         logger.debug(obj.script)

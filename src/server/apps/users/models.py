@@ -1,18 +1,18 @@
 from __future__ import unicode_literals
 
-from django.db import models
+import logging
+import re
+
 from django.conf import settings
-
+from django.contrib.auth.models import (AbstractBaseUser, Group,
+                                        PermissionsMixin, UserManager)
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import Group
+from smart_selects.db_fields import ChainedForeignKey
 
-from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from server.apps.catalog.icat.facade import get_expriments
 from server.apps.catalog.models import Facility, Instrument
 
-from smart_selects.db_fields import ChainedForeignKey 
-
-
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -22,7 +22,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     '''
     username = models.CharField(max_length=40, unique=True, db_index=True,)
     email = models.EmailField(max_length=100, unique=False, blank=True)
-    fullname = models.CharField(max_length=100, blank=False, verbose_name=_("Full Name"))
+    fullname = models.CharField(max_length=100, blank=False,
+                                verbose_name=_("Full Name"))
     address = models.CharField(max_length=250, blank=False)
 
     date_joined = models.DateField(auto_now=True)
@@ -46,40 +47,145 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                related_name="profile", related_query_name="profile",)
+class ExperimentManager(models.Manager):
+    '''
+    Queries go here!!
+    '''
+    use_for_related_fields = True
 
-    # Add here as many fields as you want
+    def populate_experiments(self):
+        '''
+        Used after each login. Populates experiment table with
+        ICat information (IPTS + exp - for hfir)
+
+        ipts_exp_json is of the form
+        [ {'exp': ['exp307', 'exp314', 'exp360'], 'ipts': 'IPTS-11518'},
+          {'exp': ['exp316'], 'ipts': 'IPTS-14466'}, ... ]
+        '''
+
+        logger.debug("Populate_experiments: IPTSs + Exps")
+
+        instruments = Instrument.objects.filter(reduction_available=True)
+        for instrument in instruments:
+            logger.debug("Populating IPTS and Experiments for %s.", instrument)
+            iptss_json = get_expriments(
+                instrument.facility.name,
+                instrument.icat_name
+            )
+            for entry in iptss_json:
+                try:
+                    # SNS
+                    this_ipts = entry["id"]
+                except KeyError:
+                    # HFIR
+                    this_ipts = entry["ipts"]
+
+                ipts_obj, _ = Group.objects.get_or_create(name=this_ipts)
+                # If it's SNS entry.get("exp" is None!
+                for this_exp in entry.get("exp", []):
+                    r = re.search(r"exp(\d+)", this_exp)
+                    exp_number = int(r.group(1))
+                    self.update_or_create(
+                        experiment_number=exp_number,
+                        ipts=ipts_obj
+                    )
+
+
+class Experiment(models.Model):
+    '''
+    Experiment number. Only used for HFIR.
+    '''
+    experiment_number = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="HFIR Experiment Number (expXXX)",
+    )
+
+    ipts = models.ForeignKey(
+        Group,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_iptss",
+        related_query_name="%(class)s_ipts",
+        help_text="This IPTS will be used to find your data on ICat."
+                  " If you leave it empty the ICat lookup will not work!",
+        verbose_name="Integrated Proposal Tracking System (IPTS) number",
+    )
+
+    # Manager
+    objects = ExperimentManager()
+
+    def __str__(self):
+        return "exp{}".format(self.experiment_number)
+
+
+class UserProfileManager(models.Manager):
+    '''
+    Queries go here!!
+    '''
+    use_for_related_fields = True
+
+    def get_iptss_for_this_user(self, user):
+        return Group.objects.filter(
+            name__istartswith="IPTS").filter(user=user)
+
+
+class UserProfile(models.Model):
+    '''
+    Adds some extra info the User class
+    One to One relation
+    '''
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="profile",
+        related_query_name="profile",
+    )
+
     home_institution = models.CharField(max_length=200, blank=True)
 
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
-    #instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, null=True)
 
     instrument = ChainedForeignKey(
-        Instrument, 
+        Instrument,
         chained_field="facility",
-        chained_model_field="facility", 
-        show_all=False, 
+        chained_model_field="facility",
+        show_all=False,
         auto_choose=True,
         # sort=True
-        # This will show only instruments with the field: 
+        # This will show only instruments with the field:
         limit_choices_to={'reduction_available': True},
     )
-    
-    ipts = models.ForeignKey(Group, null=True, blank=True,
-        help_text="This IPTS will be used to find your data on ICat.\
-         If you leave it empty the ICat lookup will not work!",
-         verbose_name = "Integrated Proposal Tracking System (IPTS) number",
+
+    ipts = models.ForeignKey(
+        Group,
+        null=True,
+        blank=True,
+        help_text="This IPTS will be used to find your data on ICat."
+                  " If you leave it empty the ICat lookup will not work!",
+        verbose_name="Integrated Proposal Tracking System (IPTS) number",
     )
 
-    experiment_number =  models.IntegerField(
-        default = 0,
-        help_text = "HFIR Experiment Number (expXXX)",
+    experiment = ChainedForeignKey(
+        Experiment,
+        null=True,
+        blank=True,
+        chained_field="ipts",
+        chained_model_field="ipts",
+        show_all=False,
+        auto_choose=True,
+        sort=True
+        # This will show only instruments with the field:
+        # limit_choices_to={'reduction_available': True},
     )
 
     def __str__(self):
         return self.user.username
+
+    # Manager
+    objects = UserProfileManager()
 
     # Meta
     class Meta:

@@ -28,8 +28,8 @@ LOGGING = {
                       '%(process)d %(thread)d %(message)s'
         },
         'standard': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
         },
     },
     'handlers': {
@@ -38,13 +38,14 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
         },
-        'file':{
-            'level':'DEBUG',
-            'class':'logging.handlers.TimedRotatingFileHandler',
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'standard',
             'filename':  ROOT_DIR('../dist/django.log'),
             'when': 'D',
-            'backupCount' : 3
+            'backupCount': 10,
+            # 'maxBytes': 10*1024*1024,
         },
     },
     'loggers': {
@@ -60,8 +61,8 @@ LOGGING = {
         },
         # Mine:
         'django': {
-            'handlers':['console'],
-            'level':'INFO',
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': True,
         },
         'django.db.backends': {

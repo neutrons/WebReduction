@@ -24,6 +24,8 @@
     </ul>
     <p>Your home institution is: <strong>{{ user.profile.home_institution }}</strong>. </p>
     <p>Your intrument is: <strong>{{ user.profile.instrument }}</strong>. </p>
+    <p>Your IPTS is: <strong>{{ user.profile.ipts }}</strong>. </p>
+    <p>Your Experiment is: <strong>{{ user.profile.experiment }}</strong>. </p>
     <p>Your groups are: </p>
     <ul>
     	{% for group in user.groups.all %}

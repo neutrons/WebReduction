@@ -54,11 +54,29 @@ celery -A server.celery worker -B --loglevel=debug
 ## DB
 
 ```
+# Delete all migrations
+find . -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py"
+```
+
+```
 psql reduction reduction
 
 # In the DB:
 drop owned by reduction;
 
+```
+
+OR
+
+In `bash` (folder `src`):
+
+```
+find .. -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" && \
+psql -U reduction -d reduction -c "drop owned by reduction;" && \
+./manage.py makemigrations && \
+./manage.py migrate && \
+./manage.py loaddata catalog jobs && \
+./manage.py runserver 0.0.0.0:8000
 ```
 
 ## TODO

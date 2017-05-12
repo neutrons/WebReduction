@@ -64,7 +64,7 @@
 {% block content %}
 <div class="container">
     <div class="page-header">
-        <h1>Reduction <small> <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} :: new</small></h1>
+        <h1>Reduction <small> <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment %} / <strong>{{user.profile.experiment}} </strong> {% endif %} :: new</small></h1>
     </div>
 
 
@@ -131,7 +131,7 @@
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-         <span class="caret"></span>  Catalog files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment_number and user.profile.experiment_number > 0%} / <strong>exp {{user.profile.experiment_number}} </strong> {% endif %} <span class="caret"></span>
+         <span class="caret"></span>  Catalog files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment %} / <strong> {{user.profile.experiment}} </strong> {% endif %} <span class="caret"></span>
         </a>
       </h4>
     </div>
