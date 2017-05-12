@@ -8,12 +8,13 @@ from django.contrib.auth.models import (AbstractBaseUser, Group,
                                         PermissionsMixin, UserManager)
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.db import IntegrityError
 from smart_selects.db_fields import ChainedForeignKey
 
 from server.apps.catalog.icat.facade import get_expriments
 from server.apps.catalog.models import Facility, Instrument
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -45,6 +46,40 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+class IptsManager(models.Manager):
+    """
+    Lets us do querysets limited to families that have 
+    currently enrolled students, e.g.:
+        Family.has_students.all() 
+    """
+    use_for_related_fields = True
+
+
+class Ipts(Group):
+    '''
+    Inherits name from the Group
+    '''
+
+    instrument = models.ForeignKey(
+        Instrument,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_instruments",
+        related_query_name="%(class)s_instrument",
+    )
+
+    # Manager
+    objects = IptsManager()
+
+    class Meta:
+        verbose_name = "Integrated Proposal Tracking System (IPTS) number"
+        verbose_name_plural = "IPTSs"
+
+    def __str__(self):
+        return u'%s' % (self.name)
 
 
 class ExperimentManager(models.Manager):
@@ -79,8 +114,14 @@ class ExperimentManager(models.Manager):
                 except KeyError:
                     # HFIR
                     this_ipts = entry["ipts"]
-
-                ipts_obj, _ = Group.objects.get_or_create(name=this_ipts)
+                try:
+                    ipts_obj, _ = Ipts.objects.get_or_create(
+                        name=this_ipts,
+                        instrument=instrument
+                    )
+                except IntegrityError as e:
+                    logger.error("Ignoring Duplicated IPTS: %s.", e)
+                    continue
                 # If it's SNS entry.get("exp" is None!
                 for this_exp in entry.get("exp", []):
                     r = re.search(r"exp(\d+)", this_exp)
@@ -102,7 +143,7 @@ class Experiment(models.Model):
     )
 
     ipts = models.ForeignKey(
-        Group,
+        Ipts,
         null=True,
         blank=True,
         on_delete=models.CASCADE,
@@ -127,7 +168,7 @@ class UserProfileManager(models.Manager):
     use_for_related_fields = True
 
     def get_iptss_for_this_user(self, user):
-        return Group.objects.filter(
+        return Ipts.objects.filter(
             name__istartswith="IPTS").filter(user=user)
 
 
@@ -159,13 +200,15 @@ class UserProfile(models.Model):
         limit_choices_to={'reduction_available': True},
     )
 
-    ipts = models.ForeignKey(
-        Group,
+    ipts = ChainedForeignKey(
+        Ipts,
         null=True,
         blank=True,
-        help_text="This IPTS will be used to find your data on ICat."
-                  " If you leave it empty the ICat lookup will not work!",
-        verbose_name="Integrated Proposal Tracking System (IPTS) number",
+        chained_field="instrument",
+        chained_model_field="instrument",
+        show_all=False,
+        auto_choose=True,
+        sort=True
     )
 
     experiment = ChainedForeignKey(

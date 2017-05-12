@@ -71,7 +71,7 @@ OR
 In `bash` (folder `src`):
 
 ```
-find .. -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" && \
+find .. -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" | xargs rm && \
 psql -U reduction -d reduction -c "drop owned by reduction;" && \
 ./manage.py makemigrations && \
 ./manage.py migrate && \
