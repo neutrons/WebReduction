@@ -10,6 +10,7 @@ from crispy_forms.layout import Submit, Button
 
 from .models import UserProfile
 
+
 class UserProfileForm(ModelForm):
     '''
     '''
@@ -18,7 +19,9 @@ class UserProfileForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_class = 'form-horizontal'
         self.helper.layout.append(Submit('submit', 'Submit'))
-        self.helper.layout.append(Button('cancel', 'Cancel', css_class='btn-default', onclick="window.history.back()"))
+        self.helper.layout.append(Button('cancel', 'Cancel',
+                                         css_class='btn-default',
+                                         onclick="window.history.back()"))
 
     class Meta:
         model = UserProfile

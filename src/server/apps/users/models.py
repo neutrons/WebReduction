@@ -9,6 +9,7 @@ from django.contrib.auth.models import (AbstractBaseUser, Group,
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.db import IntegrityError
+from django.db.models import Q
 from smart_selects.db_fields import ChainedForeignKey
 
 from server.apps.catalog.icat.facade import get_expriments
@@ -50,11 +51,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class IptsManager(models.Manager):
     """
-    Lets us do querysets limited to families that have 
-    currently enrolled students, e.g.:
-        Family.has_students.all() 
     """
     use_for_related_fields = True
+
+    def get_queryset(self):
+        '''
+        This overrrides the default query set
+        We want to have only the IPTSs!!
+        '''
+        return super(
+            IptsManager,
+            self
+        ).get_queryset().filter(name__istartswith="IPTS")
 
 
 class Ipts(Group):
@@ -167,9 +175,9 @@ class UserProfileManager(models.Manager):
     '''
     use_for_related_fields = True
 
-    def get_iptss_for_this_user(self, user):
-        return Ipts.objects.filter(
-            name__istartswith="IPTS").filter(user=user)
+    def get_queryset(self):
+        logger.debug("QuerySet")
+        return super(UserProfileManager, self).get_queryset()
 
 
 class UserProfile(models.Model):
@@ -208,7 +216,9 @@ class UserProfile(models.Model):
         chained_model_field="instrument",
         show_all=False,
         auto_choose=True,
-        sort=True
+        sort=True,
+        #limit_choices_to = Q("name" in list(user.groups.all().values_list("name", flat=True)))
+        # limit_choices_to= {'user' : user}
     )
 
     experiment = ChainedForeignKey(
@@ -220,8 +230,6 @@ class UserProfile(models.Model):
         show_all=False,
         auto_choose=True,
         sort=True
-        # This will show only instruments with the field:
-        # limit_choices_to={'reduction_available': True},
     )
 
     def __str__(self):
@@ -233,3 +241,12 @@ class UserProfile(models.Model):
     # Meta
     class Meta:
         verbose_name = _("Profile")
+
+
+from django.core.signals import request_started
+from django.dispatch import receiver
+
+
+@receiver(request_started, sender=UserProfile)
+def my_callback(sender, **kwargs):
+    print("Request started!")

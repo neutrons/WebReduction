@@ -84,7 +84,7 @@ class LoginView(FormView):
             logger.info("Redirecting to create user profile!")
             return self.create_profile_url
 
-        redirect_to = self.request.GET.get(self.redirect_field_name,'/')
+        redirect_to = self.request.GET.get(self.redirect_field_name, '/')
         if not is_safe_url(url=redirect_to, host=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
@@ -126,19 +126,8 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             return redirect(reverse_lazy('users:profile_create'))
 
 
-class ProfileMixin(object):
-    def get_form(self, form_class=None):
-        '''
-        Make sure the user only see in the his IPTSs
-        '''
-        form_class = super(ProfileMixin, self).get_form(form_class)
-        form_class.fields['ipts'].queryset = \
-            UserProfile.objects.get_iptss_for_this_user(self.request.user)
-        return form_class
-
-
 class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin,
-                    ProfileMixin, UpdateView):
+                    UpdateView):
     '''
     I'm using form_class to test crispy forms
     '''
@@ -156,7 +145,7 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin,
         return super(ProfileUpdate, self).form_valid(form)
 
 
-class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin, ProfileMixin,
+class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin,
                     CreateView):
     model = UserProfile
     form_class = UserProfileForm
