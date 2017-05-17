@@ -132,7 +132,9 @@ class Catalog(object):
             entry["Scan Type"] = d["metadata"]["scan_type"]
             entry["Sample Type"] = d["metadata"]["sample_type"]
             entry["Wavelength"] = d["metadata"]["wavelength"]
+            entry["Sample Apert."] = d["metadata"]["sample_aperture_size"]
             entry["SDD"] = d["motor_positions"]["sdd"]
+            entry["SSD"] = d["metadata"]["source_distance"]
             entry["End"] = d["end_time"]
             entry["Thickness"] = d["metadata"]["sample_thickness"]
             entry["Sample"] = d["sample_info"] if d["sample_info"] != "" else None
