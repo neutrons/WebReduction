@@ -64,6 +64,7 @@ class Catalog(object):
 
         '''
         response = self.icat.get_runs(instrument, ipts, exp)
+        # logger.debug("Response for %s %s %s: %s", instrument, ipts, exp, pformat(response))
         result = None
         if response is not None:
             try:
@@ -75,7 +76,7 @@ class Catalog(object):
                     }, **{
                         # Metadata here:
                         'filename': entry['metadata']['spicerack']['@filename'],
-                        'end_time':  entry['metadata']['spicerack']['header']['end_time'],
+                        'end_time':  entry['metadata']['spicerack']['@end_time'],
                         'title': entry['metadata']['spicerack']['header']['scan_title'],
                         'sample_info': entry['metadata']['spicerack']['sample_info']['sample']['field']
                                        if entry['metadata']['spicerack']['sample_info']['sample'] else "",

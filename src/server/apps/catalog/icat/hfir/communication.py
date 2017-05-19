@@ -39,8 +39,7 @@ class HFIRICat(ICat):
         '''
         logger.debug("get_experiments")
         return self._request("/facilities/HFIR/instruments/{}/experiments".format(instrument),
-                             params_json={'projection': ['tags']}
-        )
+                             params_json={'projection': ['tags']})
 
     def get_runs(self, instrument, ipts, exp):
         '''
@@ -60,13 +59,14 @@ class HFIRICat(ICat):
                                'DetectorWing': ....
                                }
         '''
-        logger.debug("get_runs")
+        logger.debug("get_runs for %s %s %s", instrument, ipts, exp)
         json_params = {
             'tags': ['spice/{}'.format(exp)],
             'ext': 'xml',
             'projection': [
                 'location',
                 'metadata.spicerack.@filename',
+                'metadata.spicerack.@end_time',
                 'metadata.spicerack.header',
                 'metadata.spicerack.sample_info',
                 'thumbnails',
