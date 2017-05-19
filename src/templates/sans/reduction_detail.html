@@ -117,7 +117,17 @@ $.each( entriesSelectors, function( i, selector ) {
         rowHeaders: true,
         contextMenu: true,
         outsideClickDeselects: false,
-		readOnly: true
+		readOnly: true,
+        columns: [
+            { data: "name" },
+            { data: "thickness"},
+            { data: "sample_scattering"},
+            { data: "sample_transmission"},
+            { data: "backgroung_scattering"},
+            { data: "backgroung_transmission"}
+        ],
+        colHeaders: ["Name", "Thickness", "Sample Scattering", "Sample Transmission", "Backgroung Scattering",
+                     "Backgroung Transmission"],
         
     };
     $(selector).handsontable(options);

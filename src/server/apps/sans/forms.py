@@ -41,7 +41,7 @@ class ReductionForm(object):
         self.helper.form_tag = False
 
     class Meta:
-        exclude = ['user', 'instrument', 'script', 'script_interpreter', 'job']
+        exclude = ['user', 'instrument', 'script', 'script_interpreter', 'job', 'script_execution_path']
         #widgets = {'script': HiddenInput()}
 
 class ReductionScriptForm(object):
@@ -54,9 +54,12 @@ class ReductionScriptForm(object):
             # FormActions just groups the buttons
             FormActions(
                 # Submit all have type="submit" in the html
-                SubmitWithCss(name='save', value='Save & go back', css_class='btn-info'),
-                Submit('generate', 'Regenerate the script'),
-                SubmitWithCss('submit', 'Save & Submit job', css_class='btn-warning'),
+                SubmitWithCss(name='save', value='Save & go back', css_class='btn-info',
+                    title="Save the script and go back to the detail."),
+                Submit('generate', 'Regenerate the script',
+                    title="Did you do something wrong? This regenerate the script from the reduction fields."),
+                SubmitWithCss('submit', 'Save & Submit job', css_class='btn-warning',
+                    title="Send the script to the cluster to be executed."),
                 Button('cancel', 'Cancel', css_class='btn-default',
                        onclick="window.history.back()")))
     class Meta:

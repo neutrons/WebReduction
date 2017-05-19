@@ -135,7 +135,7 @@ class ExperimentManager(models.Manager):
                     r = re.search(r"exp(\d+)", this_exp)
                     exp_number = int(r.group(1))
                     self.update_or_create(
-                        experiment_number=exp_number,
+                        number=exp_number,
                         ipts=ipts_obj
                     )
 
@@ -144,7 +144,7 @@ class Experiment(models.Model):
     '''
     Experiment number. Only used for HFIR.
     '''
-    experiment_number = models.IntegerField(
+    number = models.IntegerField(
         null=True,
         blank=True,
         help_text="HFIR Experiment Number (expXXX)",
@@ -166,7 +166,7 @@ class Experiment(models.Model):
     objects = ExperimentManager()
 
     def __str__(self):
-        return "exp{}".format(self.experiment_number)
+        return "exp{}".format(self.number)
 
 
 class UserProfileManager(models.Manager):

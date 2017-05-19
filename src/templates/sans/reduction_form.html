@@ -107,11 +107,12 @@
                         <p>Formats accepted on the spreadsheet:</p>
                         <ul>
                             <li>Full path (if file from other experiment).</li>
-                            <li>File name (assumend from this experiement)</li>
-                            <li>The scan number (integer)</li>
-                            <li>Abreviated notation: [scan]_[frame]. E.g.: 2_123</li>
-                            <li>If the frame number is needed, use abreviated notation</li>
-                            <li>Separate multiple runs with ',' whatever notation you use.</li>
+                            <li>If single number, it's scan</li>
+                            <li>Abreviated notation: [scan]_[frame]. E.g.: 2_1</li>
+                            <li>Ranges: E.g.: 2,3,4</li>
+                            <li>Ranges: E.g.: 2,4-6 => 2,4,5,6</li>
+                            <li>Frame ranges: E.g.: 1_2,3 => 1_2,1_3</li>
+                            <li>Frame ranges: E.g.: 1_4-6 => 1_4,1_5,1_6</li>
                         </ul>
                     </div>
             </div>
@@ -127,40 +128,36 @@
 
 <!-- The catalog  -->
 <div class="panel-group" id="accordion">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-         <span class="caret"></span>  Catalog files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment %} / <strong> {{user.profile.experiment}} </strong> {% endif %} <span class="caret"></span>
-        </a>
-      </h4>
-    </div>
-    <div id="collapseOne" class="panel-collapse collapse">
-
-                <div class="panel-body">
-                    <table id="icat_table" class="table table-bordered table-striped" cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                {% for h in header %}
-                                    <th>{{h}}</th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-                        <tfoot>
-                            <tr>
-                                {% for h in header %}
-                                    <th>{{h}}</th>
-                                {% endfor %}
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
-
-
-      </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                    <span class="caret"></span>  Catalog files for: <strong>{{user.profile.ipts}}</strong> {%if user.profile.experiment %} / <strong> {{user.profile.experiment}} </strong> {% endif %} <span class="caret"></span>
+                </a>
+            </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse">
+            <div class="panel-body">
+                <table id="icat_table" class="table table-bordered table-striped" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                        {% for h in header %}
+                            <th>{{h}}</th>
+                        {% endfor %}
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                        {% for h in header %}
+                            <th>{{h}}</th>
+                        {% endfor %}
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>            
-  </div>
+</div>
 
 
 {% endblock %}
@@ -187,16 +184,21 @@ function validateCellValue(hotInstance, TD, row, col, prop, value, cellPropertie
     // This TextRenderer has to here. Otherwise the delete cell does not work!
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     if (value != null) {
-        if (value.includes(",")) // list! user responsability to make sure it is valid for now!
-            TD.style.backgroundColor = '#ffcccc';
-        else if (matchFullPath(value))
+        if (matchFullPath(value)){
             TD.style.backgroundColor = '#e6fff2';
-        else if (matchFilename(value))
+        }
+        else if (matchRunRange(value)){
             TD.style.backgroundColor = '#e6e6ff';
-        else if (matchRunAndFrame(value))
+        }
+        else if (matchRunAndFrame(value)){
             TD.style.backgroundColor = '#f7e6ff';
-        else if (matchRun(value))
+        }
+        else if (matchRun(value)){
             TD.style.backgroundColor = '#fff2e6';
+        }
+        else if (matchRunAndFrameRange(value)){
+            TD.style.backgroundColor = '#ffcccc';
+        }
         else {
             value = null;
             Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -209,8 +211,8 @@ function matchFullPath(value){
     var ret = value.match(/^\/.*\/\w+_exp\d{3}_scan\d{4}\_\d{4}\.xml$/);
     if (ret == null) return false; else return true;
 }
-function matchFilename(value){
-    var ret = value.match(/^\w+_exp\d{3}_scan\d{4}\_\d{4}\.xml$/);
+function matchRunRange(value){
+    var ret = value.match(/^\d+([,-]+\d+)+$/);
     if (ret == null) return false; else return true;
 }
 function matchRunAndFrame(value){
@@ -221,12 +223,17 @@ function matchRun(value){
     var ret = value.match(/^\d+$/);
     if (ret == null) return false; else return true;
 }
+function matchRunAndFrameRange(value){
+    var ret = value.match(/^\d+\_\d+([,-]+\d+)+$/);
+    if (ret == null) return false; else return true;
+}
+
+
 
 /******************* handsontable *************************/
 // Let's get the form entries: id_regions-#-entries
 // starts with id_regions and finishes with entries
 var entriesSelectors = $('[id ^=id_regions][id $=entries]');
-
 // Builds the spread sheet!
 // For every entry input field add a div anchor to place the spreadsheet
 $.each(entriesSelectors, function (i, selector) {
@@ -265,7 +272,8 @@ $.each(entriesSelectors, function (i, selector) {
             { type: 'text', data: "backgroung_scattering", renderer: validateCellValue },
             { type: 'text', data: "backgroung_transmission", renderer: validateCellValue }
         ],
-        colHeaders: ["Name", "Thickness", "Sample Scattering", "Sample Transmission", "Backgroung Scattering", "Backgroung Transmission"],
+        colHeaders: ["Name", "Thickness", "Sample Scattering", "Sample Transmission", "Backgroung Scattering",
+                     "Backgroung Transmission"],
         renderAllRows: false,
         contextMenu: {
             items: { // Just give 3 actions to the context menu
@@ -296,7 +304,7 @@ function populateFormWithHotContents() {
         // Remove empty rows first
 
         //iterate all rows
-        for (var rowIdx = 0; rowIdx < hotContents.length; ++rowIdx) {
+        for (var rowIdx = 0; rowIdx < hotContents.length -2; ++rowIdx) {
             var thisRow = hotContents[rowIdx];
             var nAttrNull = 0; // number of null atrributes
             for (key in thisRow) {
@@ -364,16 +372,16 @@ $(document).ready(function () {
         searching: true,
         ordering: true,
         info: true,
-        scrollY:        "400px",
+        scrollY:        $(document).height()/4,
         scrollCollapse: true,
         paging:         false,
         // For the headers to scroll in X
-        "bPaginate": false, 
-        "bFilter": false, 
-        "sScrollX": "100%", 
-        "sScrollXInner": "100%", 
-        "bScrollCollapse": true,
-
+        bPaginate: false, 
+        bFilter: false, 
+        sScrollX: "100%", 
+        sScrollXInner: "100%", 
+        bScrollCollapse: true,
+        searching: false,
         //autoWidth: false,
         initComplete: function () {
             this.api().columns().every( function () {

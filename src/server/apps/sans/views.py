@@ -7,14 +7,15 @@ from pprint import pformat
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
 from django_remote_submission.models import Job, Server
 from django_remote_submission.tasks import LogPolicy, submit_job_to_server
-
-from server.apps.catalog.icat.facade import get_expriments, get_runs, get_runs_as_table
+from django.urls import reverse
+from server.apps.catalog.icat.facade import (get_expriments, get_runs,
+                                             get_runs_as_table)
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 from server.settings.env import env
@@ -402,6 +403,8 @@ class ReductionFormMixin(ReductionMixin):
     def get_context_data(self, **kwargs):
         '''
         Get RUNs from the catalog
+        header = the columns
+        runs = is the row list
         '''
         logger.debug("ReductionFormMixin get_context_data")
         context = context = super(ReductionFormMixin, self).get_context_data(**kwargs)
@@ -409,10 +412,11 @@ class ReductionFormMixin(ReductionMixin):
         instrument = self.request.user.profile.instrument.icat_name
         ipts = self.request.user.profile.ipts
         exp = self.request.user.profile.experiment
-        logger.debug('Getting runs from catalog: %s %s %s %s', facility, instrument, ipts, exp )
+        logger.debug('Getting runs from the catalog: %s %s %s %s', facility, instrument, ipts, exp )
         try:
             header, runs = get_runs_as_table(facility, instrument, ipts, exp)
-        except Exception:
+        except Exception as e:
+            logger.debug("get_runs_as_table failed %s", e)
             header = []
             runs = []
         context['runs'] = json.dumps(runs) #Converts dict to string and None to null: Good for JS
@@ -469,7 +473,7 @@ class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
         return super(ReductionDelete, self).delete(request, *args, **kwargs)
 
 
-class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
+class ReductionClone(LoginRequiredMixin, ReductionMixin, UpdateView):
     '''
     Clones the Object Configuration. Keeps the same user
     '''
@@ -481,6 +485,10 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, DetailView):
         self.kwargs['pk'] = obj.pk
         messages.success(self.request, "Reduction '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
         return obj
+    def get(self, request, *args, **kwargs):
+        _ = super(ReductionClone, self).get(request, *args, **kwargs)
+        return HttpResponseRedirect(
+            reverse('sans:reduction_update', kwargs={'pk': self.object.pk}))
 
 
 class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
@@ -534,7 +542,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 obj.script_execution_path = os.path.join(
                     self.request.user.profile.instrument.drive_path,
                     str(self.request.user.profile.ipts),
-                    self.request.user.profile.experiment if self.request.user.profile.experiment else "",
+                    "exp%s"%self.request.user.profile.experiment.number if self.request.user.profile.experiment else "",
                     "Shared", "AutoRedution"
                 )
         logger.debug(obj.script)
