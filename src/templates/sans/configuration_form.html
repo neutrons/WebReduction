@@ -41,6 +41,11 @@
     </div>
 
     <div class="well">
+				{% if form.errors %}
+				<div class="panel-heading">
+						<div class="alert alert-danger">There are errors in the form submission! See below.</div>
+				</div>
+				{% endif %}
         <div class="panel-body">
             {% crispy form  %}
         </div>

@@ -35,12 +35,16 @@ from .gpsans.forms import (GPSANSConfigurationForm, GPSANSReductionForm,
                            GPSANSRegionInlineFormSetUpdate)
 from .gpsans.models import GPSANSConfiguration, GPSANSReduction, GPSANSRegion
 
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
 class SANSMixin(object):
     '''
     Base for all the Instruments
+    Because the code is the same, just the models or the form change based
+    on the instrument name, I decided to have all set has a ditionary...
+    Looking for better ideas...
     '''
     params = {
         "EQSANS": {
@@ -126,7 +130,7 @@ class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
     '''
     List all configurations.
     Gets the query from the ConfigurationMixinModel
-    No need for any definitions 
+    No need for any definitions
     '''
     template_name = 'sans/configuration_list.html'
 
@@ -155,7 +159,8 @@ class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, CreateView):
         Sets initial values which are hidden in the form
         """
         form.instance.user = self.request.user
-        form.instance.instrument = get_object_or_404(Instrument,
+        form.instance.instrument = get_object_or_404(
+            Instrument,
             name=self.instrument_name)
         return CreateView.form_valid(self, form)
 
@@ -184,7 +189,7 @@ class ConfigurationDelete(LoginRequiredMixin, ConfigurationMixin, DeleteView):
         return obj
 
     def delete(self, request, *args, **kwargs):
-        logger.debug("Deleting Configuration %s " % self.get_object())
+        logger.debug("Deleting Configuration %s ", self.get_object())
         messages.success(request,
                          'Configuration %s deleted.' % self.get_object())
         return super(ConfigurationDelete, self).delete(request, *args, **kwargs)
@@ -197,7 +202,10 @@ class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
 
     template_name = 'sans/configuration_detail.html'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
+        '''
+        Overrires DetailView.get_object and 
+        '''
         obj = self.model.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
         messages.success(self.request, "Configuration '%s' cloned. New id is \
@@ -466,7 +474,7 @@ class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
         if not obj.user == self.request.user:
             raise Http404
         return obj
-    
+
     def delete(self, request, *args, **kwargs):
         logger.debug("Deleting reduction %s", self.get_object())
         messages.success(request, 'Reduction %s deleted.'%(self.get_object()))
@@ -566,8 +574,6 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 obj_json)
         return super(ReductionScriptUpdate, self).post(request, **kwargs)
 
-
-    
 
     def form_valid(self, form):
         """

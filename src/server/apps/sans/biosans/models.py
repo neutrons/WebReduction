@@ -5,18 +5,21 @@
 import re
 
 from django.core.exceptions import ValidationError
+from django.db import models
 
-from ..models import *
+from ..models import Configuration, Reduction, Region
+
 
 def validate_q_range(value):
     try:
-        l = [float(i) for i in re.split(';|,',value)]
-        if len(l)!=3:
-            raise ValidationError("Q range must be have three values: min,step,max")
+        l = [float(i) for i in re.split(';|,', value)]
+        if len(l) != 3:
+            raise ValidationError("Q range must be have three values: min, step, max")
         if l[0] >= l[2]:
-            raise ValidationError("Q range min must be lower than max: min,step,max")
+            raise ValidationError("Q range min must be lower than max: min, step, max")
     except ValueError:
         raise ValidationError("Q range must be of the form: min,step,max")
+
 
 class BioSANSConfiguration(Configuration):
 
@@ -57,7 +60,7 @@ class BioSANSConfiguration(Configuration):
     # IQxQy(nbins=80)
     iqxqy_nbins = models.IntegerField(
         "Number of bins for I(Qx, Qy) calculation",
-        default = 80,
+        default=80,
     )
 
     # Mask(nx_low=2, nx_high=40, ny_low=10, ny_high=10, component_name="detector1")
@@ -70,23 +73,23 @@ class BioSANSConfiguration(Configuration):
         max_length=50,
         choices=COMPONENT_CHOICES,
         default=COMPONENT_CHOICES[0][0],
-        help_text = "The parameters below are relative to this component",
+        help_text="The parameters below are relative to this component",
     )
     mask_left = models.IntegerField(
         "Number of pixels masked on the left of the detector (nx_low)",
-        default = 0,
+        default=0,
     )
     mask_right = models.IntegerField(
         "Number of pixels masked on the right of the detector (nx_high)",
-        default = 0,
+        default=0,
     )
     mask_bottom = models.IntegerField(
         "Number of pixels masked on the bottom of the detector (ny_low)",
-        default = 10,
+        default=10,
     )
     mask_top = models.IntegerField(
         "Number of pixels masked on the top of the detector (ny_high)",
-        default = 10,
+        default=10,
     )
     # MaskComponent("wing_detector")
     mask_total_component_name = models.CharField(
@@ -110,8 +113,8 @@ class BioSANSConfiguration(Configuration):
         max_digits=10, decimal_places=2, default=1.7)
     sensitivity_use_sample_dc = models.BooleanField(
         "Use Sample Dark Current dor sensitivity",
-        default = False,
-        help_text = "If use_sample_dc is set to True, the dark current data that was chosen to \
+        default=False,
+        help_text="If use_sample_dc is set to True, the dark current data that was chosen to \
         be subtracted from the sample data will also be \
         subtracted from the flood data. The subtraction is done before the sensitivity is calculated. \
         Alternatively, a different file can be selected by specifying the dark_current parameter.",
@@ -127,14 +130,14 @@ class BioSANSConfiguration(Configuration):
     )
     transmission_theta_dependent = models.BooleanField(
         "Theta Dependent Transmission",
-        default = False,
-        help_text = "If set to False, the transmission correction will be applied by dividing \
+        default=False,
+        help_text="If set to False, the transmission correction will be applied by dividing \
         each pixel by the zero-angle transmission, without theta dependence.",
     )
     transmission_use_sample_dc = models.BooleanField(
         "Use Sample Dark Current for Transmission",
-        default = False,
-        help_text = "If this is set to True, the dark current data that was chosen to be \
+        default=False,
+        help_text="If this is set to True, the dark current data that was chosen to be \
         subtracted from the sample data will also be subtracted from the flood data.",
     )
     # AzimuthalAverage(binning=main7m_q_range, n_subpix=1, log_binning=True, error_weighting=False)
@@ -145,6 +148,20 @@ class BioSANSConfiguration(Configuration):
         validators=[validate_q_range],
         help_text="Select a Q range of the form: 'min,-step,max'. \
             Note that negtive step means log binning."
+    )
+
+    empty_beam_file = models.CharField(
+        "Empty Beam Transmission file",
+        max_length=64,
+        blank=True,
+        help_text="Note that the user can always overwrite this value!"
+    )
+
+    beam_center_file = models.CharField(
+        "Beam Center file",
+        max_length=64,
+        blank=True,
+        help_text="Note that the user can always overwrite this value!"
     )
 
     @models.permalink

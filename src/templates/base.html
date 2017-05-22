@@ -117,7 +117,9 @@
 
     {% endblock %}
 
-    {% block content %}{% endblock content %}
+    <!-- Main content goes here-->
+    {% block content %}
+    {% endblock content %}
 
     {% block messages %}
     <div class="container">
@@ -132,6 +134,7 @@
         <!-- Messages end! -->
     </div>
     {% endblock messages %}
+
     {% block footer%}
     <footer>
         <hr />
@@ -163,6 +166,22 @@
     <script src='{% static "thirdparty/jquery.min.js" %}'></script>
     <!--script src='{% static "thirdparty/jquery-ui/jquery-ui.min.js" %}'></script-->
     <script src='{% static "thirdparty/bootstrap3/js/bootstrap.min.js" %}'></script>
+    <!-- Messages usually comming from the form validation -->
+    <script src='{% static "thirdparty/notify/notify.js" %}'></script>
+    <script>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                $.notify("{{ message|safe }}", "{{ message.tags }}");
+                console.log("xpto:", "{{ message|safe }}");
+            {% else %}
+                $.notify("{{ message|safe }}");
+                console.log("xpto:", "{{ message|safe }}");
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    </script>
+<!-- Messages end! -->
      {% endblock footer_js%}
 </body>
 
