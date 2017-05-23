@@ -11,8 +11,8 @@ AUTH_LDAP_BIND_PASSWORD = ''
 
 #
 AUTH_LDAP_GLOBAL_OPTIONS = {
-    ldap.OPT_X_TLS_REQUIRE_CERT : ldap.OPT_X_TLS_NEVER,
-    #ldap.OPT_X_TLS_CACERTFILE : ROOT_DIR("../config/certificates/ldap.crt"),
+    # ldap.OPT_X_TLS_REQUIRE_CERT : ldap.OPT_X_TLS_NEVER,
+    ldap.OPT_X_TLS_CACERTFILE : ROOT_DIR("../config/certificates/ldap.crt"),
 }
 
 # Direct bind to user's username

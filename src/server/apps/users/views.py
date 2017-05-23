@@ -10,7 +10,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import (REDIRECT_FIELD_NAME, authenticate,
                                  get_user_model)
-from django.contrib.auth.forms import AuthenticationForm
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
@@ -32,7 +32,7 @@ from django_remote_submission.remote import RemoteWrapper
 
 from server.settings.env import env
 
-from .forms import UserProfileForm
+from .forms import UserProfileForm, LoginForm
 from .models import UserProfile, Experiment
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class LoginView(FormView):
     """
 
     """
-    form_class = AuthenticationForm
+    form_class = LoginForm
     template_name = 'users/login.html'
     redirect_field_name = REDIRECT_FIELD_NAME
     success_url = reverse_lazy('index')
@@ -52,6 +52,8 @@ class LoginView(FormView):
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
+        # This prints the password
+        # logger.debug(request.POST)
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):

@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
+{% load crispy_forms_tags %}
+
 {% block header %}
-    {{ block.super }}
-    <style>
+{{ block.super }}
+<style>
 .form-signin
 {
     max-width: 330px;
@@ -85,7 +87,7 @@
     padding: 20px;
     margin: 0 auto;
 }
-    </style>
+</style>
 {% endblock %}
 
 {% block navbar %}{% endblock %}
@@ -96,24 +98,21 @@
 
 <div class="container">
   <div class="page-header">
-    <h1 align="center">SNS Data Reduction Service</h1>
+    <h1 align="center">HFIR &amp; SNS Data Reduction Service</h1>
   </div>
 </div>
-
 
 <div class="container">
     <div class="row">
         <div class="col-sm-6 col-md-4 col-md-offset-4">
             <h1 class="text-center login-title">Sign in to continue</h1>
             <div class="account-wall">
-                <img class="profile-img" src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=120"
+                <img class="profile-img" 
+                    src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=120"
                     alt="">
                 <form class="form-signin" action="#" method="post">
                   {% csrf_token %}
-                  <input type="text" class="form-control" name="username" placeholder="username" required autofocus>
-                  <input type="password" class="form-control" name="password" placeholder="password" required>
-
-                  <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                  {% crispy form %}
                 </form>
             </div>
             <a href="#" class="text-center new-account">Need help?</a>
