@@ -35,6 +35,9 @@
             margin-top: 60px;
             padding: 20px;
         }
+        .notifyjs-corner {
+            top: 50px !important;
+        }   
     </style>
     {% endblock header %}
 </head>
@@ -122,6 +125,7 @@
     {% endblock content %}
 
     {% block messages %}
+    <br/>
     <div class="container">
         <!-- Messages usually comming from the form validation -->
         {% if messages %}
@@ -169,6 +173,10 @@
     <!-- Messages usually comming from the form validation -->
     <script src='{% static "thirdparty/notify/notify.js" %}'></script>
     <script>
+    $.notify.defaults({
+        gap: 100,
+        autoHideDelay: 10000
+    });
     {% if messages %}
         {% for message in messages %}
             {% if message.tags %}

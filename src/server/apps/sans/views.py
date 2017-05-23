@@ -370,13 +370,13 @@ class ReductionMixin(SANSMixin):
         for form in formset:
             form.fields['configuration'].queryset = self.model_configuration.objects.filter(user = self.request.user)
         return formset
-    
+
     def get_formset_kwargs(self):
         '''
         Sets the initial values for the regions formsets
         '''
         logger.debug("ReductionMixin get_formset_kwargs")
-        kwargs = super(ReductionMixin,self).get_formset_kwargs()
+        kwargs = super(ReductionMixin, self).get_formset_kwargs()
 #         kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
         return kwargs
 
@@ -384,11 +384,13 @@ class ReductionMixin(SANSMixin):
 # Reductions
 #
 
+
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
     List all Reduction.
     '''
     template_name = 'sans/reduction_list.html'
+
 
 class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
     '''
@@ -397,7 +399,7 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
     The entries are an hidden field : id="entries_hidden"
     Which are an Handsontable
     '''
-    
+
     template_name = 'sans/reduction_detail.html'
 
     def get_queryset(self):
@@ -406,6 +408,7 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
         '''
         queryset = super(ReductionDetail, self).get_queryset()
         return queryset.filter(id=self.kwargs['pk'])
+
 
 class ReductionFormMixin(ReductionMixin):
     def get_context_data(self, **kwargs):
@@ -427,9 +430,10 @@ class ReductionFormMixin(ReductionMixin):
             logger.debug("get_runs_as_table failed %s", e)
             header = []
             runs = []
-        context['runs'] = json.dumps(runs) #Converts dict to string and None to null: Good for JS
+        context['runs'] = json.dumps(runs) # Converts dict to string and None to null: Good for JS
         context['header'] = header
         return context
+
 
 class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, CreateView):
     '''
@@ -437,14 +441,17 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
     '''
     template_name = 'sans/reduction_form.html'
     success_url = reverse_lazy('sans:reduction_list')
-    
+
     def form_valid(self, form, formset):
         """
         Sets initial values which are hidden in the form
         """
         logger.debug("ReductionCreate form_valid")
         form.instance.user = self.request.user
-        form.instance.instrument = get_object_or_404(Instrument,name=self.instrument_name)
+        form.instance.instrument = get_object_or_404(
+            Instrument,
+            name=self.instrument_name
+        )
         return FormsetMixin.form_valid(self, form, formset)
 
 
@@ -455,14 +462,16 @@ class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Upda
     template_name = 'sans/reduction_form.html'
     success_url = reverse_lazy('sans:reduction_list')
 
-
     def dispatch(self, request, *args, **kwargs):
         return super(ReductionUpdate,
-                     self).dispatch(request,formset_to_use = "region_formset_update",
-                                    *args, **kwargs)
+                     self).dispatch(
+                         request,
+                         formset_to_use="region_formset_update",
+                         *args, **kwargs)
+
 
 class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
-    
+
     template_name = 'sans/reduction_confirm_delete.html'
     success_url = reverse_lazy('sans:reduction_list')
 
@@ -477,7 +486,7 @@ class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         logger.debug("Deleting reduction %s", self.get_object())
-        messages.success(request, 'Reduction %s deleted.'%(self.get_object()))
+        messages.success(request, 'Reduction %s deleted.' % (self.get_object()))
         return super(ReductionDelete, self).delete(request, *args, **kwargs)
 
 
@@ -488,13 +497,20 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, UpdateView):
 
     template_name = 'sans/reduction_detail.html'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         obj = self.model.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
-        messages.success(self.request, "Reduction '%s' cloned. New id is '%s'. Click Edit below to change it."%(obj, obj.pk))
+        messages.success(self.request, "Reduction '%s' cloned."
+                                       " New id is '%s'." % (obj, obj.pk))
         return obj
+
     def get(self, request, *args, **kwargs):
-        _ = super(ReductionClone, self).get(request, *args, **kwargs)
+        '''
+        This is called first in the View
+        However calling the super below, will do the default prodecure, i.e.,
+        It will call the get_object which will clone the current reduction
+        '''
+        super(ReductionClone, self).get(request, *args, **kwargs)
         return HttpResponseRedirect(
             reverse('sans:reduction_update', kwargs={'pk': self.object.pk}))
 

@@ -1,5 +1,5 @@
-from django.shortcuts import render
 from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
 from pprint import pformat
 import logging
 
@@ -20,17 +20,21 @@ class AlbumEdit(FormsetMixin,UpdateView):
     form_class = forms.MusicianForm
     formset_class = forms.AlbumFormSetUpdate
 
-    
 '''
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
 class FormsetMixin(object):
+    '''
+    This basically overrides the methods get and post in the BaseFormView
+    The BaseFormView is ancestor of any FormView (E.g. Create and update)
+    '''
     object = None
 
     def get(self, request, *args, **kwargs):
-        logger.debug("get")
+        # pylint: disable=unused-argument
+        logger.debug("FormsetMixin: Get")
         if 'pk' in kwargs:
             # For the UpdateView
             self.object = self.get_object()
@@ -38,10 +42,12 @@ class FormsetMixin(object):
         form = self.get_form(form_class)
         formset_class = self.get_formset_class()
         formset = self.get_formset(formset_class)
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset))
 
     def post(self, request, *args, **kwargs):
-        logger.debug("post")
+        # pylint: disable=unused-argument
+        logger.debug("FormsetMixin: Post")
         if 'pk' in kwargs:
             # For the UpdateView
             self.object = self.get_object()
@@ -56,15 +62,15 @@ class FormsetMixin(object):
             return self.form_invalid(form, formset)
 
     def get_formset_class(self):
-        logger.debug("get_formset_class")
+        logger.debug("FormsetMixin: get_formset_class")
         return self.formset_class
 
     def get_formset(self, formset_class):
-        logger.debug("get_formset")
+        logger.debug("FormsetMixin: get_formset")
         return formset_class(**self.get_formset_kwargs())
 
     def get_formset_kwargs(self):
-        logger.debug("get_formset_kwargs")
+        logger.debug("FormsetMixin: get_formset_kwargs")
         kwargs = {
             'instance': self.object
         }
@@ -77,15 +83,18 @@ class FormsetMixin(object):
         return kwargs
 
     def form_valid(self, form, formset):
-        logger.debug("form_valid")
+        logger.debug("FormsetMixin: form_valid")
         self.object = form.save()
         formset.instance = self.object
         formset.save()
-        return redirect(self.object.get_absolute_url())
+        # return redirect(self.object.get_absolute_url())
+        # Same as in FormMixin
+        return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, formset):
-        logger.debug("form_invalid")
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
+        logger.debug("FormsetMixin: form_invalid")
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset))
 
 
 

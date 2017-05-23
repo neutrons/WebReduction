@@ -235,15 +235,16 @@ class Region(models.Model, ModelMixin):
 
     empty_beam_run = models.CharField(
         "Empty Beam Transmission",
-        max_length=64,
-        blank=False,
+        max_length=128,
+        blank=True,
+        help_text="Use run number or file path. If empty, uses that of the Configuration."
     )
     
     beam_center_run = models.CharField(
         "Beam Center",
-        max_length=64,
+        max_length=128,
         blank=True,
-        help_text="If empty, uses the empty beam as beam center."
+        help_text="Use run number or file path. If empty, uses that of the Configuration."
     )
 
     created_date = models.DateTimeField(auto_now_add=True)
