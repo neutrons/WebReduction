@@ -93,7 +93,7 @@ LOGGING = {
         },
         'server.util': {
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True,
         },
     }

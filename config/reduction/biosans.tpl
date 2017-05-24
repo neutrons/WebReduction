@@ -11,7 +11,7 @@ from multiprocessing import Process
 '''
 Script generation for reduction
 Title: {{ title}}
-User: {{ user }}
+User: {{ user | cut2:request.session.ipts }}
 '''
 
 

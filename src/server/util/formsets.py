@@ -1,7 +1,7 @@
-from django.shortcuts import redirect
-from django.http import HttpResponseRedirect
-from pprint import pformat
 import logging
+from pprint import pformat
+
+from django.http import HttpResponseRedirect
 
 '''
 Formset helper for Create and Update View
@@ -88,13 +88,10 @@ class FormsetMixin(object):
         formset.instance = self.object
         formset.save()
         # return redirect(self.object.get_absolute_url())
-        # Same as in FormMixin
+        # Same as in FormMixin (copied from FormMixin)
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, formset):
         logger.debug("FormsetMixin: form_invalid")
         return self.render_to_response(
             self.get_context_data(form=form, formset=formset))
-
-
-

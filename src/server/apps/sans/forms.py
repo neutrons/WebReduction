@@ -39,9 +39,14 @@ class ReductionForm(object):
         self.helper.form_class = 'form-horizontal'
         self.helper.render_required_fields = True
         self.helper.form_tag = False
+        # self.fields['ipts'].widget.attrs['readonly'] = True
+        # self.fields['experiment'].widget.attrs['readonly'] = True
 
     class Meta:
-        exclude = ['user', 'instrument', 'script', 'script_interpreter', 'job', 'script_execution_path']
+        exclude = [
+            'user', 'instrument',
+            'script', 'script_interpreter', 'job', 'script_execution_path'
+        ]
         #widgets = {'script': HiddenInput()}
 
 class ReductionScriptForm(object):

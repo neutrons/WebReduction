@@ -15,9 +15,10 @@ from django.utils.translation import ugettext_lazy as _
 from django_auth_ldap.backend import LDAPBackend
 from django_remote_submission.models import Interpreter, Job
 
+from server.apps.users.models import Ipts, Experiment
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
-from server.util.script import build_script
+
 
 logger = logging.getLogger(__name__)
 
@@ -196,6 +197,14 @@ class Reduction(models.Model, ModelMixin):
     script = models.TextField(blank=True,
                               help_text="Python script generated from the reduction entry. \
                               If the script was generated already just shows it!")
+
+    # ipts = models.ForeignKey(Ipts, on_delete=models.CASCADE,
+    #                          related_name="%(class)s_iptss",
+    #                          related_query_name="%(class)s_ipts",)
+
+    # experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE,
+    #                                related_name="%(class)s_experiments",
+    #                                related_query_name="%(class)s_experiment",)
 
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
                                    related_name="%(class)s_instruments",

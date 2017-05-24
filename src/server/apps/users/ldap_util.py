@@ -2,11 +2,10 @@
 
 import logging
 
-from django.conf import settings
 import ldap
+from django.conf import settings
 
-
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 '''
 
@@ -33,8 +32,8 @@ class LdapSns(object):
 
     def __init__(self):
         ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-        #self.server = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
-        self.server = ldap.initialize("ldaps://ldap-vip.sns.gov")
+        self.server = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+        # self.server = ldap.initialize("ldaps://ldap-vip.sns.gov")
 
     def __del__(self):
         self.server.unbind()
@@ -106,7 +105,6 @@ class LdapSns(object):
         )
         return results
 
-
     def get_all_users_name_and_uid(self):
         '''
         @return: list of {'name': 'Whitaker, Tracy H', 'uid': 'twq'},
@@ -121,7 +119,7 @@ class LdapSns(object):
         return [{'uid': result[1]['uid'][0].decode('UTF-8'),
                  'name': result[1]['cn'][0].decode('UTF-8')}
                 for result in results]
-    
+
     def get_user_name(self, uid):
         '''
         @return: list of {'Whitaker, Tracy H',  'Williamson, Richard L'...]
@@ -146,6 +144,7 @@ class LdapSns(object):
             ["cn"]
         )
         return [result[1]['cn'][0].decode('UTF-8') for result in results]
+
 
 # Test
 if __name__ == '__main__':

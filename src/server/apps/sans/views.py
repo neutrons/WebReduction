@@ -19,7 +19,7 @@ from server.apps.catalog.icat.facade import (get_expriments, get_runs,
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 from server.settings.env import env
-from server.util import script
+from server.util.script import ScriptBuilder
 from server.util.formsets import FormsetMixin
 
 from .biosans.forms import (BioSANSConfigurationForm, BioSANSReductionForm,
@@ -411,6 +411,16 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
 
 
 class ReductionFormMixin(ReductionMixin):
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(ReductionFormMixin, self).get_initial()
+
+        initial['ipts'] = self.request.user.profile.ipts
+        initial['experiment'] = self.request.user.profile.experiment
+        return initial
+
     def get_context_data(self, **kwargs):
         '''
         Get RUNs from the catalog
@@ -547,29 +557,24 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         It does the same for sript path. It should work HFIR and SNS
         '''
         obj = super(ReductionScriptUpdate, self).get_object()
+
         # If we are generating thr form fill in empty bits
         if self.request.method == 'GET':
             if obj.script is None or obj.script == "":
                 # if the script does not exist, let's generate it!
                 logger.debug("Generate the script for %s.", obj)
-                obj_json = self.model.objects.to_json(self.kwargs['pk'])
-                #logger.debug(pformat(obj_json))
-                python_script = script.build_script(
-                    os.path.join(
-                        os.path.dirname(
-                            os.path.realpath(__file__)),
-                        self.instrument_name.lower(),
-                        "script.tpl"),
-                    obj_json)
-                obj.script = python_script
+                script_builder = ScriptBuilder(
+                    self.request.session['instrument'].name,
+                    self.model.objects.to_json(self.kwargs['pk']))
+                obj.script = script_builder.build_script()
             if obj.script_execution_path is None or obj.script_execution_path == "":
                 obj.script_execution_path = os.path.join(
                     self.request.user.profile.instrument.drive_path,
                     str(self.request.user.profile.ipts),
-                    "exp%s"%self.request.user.profile.experiment.number if self.request.user.profile.experiment else "",
+                    "exp%s" % self.request.user.profile.experiment.number if self.request.user.profile.experiment else "",
                     "Shared", "AutoRedution"
                 )
-        logger.debug(obj.script)
+        # logger.debug(obj.script)
         return obj
 
     def post(self, request, **kwargs):
@@ -580,16 +585,12 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         '''
         if 'generate' in self.request.POST:
             request.POST = request.POST.copy()
-            obj_json = self.model.objects.to_json(self.kwargs['pk'])
-            request.POST['script'] = script.build_script(
-                os.path.join(
-                    os.path.dirname(
-                        os.path.realpath(__file__)),
-                    self.instrument_name.lower(),
-                    "script.tpl"),
-                obj_json)
-        return super(ReductionScriptUpdate, self).post(request, **kwargs)
 
+            script_builder = ScriptBuilder(
+                self.request.session['instrument'].name,
+                self.model.objects.to_json(self.kwargs['pk']))
+            request.POST['script'] = script_builder.build_script()
+        return super(ReductionScriptUpdate, self).post(request, **kwargs)
 
     def form_valid(self, form):
         """

@@ -21,10 +21,11 @@ except ImportError:
     import logging
     logger = logging.getLogger(__name__)
 
+
 class Experiment(object):
     _instruments = {
-        "CG2" : "CG2",
-        "CG3" : "BioSANS",
+        "CG2": "CG2",
+        "CG3": "BioSANS",
     }
 
     def __init__(self, beamline, ipts_number, exp_number):
@@ -32,7 +33,7 @@ class Experiment(object):
         self._ipts_number = ipts_number
         self._exp_number = exp_number
         self._make_paths()
-    
+
     @staticmethod
     def _mkdir_p(path):
         try:
@@ -42,6 +43,7 @@ class Experiment(object):
                 pass
             else:
                 raise
+
     def _make_paths(self):
         '''
         Make:
@@ -49,7 +51,10 @@ class Experiment(object):
         folder_shared
         folder_datafiles
         '''
-        self._folder_base = os.path.abspath(os.path.join(os.sep, 'HFIR', self._beamline,
+
+        self._folder_base = os.path.abspath(os.path.join(
+            os.sep, 'HFIR',
+            self._beamline,
             'IPTS-{:04}'.format(self._ipts_number),
             'exp{}'.format(self._exp_number),
         ))
@@ -63,7 +68,6 @@ class Experiment(object):
             logger.error("The Folder is not valid: %s", self._folder_shared)
         if not os.path.exists(self._folder_datafiles):
             logger.error("The Folder is not valid: %s", self._folder_datafiles)
-
 
     def _fullpath(self, scan_number, frame_number):
         '''
