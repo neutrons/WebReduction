@@ -6,26 +6,39 @@ import logging
 import errno
 
 from server.settings.env import ROOT_DIR
-from django import template
-
-register = template.Library()  # pylint: disable=C0103
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
-
-# Script template locations
-LOCATIONS = {
-    "EQSANS": None,
-    "BioSANS": ROOT_DIR("../config/reduction/biosans.tpl"),
-    "GPSANS": ROOT_DIR("../config/reduction/gpsans.tpl"),
-}
 
 
 class ScriptBuilder(object):
 
-    def __init__(self, instrument_name, data):
-        self.template_file_path = LOCATIONS[instrument_name]
+    # Script template locations
+    LOCATIONS = {
+        "EQSANS": None,
+        "BioSANS": ROOT_DIR("../config/reduction/biosans.tpl"),
+        "GPSANS": ROOT_DIR("../config/reduction/gpsans.tpl"),
+    }
+
+    def __init__(self, data, instrument_name, ipts, experiment=None):
+        '''
+        instrument_name :: as in LOCATIONS keys
+        ipts
+        experiment :: number integer
+
+        '''
+        self.template_file_path = self.LOCATIONS[instrument_name]
+        self.engine = Engine(
+            # debug=True,
+            builtins=['server.util.filters'], # this is for tags and filters
+        )
+        data.update({
+            "instrument": instrument_name,
+            "ipts": ipts,
+            "experiment": experiment
+        })
         self.data = data
-        logger.debug(pformat(self.data))
+
+        # logger.debug(pformat(self.data))
 
     def build_script(self):
         '''
@@ -33,8 +46,7 @@ class ScriptBuilder(object):
         @data is a dictionary / json
         @return script as string
         '''
-        X = 123
-        logger.debug(pformat(self.data))
+        # logger.debug(pformat(self.data))
         if not os.path.exists(self.template_file_path):
             logger.error("Template file %s does not exist.",
                          self.template_file_path)
@@ -48,13 +60,12 @@ class ScriptBuilder(object):
                 lines = f.readlines()
                 # text = '\n'.join(lines)
                 text = ''.join(lines)
-                template = Template(text,
-                    engine=Engine(
-                        builtins=['server.util.script'],
-                        context_processors=my_context_processor
-                    )
+                template = Template(
+                    text,
+                    engine=self.engine,
                 )
                 context = Context(self.data)
+                print("************** context:", context)
                 script = template.render(context)
                 # script_filtered = "\n".join([ll.rstrip() for ll in script.splitlines() if ll.strip()])
                 script_filtered = script
@@ -62,19 +73,16 @@ class ScriptBuilder(object):
             logger.error("Template file %s does not exist!", self.template_file_path)
         return script_filtered
 
-#
-# Auxiliary filters used only for building script
-#
-
-def my_context_processor(request):
-    return {'X': 123}
-
-@register.filter(name='cut2')
-def cut2( value):
-    return X
 
 
 
-
-
-
+if __name__ == "__main__":
+    print("START!")
+    d = {
+        'title': 'Reduction 5',
+        'user': 'rhf'
+    }
+    d.update({"ipts":"12345"})
+    script_builder = ScriptBuilder("BioSANS", d)
+    res = script_builder.build_script()
+    print(res)

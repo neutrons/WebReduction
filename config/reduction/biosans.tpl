@@ -11,7 +11,12 @@ from multiprocessing import Process
 '''
 Script generation for reduction
 Title: {{ title}}
-User: {{ user | cut2:request.session.ipts }}
+User: {{ user }}
+IPTS: {{ ipts | my_filter }}
+****
+Intrument: {{request.session.instrument}}
+Filename: {% filename 1 %}
+
 '''
 
 
@@ -21,7 +26,7 @@ def reduce{{forloop.counter}}:
 	Region: {{region.region}}
 	Comments: {{region.comments}}
 	'''
-	GPSANS()
+	BioSANS()
 	SetSampleDetectorDistance(6850)
 	SetWavelength(6.08, 0.15)
 	SolidAngle(detector_tubes=True)

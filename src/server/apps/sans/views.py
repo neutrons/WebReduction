@@ -564,8 +564,11 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 # if the script does not exist, let's generate it!
                 logger.debug("Generate the script for %s.", obj)
                 script_builder = ScriptBuilder(
+                    self.model.objects.to_json(self.kwargs['pk']),
                     self.request.session['instrument'].name,
-                    self.model.objects.to_json(self.kwargs['pk']))
+                    self.request.user.profile.ipts,
+                    self.request.user.profile.experiment
+                )
                 obj.script = script_builder.build_script()
             if obj.script_execution_path is None or obj.script_execution_path == "":
                 obj.script_execution_path = os.path.join(
@@ -587,8 +590,11 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
             request.POST = request.POST.copy()
 
             script_builder = ScriptBuilder(
+                self.model.objects.to_json(self.kwargs['pk']),
                 self.request.session['instrument'].name,
-                self.model.objects.to_json(self.kwargs['pk']))
+                self.request.user.profile.ipts,
+                self.request.user.profile.experiment
+            )
             request.POST['script'] = script_builder.build_script()
         return super(ReductionScriptUpdate, self).post(request, **kwargs)
 
