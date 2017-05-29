@@ -19,7 +19,7 @@ from server.apps.catalog.icat.facade import (get_expriments, get_runs,
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 from server.settings.env import env
-from server.util.script import ScriptBuilder
+from server.scripts.builder import ScriptBuilder
 from server.util.formsets import FormsetMixin
 
 from .biosans.forms import (BioSANSConfigurationForm, BioSANSReductionForm,
@@ -411,15 +411,15 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
 
 
 class ReductionFormMixin(ReductionMixin):
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        initial = super(ReductionFormMixin, self).get_initial()
+    # def get_initial(self):
+    #     """
+    #     Returns the initial data to use for forms on this view.
+    #     """
+    #     initial = super(ReductionFormMixin, self).get_initial()
 
-        initial['ipts'] = self.request.user.profile.ipts
-        initial['experiment'] = self.request.user.profile.experiment
-        return initial
+    #     initial['ipts'] = self.request.user.profile.ipts
+    #     initial['experiment'] = self.request.user.profile.experiment
+    #     return initial
 
     def get_context_data(self, **kwargs):
         '''
@@ -428,14 +428,15 @@ class ReductionFormMixin(ReductionMixin):
         runs = is the row list
         '''
         logger.debug("ReductionFormMixin get_context_data")
-        context = context = super(ReductionFormMixin, self).get_context_data(**kwargs)
-        facility = self.request.user.profile.instrument.facility.name
-        instrument = self.request.user.profile.instrument.icat_name
+        context = super(ReductionFormMixin, self).get_context_data(**kwargs)
+        facility_name = self.request.user.profile.instrument.facility.name
+        instrument_icat_name = self.request.user.profile.instrument.icat_name
         ipts = self.request.user.profile.ipts
         exp = self.request.user.profile.experiment
-        logger.debug('Getting runs from the catalog: %s %s %s %s', facility, instrument, ipts, exp )
+        logger.debug('Getting runs from the catalog: %s %s %s %s', 
+                      facility_name, instrument_icat_name, ipts, exp )
         try:
-            header, runs = get_runs_as_table(facility, instrument, ipts, exp)
+            header, runs = get_runs_as_table(facility_name, instrument_icat_name, ipts, exp)
         except Exception as e:
             logger.debug("get_runs_as_table failed %s", e)
             header = []

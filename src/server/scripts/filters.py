@@ -17,5 +17,4 @@ def my_filter(value):
 
 @register.simple_tag(takes_context=True)
 def filename(context, arg):
-
     return "/tmp/"+ str(context['ipts']) +"/" + str(arg)

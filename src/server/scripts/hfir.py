@@ -1,6 +1,9 @@
 # pylint: disable=line-too-long,C0103,C0330
 from __future__ import print_function
 '''
+
+HFIR Path builder
+
 To use this:
 
 import sys
@@ -23,9 +26,13 @@ except ImportError:
 
 
 class Experiment(object):
+    # This is basically a translation table from the name of the instrument
+    # and the way the file names are constructed
     _instruments = {
         "CG2": "CG2",
         "CG3": "BioSANS",
+        "GPSANS": "CG2",
+        "BioSANS": "BioSANS",
     }
 
     def __init__(self, beamline, ipts_number, exp_number):

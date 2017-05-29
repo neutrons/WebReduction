@@ -15,8 +15,14 @@ class ScriptBuilder(object):
     # Script template locations
     LOCATIONS = {
         "EQSANS": None,
-        "BioSANS": ROOT_DIR("../config/reduction/biosans.tpl"),
-        "GPSANS": ROOT_DIR("../config/reduction/gpsans.tpl"),
+        # "BioSANS": ROOT_DIR("../config/reduction/biosans.tpl"),
+        # "GPSANS": ROOT_DIR("../config/reduction/gpsans.tpl"),
+        "BioSANS": os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "templates", "biosans.tpl"),
+        "GPSANS": os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "templates", "gpsans.tpl"),
     }
 
     def __init__(self, data, instrument_name, ipts, experiment=None):
@@ -29,8 +35,9 @@ class ScriptBuilder(object):
         self.template_file_path = self.LOCATIONS[instrument_name]
         self.engine = Engine(
             # debug=True,
-            builtins=['server.util.filters'], # this is for tags and filters
+            builtins=['server.scripts.filters'], # this is for tags and filters
         )
+        # Because the following is not part of the data
         data.update({
             "instrument": instrument_name,
             "ipts": ipts,
@@ -65,7 +72,6 @@ class ScriptBuilder(object):
                     engine=self.engine,
                 )
                 context = Context(self.data)
-                print("************** context:", context)
                 script = template.render(context)
                 # script_filtered = "\n".join([ll.rstrip() for ll in script.splitlines() if ll.strip()])
                 script_filtered = script
