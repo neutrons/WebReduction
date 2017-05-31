@@ -68,7 +68,14 @@ class IptsManager(models.Manager):
 class Ipts(Group):
     '''
     Inherits name from the Group
+    It is a subset of Group with Only groups starting with "IPTS-"
     '''
+
+    number = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="This IPTS Number (IPTS-XXX)",
+    )
 
     instrument = models.ForeignKey(
         Instrument,
@@ -123,12 +130,15 @@ class ExperimentManager(models.Manager):
                     # HFIR
                     this_ipts = entry["ipts"]
                 try:
+                    r = re.search(r"IPTS-(\d+)", this_ipts)
+                    ipts_number = int(r.group(1)) if r else None
                     ipts_obj, _ = Ipts.objects.get_or_create(
                         name=this_ipts,
+                        number=ipts_number,
                         instrument=instrument
                     )
                 except IntegrityError as e:
-                    logger.error("Ignoring Duplicated IPTS: %s.", e)
+                    # logger.warning("Ignoring Duplicated IPTS: %s.", e)
                     continue
                 # If it's SNS entry.get("exp" is None!
                 for this_exp in entry.get("exp", []):

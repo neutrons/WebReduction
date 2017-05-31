@@ -5,7 +5,7 @@ import os
 import logging
 import errno
 
-from server.settings.env import ROOT_DIR
+# from server.settings.env import ROOT_DIR
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -25,27 +25,31 @@ class ScriptBuilder(object):
             "templates", "gpsans.tpl"),
     }
 
-    def __init__(self, data, instrument_name, ipts, experiment=None):
+    def __init__(self, data, instrument, ipts, experiment=None):
         '''
-        instrument_name :: as in LOCATIONS keys
-        ipts
-        experiment :: number integer
-
+        instrument, ipts, experiment :: are objects
         '''
-        self.template_file_path = self.LOCATIONS[instrument_name]
+        self.template_file_path = self.LOCATIONS[instrument.name]
         self.engine = Engine(
             # debug=True,
             builtins=['server.scripts.filters'], # this is for tags and filters
         )
         # Because the following is not part of the data
         data.update({
-            "instrument": instrument_name,
-            "ipts": ipts,
-            "experiment": experiment
+            "instrument_name": instrument.name,
+            "ipts_number": ipts.number,
+            "experiment_number": experiment.number,
+            "data_file_path_template": instrument.data_file_path_template,
         })
         self.data = data
-
+        self.instrument = instrument
+        self.ipts = ipts
+        self.experiment = experiment
         # logger.debug(pformat(self.data))
+    
+    def get_reduction_path(self):
+        return self.instrument.reduction_path_template % self.data
+
 
     def build_script(self):
         '''
@@ -78,7 +82,6 @@ class ScriptBuilder(object):
         else:
             logger.error("Template file %s does not exist!", self.template_file_path)
         return script_filtered
-
 
 
 

@@ -21,8 +21,8 @@ killall -s INT $(which nginx)
 Single command:
 
 ```
+find . -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" | xargs rm && \
 psql -U reduction -d reduction -c "drop owned by reduction;" && \
-find . -iname "$????_*.py*" | grep migrations | xargs rm && \
 ./manage.py makemigrations && \
 ./manage.py migrate && \
 ./manage.py loaddata catalog && \

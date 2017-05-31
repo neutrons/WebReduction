@@ -34,7 +34,8 @@
 			"ldap_group_name": "hfir_cg3_team",
 			"icat_url": "https://hfir-icat-testing.ornl.gov",
 			"drive_path": "/HFIR/CG3",
-			"filename_prefix": "BioSANS",
+			"data_file_path_template": "/HFIR/CG3/IPTS-%(ipts_number)s/exp%(experiment_number)s/Datafiles/BioSANS_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml",
+			"reduction_path_template": "/HFIR/CG3/IPTS-%(ipts_number)s/exp%(experiment_number)s/Shared/Reduction",
 			"reduction_available": true,
 			"active": true,
 			"facility": 1
@@ -54,7 +55,8 @@
 			"ldap_group_name": "hfir_cg2_team",
 			"icat_url": "https://hfir-icat-testing.ornl.gov",
 			"drive_path": "/HFIR/CG2",
-			"filename_prefix": "CG2",
+			"data_file_path_template": "/HFIR/CG2/IPTS-%(ipts_number)s/exp%(experiment_number)s/Datafiles/CG2_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml",
+			"reduction_path_template": "/HFIR/CG2/IPTS-%(ipts_number)s/exp%(experiment_number)s/Shared/Reduction",
 			"reduction_available": true,
 			"active": true,
 			"facility": 1

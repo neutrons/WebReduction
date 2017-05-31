@@ -90,16 +90,24 @@ class Instrument(models.Model):
         max_length=256,
     )
 
+    # /HFIR/CG3/
     drive_path = models.CharField(
         'instrument drive path',
         help_text='Name used for loading files from shared filesystem',
         max_length=256,
     )
 
-    filename_prefix = models.CharField(
-        'filename prefix',
-        help_text='Prefix for file name. E.g. HFIR uses the instrument name',
-        max_length=256,
+    # '/HFIR/CG3/IPTS-%(ipts_numbers)s/exp%(experiment_number)s/Datafiles/BioSANS_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml'
+    data_file_path_template = models.CharField(
+        help_text='Python template for the full path of the data files',
+        max_length=512,
+        blank=True,
+    )
+
+    # /HFIR/CG3/IPTS-%(ipts_numbers)s/exp%(experiment_number)s/Shared/Reduction
+    reduction_path_template = models.CharField(
+        help_text='Python template for the full path of the folder where the reduced files go',
+        max_length=512,
         blank=True,
     )
 

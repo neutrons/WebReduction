@@ -561,24 +561,18 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
 
         # If we are generating thr form fill in empty bits
         if self.request.method == 'GET':
+            script_builder = ScriptBuilder(
+                self.model.objects.to_json(self.kwargs['pk']),
+                self.request.user.profile.instrument,
+                self.request.user.profile.ipts,
+                self.request.user.profile.experiment
+            )
             if obj.script is None or obj.script == "":
                 # if the script does not exist, let's generate it!
                 logger.debug("Generate the script for %s.", obj)
-                script_builder = ScriptBuilder(
-                    self.model.objects.to_json(self.kwargs['pk']),
-                    self.request.session['instrument'].name,
-                    self.request.user.profile.ipts,
-                    self.request.user.profile.experiment
-                )
                 obj.script = script_builder.build_script()
             if obj.script_execution_path is None or obj.script_execution_path == "":
-                obj.script_execution_path = os.path.join(
-                    self.request.user.profile.instrument.drive_path,
-                    str(self.request.user.profile.ipts),
-                    "exp%s" % self.request.user.profile.experiment.number if self.request.user.profile.experiment else "",
-                    "Shared", "AutoRedution"
-                )
-        # logger.debug(obj.script)
+                obj.script_execution_path = script_builder.get_reduction_path()
         return obj
 
     def post(self, request, **kwargs):
@@ -589,10 +583,9 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         '''
         if 'generate' in self.request.POST:
             request.POST = request.POST.copy()
-
             script_builder = ScriptBuilder(
                 self.model.objects.to_json(self.kwargs['pk']),
-                self.request.session['instrument'].name,
+                self.request.user.profile.instrument,
                 self.request.user.profile.ipts,
                 self.request.user.profile.experiment
             )

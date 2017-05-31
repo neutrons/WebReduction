@@ -12,10 +12,7 @@ from multiprocessing import Process
 Script generation for reduction
 Title: {{ title}}
 User: {{ user }}
-IPTS: {{ ipts | my_filter }}
-****
-Intrument: {{request.session.instrument}}
-Filename: {% filename 1 %}
+Intrument: {{user.profile.instrument}}
 
 '''
 
