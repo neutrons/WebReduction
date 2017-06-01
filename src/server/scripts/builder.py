@@ -45,8 +45,10 @@ class ScriptBuilder(object):
         self.instrument = instrument
         self.ipts = ipts
         self.experiment = experiment
-        # logger.debug(pformat(self.data))
-    
+
+        self.data.pop('script', None)
+        logger.debug(pformat(self.data))
+
     def get_reduction_path(self):
         return self.instrument.reduction_path_template % self.data
 
@@ -76,8 +78,11 @@ class ScriptBuilder(object):
                     engine=self.engine,
                 )
                 context = Context(self.data)
-                script = template.render(context)
-                # script_filtered = "\n".join([ll.rstrip() for ll in script.splitlines() if ll.strip()])
+                try:
+                    script = template.render(context)
+                    # script_filtered = "\n".join([ll.rstrip() for ll in script.splitlines() if ll.strip()])
+                except Exception as e:
+                    raise e
                 script_filtered = script
         else:
             logger.error("Template file %s does not exist!", self.template_file_path)

@@ -64,15 +64,12 @@ class GPSANSConfiguration(Configuration):
         choices=NORMALIZATION_CHOICES,
         default=NORMALIZATION_CHOICES[2][0],
     )
-    
-    
+
     dark_current_file = models.CharField(
         max_length=256,
         blank=True,
         help_text="File path"
     )
-    
-
 
     sample_aperture_diameter = models.DecimalField(
         max_digits=10, decimal_places=2, default=10.0)
@@ -89,6 +86,20 @@ class GPSANSConfiguration(Configuration):
         max_digits=10, decimal_places=2, default=0.4)
     sensitivity_max = models.DecimalField(
         max_digits=10, decimal_places=2, default=2.0)
+    
+    empty_beam_file = models.CharField(
+        "Empty Beam Transmission file",
+        max_length=256,
+        blank=True,
+        help_text="Note that the user can always overwrite this value!"
+    )
+
+    beam_center_file = models.CharField(
+        "Beam Center file",
+        max_length=256,
+        blank=True,
+        help_text="Note that the user can always overwrite this value!"
+    )
 
     @models.permalink
     def get_absolute_url(self):

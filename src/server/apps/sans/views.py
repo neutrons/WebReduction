@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from pprint import pformat
 
+from django.shortcuts import render_to_response
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
@@ -570,7 +571,11 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
             if obj.script is None or obj.script == "":
                 # if the script does not exist, let's generate it!
                 logger.debug("Generate the script for %s.", obj)
-                obj.script = script_builder.build_script()
+                try:
+                    obj.script = script_builder.build_script()
+                except Exception as e:
+                    logger.exception(e)
+                    messages.error(self.request, "An exception occurred: {0} :: {1}".format(type(e).__name__, str(e)))
             if obj.script_execution_path is None or obj.script_execution_path == "":
                 obj.script_execution_path = script_builder.get_reduction_path()
         return obj
@@ -589,7 +594,14 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                 self.request.user.profile.ipts,
                 self.request.user.profile.experiment
             )
-            request.POST['script'] = script_builder.build_script()
+            
+            try:
+                request.POST['script'] = script_builder.build_script()
+            except Exception as e:
+                logger.exception(e)
+                messages.error(self.request, "An exception occurred: {0} :: {1}".format(type(e).__name__, str(e)))
+                #return render_to_response(self.template_name, {'form': self.form_class(self.request.POST) })
+                return super(ReductionScriptUpdate, self).get(request, **kwargs)
         return super(ReductionScriptUpdate, self).post(request, **kwargs)
 
     def form_valid(self, form):

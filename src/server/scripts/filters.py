@@ -3,7 +3,11 @@
 #
 import re
 import os
+import logging
+
 from django import template
+
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 register = template.Library()  # pylint: disable=C0103
 
@@ -23,6 +27,7 @@ def filename(context, arg):
     This will give the filenames based on runs:
     1 or 1_1
     '''
+    logger.debug("TAG: Checking for filename: %s", arg)
     c = {}
     # 1 or 1_1
     r = re.search(r"^(\d+)(_(\d+))?$", str(arg))
@@ -40,5 +45,9 @@ def filename(context, arg):
     if os.path.isfile(filename):
         return filename
     else:
-        # We might want to throw an exception here
-        return None
+        raise FileNotFoundError(filename)
+
+
+@register.simple_tag
+def raise_exception(message):
+    raise template.TemplateSyntaxError(message)

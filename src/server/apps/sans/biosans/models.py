@@ -152,14 +152,14 @@ class BioSANSConfiguration(Configuration):
 
     empty_beam_file = models.CharField(
         "Empty Beam Transmission file",
-        max_length=64,
+        max_length=256,
         blank=True,
         help_text="Note that the user can always overwrite this value!"
     )
 
     beam_center_file = models.CharField(
         "Beam Center file",
-        max_length=64,
+        max_length=256,
         blank=True,
         help_text="Note that the user can always overwrite this value!"
     )

@@ -96,5 +96,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'server.scripts': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
 }
