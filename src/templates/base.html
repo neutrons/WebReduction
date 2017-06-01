@@ -173,22 +173,28 @@
     <!-- Messages usually comming from the form validation -->
     <script src='{% static "thirdparty/notify/notify.js" %}'></script>
     <script>
-    $.notify.defaults({
-        gap: 100,
-        autoHideDelay: 10000
-    });
-    {% if messages %}
-        {% for message in messages %}
-            {% if message.tags %}
-                $.notify("{{ message|safe }}", "{{ message.tags }}");
-                console.log("xpto:", "{{ message|safe }}");
-            {% else %}
-                $.notify("{{ message|safe }}");
-                console.log("xpto:", "{{ message|safe }}");
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-    </script>
+        /**
+        $.notify("Access granted", "success");
+        $.notify("Do not press this button", "info");
+        $.notify("Warning: Self-destruct in 3.. 2..", "warn");
+        $.notify("BOOM!", "error");
+        */
+        $.notify.defaults({
+            clickToHide: true,
+            gap: 100,
+            autoHideDelay: 10000,
+        });
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags %}
+                    $.notify("{{ message|safe }}", {% if message.tags == "danger" %} "error" {% else %} "{{ message.tags }}"{% endif %} );
+                    console.log("{{ message|safe }}", "{{ message.tags }}")
+                {% else %}
+                    $.notify("{{ message|safe }}");
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        </script>
 <!-- Messages end! -->
      {% endblock footer_js%}
 </body>
