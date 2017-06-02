@@ -164,6 +164,13 @@ class BioSANSConfiguration(Configuration):
         help_text="Note that the user can always overwrite this value!"
     )
 
+    save_iq = models.BooleanField(
+        "Save IQ data as filr",
+        default=False,
+        help_text="If selected will save on dist the IQ curve. Usefull for \
+        posterior feetings / stitching."
+    )
+
     @models.permalink
     def get_absolute_url(self):
         return ('sans:configuration_detail', [self.pk])

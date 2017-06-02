@@ -22,10 +22,11 @@ def my_filter(value):
 
 
 @register.simple_tag(takes_context=True)
-def filename(context, arg):
+def filepath(context, arg):
     '''
     This will give the filenames based on runs:
     1 or 1_1
+    if a filename is given by path, check if exists
     '''
     logger.debug("TAG: Checking for filename: %s", arg)
     c = {}
@@ -50,4 +51,44 @@ def filename(context, arg):
 
 @register.simple_tag
 def raise_exception(message):
+    '''
+    Just raise an exception
+    '''
     raise template.TemplateSyntaxError(message)
+
+
+@register.simple_tag(takes_context=True)
+def filename_options(context, first, second, message=""):
+    '''
+    Do the same as filename but first looks for first
+    If it doesnt exist, look for second
+    '''
+    if first:
+        return filepath(context, first)
+    elif second:
+        return filepath(context, second)
+    else:
+        raise_exception("The file you are looking is not defined in neither Reduction nor Configuration: {}".format(message))
+
+
+@register.simple_tag(takes_context=True)
+def filename(context, arg):
+    '''
+    Do the same as filename but first looks for first
+    If it doesnt exist, look for second
+    '''
+    full_filepath =  filepath(context, arg)
+    filename_without_ext = os.path.basename(full_filepath).split(".")[0]
+    return filename_without_ext
+
+
+@register.filter(name='zip')
+def zip_lists(a, b):
+    '''
+    The same as python zip:
+    {%for a, b in first_list|zip:second_list %}
+        {{a}}
+        {{b}}
+    {%endfor%}
+    '''
+    return zip(a, b)
