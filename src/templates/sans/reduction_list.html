@@ -30,6 +30,7 @@
                 <th>Title</th>
                 <th>Date created</th>
                 <th>Date modified</th>
+                <th>Edit</th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +42,8 @@
                 	</td>
                 <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>
                 <td>{{object.modified_date | date:"DATETIME_FORMAT" }}</td>
+                <td><a data-toggle="tooltip" data-placement="right" href="{% url 'sans:reduction_update' object.pk %}"
+            title="Click to edit the details of this configuration."><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></td>
             </tr>
             {% endfor %}
         </tbody>
@@ -50,6 +53,7 @@
                 <th>Title</th>
                 <th>Date created</th>
                 <th>Date modified</th>
+                <th>Edit</th>
             </tr>
         </tfoot>
     </table>
@@ -70,7 +74,21 @@
                 "searching": true,
                 "ordering": true,
                 "info": true,
-                "autoWidth": true
+                "autoWidth": true,
+                columnDefs: [
+                    {
+                        "targets": 4,
+                        //"visible": false,      // And making this columns invisible ...
+                        "orderable" : false,
+                        "searchable": false,
+                        "width": "10%",
+                        "className": "text-center"
+                    },
+                    {
+                        "targets": [2,3],
+                        "className": "text-right"
+                    }
+                ]
             });
         });
     </script>

@@ -400,46 +400,35 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
     The entries are an hidden field : id="entries_hidden"
     Which are an Handsontable
     '''
-
     template_name = 'sans/reduction_detail.html'
-
-    def get_queryset(self):
-        '''
-        Get only reductions for this user: reduction.configuration.user
-        '''
-        queryset = super(ReductionDetail, self).get_queryset()
-        return queryset.filter(id=self.kwargs['pk'])
 
 
 class ReductionFormMixin(ReductionMixin):
-    # def get_initial(self):
-    #     """
-    #     Returns the initial data to use for forms on this view.
-    #     """
-    #     initial = super(ReductionFormMixin, self).get_initial()
-
-    #     initial['ipts'] = self.request.user.profile.ipts
-    #     initial['experiment'] = self.request.user.profile.experiment
-    #     return initial
+    '''
+    Mixin only used for the Reduction Form views
+    '''
 
     def get_context_data(self, **kwargs):
         '''
-        Get RUNs from the catalog
-        header = the columns
-        runs = is the row list
+        This will get from the catalog the data for this IPTS
+        in form of a table.
+        This is passed to the view as context variables: header and runs
         '''
-        logger.debug("ReductionFormMixin get_context_data")
         context = super(ReductionFormMixin, self).get_context_data(**kwargs)
         facility_name = self.request.user.profile.instrument.facility.name
         instrument_icat_name = self.request.user.profile.instrument.icat_name
         ipts = self.request.user.profile.ipts
         exp = self.request.user.profile.experiment
-        logger.debug('Getting runs from the catalog: %s %s %s %s', 
-                      facility_name, instrument_icat_name, ipts, exp )
+        logger.debug('ReductionFormMixin :: Populating the context with the \
+                      catalog: %s %s %s %s',
+                     facility_name, instrument_icat_name, ipts, exp)
         try:
-            header, runs = get_runs_as_table(facility_name, instrument_icat_name, ipts, exp)
+            header, runs = get_runs_as_table(facility_name,
+                                             instrument_icat_name, ipts, exp)
         except Exception as e:
-            logger.debug("get_runs_as_table failed %s", e)
+            logger.warning("Catalog function get_runs_as_table failed %s", e)
+            messages.error(self.request, "An exception occurred while getting \
+                data from the catalog: {0} :: {1}".format(type(e).__name__, str(e)))
             header = []
             runs = []
         context['runs'] = json.dumps(runs) # Converts dict to string and None to null: Good for JS

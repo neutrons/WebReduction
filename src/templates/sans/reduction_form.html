@@ -369,7 +369,8 @@ $(document).ready(function () {
         order: [[ 4, 'desc' ]],
         columnDefs: [
             { width: "20%", targets: 0 },
-            { type: "date", targets: 4 }
+            { type: "date", targets: 4 },
+            { targets: [1, 2], type: "num"}
         ],
         lengthChange: true,
         searching: true,
@@ -384,7 +385,7 @@ $(document).ready(function () {
         sScrollX: "100%", 
         sScrollXInner: "100%", 
         bScrollCollapse: true,
-        searching: false,
+        searching: true,
         //autoWidth: false,
         initComplete: function () {
             this.api().columns().every( function () {
@@ -395,6 +396,7 @@ $(document).ready(function () {
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
                         );
+                        console.log("Filter by:", val)
                         column
                             .search( val ? '^'+val+'$' : '', true, false )
                             .draw();
@@ -411,8 +413,6 @@ $(document).ready(function () {
 $('#collapseOne').on('shown.bs.collapse', function() {
   $('#icat_table').DataTable().draw();
 });
-
-
 
 </script>
 

@@ -17,15 +17,14 @@ class BioSANSConfigurationForm(ConfigurationForm, ModelForm):
         super(BioSANSConfigurationForm, self).__init__(*args, **kwargs)
         self.helper.layout.insert(
             0,
-            HTML("""<div class="alert alert-warning">
-                    <strong>Note: </strong> Two separate configurations have to \
-                    be created for Main and Wing detector!.
+            HTML("""<div class="alert alert-info">
+                    <strong>Note: </strong> Two separate configurations have \
+                    to be created for Main and Wing detector!.
                 </div>"""))
 
         # Mask pixels:
         self.helper[6].wrap(Div, css_class="col-md-3")
-        # Space between 1st and 2nd collumn:
-        self.helper[7].wrap(Div, css_class="col-md-2 col-md-offset-1")
+        self.helper[7].wrap(Div, css_class="col-md-2 col-md-offset-1")  # Space between 1st and 2nd collumn
         self.helper[8:11].wrap(Div, css_class="col-md-2")
         self.helper[6:11].wrap_together(Div, css_class="row")
 
