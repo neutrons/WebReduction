@@ -3,10 +3,9 @@ Created on Jan 8, 2016
 @author: rhf
 '''
 from django.forms import ModelForm, inlineformset_factory
-
-
-from crispy_forms.layout import HTML
-
+from crispy_forms.layout import (
+    HTML, Div
+)
 from ..forms import (
     ConfigurationForm, ReductionForm, RegionForm, ReductionScriptForm
 )
@@ -22,19 +21,31 @@ class BioSANSConfigurationForm(ConfigurationForm, ModelForm):
                     <strong>Note: </strong> Two separate configurations have to \
                     be created for Main and Wing detector!.
                 </div>"""))
+
+        # Mask pixels:
+        self.helper[6].wrap(Div, css_class="col-md-3")
+        # Space between 1st and 2nd collumn:
+        self.helper[7].wrap(Div, css_class="col-md-2 col-md-offset-1")
+        self.helper[8:11].wrap(Div, css_class="col-md-2")
+        self.helper[6:11].wrap_together(Div, css_class="row")
+
+        # Sticthing Q
+        self.helper[20:22].wrap(Div, css_class="col-md-6", style="padding-left:20px;")
+        self.helper[20:22].wrap_together(Div, css_class="row")
+
     def clean(self):
         '''
         This is called when the form is submitted
-        Any form validdation must be done here!
+        Any form validation must be done here!
         '''
         cleaned_data = super(BioSANSConfigurationForm, self).clean()
         q_min = cleaned_data.get("stiching_q_min")
         q_max = cleaned_data.get("stiching_q_max")
 
-        if (not q_min and not q_max):
+        if not q_min and not q_max:
             self.add_error('stiching_q_min', "Please select one of the fields!")
             self.add_error('stiching_q_max', "Please select one of the fields!")
-        elif (q_min and q_max):
+        elif q_min and q_max:
             self.add_error('stiching_q_min', "Please select only of the fields!")
             self.add_error('stiching_q_max', "Please select only of the fields!")
 

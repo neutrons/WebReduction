@@ -23,6 +23,7 @@ class ConfigurationForm(object):
     def __init__(self, *args, **kwargs):
         super(ConfigurationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        # self.helper.form_class = 'form-inline'
         self.helper.form_class = 'form-horizontal'
         self.helper.layout.append(Submit('submit', 'Save'))
         self.helper.layout.append(Button('cancel', 'Cancel', css_class='btn-default',

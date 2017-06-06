@@ -69,26 +69,32 @@ class BioSANSConfiguration(Configuration):
         ("wing_detector", "Wing"),
     )
     mask_component_name = models.CharField(
-        "Component to apply mask settings below",
+        "Component to mask",
         max_length=50,
         choices=COMPONENT_CHOICES,
         default=COMPONENT_CHOICES[0][0],
-        help_text="The parameters below are relative to this component",
+        help_text="The number of pixels masked are relative to this component",
     )
     mask_left = models.IntegerField(
-        "Number of pixels masked on the left of the detector (nx_low)",
+        "Left",
+        help_text="Number of pixels masked on the left of the detector (nx_low)",
         default=0,
     )
     mask_right = models.IntegerField(
-        "Number of pixels masked on the right of the detector (nx_high)",
+        "Right",
+        help_text="Number of pixels masked on the right of the detector (nx_high)",
         default=0,
     )
-    mask_bottom = models.IntegerField(
-        "Number of pixels masked on the bottom of the detector (ny_low)",
+
+    mask_top = models.IntegerField(
+        "Top",
+        help_text="Number of pixels masked on the top of the detector (ny_high)",
         default=10,
     )
-    mask_top = models.IntegerField(
-        "Number of pixels masked on the top of the detector (ny_high)",
+
+    mask_bottom = models.IntegerField(
+        "Bottom",
+        help_text="Number of pixels masked on the bottom of the detector (ny_low)",
         default=10,
     )
     # MaskComponent("wing_detector")
