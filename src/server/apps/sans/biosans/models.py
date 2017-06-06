@@ -97,7 +97,7 @@ class BioSANSConfiguration(Configuration):
         max_length=50,
         choices=COMPONENT_CHOICES,
         default=COMPONENT_CHOICES[1][0],
-        help_text = "Totally mask this coponent. The name shouldd be different from above!",
+        help_text="Totally masks this component. The name should be different from above!",
     )
 
     # SensitivityCorrection(main_flood, min_sensitivity=0.3, max_sensitivity=1.7, dark_current=None, use_sample_dc=False)
@@ -165,12 +165,30 @@ class BioSANSConfiguration(Configuration):
     )
 
     save_iq = models.BooleanField(
-        "Save IQ data as filr",
+        "Save IQ data as file",
         default=False,
         help_text="If selected will save on dist the IQ curve. Usefull for \
         posterior feetings / stitching."
     )
 
+    stiching_q_min = models.DecimalField(
+        "Stiching Q min",
+        max_digits=10,
+        decimal_places=5,
+        blank=True,
+        null=True,
+        help_text="Value only used for stiching. Only use for High Q Region."
+    )
+
+    stiching_q_max = models.DecimalField(
+        "Stiching Q max",
+        max_digits=10,
+        decimal_places=5,
+        blank=True,
+        null=True,
+        help_text="Value only used for stiching. Only use for Low Q Region."
+    )
+    
     @models.permalink
     def get_absolute_url(self):
         return ('sans:configuration_detail', [self.pk])

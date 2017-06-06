@@ -138,12 +138,14 @@ def reduce{{forloop.counter}}:
 
 	#MERGING FROM TWO DETECTORS
 
-	NameMain = "main_{{entry_high.name|slugify}}_Iq"
+	NameMain = "main_{{entry_low.name|slugify}}_Iq"
 	NameWing = "wing_{{entry_high.name|slugify}}_Iq"
-	q_min_overlap = min
-	q_max_overlap = max
-
-	FileNameOut2=data_out_folder+"/"+WkSpMerge+".txt"
+	q_min_overlap = {{regions.1.configuration.stiching_q_min}}
+	q_max_overlap = {{regions.0.configuration.stiching_q_max}}
+	
+	WkSpMerge = "full_{{entry_low.name|slugify}}_{{entry_high.name|slugify}}_f"
+	FileNameOut2=os.path.join(this_file_directory, WkSpMerge+".txt")
+	
 	if os.path.exists(root_path):
 		try:
 			Stitch(data_list=[NameMain, NameWing], q_min=q_min_overlap, q_max=q_max_overlap, output_workspace=WkSpMerge,  )
