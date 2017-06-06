@@ -120,9 +120,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         if UserProfile.objects.filter(user=request.user).count() > 0:
-            if 'instrument' not in self.request.session:
-                self.request.session['instrument'] = UserProfile.objects.get(
-                    user=request.user).instrument
             return super(ProfileView, self).get(request, *args, **kwargs)
         else:
             return redirect(reverse_lazy('users:profile_create'))
@@ -139,13 +136,6 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin,
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
 
-    def form_valid(self, form):
-        '''
-        Add instrument to session
-        '''
-        self.request.session['instrument'] = form.instance.instrument
-        return super(ProfileUpdate, self).form_valid(form)
-
 
 class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin,
                     CreateView):
@@ -161,5 +151,4 @@ class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin,
         '''
         user = self.request.user
         form.instance.user = user
-        self.request.session['instrument'] = form.instance.instrument
         return super(ProfileCreate, self).form_valid(form)

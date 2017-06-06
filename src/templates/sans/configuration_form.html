@@ -76,7 +76,7 @@
 
 	// Create the modal dialog to show the browser
 	var dialog_server_side_browser = new BootstrapDialog({
-		title: '{{request.session.instrument.drive_path}} : Pick a file',
+		title: '{{request.user.profile.instrument.drive_path}} : Pick a file',
 	  message: $("#dirlist_wrapper"),
 	  onhidden: function() {
 	    $("#dirlist_wrapper").appendTo('#dirlist_container'); // Put the dirlist back
@@ -111,7 +111,7 @@
 	$("input[name$='file']").wrap( "<div class='input-group'></div>" );
 	$("input[name$='file']").after("<span class='input-group-btn'> \
 		<button class='btn btn-primary server_side_browse_btn' \
-			title='Browse server side {{request.session.instrument.drive_path}}.' type='button'>\
+			title='Browse server side {{request.user.profile.instrument.drive_path}}.' type='button'>\
 		<span class='glyphicon glyphicon-search'></span></button></span>");
 	// Add click event to the button
 	$(".server_side_browse_btn").on('click', function(event) {

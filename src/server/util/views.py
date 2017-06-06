@@ -19,7 +19,7 @@ def dirlist(request):
     This wil be called by the server side file browser
 
     '''
-    default_dir = request.session['instrument'].drive_path
+    default_dir = request.user.profile.instrument.drive_path
     
     r = ['<ul class="jqueryFileTree" style="display: none;">']
     try:

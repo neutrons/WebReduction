@@ -91,7 +91,7 @@ class SANSMixin(object):
         '''
         Get instrument name from the session
         '''
-        instrument = request.session['instrument']
+        instrument = self.request.user.profile.instrument
         self.instrument_name = instrument.name
 
 #
