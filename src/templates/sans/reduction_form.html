@@ -234,6 +234,9 @@ function matchRunAndFrameRange(value){
 
 
 /******************* handsontable *************************/
+//Lets first remove the text area:
+$("#id_regions-0-entries,textarea").hide()
+
 // Let's get the form entries: id_regions-#-entries
 // starts with id_regions and finishes with entries
 var entriesSelectors = $('[id ^=id_regions][id $=entries]');
@@ -345,7 +348,8 @@ function populateFormWithHotContents() {
 
 
 /*
- This will re-render the spreadsheet on the visible tab!
+ This will re-render the spreadsheet on the visible tab
+ On tab changes and page reload!
  */
 $('.nav-tabs a').on('shown.bs.tab', function (event) {
     //     console.log($(event.target).text());         // active tab

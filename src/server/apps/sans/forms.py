@@ -83,10 +83,11 @@ class RegionForm(object):
         self.helper.layout = Layout(
             Fieldset(
                 '', # TITLE
-                'comments', 'configuration', 'empty_beam_run',  'beam_center_run', 'entries',
+                'comments', 'configuration', 'empty_beam_run',
+                'beam_center_run', 'entries',
             )
         )
 
     class Meta:
         fields = '__all__'
-        widgets = {'entries': HiddenInput()}
+        #widgets = {'entries': HiddenInput()}

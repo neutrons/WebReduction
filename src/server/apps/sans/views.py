@@ -447,12 +447,8 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
         """
         Sets initial values which are hidden in the form
         """
-        logger.debug("ReductionCreate form_valid")
         form.instance.user = self.request.user
-        form.instance.instrument = get_object_or_404(
-            Instrument,
-            name=self.instrument_name
-        )
+        form.instance.instrument = self.request.user.profile.instrument
         return FormsetMixin.form_valid(self, form, formset)
 
 

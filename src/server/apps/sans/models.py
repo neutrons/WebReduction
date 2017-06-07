@@ -19,17 +19,15 @@ from server.apps.users.models import Ipts, Experiment
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 
-
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 '''
-
 Abstract models for SANS
 
 Configuration - 1 to many - Reductions
 Reduction - 1 to many - Entries
-
 '''
+
 
 class ModelMixin(object):
     def get_all_fields(self, fields_to_ignore=('id', 'user')):
@@ -50,13 +48,14 @@ class ModelMixin(object):
                     value = None
             # only display fields with values and skip some fields entirely
             # if f.editable and value and f.name not in ('id', 'user') : # Hide None
-            if f.editable and f.name not in fields_to_ignore :
+            if f.editable and f.name not in fields_to_ignore:
                 fields.append({
-                    'label':f.verbose_name,
-                    'name':f.name,
-                    'value':value,
+                    'label': f.verbose_name,
+                    'name': f.name,
+                    'value': value,
                     })
         return fields
+
 
 class ConfigurationManager(models.Manager):
     '''
@@ -72,9 +71,9 @@ class ConfigurationManager(models.Manager):
         obj = self.get(id=pk)
         obj.pk = None  # setting to None, clones the object!
         obj.title += " (cloned)"
-        obj.save() 
+        obj.save()
         return obj
-    
+
     def clone_and_assign_new_uid(self, pk, new_uid):
         '''
         if new_uid is not on the DB, populates it from the ldap
@@ -88,7 +87,7 @@ class ConfigurationManager(models.Manager):
                 logger.warning("UID %s does not exist in LDAP... Skipping it." % new_uid)
                 return None
         obj = self.get(id=pk)
-        logger.debug("Cloning %s and assigning to user %s." % (obj, new_uid))
+        logger.debug("Cloning %s and assigning to user %s.", obj, new_uid)
         obj.pk = None  # setting to None, clones the object!
         obj.user = get_user_model().objects.get(username=new_uid)
         obj.save()
@@ -101,7 +100,7 @@ class ConfigurationManager(models.Manager):
         '''
         ldap_server = LdapSns()
         uids = ldap_server.get_all_uids_for_an_ipts(ipts)
-        logger.debug("Users for IPTS %s : %s" % (ipts, pformat(uids)))
+        logger.debug("Users for IPTS %s : %s", ipts, pformat(uids))
         cloned_objs = []
         for uid in uids:
             obj = self.clone_and_assign_new_uid(pk, uid)
@@ -114,17 +113,29 @@ class Configuration(models.Model, ModelMixin):
 
     '''
     title = models.CharField(max_length=256)
-    
+
     created_date = models.DateTimeField(auto_now_add=True)
+
     modified_date = models.DateTimeField(auto_now=True)
 
-    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
-                                   related_name="%(class)s_instruments",
-                                   related_query_name="%(class)s_instrument",)  # , blank=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                             related_name="%(class)s_users",
-                             related_query_name="%(class)s_user",)  # , blank=True, null=True)
-    
+    instrument = models.ForeignKey(
+        Instrument,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_instruments",
+        related_query_name="%(class)s_instrument",
+        # blank=True,
+        # null=True,
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_users",
+        related_query_name="%(class)s_user",
+        # blank=True,
+        # null=True,
+    )
+
     # Manager
     objects = ConfigurationManager()
 
@@ -134,7 +145,6 @@ class Configuration(models.Model, ModelMixin):
 
     def __str__(self):
         return self.title
-
 
 
 class ReductionManager(models.Manager):
@@ -184,19 +194,24 @@ class Reduction(models.Model, ModelMixin):
     title = models.CharField(max_length=256)
 
     created_date = models.DateTimeField(auto_now_add=True)
+
     modified_date = models.DateTimeField(auto_now=True)
 
-    script_interpreter = models.ForeignKey(Interpreter,
-                                           null=True,
-                                           on_delete=models.CASCADE,
-                                           related_name="%(class)s_interpreters",
-                                           related_query_name="%(class)s_interpreter",)
+    script_interpreter = models.ForeignKey(
+        Interpreter,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_interpreters",
+        related_query_name="%(class)s_interpreter",
+    )
 
     script_execution_path = models.CharField(max_length=256)
 
-    script = models.TextField(blank=True,
-                              help_text="Python script generated from the reduction entry. \
-                              If the script was generated already just shows it!")
+    script = models.TextField(
+        blank=True,
+        help_text="Python script generated from the reduction entry. \
+        If the script was generated already just shows it!"
+    )
 
     # ipts = models.ForeignKey(Ipts, on_delete=models.CASCADE,
     #                          related_name="%(class)s_iptss",
@@ -248,7 +263,7 @@ class Region(models.Model, ModelMixin):
         blank=True,
         help_text="Use run number or file path. If empty, uses that of the Configuration."
     )
-    
+
     beam_center_run = models.CharField(
         "Beam Center",
         max_length=128,
@@ -259,8 +274,12 @@ class Region(models.Model, ModelMixin):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
-    comments = models.CharField(max_length=256, blank=True,
-                                help_text="Any necessary comments...")
+    comments = models.CharField(
+        max_length=256,
+        blank=True,
+        help_text="Any necessary comments..."
+    )
+
     # This will be the json for sample / backgroun sample/transmission
     entries = JSONField()
 
