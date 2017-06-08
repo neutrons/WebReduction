@@ -435,6 +435,18 @@ class ReductionFormMixin(ReductionMixin):
         context['header'] = header
         return context
 
+    def _get_script_builder(self):
+        '''
+        This function builds a script based on the request parameters
+        Used only in the form
+        '''
+        return ScriptBuilder(
+            self.model.objects.to_json(self.kwargs['pk']),
+            self.request.user.profile.instrument,
+            self.request.user.profile.ipts,
+            self.request.user.profile.experiment
+        )
+
 
 class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, CreateView):
     '''
@@ -450,21 +462,6 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
         form.instance.user = self.request.user
         form.instance.instrument = self.request.user.profile.instrument
         return FormsetMixin.form_valid(self, form, formset)
-
-
-class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, UpdateView):
-    '''
-    Edit a Reduction
-    '''
-    template_name = 'sans/reduction_form.html'
-    success_url = reverse_lazy('sans:reduction_list')
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(ReductionUpdate,
-                     self).dispatch(
-                         request,
-                         formset_to_use="region_formset_update",
-                         *args, **kwargs)
 
 
 class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
@@ -511,8 +508,53 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, UpdateView):
         return HttpResponseRedirect(
             reverse('sans:reduction_update', kwargs={'pk': self.object.pk}))
 
+class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, UpdateView):
+    '''
+    Edit a Reduction (The spreadsheet)
+    '''
+    template_name = 'sans/reduction_form.html'
+    success_url = reverse_lazy('sans:reduction_list')
 
-class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
+    def dispatch(self, request, *args, **kwargs):
+        return super(
+            ReductionUpdate,
+            self
+        ).dispatch(
+            request,
+            formset_to_use="region_formset_update",
+            *args,
+            **kwargs
+        )
+
+    def post(self, request, **kwargs):
+        '''
+        When the form is saved we fo back success_url: the reduction list
+        When the form is posted through the button Run, it will be saved and
+        redirected to the edit script view.
+        if the form was posted with the run button, in the html:
+        <button name="run" ...
+        The script is generated from the data in the form and then the default
+        procedure is followed by calling super
+        '''
+        if 'run' in self.request.POST:
+            request.POST = request.POST.copy()
+            script_builder = self._get_script_builder()
+            try:
+                request.POST['script'] = script_builder.build_script()
+                self.success_url = reverse_lazy(
+                    'sans:reduction_script',
+                    kwargs={'pk': kwargs['pk']},)
+                logger.debug("Generated script. Going to: %s", self.success_url)
+            except Exception as e:
+                logger.exception(e)
+                messages.error(
+                    self.request,
+                    "An exception occurred: {0} :: {1}".format(
+                        type(e).__name__, str(e)))
+        return super(ReductionUpdate, self).post(request, **kwargs)
+
+
+class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
     '''
     Edit a Reduction Script
     on GET:
@@ -543,16 +585,12 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         and add it to object shown on the form
         It does the same for sript path. It should work HFIR and SNS
         '''
+        logger.debug("From ReductionScriptUpdate *******************************")
         obj = super(ReductionScriptUpdate, self).get_object()
 
-        # If we are generating thr form fill in empty bits
+        # If we are generating the form fill in empty bits
         if self.request.method == 'GET':
-            script_builder = ScriptBuilder(
-                self.model.objects.to_json(self.kwargs['pk']),
-                self.request.user.profile.instrument,
-                self.request.user.profile.ipts,
-                self.request.user.profile.experiment
-            )
+            script_builder = self._get_script_builder()
             if obj.script is None or obj.script == "":
                 # if the script does not exist, let's generate it!
                 logger.debug("Generate the script for %s.", obj)
@@ -560,7 +598,8 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                     obj.script = script_builder.build_script()
                 except Exception as e:
                     logger.exception(e)
-                    messages.error(self.request, "An exception occurred: {0} :: {1}".format(type(e).__name__, str(e)))
+                    messages.error(self.request, "An exception occurred: {0} ::\
+                        {1}".format(type(e).__name__, str(e)))
             if obj.script_execution_path is None or obj.script_execution_path == "":
                 obj.script_execution_path = script_builder.get_reduction_path()
         return obj
@@ -573,19 +612,13 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
         '''
         if 'generate' in self.request.POST:
             request.POST = request.POST.copy()
-            script_builder = ScriptBuilder(
-                self.model.objects.to_json(self.kwargs['pk']),
-                self.request.user.profile.instrument,
-                self.request.user.profile.ipts,
-                self.request.user.profile.experiment
-            )
-            
+            script_builder = self._get_script_builder()
             try:
                 request.POST['script'] = script_builder.build_script()
             except Exception as e:
                 logger.exception(e)
-                messages.error(self.request, "An exception occurred: {0} :: {1}".format(type(e).__name__, str(e)))
-                #return render_to_response(self.template_name, {'form': self.form_class(self.request.POST) })
+                messages.error(self.request, "An exception occurred: {0} :: \
+                    {1}".format(type(e).__name__, str(e)))
                 return super(ReductionScriptUpdate, self).get(request, **kwargs)
         return super(ReductionScriptUpdate, self).post(request, **kwargs)
 
@@ -621,7 +654,12 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionMixin, UpdateView):
                     job.pk, password=self.request.session["password"],
                     log_policy=LogPolicy.LOG_LIVE,
                     store_results=["*.txt"])
-                messages.success(self.request, "Reduction submitted to the cluster")
+                messages.success(
+                    self.request,
+                    "Reduction submitted to the cluster. See status: \
+                    <a href='%s'> here </a>" % reverse_lazy("results:job_log_live",
+                                                            args=[job.pk])
+                )
             except Exception as e:
                 logger.exception(e)
                 messages.error(self.request, "Reduction not submitted to the cluster: %s"%(str(e)))

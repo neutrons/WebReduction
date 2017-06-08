@@ -58,13 +58,14 @@ pre {
 socket = new ReconnectingWebSocket("ws://" + window.location.host + "/job-log/{{ object.id }}/");
 socket.onmessage = function(e) {
     var { log_id, time, content, stream } = JSON.parse(e.data);
-    $('#job-log-rows').text(
-        $('#job-log-rows').text() + '\n' +
-        log_id + " -\t" +
-        (new Date(Date.parse(time))).toLocaleString()  + "\t" +
-        stream + "\t" +
-        content
-  );
+//    $('#job-log-rows').append(
+//        '\n' +
+//        log_id + " -\t" +
+//        (new Date(Date.parse(time))).toLocaleString()  + "\t" +
+//        stream + "\t" + content
+//    );
+    $('#job-log-rows').append(content);
+    $("html, body").animate({ scrollTop: $(document).height() }, "fast");
 }
 socket.onopen = function() { }
 // Call onopen directly if socket is already open

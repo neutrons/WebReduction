@@ -30,7 +30,8 @@ def reduce{{forloop.counter}}:
 	'''
 	###### Main detector reduction~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	BIOSANS()
-	DataPath(os.path.joint(this_file_directory, "{{title|slugify}}"))
+	# No neeed for this because we give the full path of the files
+	# DataPath(os.path.joint(this_file_directory, "{{title|slugify}}"))
 	DirectBeamCenter("{% filename_options region.beam_center_run region.configuration.beam_center_file "Beam Center" %}")
 	SetAbsoluteScale({{region.configuration.absolute_scale_factor}})
 	{% if region.configuration.solid_angle_correction %}

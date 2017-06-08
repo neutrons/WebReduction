@@ -2,6 +2,9 @@
 Created on Jan 8, 2016
 @author: rhf
 '''
+
+import logging
+from pprint import pformat
 from django.forms import ModelForm, inlineformset_factory
 from crispy_forms.layout import (
     HTML, Div
@@ -10,6 +13,8 @@ from ..forms import (
     ConfigurationForm, ReductionForm, RegionForm, ReductionScriptForm
 )
 from .models import BioSANSConfiguration, BioSANSReduction, BioSANSRegion
+
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
 class BioSANSConfigurationForm(ConfigurationForm, ModelForm):
@@ -38,6 +43,9 @@ class BioSANSConfigurationForm(ConfigurationForm, ModelForm):
         Any form validation must be done here!
         '''
         cleaned_data = super(BioSANSConfigurationForm, self).clean()
+        logger.debug(pformat(cleaned_data))
+
+        # Validate Qs for stiching data sets
         q_min = cleaned_data.get("stiching_q_min")
         q_max = cleaned_data.get("stiching_q_max")
 
@@ -86,3 +94,4 @@ BioSANSRegionInlineFormSetUpdate = inlineformset_factory(
     extra=0,
     can_delete=False
 )
+
