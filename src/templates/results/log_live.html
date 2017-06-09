@@ -46,6 +46,9 @@ pre {
         </div>
     </div>
 
+    <p>Click <a href="{% url 'results:job_detail' object.id %}"
+                   title="Click to see the details of this Job."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>here</a> to see the details of this job</p>
+
 </div>
 {% endblock %}
 
@@ -65,7 +68,7 @@ socket.onmessage = function(e) {
 //        stream + "\t" + content
 //    );
     $('#job-log-rows').append(content);
-    $("html, body").animate({ scrollTop: $(document).height() }, "fast");
+    $("html, body").animate({ scrollTop: $(document).height() }, 0);
 }
 socket.onopen = function() { }
 // Call onopen directly if socket is already open

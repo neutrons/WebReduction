@@ -6,7 +6,8 @@
     "python.formatting.provider": "autopep8",
     "files.exclude": {
         "**/*.pyc": true,
-        "**/__pycache__": true
+        "**/__pycache__": true,
+        "**/*.*~": true
     },
     "files.associations": {
         "*.tpl": "jinja"

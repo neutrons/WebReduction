@@ -25,7 +25,10 @@
             {% for f in object.get_all_fields %}
                 <li class="list-group-item">
                     {% if f.name == "program" %}
+                        <a role="button" data-toggle="collapse" data-target="#code"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Click to see the script</a>
+                        <div id="code" class="collapse">
                         <pre><code>{{f.value}}</code></pre>
+                        </div>
                     {% else %}
                         <strong>{{f.label|capfirst}}</strong>
                         <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
@@ -43,7 +46,12 @@
         <div class="panel panel-default">
             <div class="panel-heading">Result {{ result.id }}</div>
             <div class="panel-body">{{ result.remote_filename }}
-                <a href="{{result.local_file.url}}">{{ result.local_file }}</a>
+                <br/>
+                <a href="{{result.local_file.url}}"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Download</a>
+                <br/>
+                <a href="{% url 'results:result_plot' result.id %}"
+                   title="Click to see thethe plot for this file."><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Plot this file</a>
+                
             </div>
         </div>
         {% endfor %}
