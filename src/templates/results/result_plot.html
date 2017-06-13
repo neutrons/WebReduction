@@ -3,7 +3,8 @@
 
 {% block header %}
 {{ block.super }}
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!-- Plotly.js only works in the header, not in the footer! -->
+<script src='{% static "thirdparty/plotly/plotly.min.js" %}'></script>
 {% endblock header %}
 
 {% block breadcrumbs %}
@@ -27,9 +28,13 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="center-block" {{plot|safe}} </div>
-            
+            <div class="panel-footer">
+                <div class="text-right">
+                <button type="cancel" class="btn btn-default" onclick="window.history.back()" ><span class="glyphicon glyphicon-arrow-left"></span> Go back</button>
+                </div>
+            </div>
         </div>
-    </div>
+    </div>    
 
 </div>
 {% endblock %}
