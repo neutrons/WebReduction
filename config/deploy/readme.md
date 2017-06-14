@@ -1,8 +1,9 @@
 # Concepts
 
-- Dev: Local machine no SSL
-- Pre-prod: Same as prod in RHEL
-- Prod: Production in  RHEL Virtual Machine
+- dev: (ubuntu) Local machine no SSL
+- dev_ssl: (ubuntu) Local machine with SSL
+- staging: (RHEL7) Same as prod in RHEL
+- production: (RHEL7)Production in  RHEL Virtual Machine
 
 # TODO
 

@@ -51,6 +51,11 @@ celery -A server.celery worker -B --loglevel=debug
 
 ```
 
+## Deploying:
+
+### Redhat 7
+
+
 ## DB
 
 ```

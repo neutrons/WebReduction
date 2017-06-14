@@ -1,3 +1,7 @@
+# pylint: disable-msg=C0103
+
+from __future__ import print_function, with_statement
+
 '''
 This file is never called direcly
 Use the command `fab`
@@ -11,31 +15,33 @@ fab -f fabfile.py -R dev deploy_dev
 fab deploy_dev
 '''
 
-# To run with python2
-from __future__ import print_function, with_statement
-
 import os
 
-from fabric.api import task, run, env, local, path, prefix, cd, \
+from fabric.api import (
+    task, run, env, local, path, prefix, cd,
     hosts, roles, parallel, settings, sudo
+)
 from fabric.contrib import files
-
+from contextlib import contextmanager as _contextmanager
 
 # Fabric hangs without this
 env.shell = "/bin/bash -c"
 
+###############################################################################
+# Roles
+#
 env.roledefs = {
     'dev': {
         'hosts': ['localhost'],
         'user': 'rhf',
         'project_root': '/home/rhf/git/sns-reduction',
     },
-    'dev_ssl': {
+    'dev-ssl': {
         'hosts': ['lealpc.ornl.gov'],
         'user': 'rhf',
         'project_root': '/home/rhf/git/sns-reduction',
     },
-    'staging': {
+    'pre-prod': {
         'hosts': ['pc83734.ornl.gov'],
         'user': 'rhf',
         'project_root': '/home/rhf/git/sns-reduction',
@@ -47,36 +53,89 @@ env.roledefs = {
     }
 }
 
-
-dev_roles = {'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_dev_template.conf'),
-             'nginx_conf_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'nginx.conf'),
-             'uwsgi_ini_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_template.ini' ),
-             'uwsgi_ini_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'),
-             'redis_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_dev_template.conf'),
-             'redis_conf_file' : os.path.join(env.roledefs['dev']['project_root'], 'dist', 'redis.conf'),
-             'requirements_file' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'requirements', 'dev.txt'),
-             }
+###############################################################################
+# dev
+#
+dev_roles = {
+    # nginx
+    'nginx_conf_template': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_dev_template.conf'
+    ),
+    'nginx_conf_file': os.path.join(
+        env.roledefs['dev']['project_root'], 'dist', 'nginx.conf'),
+    # uwsgi
+    'uwsgi_ini_template': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_template.ini'
+    ),
+    'uwsgi_ini_file': os.path.join(
+        env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'
+    ),
+    # redis
+    'redis_conf_template': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_dev_template.conf'
+    ),
+    'redis_conf_file': os.path.join(
+        env.roledefs['dev']['project_root'], 'dist', 'redis.conf'
+    ),
+    # requirements
+    'requirements_file': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'requirements', 'dev.txt'
+    ),
+}
 env.roledefs['dev'].update(dev_roles)
 
-# Dev_SSL
+###############################################################################
+# dev-ssl
+#
 dev_ssl_roles = dev_roles
-dev_ssl_roles.update({'nginx_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_staging_template.conf' ),
-                      })
-env.roledefs['dev_ssl'].update(dev_ssl_roles)
+dev_ssl_roles.update({
+    'nginx_conf_template': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_dev-ssl_template.conf'
+    ),
+    'redis_conf_template': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_dev-ssl_template.conf'
+    ),
+    'redis_systemd_template': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_template.service'
+    ),
+    'redis_systemd_file': '/etc/systemd/system/reduction-redis.service',
+})
+env.roledefs['dev-ssl'].update(dev_ssl_roles)
 
-# Staging
-staging_roles = dev_ssl_roles
-staging_roles.update({'redis_conf_template' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_prod_template.conf' ),
-                      })
-env.roledefs['staging'].update(staging_roles)
+###############################################################################
+# pre-prod
+#
+pre_prod_roles = dev_ssl_roles
+# pre_prod_roles.update({
+# })
+env.roledefs['pre-prod'].update(pre_prod_roles)
 
+###############################################################################
 # Production
-production_roles = staging_roles
-production_roles.update({'ssl_certificate_file' : '/etc/ssl/certs/wildcard.sns.gov.crt',
-                         'ssl_certificate_key_file' : '/etc/pki/tls/private/wildcard.sns.gov.key',
-                        'requirements_file' : os.path.join(env.roledefs['dev']['project_root'], 'config', 'requirements', 'prod.txt'),
-                        })
+#
+production_roles = pre_prod_roles
+production_roles.update({
+    'ssl_certificate_file': '/etc/ssl/certs/wildcard.sns.gov.crt',
+    'ssl_certificate_key_file': '/etc/pki/tls/private/wildcard.sns.gov.key',
+    'requirements_file': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'requirements', 'prod.txt'
+    ),
+})
 env.roledefs['production'].update(production_roles)
+
+###############################################################################
+# Virtual Env
+#
+env.venv_directory = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), 'venv'
+)
+env.venv_activate = 'source ' + os.path.join(env.venv_directory, 'bin', 'activate')
+
+@_contextmanager
+def virtualenv():
+    with cd(env.venv_directory):
+        with prefix(env.venv_activate):
+            yield
 
 #
 # Aux functions
@@ -90,6 +149,8 @@ def run_background(command, run_as_sudo=False):
         sudo(full_command, pty=False)
     else:
         run(full_command, pty=False)
+
+
 
 #
 # Main Functions
@@ -153,17 +214,22 @@ def deploy():
     with cd(src_root), prefix('. ' + venv_root + '/bin/activate'), settings(warn_only=True):
         run("kill -9 $(ps -ef  | grep $(which celery) | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)")
         run_background("$(which celery) -A server.celery worker --loglevel=info --logfile=%(project_root)s/dist/celery.log"%env)
-    
-    
+
 
 #
 # Tasks
 #
+@task
+def debug():
+    with virtualenv():
+        run('pip freeze')
+
 
 @task
 def cleandb():
     local('psql -U reduction -d reduction -c "drop owned by reduction;" && find . -iname "$????_*.py*" | grep migrations | xargs rm')
-    
+
+
 @task
 @roles('dev')
 def killall():
@@ -176,6 +242,8 @@ def killall():
         run("killall -w -q -s INT $(which nginx)")
         #run("ps -e | grep -e $(which celery) -e $(which redis-server) -e $(which uwsgi) -e $(which nginx)")
         run("ps -ef | grep -e celery -e redis-server -e uwsgi -e nginx")
+
+
 @task
 @roles('dev')
 def deploy_dev():
@@ -184,18 +252,21 @@ def deploy_dev():
     restart_nginx()
     run("ps -e | grep -e celery -e redis-server -e uwsgi -e nginx")
 
+
 @task
-@roles('dev_ssl')
+@roles('dev-ssl')
 def deploy_dev_ssl():
     update_env()
     deploy()
     restart_nginx(run_as_sudo=True)
 
+
 @task
-@roles('staging')
-def deploy_staging():
+@roles('pre-prod')
+def deploy_pre_prod():
     print("TODO")
     pass
+
 
 @task
 @roles('production')
