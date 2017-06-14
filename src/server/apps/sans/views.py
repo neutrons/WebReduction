@@ -651,16 +651,20 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
                 )
                 form.instance.job = job
                 submit_job_to_server.delay(
-                    job.pk, password=self.request.session["password"],
+                    job.pk,
+                    password=self.request.session["password"],
                     log_policy=LogPolicy.LOG_LIVE,
                     store_results=["*.txt"])
                 messages.success(
                     self.request,
                     "Reduction submitted to the cluster. See status: \
-                    <a href='%s'> here </a>" % reverse_lazy("results:job_log_live",
-                                                            args=[job.pk])
+                    <a href='%s'> here </a>" % reverse_lazy(
+                        "results:job_log_live",
+                        args=[job.pk])
                 )
             except Exception as e:
                 logger.exception(e)
-                messages.error(self.request, "Reduction not submitted to the cluster: %s"%(str(e)))
+                messages.error(self.request, "Reduction not submitted to the cluster. \
+                    An exception occurred: {0} :: \
+                    {1}".format(type(e).__name__, str(e)))
         return super(ReductionScriptUpdate, self).form_valid(form)
