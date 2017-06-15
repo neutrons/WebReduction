@@ -34,22 +34,22 @@ env.roledefs = {
     'dev': {
         'hosts': ['localhost'],
         'user': 'rhf',
-        'project_root': '/home/rhf/git/sns-reduction',
+        'project_root': os.path.dirname(os.path.realpath(__file__)),
     },
     'dev-ssl': {
         'hosts': ['lealpc.ornl.gov'],
         'user': 'rhf',
-        'project_root': '/home/rhf/git/sns-reduction',
+        'project_root': os.path.dirname(os.path.realpath(__file__)),
     },
     'pre-prod': {
         'hosts': ['pc83734.ornl.gov'],
         'user': 'rhf',
-        'project_root': '/home/rhf/git/sns-reduction',
+        'project_root': os.path.dirname(os.path.realpath(__file__)),
     },
-    'production': {
+    'prod': {
         'hosts': ['reduction.sns.gov'],
         'user': 'rhf',
-        'project_root': '/var/www/sns-reduction',
+        'project_root': os.path.dirname(os.path.realpath(__file__)),
     }
 }
 
@@ -57,6 +57,10 @@ env.roledefs = {
 # dev
 #
 dev_roles = {
+    # virtual env:
+    'venv_root': os.path.join(
+        env.roledefs['dev']['project_root'], 'venv'
+    ),
     # nginx
     'nginx_conf_template': os.path.join(
         env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_dev_template.conf'
@@ -89,16 +93,32 @@ env.roledefs['dev'].update(dev_roles)
 #
 dev_ssl_roles = dev_roles
 dev_ssl_roles.update({
-    'nginx_conf_template': os.path.join(
-        env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_dev-ssl_template.conf'
+    # Certificates
+    'ssl_certificate_file': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'certificates', 'domain.crt'
     ),
+    'ssl_certificate_key_file': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'certificates', 'domain.key'
+    ),
+    # NGINX
+    'nginx_conf_template': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'nginx_dev-ssl_template.conf'
+    ),
+    'nginx_systemd_template': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'nginx_template.service'
+    ),
+    'nginx_systemd_file': '/etc/systemd/system/nginx.service',
+    # Redis
     'redis_conf_template': os.path.join(
-        env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_dev-ssl_template.conf'
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_dev-ssl_template.conf'
     ),
     'redis_systemd_template': os.path.join(
-        env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_template.service'
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_template.service'
     ),
-    'redis_systemd_file': '/etc/systemd/system/reduction-redis.service',
+    'redis_systemd_file': '/etc/systemd/system/redis.service',
+    # uWSGI
+    
+
 })
 env.roledefs['dev-ssl'].update(dev_ssl_roles)
 
@@ -111,31 +131,62 @@ pre_prod_roles = dev_ssl_roles
 env.roledefs['pre-prod'].update(pre_prod_roles)
 
 ###############################################################################
-# Production
+# prod
 #
-production_roles = pre_prod_roles
-production_roles.update({
+prod_roles = pre_prod_roles
+prod_roles.update({
     'ssl_certificate_file': '/etc/ssl/certs/wildcard.sns.gov.crt',
     'ssl_certificate_key_file': '/etc/pki/tls/private/wildcard.sns.gov.key',
     'requirements_file': os.path.join(
         env.roledefs['dev']['project_root'], 'config', 'requirements', 'prod.txt'
     ),
 })
-env.roledefs['production'].update(production_roles)
+env.roledefs['prod'].update(prod_roles)
 
 ###############################################################################
 # Virtual Env
 #
-env.venv_directory = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), 'venv'
-)
-env.venv_activate = 'source ' + os.path.join(env.venv_directory, 'bin', 'activate')
 
 @_contextmanager
 def virtualenv():
-    with cd(env.venv_directory):
-        with prefix(env.venv_activate):
+    '''
+    Use as:
+    with virtualenv():
+        .....
+    '''
+    with cd(env['venv_root']):
+        with prefix('source ' + os.path.join(env['venv_root'], 'bin', 'activate')):
             yield
+
+
+#
+def update_env():
+    '''
+    If we want to use:
+    env.roledefs
+    This must be called. It makes available all the variables above
+    '''
+    context = env.roledefs[env.effective_roles[0]]
+    env.update(context)
+#     from pprint import pprint
+#     pprint(env)
+
+
+##
+#
+def start_redis_as_service():
+    files.upload_template(env['redis_conf_template'], env['redis_conf_file'], context=env)
+    files.upload_template(env['redis_systemd_template'], env['redis_systemd_file'], context=env, use_sudo=True)
+    sudo("$(which systemctl) start redis")
+
+
+def start_nginx_as_service():
+    files.upload_template(env['nginx_conf_template'], env['nginx_conf_file'], context=env)
+    files.upload_template(env['nginx_systemd_template'], env['nginx_systemd_file'], context=env, use_sudo=True)
+    sudo("$(which systemctl) start nginx")
+
+
+
 
 #
 # Aux functions
@@ -167,7 +218,7 @@ def restart_nginx(run_as_sudo=False):
             sudo(command)
         else:
             run(command)
-    run_background("nginx -c %(nginx_conf_file)s -g 'daemon off;'"%env, run_as_sudo)
+    run_background("nginx -c %(nginx_conf_file)s -g 'daemon off;'" % env, run_as_sudo)
 
 def update_env():
     context = env.roledefs[env.effective_roles[0]]
@@ -220,9 +271,13 @@ def deploy():
 # Tasks
 #
 @task
+@roles('dev-ssl')
 def debug():
+    update_env()
     with virtualenv():
         run('pip freeze')
+    # start_redis_as_service()
+    start_nginx_as_service()
 
 
 @task
@@ -269,7 +324,7 @@ def deploy_pre_prod():
 
 
 @task
-@roles('production')
+@roles('prod')
 def deploy_prod():
     print("TODO")
     pass
