@@ -69,7 +69,7 @@ dev_roles = {
         env.roledefs['dev']['project_root'], 'dist', 'nginx.conf'),
     # uwsgi
     'uwsgi_ini_template': os.path.join(
-        env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_template.ini'
+        env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_dev_template.ini'
     ),
     'uwsgi_ini_file': os.path.join(
         env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'
@@ -117,8 +117,13 @@ dev_ssl_roles.update({
     ),
     'redis_systemd_file': '/etc/systemd/system/redis.service',
     # uWSGI
-    
-
+    'uwsgi_ini_template': os.path.join(
+        env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_dev-ssl_template.ini'
+    ),
+    'uwsgi_systemd_template': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'uwsgi_template.service'
+    ),
+    'uwsgi_systemd_file': '/etc/systemd/system/uwsgi.service',
 })
 env.roledefs['dev-ssl'].update(dev_ssl_roles)
 
@@ -186,6 +191,11 @@ def start_nginx_as_service():
     sudo("$(which systemctl) start nginx")
 
 
+def start_uwsgi_as_service():
+    files.upload_template(env['uwsgi_ini_template'], env['uwsgi_ini_file'], context=env)
+    files.upload_template(env['uwsgi_systemd_template'], env['uwsgi_systemd_file'], context=env, use_sudo=True)
+    sudo("$(which systemctl) start uwsgi")
+
 
 
 #
@@ -202,6 +212,8 @@ def run_background(command, run_as_sudo=False):
         run(full_command, pty=False)
 
 
+def launch_in_terminal(command):
+    local("gnome-terminal -e 'bash -c \"" + command + "\"'")
 
 #
 # Main Functions
@@ -225,6 +237,7 @@ def update_env():
     env.update(context)
 #     from pprint import pprint
 #     pprint(env)
+
 
 
 def deploy():
@@ -277,7 +290,10 @@ def debug():
     with virtualenv():
         run('pip freeze')
     # start_redis_as_service()
-    start_nginx_as_service()
+    # start_nginx_as_service()
+    # start_uwsgi_as_service()
+    
+
 
 
 @task

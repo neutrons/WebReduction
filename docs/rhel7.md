@@ -18,6 +18,9 @@ sudo yum install https://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/postgresql9
 
 sudo yum install lapack.x86_64
 sudo yum install ftp://rpmfind.net/linux/centos/7.3.1611/os/x86_64/Packages/lapack-devel-3.4.2-5.el7.x86_64.rpm
+
+yum install uwsgi uwsgi-plugin-python
+
 ##
 
 cd ~
