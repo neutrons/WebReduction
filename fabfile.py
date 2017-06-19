@@ -61,26 +61,6 @@ dev_roles = {
     'venv_root': os.path.join(
         env.roledefs['dev']['project_root'], 'venv'
     ),
-    # nginx
-    'nginx_conf_template': os.path.join(
-        env.roledefs['dev']['project_root'], 'config', 'deploy', 'nginx_dev_template.conf'
-    ),
-    'nginx_conf_file': os.path.join(
-        env.roledefs['dev']['project_root'], 'dist', 'nginx.conf'),
-    # uwsgi
-    'uwsgi_ini_template': os.path.join(
-        env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_dev_template.ini'
-    ),
-    'uwsgi_ini_file': os.path.join(
-        env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'
-    ),
-    # redis
-    'redis_conf_template': os.path.join(
-        env.roledefs['dev']['project_root'], 'config', 'deploy', 'redis_dev_template.conf'
-    ),
-    'redis_conf_file': os.path.join(
-        env.roledefs['dev']['project_root'], 'dist', 'redis.conf'
-    ),
     # requirements
     'requirements_file': os.path.join(
         env.roledefs['dev']['project_root'], 'config', 'requirements', 'dev.txt'
@@ -104,26 +84,36 @@ dev_ssl_roles.update({
     'nginx_conf_template': os.path.join(
         env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'nginx_dev-ssl_template.conf'
     ),
+    'nginx_conf_file': os.path.join(
+        env.roledefs['dev']['project_root'], 'dist', 'nginx.conf'
+    ),
     'nginx_systemd_template': os.path.join(
         env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'nginx_template.service'
     ),
     'nginx_systemd_file': '/etc/systemd/system/nginx.service',
-    # Redis
-    'redis_conf_template': os.path.join(
-        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_dev-ssl_template.conf'
-    ),
-    'redis_systemd_template': os.path.join(
-        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_template.service'
-    ),
-    'redis_systemd_file': '/etc/systemd/system/redis.service',
     # uWSGI
     'uwsgi_ini_template': os.path.join(
         env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_dev-ssl_template.ini'
+    ),
+    'uwsgi_ini_file': os.path.join(
+        env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'
     ),
     'uwsgi_systemd_template': os.path.join(
         env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'uwsgi_template.service'
     ),
     'uwsgi_systemd_file': '/etc/systemd/system/uwsgi.service',
+    # Redis
+    'redis_conf_template': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_dev-ssl_template.conf'
+    ),
+    'redis_conf_file': os.path.join(
+        env.roledefs['dev']['project_root'], 'dist', 'redis.conf'
+    ),
+    'redis_systemd_template': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_template.service'
+    ),
+    'redis_systemd_file': '/etc/systemd/system/redis.service',
+
 })
 env.roledefs['dev-ssl'].update(dev_ssl_roles)
 
@@ -290,8 +280,8 @@ def debug():
     with virtualenv():
         run('pip freeze')
     # start_redis_as_service()
-    # start_nginx_as_service()
-    # start_uwsgi_as_service()
+    start_nginx_as_service()
+    start_uwsgi_as_service()
     
 
 

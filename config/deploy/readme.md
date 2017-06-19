@@ -1,7 +1,7 @@
 # Concepts
 
-- dev: (ubuntu) Local machine no SSL
-- dev_ssl: (ubuntu) Local machine with SSL
+- dev: (ubuntu) Local machine no SSL, no nginx, no wsgi
+- dev_ssl: (ubuntu) Local machine with SSL: nginx, 
 - staging: (RHEL7) Same as prod in RHEL
 - production: (RHEL7)Production in  RHEL Virtual Machine
 
