@@ -93,10 +93,10 @@ dev_ssl_roles.update({
     'nginx_systemd_file': '/etc/systemd/system/nginx.service',
     # uWSGI
     'uwsgi_ini_template': os.path.join(
-        env.roledefs['dev']['project_root'], 'config', 'deploy', 'uwsgi_dev-ssl_template.ini'
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'uwsgi_template.ini'
     ),
     'uwsgi_ini_file': os.path.join(
-        env.roledefs['dev']['project_root'], 'dist', 'uwsgi.ini'
+        env.roledefs['dev-ssl']['project_root'], 'dist', 'uwsgi.ini'
     ),
     'uwsgi_systemd_template': os.path.join(
         env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'uwsgi_template.service'
@@ -104,15 +104,26 @@ dev_ssl_roles.update({
     'uwsgi_systemd_file': '/etc/systemd/system/uwsgi.service',
     # Redis
     'redis_conf_template': os.path.join(
-        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_dev-ssl_template.conf'
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_template.conf'
     ),
     'redis_conf_file': os.path.join(
-        env.roledefs['dev']['project_root'], 'dist', 'redis.conf'
+        env.roledefs['dev-ssl']['project_root'], 'dist', 'redis.conf'
     ),
     'redis_systemd_template': os.path.join(
         env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'redis_template.service'
     ),
     'redis_systemd_file': '/etc/systemd/system/redis.service',
+    # Celery
+    'celery_conf_template': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'celery_template.conf'
+    ),
+    'celery_conf_file': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'dist', 'celery.conf'
+    ),
+    'celery_systemd_template': os.path.join(
+        env.roledefs['dev-ssl']['project_root'], 'config', 'deploy', 'celery_template.service'
+    ),
+    'celery_systemd_file': '/etc/systemd/system/celery.service',
 
 })
 env.roledefs['dev-ssl'].update(dev_ssl_roles)
@@ -186,6 +197,11 @@ def start_uwsgi_as_service():
     files.upload_template(env['uwsgi_systemd_template'], env['uwsgi_systemd_file'], context=env, use_sudo=True)
     sudo("$(which systemctl) start uwsgi")
 
+
+def start_celery_as_service():
+    files.upload_template(env['celery_conf_template'], env['celery_conf_file'], context=env)
+    files.upload_template(env['celery_systemd_template'], env['celery_systemd_file'], context=env, use_sudo=True)
+    sudo("$(which systemctl) start celery")
 
 
 #
@@ -280,8 +296,9 @@ def debug():
     with virtualenv():
         run('pip freeze')
     # start_redis_as_service()
-    start_nginx_as_service()
-    start_uwsgi_as_service()
+    #start_nginx_as_service()
+    #start_uwsgi_as_service()
+    start_celery_as_service()
     
 
 
