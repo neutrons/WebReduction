@@ -45,6 +45,7 @@
     </div>
     <hr/>
 
+    <!--Plot-->
     <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">Plot</div>
@@ -60,12 +61,13 @@
     
     <hr/>
 
+    <!--File list-->
     <div class="container-fluid">
          <div class="panel panel-default">
             <div class="panel-heading"> Files to download
             </div>
             <div class="panel-body">
-                <form id="frm-table_results" action="/path/to/your/script" method="POST">
+                <form id="frm-table_results" action="{% url 'results:zipfiles' %}" method="POST">
                     <table id="table_results" class="table table-bordered table-striped" width="100%">
                         <thead>
                             <tr>
@@ -101,44 +103,16 @@
          </div>
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class="container-fluid">
-        {% for result in object.results.all %}
-        <div class="panel panel-default">
-            <div class="panel-heading">Result {{ result.id }}</div>
-            <div class="panel-body">{{ result.remote_filename }}
-                <br/>
-                <a href="{{result.local_file.url}}"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Download</a>
-                <br/>
-
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    
-    <h2>Log</h2>
+    <hr/>
 
     <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">Log</div>
             <div class="panel-body">
-               <pre><code>{% for log in object.logs.all %}{{ log.content }}{% endfor %}</code></pre>
+                <a role="button" data-toggle="collapse" data-target="#log"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Click to see the log</a>
+                <div id="log" class="collapse">
+                    <pre><code>{% for log in object.logs.all %}{{ log.content }}{% endfor %}</code></pre>
+                </div>
             </div>
         </div>
     </div>
@@ -148,6 +122,7 @@
             href="#" title="Go back.">Go Back</a>
     </p>
 </div>
+
 {% endblock %}
 
 {% block footer_js%}
@@ -224,18 +199,20 @@
             // FOR TESTING ONLY
             
             // Output form data to a console
-            $('#example-table_results').text($(form).serialize()); 
+            
             console.log("Form submission:", $(form).serialize()); 
             //console.log("Form submission", $(form));
             // Prevent actual form submission
-            e.preventDefault();
+            //e.preventDefault();
         });
 
 
         });
         
 
-
+        /**
+        * Functions for the plot
+        */
         function handleClickLogX(cb) {
             // Convert jquery element to html element
             var plotDiv = $('.plotly-graph-div')[0];

@@ -7,6 +7,11 @@ from django.http import Http404
 from django.views.generic import DetailView, ListView
 from django_remote_submission.models import Job, Result
 from django.contrib import messages
+import os
+import zipfile
+from io import StringIO
+from django.views import View
+from django.http import HttpResponse
 
 from server.apps.sans.models import ModelMixin
 import logging
@@ -54,7 +59,7 @@ class JobDetail(LoginRequiredMixin, JobMixin, DetailView):
             result.local_file.path for result in self.object.results.all()
         ]
         try:
-            context['plot'] = plot_sasview_multiple_iq(files_to_plot)
+            context['plot'] = self.plot_sasview_multiple_iq(files_to_plot)
         except Exception as e:
             messages.error(
                 self.request, "An exception occurred while trying to plot the \
@@ -62,43 +67,82 @@ class JobDetail(LoginRequiredMixin, JobMixin, DetailView):
         return context
 
 
-def plot_sasview_multiple_iq(files_to_plot):
-    data_list = []
-    for filepath in files_to_plot:
-        data = np.genfromtxt(filepath)
+    def plot_sasview_multiple_iq(self, files_to_plot):
+        data_list = []
+        for filepath in files_to_plot:
+            data = np.genfromtxt(filepath)
 
-        x_data = data[:, [0]].flatten()
-        y_data = data[:, [1]].flatten()
-        e_data = data[:, [2]].flatten()
-        trace = go.Scatter(
-            name = filepath.split('/')[-1],
-            x=x_data,
-            y=y_data,
-            error_y=dict(
-                type='data',
-                array=e_data,
-                visible=True
+            x_data = data[:, [0]].flatten()
+            y_data = data[:, [1]].flatten()
+            e_data = data[:, [2]].flatten()
+            trace = go.Scatter(
+                name = filepath.split('/')[-1],
+                x=x_data,
+                y=y_data,
+                error_y=dict(
+                    type='data',
+                    array=e_data,
+                    visible=True
+                ),
+                mode = 'lines+markers',
+            )
+            data_list.append(trace)
+
+
+        layout = go.Layout(
+            autosize=False,
+            width=1024,
+            height=800,
+
+            xaxis=dict(
+                #type='log',
+                autorange=True
             ),
-            mode = 'lines+markers',
+            yaxis=dict(
+                #type='log',
+                autorange=True
+            )                                       
         )
-        data_list.append(trace)
+        fig = go.Figure(data=data_list, layout=layout)
+        plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+        return plot_div
 
 
-    layout = go.Layout(
-        autosize=False,
-        width=1024,
-        height=800,
+class ZipFilesView(View):
+    def post(self, request):
 
-        xaxis=dict(
-            #type='log',
-            autorange=True
-        ),
-        yaxis=dict(
-            #type='log',
-            autorange=True
-        )
-    )
-    fig = go.Figure(data=data_list, layout=layout)
-    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
-    return plot_div
+        from pprint import pprint
+        pprint(request.POST)
+        # Files (local path) to put in the .zip
+        # FIXME: Change this (get paths from DB etc)
+        filenames = ["/tmp/file1.txt", "/tmp/file2.txt"]
 
+        # Folder name in ZIP archive which contains the above files
+        # E.g [thearchive.zip]/somefiles/file2.txt
+        # FIXME: Set this to something better
+        zip_subdir = "somefiles"
+        zip_filename = "%s.zip" % zip_subdir
+
+        # Open StringIO to grab in-memory ZIP contents
+        s = StringIO.StringIO()
+
+        # The zip compressor
+        zf = zipfile.ZipFile(s, "w")
+
+        for fpath in filenames:
+            # Calculate path for file in zip
+            fdir, fname = os.path.split(fpath)
+            zip_path = os.path.join(zip_subdir, fname)
+
+            # Add file, at correct path
+            zf.write(fpath, zip_path)
+
+        # Must close zip for all contents to be written
+        zf.close()
+
+        # Grab ZIP file from in-memory, make response with correct MIME-type
+        resp = HttpResponse(s.getvalue(), mimetype = "application/x-zip-compressed")
+        # ..and correct content-disposition
+        resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+
+        return resp
