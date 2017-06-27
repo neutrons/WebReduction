@@ -12,7 +12,8 @@ import zipfile
 from io import StringIO
 from django.views import View
 from django.http import HttpResponse
-
+from django.http import HttpResponseForbidden
+from tempfile import NamedTemporaryFile
 from server.apps.sans.models import ModelMixin
 import logging
 
@@ -108,41 +109,31 @@ class JobDetail(LoginRequiredMixin, JobMixin, DetailView):
         return plot_div
 
 
-class ZipFilesView(View):
+class ZipFilesView(LoginRequiredMixin, JobMixin, View):
     def post(self, request):
 
         from pprint import pprint
         pprint(request.POST)
-        # Files (local path) to put in the .zip
-        # FIXME: Change this (get paths from DB etc)
-        filenames = ["/tmp/file1.txt", "/tmp/file2.txt"]
 
-        # Folder name in ZIP archive which contains the above files
-        # E.g [thearchive.zip]/somefiles/file2.txt
-        # FIXME: Set this to something better
-        zip_subdir = "somefiles"
-        zip_filename = "%s.zip" % zip_subdir
+        ids_selected = request.POST['ids_selected']
 
-        # Open StringIO to grab in-memory ZIP contents
-        s = StringIO.StringIO()
+        if ids_selected:
+            ids_selected_arr = ids_selected.split(',')
 
-        # The zip compressor
-        zf = zipfile.ZipFile(s, "w")
+        filenames = []
+        for job_in in ids_selected_arr:
+            r = Result.objects.get(id=job_in)
+            if r.job.owner != request.user:
+                return HttpResponseForbidden()
+            filenames.append(r.local_file.path)
 
-        for fpath in filenames:
-            # Calculate path for file in zip
-            fdir, fname = os.path.split(fpath)
-            zip_path = os.path.join(zip_subdir, fname)
+        zip_file = NamedTemporaryFile()
+        with zipfile.ZipFile(zip_file.name, 'w') as myzip:
+            for f in filenames:
+                myzip.write(f, os.path.basename(f))
 
-            # Add file, at correct path
-            zf.write(fpath, zip_path)
-
-        # Must close zip for all contents to be written
-        zf.close()
-
-        # Grab ZIP file from in-memory, make response with correct MIME-type
-        resp = HttpResponse(s.getvalue(), mimetype = "application/x-zip-compressed")
-        # ..and correct content-disposition
-        resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
-
+        resp = HttpResponse(
+            zip_file.read(),
+            content_type='application/zip'
+        )
         return resp

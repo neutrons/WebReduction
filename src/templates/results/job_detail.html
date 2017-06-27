@@ -68,10 +68,11 @@
             </div>
             <div class="panel-body">
                 <form id="frm-table_results" action="{% url 'results:zipfiles' %}" method="POST">
+                    {% csrf_token %}
                     <table id="table_results" class="table table-bordered table-striped" width="100%">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" name="select_all" value="1" id="table_results-select-all"></th>
+                                <th><input type="checkbox" name="rows" id="table_results-select-all"></th>
                                 <!--<th></th>-->
                                 <th>Id</th>
                                 <th>Filename</th>
@@ -80,7 +81,7 @@
                         <tbody>
                             {% for result in object.results.all %}
                             <tr>
-                                <td></td>
+                                <td><input id="row{{ result.id }}" type="checkbox" name="row" value="{{ result.id }}"></td>
                                 <td>{{ result.id }}</td>
                                 <td>{{ result.remote_filename }}</td>
                             </tr>
@@ -134,15 +135,6 @@
         $(function () {
 
         var table = $('#table_results').DataTable({
-            'columnDefs': [{
-                'targets': 0,
-                'searchable': false,
-                'orderable': false,
-                'className': 'dt-body-center',
-                'render': function (data, type, full, meta){
-                    return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
-                }
-            }],
             'order': [[1, 'asc']],
             "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
             "paging": true,
@@ -178,23 +170,25 @@
         // Handle form submission event
         $('#frm-table_results').on('submit', function(e){
             var form = this;
+            $('<input>').attr({
+                type: 'hidden',
+                id: 'ids_selected',
+                name: 'ids_selected',
+                value: "",
+            }).appendTo(this);
 
+            var ids_to_download = [];
             // Iterate over all checkboxes in the table
-            table.$('input[type="checkbox"]').each(function(){
-                // If checkbox doesn't exist in DOM
-                if(!$.contains(document, this)){
-                    // If checkbox is checked
-                    if(this.checked){
-                        // Create a hidden element 
-                        $(form).append(
-                            $('<input>')
-                                .attr('type', 'hidden')
-                                .attr('name', this.name)
-                                .val(this.value)
-                        );
-                    }
-                } 
+            $('input[id^="row"]').each(function(){
+                //console.log("here", this.checked)
+                // If checkbox is checked
+                if(this.checked){
+                    console.log("checked:", this.id, this.value);
+                    ids_to_download.push(this.value);
+                }
+        
             });
+            this.ids_selected.value = ids_to_download;
 
             // FOR TESTING ONLY
             
