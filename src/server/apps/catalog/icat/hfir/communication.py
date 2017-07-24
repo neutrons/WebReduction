@@ -16,7 +16,7 @@ class HFIRICat(ICat):
 
     def __init__(self):
         super(HFIRICat, self).__init__(
-            url_prefix='https://hfir-icat.ornl.gov/api',
+            url_prefix='https://oncat.ornl.gov/api',
             headers={
                 'Authorization': 'Bearer {}'.format(SANS_TOKEN)
             },
@@ -38,8 +38,12 @@ class HFIRICat(ICat):
             {'exts': None, 'name': 'IPTS-17252', 'tags': ['spice/exp321']},
         '''
         logger.debug("get_experiments")
-        return self._request("/facilities/HFIR/instruments/{}/experiments".format(instrument),
-                             params_json={'projection': ['tags']})
+        json_params = {
+            'facility' : 'HFIR',
+            'instrument' : instrument,
+            'projection': ['tags'],
+        }
+        return self._request("/experiments", params_json=json_params)
 
     def get_runs(self, instrument, ipts, exp):
         '''
@@ -61,6 +65,9 @@ class HFIRICat(ICat):
         '''
         logger.debug("get_runs for %s %s %s", instrument, ipts, exp)
         json_params = {
+            'facility' : 'HFIR',
+            'instrument' : instrument,
+            'experiment' : ipts,
             'tags': ['spice/{}'.format(exp)],
             'ext': 'xml',
             'projection': [
@@ -73,10 +80,7 @@ class HFIRICat(ICat):
                 'metadata.spicerack.motor_positions',
             ],
         }
-        return self._request("/facilities/HFIR/instruments/{}/experiments/{}/datafiles".format(
-            instrument, ipts),
-            params_json=json_params,
-        )
+        return self._request("/datafiles", params_json=json_params)
 
     def run_info(self, instrument, ipts, file_location):
         '''
@@ -96,13 +100,12 @@ class HFIRICat(ICat):
 
         '''
         logger.debug("get_experiments")
-        return self._request("/facilities/HFIR/instruments/{}/experiments/{}/datafiles{}".format(
-            instrument,
-            ipts,
-            file_location
-        ),
-        )
-
+        json_params = {
+            'facility' : 'HFIR',
+            'instrument' : instrument,
+            'experiment' : ipts,
+        }
+        return self._request("/datafiles{}".format(file_location), params_json=json_params)
 
 if __name__ == "__main__":
     icat = HFIRICat()
