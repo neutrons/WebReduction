@@ -66,7 +66,7 @@ class Catalog(object):
 
         '''
         response = self.icat.get_runs(instrument, ipts, exp)
-        logger.debug("Response for %s %s %s: %s", instrument, ipts, exp, pformat(response))
+        # logger.debug("Response for %s %s %s: %s", instrument, ipts, exp, pformat(response))
         result = None
         if response is not None:
             try:
