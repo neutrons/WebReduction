@@ -143,11 +143,12 @@ class ExperimentManager(models.Manager):
                 # If it's SNS entry.get("exp" is None!
                 for this_exp in entry.get("exp", []):
                     r = re.search(r"exp(\d+)", this_exp)
-                    exp_number = int(r.group(1))
-                    self.update_or_create(
-                        number=exp_number,
-                        ipts=ipts_obj
-                    )
+                    if r is not None:
+                        exp_number = int(r.group(1))
+                        self.update_or_create(
+                            number=exp_number,
+                            ipts=ipts_obj
+                        )
 
 
 class Experiment(models.Model):

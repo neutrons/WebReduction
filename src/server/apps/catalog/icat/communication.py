@@ -56,7 +56,7 @@ class ICat(object):
             )
             response.raise_for_status()
             logger.debug("ICat response status code: %s", response.status_code)
-            # logger.debug("ICat response content: %s", response.content)
+            logger.debug("ICat response content: %s", response.json())
             return response.json()
         except requests.exceptions.Timeout as this_exception:
             # Maybe set up for a retry, or continue in a retry loop

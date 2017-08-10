@@ -47,6 +47,8 @@ class Catalog(object):
                 logger.exception(this_exception)
             except IndexError as this_exception:
                 logger.exception(this_exception)
+        
+        # logger.debug(pformat(result))
         return result
 
     def get_runs(self, instrument, ipts, exp):
@@ -64,7 +66,7 @@ class Catalog(object):
 
         '''
         response = self.icat.get_runs(instrument, ipts, exp)
-        # logger.debug("Response for %s %s %s: %s", instrument, ipts, exp, pformat(response))
+        logger.debug("Response for %s %s %s: %s", instrument, ipts, exp, pformat(response))
         result = None
         if response is not None:
             try:
@@ -248,9 +250,9 @@ class Catalog(object):
 
 if __name__ == "__main__":
     icat = Catalog()
-    res = icat.get_experiments("CG3")
+    # res = icat.get_experiments("CG3")
     # pprint(res)
-    # res = icat.get_runs("CG3", 'IPTS-18347','exp379')
+    res = icat.get_runs("CG3", 'IPTS-18347','exp379')
     # pprint(res)
     #res = icat.get_run(
     #    "CG3", 'IPTS-18289', '/HFIR/CG3/IPTS-18289/exp400/Datafiles/BioSANS_exp400_scan0001_0001.xml')

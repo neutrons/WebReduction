@@ -34,11 +34,13 @@
     <tbody>
         {% for ipts in iptss %}
                 {% for exp in ipts.exp %}
-                    <tr>
-                        <td><a href="{% url 'catalog:list_runs' instrument ipts.ipts exp %}" data-toggle="tooltip" data-placement="right" 
-                            title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
-                        <td>{{exp}}</td>
-                    </tr>
+                    {% if exp|slice:":3" == "exp" %}
+                        <tr>
+                            <td><a href="{% url 'catalog:list_runs' instrument ipts.ipts exp %}" data-toggle="tooltip" data-placement="right" 
+                                title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
+                            <td>{{exp}}</td>
+                        </tr>
+                {% endif %}
             {% endfor %}
         {% endfor %}
     </tbody>
