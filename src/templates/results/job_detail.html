@@ -83,7 +83,7 @@
                             <tr>
                                 <td><input id="row{{ result.id }}" type="checkbox" name="row" value="{{ result.id }}"></td>
                                 <td>{{ result.id }}</td>
-                                <td>{{ result.remote_filename }}</td>
+                                <td><a href="{{result.local_file.url}}">{{ result.remote_filename }}</a></td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -97,7 +97,7 @@
                     </table>
                 
                     <button name="download" type="submit" class="btn btn-primary" data-toggle="tooltip" data-placement="top"
-                        title="Download selected files in Zip format">Download</button>
+                        title="Download selected files in Zip format">Download selected files...</button>
 
                 </form>
             </div>

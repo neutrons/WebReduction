@@ -654,7 +654,9 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
                     job.pk,
                     password=self.request.session["password"],
                     log_policy=LogPolicy.LOG_LIVE,
-                    store_results=["*.txt"])
+                    store_results=["*.txt"],
+                    remote=True,
+                )
                 messages.success(
                     self.request,
                     "Reduction submitted to the cluster. See status: \

@@ -59,50 +59,54 @@ class JobDetail(LoginRequiredMixin, JobMixin, DetailView):
         files_to_plot = [
             result.local_file.path for result in self.object.results.all()
         ]
-        try:
-            context['plot'] = self.plot_sasview_multiple_iq(files_to_plot)
-        except Exception as e:
-            messages.error(
-                self.request, "An exception occurred while trying to plot the \
-                data: {0} :: {1}".format(type(e).__name__, str(e)))
+        if len(files_to_plot) == 0:
+            logger.warning("No files to plot!")
+            context['plot'] = None
+        else:
+            try:
+                context['plot'] = self.plot_sasview_multiple_iq(files_to_plot)
+            except Exception as e:
+                messages.error(
+                    self.request, "An exception occurred while trying to plot the \
+                    data: {0} :: {1}".format(type(e).__name__, str(e)))
+                logger.exception(e)
         return context
-
 
     def plot_sasview_multiple_iq(self, files_to_plot):
         data_list = []
         for filepath in files_to_plot:
-            data = np.genfromtxt(filepath)
+            with open(filepath, 'rb') as f:
+                # Only way to read CVV and TSV
+                clean_lines = (line.replace(b',', b'\t') for line in f)
+                data = np.genfromtxt(clean_lines)
+                # logger.debug(data)
 
-            x_data = data[:, [0]].flatten()
-            y_data = data[:, [1]].flatten()
-            e_data = data[:, [2]].flatten()
-            trace = go.Scatter(
-                name = filepath.split('/')[-1],
-                x=x_data,
-                y=y_data,
-                error_y=dict(
-                    type='data',
-                    array=e_data,
-                    visible=True
-                ),
-                mode = 'lines+markers',
-            )
-            data_list.append(trace)
-
+                x_data = data[:, [0]].flatten()
+                y_data = data[:, [1]].flatten()
+                e_data = data[:, [2]].flatten()
+                trace = go.Scatter(
+                    name=filepath.split('/')[-1],
+                    x=x_data,
+                    y=y_data,
+                    error_y=dict(
+                        type='data',
+                        array=e_data,
+                        visible=True
+                    ),
+                    mode='lines+markers',
+                )
+                data_list.append(trace)
 
         layout = go.Layout(
             autosize=False,
             width=1024,
             height=800,
-
             xaxis=dict(
-                #type='log',
                 autorange=True
             ),
             yaxis=dict(
-                #type='log',
                 autorange=True
-            )                                       
+            )
         )
         fig = go.Figure(data=data_list, layout=layout)
         plot_div = plot(fig, output_type='div', include_plotlyjs=False)

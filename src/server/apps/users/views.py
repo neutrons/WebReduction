@@ -28,7 +28,6 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import (CreateView, FormView, ListView, RedirectView,
                                   TemplateView, UpdateView)
 from django_remote_submission.models import Server
-from django_remote_submission.remote import RemoteWrapper
 
 from server.settings.env import env
 
