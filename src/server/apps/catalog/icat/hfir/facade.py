@@ -66,7 +66,6 @@ class Catalog(object):
 
         '''
         response = self.icat.get_runs(instrument, ipts, exp)
-        # logger.debug("Response for %s %s %s: %s", instrument, ipts, exp, pformat(response))
         result = None
         if response is not None:
             try:
@@ -98,6 +97,7 @@ class Catalog(object):
                 logger.exception(this_exception)
             except IndexError as this_exception:
                 logger.exception(this_exception)
+        # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
         return result
 
 

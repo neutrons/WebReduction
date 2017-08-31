@@ -95,6 +95,7 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
                 the details of the %s from %s." % (ipts, instrument))
             runs = []
         context = super(Runs, self).get_context_data(**kwargs)
+        # logger.debug("Sento HTML:\n%s", pformat(runs))
         context['runs'] = runs
         return context
 
