@@ -189,6 +189,9 @@ USE_DJANGO_JQUERY = False
 # To store objects in the session
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
+# Data catalog 
+ONCAT_URL = 'https://oncat.ornl.gov/api'
+
 # Custom data format (comment out to us standard machine)
 USE_L10N = False
 DATETIME_FORMAT = 'Y-m-d H:i:s'

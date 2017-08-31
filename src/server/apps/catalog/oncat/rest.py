@@ -1,3 +1,4 @@
+import sys
 import json
 import logging
 from pprint import pformat, pprint
@@ -7,19 +8,14 @@ import requests
 logger = logging.getLogger(__name__)
 
 """
-
-ICAT Json interface
-
-This just communicate with ICAT
-
+Generic definitions for REST comunication
 Do not implement here any filtering to the output json!!!
-
 """
 
 
-class ICat(object):
+class RESTInterface(object):
     '''
-    ICAT generic communication
+    Generic class for REST comunication
     '''
 
     timeout = 5
@@ -42,17 +38,17 @@ class ICat(object):
         '''
         pass
 
-    def _request(self, url_suffix="", params_json=None):
+    def _request(self, url_suffix="", params_json=None, verbose=False):
         try:
             request_str = self._url_prefix + url_suffix
-            logger.debug("ICat url (%s): %s",
+            logger.debug("URL (%s): %s",
                          self._http_method_call.__name__, request_str)
             response = self._http_method_call(
                 request_str,
                 headers=self._headers,
                 params=params_json,
                 verify=False,
-                timeout=self.timeout
+                timeout=self.timeout,
             )
             response.raise_for_status()
             logger.debug("ICat response status code: %s", response.status_code)
