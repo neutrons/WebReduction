@@ -12,7 +12,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from smart_selects.db_fields import ChainedForeignKey
 
-from server.apps.catalog.icat.facade import get_expriments
+from server.apps.catalog.oncat.facade import Catalog
 from server.apps.catalog.models import Facility, Instrument
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
@@ -118,10 +118,8 @@ class ExperimentManager(models.Manager):
         instruments = Instrument.objects.filter(reduction_available=True)
         for instrument in instruments:
             logger.debug("Populating IPTS and Experiments for %s.", instrument)
-            iptss_json = get_expriments(
-                instrument.facility.name,
-                instrument.icat_name
-            )
+            iptss_json = Catalog(
+                instrument.facility.name).experiments(instrument.icat_name)
             for entry in iptss_json:
                 try:
                     # SNS

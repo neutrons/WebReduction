@@ -9,8 +9,8 @@ from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView, View
 
-from .icat.facade import get_expriments, get_run, get_runs
-from .icat.sns.facade import Catalog
+from .oncat.facade import Catalog
+
 from .models import Instrument
 from .permissions import (filter_user_permission,
                           user_has_permission_to_see_this_ipts)
@@ -25,7 +25,6 @@ class InstrumentMixin(object):
     instrument
     '''
     def get_context_data(self, **kwargs):
-        # context = super().get_context_data(**kwargs)
         context = super(InstrumentMixin, self).get_context_data(**kwargs)
         context["instrument"] = kwargs.get('instrument', None)
         context["ipts"] = kwargs.get('ipts', None)
@@ -51,16 +50,11 @@ class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
     template_name = 'list_iptss.html'
 
     def get_context_data(self, **kwargs):
-        # icat = Catalog()
-        # iptss = icat.get_experiments_meta(kwargs['instrument'])
+        logger.debug("Listing IPTSs for: %s", kwargs['instrument'])
         facility = self.request.user.profile.instrument.facility.name
-        iptss = get_expriments(
-            facility,
-            kwargs['instrument']
-        )
+        iptss = Catalog(facility).experiments(kwargs['instrument'])
         self.template_name = 'catalog/' + facility.lower() + '/' \
             + self.template_name
-
         context = super(IPTSs, self).get_context_data(**kwargs)
         context['iptss'] = iptss
         return context
@@ -87,7 +81,7 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
         if user_has_permission_to_see_this_ipts(
                 self.request.user,
                 self.request.user.profile.instrument, ipts):
-            runs = get_runs(facility, instrument, ipts, exp)
+            runs = Catalog(facility).runs(instrument, ipts, exp)
         else:
             # from django.http import HttpResponseForbidden
             # return HttpResponseForbidden()
@@ -95,7 +89,7 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
                 the details of the %s from %s." % (ipts, instrument))
             runs = []
         context = super(Runs, self).get_context_data(**kwargs)
-        # logger.debug("Sento HTML:\n%s", pformat(runs))
+        logger.debug("Sento HTML:\n%s", pformat(runs))
         context['runs'] = runs
         return context
 
@@ -122,7 +116,7 @@ class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
         if user_has_permission_to_see_this_ipts(
                 self.request.user,
                 self.request.user.profile.instrument, ipts):
-            run = get_run(facility, instrument, ipts, filename)
+            run = Catalog(facility).run(instrument, ipts, filename)
             # logger.debug(pformat(run)) # prints data => slow!
             logger.debug(pformat(run['sample_info'])) # prints data => slow!
         else:

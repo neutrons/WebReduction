@@ -1,26 +1,60 @@
 import logging
 import re
-from pprint import pformat, pprint
+from abc import ABC, abstractmethod
 from collections import OrderedDict
+from pprint import pformat, pprint
+
 from django.utils import dateparse
 
-from .communication import HFIRICat
-from .util import Parser
+from .communication import HFIR as HFIRCom
+from .communication import SNS as SNSCom
+from .hfir.util import Parser
 
 logger = logging.getLogger(__name__)
 
 
-class Catalog(object):
+class Catalog(ABC):
     '''
-    Custom functionality to ICAT!
+    Abstract class
     '''
+
+    def __new__(cls, facility, *arguments, **keywords):
+        '''
+        The Calatlog should be constructed like this:
+        cat = Catalog(Facility)
+        Where facility is the name of the classes below
+        '''
+        for subclass in Catalog.__subclasses__():
+            if str(subclass.__name__) == facility:
+                return super(cls, subclass).__new__(subclass, *arguments, **keywords)
+        raise Exception('Facility not supported!')
 
     def __init__(self):
-        '''
-        '''
-        self.icat = HFIRICat()
+        super().__init__()
 
-    def get_experiments(self, instrument):
+    @abstractmethod
+    def experiments(self, instrument):
+        pass
+
+    @abstractmethod
+    def runs(self, instrument, ipts, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def run(self, instrument, ipts, *args, **kwargs):
+        pass
+
+
+class HFIR(Catalog):
+    '''
+    '''
+
+    def __init__(self, *arguments, **keywords):
+        '''
+        '''
+        self.catalog = HFIRCom()
+
+    def experiments(self, instrument):
         '''
         [{'exp': ['exp305',
                 'exp320',
@@ -34,7 +68,7 @@ class Catalog(object):
         'ipts': 'IPTS-0000'},
 
         '''
-        response = self.icat.get_experiments(instrument)
+        response = self.catalog.experiments(instrument)
         result = None
         if response is not None:
             try:
@@ -47,11 +81,11 @@ class Catalog(object):
                 logger.exception(this_exception)
             except IndexError as this_exception:
                 logger.exception(this_exception)
-        
+
         # logger.debug(pformat(result))
         return result
 
-    def get_runs(self, instrument, ipts, exp):
+    def runs(self, instrument, ipts, exp):
         '''
         return a list of:
         {'end_time': '2017-02-06 10:03:18',
@@ -65,7 +99,7 @@ class Catalog(object):
                 'Chiller Temp (C): 20.000000 Min Wait (sec): 1.000000])'}]
 
         '''
-        response = self.icat.get_runs(instrument, ipts, exp)
+        response = self.catalog.runs(instrument, ipts, exp)
         result = None
         if response is not None:
             try:
@@ -100,31 +134,17 @@ class Catalog(object):
         # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
         return result
 
-
-    def _parse_filename(self, filename):
+    def runs_as_table(self, instrument, ipts, exp):
         '''
-        filename of the form
-        BioSANS_exp379_scan0500_0001.xml'
-        return: instrument, exp number, scan number, frame number
-        '''
-        regex = r"(\w+)_exp(\d+)_scan(\d+)_(\d+)\.xml"
-        match = re.search(regex, filename)
-        if match:
-            return match.group(1), int(match.group(2)), int(match.group(3)), int(match.group(4))
-        else:
-            return None
-
-
-    def get_runs_as_table(self, instrument, ipts, exp):
-        '''
-        Same as get runs but split sample_* in tables
+        Same as runs but split sample_* in tables
         Returns 2 lists:
         - headers
         - list of rows
+        This is used when filling in the reduction spreadsheet
         '''
 
         # Let's make a rubset first
-        data = self.get_runs(instrument, ipts, exp)
+        data = self.runs(instrument, ipts, exp)
         subset = []
         for d in data:
             entry = OrderedDict()
@@ -178,8 +198,21 @@ class Catalog(object):
         # logger.debug(pformat(subset3))
         return list(empty.keys()), [list(d.values()) for d in subset3]
 
+    def _parse_filename(self, filename):
+        '''
+        filename of the form
+        BioSANS_exp379_scan0500_0001.xml'
+        return: instrument, exp number, scan number, frame number
+        '''
+        regex = r"(\w+)_exp(\d+)_scan(\d+)_(\d+)\.xml"
+        match = re.search(regex, filename)
+        if match:
+            return match.group(1), int(match.group(2)), int(match.group(3)), \
+                int(match.group(4))
+        else:
+            return None
 
-    def _get_data(self, filename):
+    def _data(self, filename):
         '''
         Only for HFIR we need to have the real detector XML paths
        @returns:
@@ -210,13 +243,11 @@ class Catalog(object):
                 res['DetectorWing'] = data_wing_detector.tolist()
         return res
 
-
     def run_info(self, instrument, ipts, file_location):
         '''
 
         '''
-
-        response = self.icat.run_info(instrument, ipts, file_location)
+        response = self.catalog.run(instrument, ipts, file_location)
         result = None
         if response is not None:
             try:
@@ -237,27 +268,125 @@ class Catalog(object):
                 logger.exception(this_exception)
         return result
 
-    def get_run(self, instrument, ipts, file_location):
+    def run(self, instrument, ipts, file_location):
         '''
         Gets run_info and adds the data
         '''
         run_info = self.run_info(instrument, ipts, file_location)
         run_info.pop('thumbnails', None) # remove the thumbnails
-        run_info['data'] = self._get_data(file_location)
+        run_info['data'] = self._data(file_location)
         return run_info
+
+
+class SNS(Catalog):
+    '''
+    '''
+
+    def __init__(self, *arguments, **keywords):
+        '''
+        '''
+        self.catalog = SNSCom()
+
+    def experiments(self, instrument):
+        '''
+        @return: [...
+            {'ipts': 'IPTS-19574'},
+            {'ipts': 'IPTS-19658'},
+            {'ipts': 'IPTS-19717'}]
+
+        '''
+        response = self.catalog.experiments(instrument)
+        result = None
+        if response is not None:
+            try:
+                result = [{
+                    'ipts': entry['name'],
+                    } for entry in response]
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
+
+        # logger.debug(pformat(result))
+        return result
+
+    def runs(self, instrument, ipts, *args, **kwargs):
+        '''
+
+
+        '''
+        response = self.catalog.runs(instrument, ipts)
+        result = None
+        if response is not None:
+            try:
+                # pprint(response)
+                result = [dict(
+                    {
+                        # subset
+                        k: entry[k] for k in ('location',)
+                    },
+                    **{
+                        # This gets rid of None values in the metadata
+                        'metadata': {(key): (value if value is not None else "") for key, value in
+                                     entry['metadata']['entry'].items()},
+                        # frame_skipping=speed1 - frequency / 2.0) < 1.0
+                        'is_frame_skipping': entry['metadata']['entry']['daslogs']['speed1']['average_value'] \
+                            - entry['metadata']['entry']['daslogs']['frequency']['average_value'] / 2.0 < 1.0,
+                        'start_time': dateparse.parse_datetime(entry['metadata']['entry']['start_time']),
+                        'end_time': dateparse.parse_datetime(entry['metadata']['entry']['end_time']),
+                    }) for entry in response  # if entry['ext'] == 'xml'
+                ]
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
+        # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
+        return result
+
+    def run(self, instrument, ipts, file_location):
+        '''
+
+        '''
+        response = self.catalog.run(instrument, ipts, file_location)
+        result = None
+        if response is not None:
+            try:
+                entry = response
+                result = dict(
+                    {
+                        # subset
+                        k: entry[k] for k in ('location',)
+
+                    }, **{
+                        'metadata': entry['metadata']['entry'],
+                    })
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
+        return result
 
 
 
 if __name__ == "__main__":
-    icat = Catalog()
-    # res = icat.get_experiments("CG3")
-    # pprint(res)
-    res = icat.get_runs("CG3", 'IPTS-18347','exp379')
-    # pprint(res)
-    #res = icat.get_run(
-    #    "CG3", 'IPTS-18289', '/HFIR/CG3/IPTS-18289/exp400/Datafiles/BioSANS_exp400_scan0001_0001.xml')
+    # cat = HFIR()
+    # res = cat.experiments("CG3")
+    # res = cat.runs("CG3", 'IPTS-18347','exp379')
+    # res = cat.run("CG3", 'IPTS-18289', '/HFIR/CG3/IPTS-18289/exp400/Datafiles/BioSANS_exp400_scan0001_0001.xml')
     # res.pop('data')
-    #res = icat.get_runs("CG3", "IPTS-18512", "exp394")
-    #res = icat._parse_filename('BioSANS_exp379_scan0500_0001.xml')
+    # res = cat.runs("CG3", "IPTS-18512", "exp394")
+    # res = cat.runs_as_table("CG3", "IPTS-18512", "exp394")
+    # res = cat._parse_filename('BioSANS_exp379_scan0500_0001.xml')
+    # res = cat._parse_filename('BioSANS_exp394_scan0001_0001.xml')
+    
+    cat = Catalog('SNS')
+    # res = cat.experiments("EQSANS")
+    res = cat.runs("EQSANS", "IPTS-18418")
+    # res = cat.run("EQSANS", "IPTS-18418", '/SNS/EQSANS/IPTS-18418/0/79170/NeXus/EQSANS_79170_event.nxs')
+    
+    # It should be called like this!
+    # cat = Catalog('HFIR')
+    # res = cat.experiments("CG3")
 
     pprint(res)
+    

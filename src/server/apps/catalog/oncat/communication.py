@@ -5,28 +5,31 @@ from .rest import RESTInterface
 
 '''
 
+This file only ommunicates with the oncat.
+The data is return RAW from ONCat
+
+The PAI documentation is here:
 https://oncat.ornl.gov/doc
 
-Tests:
+For future see this:
 http://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html#legacy-application-flow
 
 '''
 logger = logging.getLogger(__name__)
 
-SANS_TOKEN = \
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwuY29tIiw' \
-    'iZXhwIjoxNDI2NDIwODAwLCJodHRwOi8vdG9wdGFsLmNvbS9qd3RfY2xhaW1zL2l' \
-    'zX2FkbWluIjp0cnVlLCJjb21wYW55IjoiVG9wdGFsIiwiYXdlc29tZSI6dHJ1ZX0' \
-    '.yRQYnWzskCZUxPwaQupWkiUzKELZ49eM7oWxAQK_ZXw'
+TOKEN = settings.ONCAT_TOKEN
 
 
 class ONCat(RESTInterface):
-
+    '''
+    Base class for the ONCat requests
+    It shouldn't be instantiated
+    '''
     def __init__(self):
         super().__init__(
             url_prefix=settings.ONCAT_URL,
             headers={
-                'Authorization': 'Bearer {}'.format(SANS_TOKEN)
+                'Authorization': 'Bearer {}'.format(TOKEN)
             },
             http_method='get',
         )
@@ -50,10 +53,9 @@ class ONCat(RESTInterface):
         logger.debug("func runs:\n%s", pformat(params_json))
         return self._request("/datafiles", params_json=params_json)
 
-    def run_info(self, facility, instrument, ipts, file_location):
+    def run(self, facility, instrument, ipts, file_location):
         '''
         '''
-        
         logger.debug("func runs for %s %s and %s: %s",
                      facility, instrument, ipts, file_location)
 
@@ -91,7 +93,7 @@ class HFIR(ONCat):
         '''
         return super().experiments(self.facility, instrument)
 
-    def runs(self, instrument, ipts, exp):
+    def runs(self, instrument, ipts, exp, extensions=['.xml', '.dat']):
         '''
         @param ipts : IPTS-17471
         @param exp : exp371
@@ -109,25 +111,29 @@ class HFIR(ONCat):
                                'DetectorWing': ....
                                }
         '''
-        params_json = {
-            'facility': self.facility,
-            'instrument': instrument,
-            'experiment': ipts,
-            'tags': ['spice/{}'.format(exp)],
-            'ext': '.xml',
-            'projection': [
-                'location',
-                'metadata.spicerack.@filename',
-                'metadata.spicerack.@end_time',
-                'metadata.spicerack.header',
-                'metadata.spicerack.sample_info',
-                'thumbnails',
-                'metadata.spicerack.motor_positions',
-            ],
-        }
-        return super().runs(params_json)
+        for extension in extensions:
+            params_json = {
+                'facility': self.facility,
+                'instrument': instrument,
+                'experiment': ipts,
+                'tags': ['spice/{}'.format(exp)],
+                'ext': extension,
+                'projection': [
+                    'location',
+                    'metadata.spicerack.@filename',
+                    'metadata.spicerack.@end_time',
+                    'metadata.spicerack.header',
+                    'metadata.spicerack.sample_info',
+                    'thumbnails',
+                    'metadata.spicerack.motor_positions',
+                ],
+            }
+            result = super().runs(params_json)
+            if len(result) > 0:
+                return result
+        return []
 
-    def run_info(self, instrument, ipts, file_location):
+    def run(self, instrument, ipts, file_location):
         '''
 
         {'ext': 'xml',
@@ -144,8 +150,7 @@ class HFIR(ONCat):
                                             'sample': {'field': {'content': 'ground'}}}}},
 
         '''
-        
-        return super().run_info(self.facility, instrument, ipts, file_location)
+        return super().run(self.facility, instrument, ipts, file_location)
 
 
 class SNS(ONCat):
@@ -168,29 +173,35 @@ class SNS(ONCat):
         '''
 
         '''
-        params_json = {
-            'facility': self.facility,
-            'instrument': instrument,
-            'experiment': ipts,
-            'ext': '.nxs.h5',
-            'projection': [
-                'location',
-                'metadata.entry.duration',
-                'metadata.entry.end_time',
-                'metadata.entry.proton_charge',
-                'metadata.entry.title',
-                'metadata.entry.total_counts',
-                'metadata.entry.total_pulses',
-                'metadata.entry.total_other_counts',
-                'metadata.entry.total_uncounted_counts',
-            ],
-        }
-        return super().runs(params_json)
+        for extension in extensions:
+            params_json = {
+                'facility': self.facility,
+                'instrument': instrument,
+                'experiment': ipts,
+                'ext': extension,
+                'projection': [
+                    'location',
+                    'metadata.entry.run_number',
+                    'metadata.entry.title',
+                    'metadata.entry.start_time',
+                    'metadata.entry.end_time',
+                    'metadata.entry.duration',
+                    'metadata.entry.total_counts',
+                    'metadata.entry.daslogs.detectorz.average_value',
+                    'metadata.entry.daslogs.lambdarequest.average_value',
+                    'metadata.entry.daslogs.frequency.average_value',
+                    'metadata.entry.daslogs.speed1.average_value',
+                ],
+            }
+            result = super().runs(params_json)
+            if len(result)  > 0:
+                return result
+        return []
     
-    def run_info(self, instrument, ipts, file_location):
+    def run(self, instrument, ipts, file_location):
         '''
         '''
-        return super().run_info(self.facility, instrument, ipts, file_location)
+        return super().run(self.facility, instrument, ipts, file_location)
 
 
 if __name__ == "__main__":
@@ -208,13 +219,14 @@ if __name__ == "__main__":
     # oncat = HFIR()
     # res = oncat.experiments("CG3")
     # res = oncat.runs("CG3", ipts='IPTS-19469', exp='exp406')
-    # res = oncat.run_info("CG3", 'IPTS-19469', '/HFIR/CG3/IPTS-19469/exp406/Datafiles/BioSANS_exp406_scan0016_0001.xml')
+    # res = oncat.run("CG3", 'IPTS-19469', '/HFIR/CG3/IPTS-19469/exp406/Datafiles/BioSANS_exp406_scan0016_0001.xml')
     
 
     ## SNS
     oncat = SNS()
-    #res = oncat.experiments("EQSANS")
+    # res = oncat.experiments("EQSANS")
     res = oncat.runs("EQSANS", 'IPTS-19298')
+    # res = oncat.run("EQSANS", 'IPTS-19298', '/SNS/EQSANS/IPTS-19298/nexus/EQSANS_87594.nxs.h5')
 
     print("\n"+80*"*")
     pprint(res)

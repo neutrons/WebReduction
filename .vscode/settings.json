@@ -13,5 +13,21 @@
     "files.associations": {
         "*.tpl": "jinja"
     },
-    "python.linting.pylintEnabled": false
+    "python.linting.pylintEnabled": false,
+
+    // https://github.com/patrys/vscode-code-outline
+    "symbolOutline.doSort": false,
+    "symbolOutline.sortOrder": [
+      "Class",
+      "Module",
+      "Constant",
+      "Interface",
+      "*",
+      "Constructor",
+      "Function",
+      "Method"
+    ],
+    "symbolOutline.topLevel": [
+      "*"
+    ]
 }

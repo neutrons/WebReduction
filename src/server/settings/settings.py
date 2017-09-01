@@ -187,10 +187,12 @@ USE_DJANGO_JQUERY = False
 #JQUERY_URL = False
 
 # To store objects in the session
+# The default is JSON and doesn't work for all objects
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-# Data catalog 
+# Data catalog configuration
 ONCAT_URL = 'https://oncat.ornl.gov/api'
+ONCAT_TOKEN = env('ONCAT_TOKEN')
 
 # Custom data format (comment out to us standard machine)
 USE_L10N = False
@@ -199,7 +201,7 @@ DATETIME_FORMAT = 'Y-m-d H:i:s'
 # Celery configuration
 # For job submission
 CELERY_RESULT_BACKEND = 'django-db'
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://127.0.0.1:6379')
 
 # Django Channels
 # For live results

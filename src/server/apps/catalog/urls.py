@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.views.decorators.cache import cache_page
 
 from . import views
 
@@ -6,7 +7,7 @@ urlpatterns = [
     # Common to HFIR and SNS
     url(r'^$', views.Instruments.as_view(), name='list_instruments'),
     url(r'^(?P<instrument>[\w\-]+)/$',
-        views.IPTSs.as_view(), name='list_iptss'),
+        cache_page(60*60)(views.IPTSs.as_view()), name='list_iptss'),
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/$',
         views.Runs.as_view(), name='list_runs'),
 
