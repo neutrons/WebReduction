@@ -6,11 +6,18 @@ from . import views
 urlpatterns = [
     # Common to HFIR and SNS
     url(r'^$', views.Instruments.as_view(), name='list_instruments'),
+    # View IPTSs fpr an instrument
     url(r'^(?P<instrument>[\w\-]+)/$',
         # cache_page(60*60)(views.IPTSs.as_view()), name='list_iptss'),
         (views.IPTSs.as_view()), name='list_iptss'),
+    
+    # Just for SNS
+    # View all Runs for an instrument
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/$',
         views.Runs.as_view(), name='list_runs'),
+    # run detail
+    url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<filename>/SNS/[^\.]+(\.\w+)+)/$',
+        views.RunDetail.as_view(), name='run_detail'),    
 
     # HFIR has exp field
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/$',

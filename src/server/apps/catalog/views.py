@@ -118,7 +118,7 @@ class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
                 self.request.user.profile.instrument, ipts):
             run = Catalog(facility).run(instrument, ipts, filename)
             # logger.debug(pformat(run)) # prints data => slow!
-            logger.debug(pformat(run['sample_info'])) # prints data => slow!
+            # logger.debug(pformat(run['sample_info'])) # prints data => slow!
         else:
             # from django.http import HttpResponseForbidden
             # return HttpResponseForbidden()

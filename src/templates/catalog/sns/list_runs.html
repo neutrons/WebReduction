@@ -26,48 +26,49 @@
     </div>
 
 <table id="tableruns" class="table table-bordered table-striped">
-						<thead>
-							<tr>
-								<th>Run</th>
-								<th>Title</th>
-								<th>Start Time</th>
-								<th>End Time</th>
-								<th>Duration (s)</th>
-								<th>Total Counts</th>
-								<th>SDD</th>
-								<th>Lambda Req.</th>
-								<th>Frame Skip.</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for run in runs %}
-							<tr>
-								<td>{{run.metadata.run_number}}</td>
-								<td>{{run.metadata.title}}</td>
-								<td>{{run.start_time | date:"DATETIME_FORMAT"}}</td>
-								<td>{{run.end_time | date:"DATETIME_FORMAT"}}</td>
-								<td>{{run.metadata.duration|floatformat:2}}</td>
-								<td>{{run.metadata.total_counts|stringformat:".2e"}}</td>
-								<td>{{run.metadata.daslogs.detectorz.average_value|floatformat:2}}</td>
-								<td>{{run.metadata.daslogs.lambdarequest.average_value|floatformat:2}}</td>
-								<td>{{run.is_frame_skipping}}</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-						<tfoot>
-							<tr>
-								<th>Run</th>
-								<th>Title</th>
-								<th>Start Time</th>
-								<th>End Time</th>
-								<th>Duration (s)</th>
-								<th>Total Counts</th>
-								<th>SDD</th>
-								<th>Lambda Req.</th>
-								<th>Frame Skip.</th>
-							</tr>
-						</tfoot>
-					</table>
+	<thead>
+		<tr>
+			<th>Run</th>
+			<th>Title</th>
+			<th>Start Time</th>
+			<th>End Time</th>
+			<th>Duration (s)</th>
+			<th>Total Counts</th>
+			<th>SDD</th>
+			<th>Lambda Req.</th>
+			<th>Frame Skip.</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for run in runs %}
+		<tr>
+			<td>{{run.metadata.run_number}}</td>
+			<!-- <td>{{run.metadata.title}}</td> -->
+			<td><a href="{% url 'catalog:run_detail' instrument  ipts run.location %}">{{run.metadata.title}}</a></td>
+			<td>{{run.start_time | date:"DATETIME_FORMAT"}}</td>
+			<td>{{run.end_time | date:"DATETIME_FORMAT"}}</td>
+			<td>{{run.metadata.duration|floatformat:2}}</td>
+			<td>{{run.metadata.total_counts|stringformat:".2e"}}</td>
+			<td>{{run.metadata.daslogs.detectorz.average_value|floatformat:2}}</td>
+			<td>{{run.metadata.daslogs.lambdarequest.average_value|floatformat:2}}</td>
+			<td>{{run.is_frame_skipping}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>Run</th>
+			<th>Title</th>
+			<th>Start Time</th>
+			<th>End Time</th>
+			<th>Duration (s)</th>
+			<th>Total Counts</th>
+			<th>SDD</th>
+			<th>Lambda Req.</th>
+			<th>Frame Skip.</th>
+		</tr>
+	</tfoot>
+</table>
 </div>
 {% endblock %}
 
