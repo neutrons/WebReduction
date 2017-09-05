@@ -24,25 +24,32 @@
         <h1>Catalog <small> List of IPTSs for {{instrument}}</small></h1>
     </div>
 
-<table id="tableipts" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>IPTS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for ipts in iptss %}
-                            <tr>
-                                <td><a href="{% url 'catalog:list_runs' instrument ipts.ipts %}" data-toggle="tooltip" data-placement="right" title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>IPTS</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+    <table id="tableipts" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>IPTS</th>
+                <th>Title</th>
+                <th>Length</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ipts in iptss %}
+            <tr>
+                <td><a href="{% url 'catalog:list_runs' instrument ipts.ipts %}" data-toggle="tooltip"
+                    data-placement="right" title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
+                <td>{{ipts.title}}</td>
+                <td>{{ipts.size}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>IPTS</th>
+                <th>Title</th>
+                <th>Length</th>
+            </tr>
+        </tfoot>
+    </table>
 </div>
 {% endblock %}
 
@@ -65,6 +72,7 @@
                 columnDefs: [
                     { type: 'natural', targets: 0 }
                 ],
+                order: [[ 0, 'desc' ]],
     			initComplete: function( settings, json ) {
    					 $('div.loading').remove();
  				}

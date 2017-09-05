@@ -18,7 +18,7 @@ class RESTInterface(object):
     Generic class for REST comunication
     '''
 
-    timeout = 5
+    timeout = 20
 
     def __init__(self, url_prefix, headers={}, http_method='get'):
         '''
@@ -53,7 +53,7 @@ class RESTInterface(object):
             )
             response.raise_for_status()
             logger.debug("ICat response status code: %s", response.status_code)
-            # logger.debug("ICat response content: %s", response.json())
+            # logger.debug("ICat response content: %s", pformat(response.json()))
             return response.json()
         except requests.exceptions.Timeout as this_exception:
             # Maybe set up for a retry, or continue in a retry loop

@@ -46,10 +46,10 @@
 								<td>{{run.metadata.title}}</td>
 								<td>{{run.start_time | date:"DATETIME_FORMAT"}}</td>
 								<td>{{run.end_time | date:"DATETIME_FORMAT"}}</td>
-								<td>{{run.metadata.duration}}</td>
-								<td>{{run.metadata.total_counts}}</td>
-								<td>{{run.metadata.daslogs.detectorz.average_value}}</td>
-								<td>{{run.metadata.daslogs.lambdarequest.average_value}}</td>
+								<td>{{run.metadata.duration|floatformat:2}}</td>
+								<td>{{run.metadata.total_counts|stringformat:".2e"}}</td>
+								<td>{{run.metadata.daslogs.detectorz.average_value|floatformat:2}}</td>
+								<td>{{run.metadata.daslogs.lambdarequest.average_value|floatformat:2}}</td>
 								<td>{{run.is_frame_skipping}}</td>
 							</tr>
 							{% endfor %}

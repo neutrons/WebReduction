@@ -74,6 +74,8 @@ class HFIR(Catalog):
             try:
                 result = [{
                     'ipts': entry['name'],
+                    'size': entry['size'],
+                    'title': entry['title'],
                     'exp': sorted([
                         tag.split('/')[1] for tag in entry['tags']])}
                           for entry in response]
@@ -300,7 +302,9 @@ class SNS(Catalog):
         if response is not None:
             try:
                 result = [{
+                    'title': entry['title'],
                     'ipts': entry['name'],
+                    'size': entry['size'],
                     } for entry in response]
             except KeyError as this_exception:
                 logger.exception(this_exception)
