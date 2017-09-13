@@ -1,3 +1,4 @@
+import os
 import logging
 from pprint import pformat
 
@@ -8,7 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView, View
-
+from django.template.loader import select_template
 from .oncat.facade import Catalog
 
 from .models import Instrument
@@ -67,12 +68,23 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
 
     template_name = 'list_runs.html'
 
+    def get_template_names(self):
+        """
+        Let's override this function.
+        Returns a lits of pripority templates to render
+        """
+        facility = self.request.user.profile.instrument.facility.name.lower()
+        instrument = self.kwargs['instrument'].lower()
+
+        return [
+            os.path.join('catalog', facility, instrument, self.template_name),
+            os.path.join('catalog', facility, self.template_name),
+            self.template_name
+        ]
+
     def get_context_data(self, **kwargs):
-
+        
         facility = self.request.user.profile.instrument.facility.name
-        self.template_name = 'catalog/' + facility.lower() + '/' \
-            + self.template_name
-
         instrument = kwargs['instrument']
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
@@ -89,7 +101,7 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
                 the details of the %s from %s." % (ipts, instrument))
             runs = []
         context = super(Runs, self).get_context_data(**kwargs)
-        logger.debug("Sento HTML:\n%s", pformat(runs))
+        # logger.debug("Sent to template:\n%s", pformat(runs))
         context['runs'] = runs
         return context
 

@@ -50,7 +50,7 @@ class ONCat(RESTInterface):
         '''
 
         '''
-        logger.debug("func runs:\n%s", pformat(params_json))
+        # logger.debug("func runs:\n%s", pformat(params_json))
         return self._request("/datafiles", params_json=params_json)
 
     def run(self, facility, instrument, ipts, file_location):
@@ -194,7 +194,7 @@ class SNS(ONCat):
                 ],
             }
             result = super().runs(params_json)
-            if len(result)  > 0:
+            if result is not None and len(result) > 0:
                 return result
         return []
     
