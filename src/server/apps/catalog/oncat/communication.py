@@ -17,20 +17,16 @@ http://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html#legacy-ap
 '''
 logger = logging.getLogger(__name__)
 
-TOKEN = settings.ONCAT_TOKEN
-
 
 class ONCat(RESTInterface):
     '''
     Base class for the ONCat requests
     It shouldn't be instantiated
     '''
-    def __init__(self):
+    def __init__(self, request):
         super().__init__(
             url_prefix=settings.ONCAT_URL,
-            headers={
-                'Authorization': 'Bearer {}'.format(TOKEN)
-            },
+            request=request,
             http_method='get',
         )
 
@@ -70,8 +66,8 @@ class ONCat(RESTInterface):
 
 class HFIR(ONCat):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, request):
+        super().__init__(request)
         self.facility = 'HFIR'
 
     def experiments(self, instrument):
@@ -155,8 +151,8 @@ class HFIR(ONCat):
 
 class SNS(ONCat):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, request):
+        super().__init__(request)
         self.facility = 'SNS'
 
     def experiments(self, instrument):

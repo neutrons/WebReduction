@@ -18,19 +18,20 @@ class Catalog(ABC):
     Abstract class
     '''
 
-    def __new__(cls, facility, *arguments, **keywords):
+    def __new__(cls, facility, *args, **kwargs):
         '''
+        This allows to great subclasses from this base class,
+        gievn a facility name
+
         The Calatlog should be constructed like this:
         cat = Catalog(Facility)
         Where facility is the name of the classes below
         '''
         for subclass in Catalog.__subclasses__():
             if str(subclass.__name__) == facility:
-                return super(cls, subclass).__new__(subclass, *arguments, **keywords)
+                return super(cls, subclass).__new__(subclass)
         raise Exception('Facility not supported!')
 
-    def __init__(self):
-        super().__init__()
 
     @abstractmethod
     def experiments(self, instrument):
@@ -45,14 +46,105 @@ class Catalog(ABC):
         pass
 
 
+class SNS(Catalog):
+    '''
+    '''
+
+    def __init__(self, facility, request):
+        '''
+        '''
+        self.catalog = SNSCom(request)
+
+    def experiments(self, instrument):
+        '''
+        @return: [...
+            {'ipts': 'IPTS-19574'},
+            {'ipts': 'IPTS-19658'},
+            {'ipts': 'IPTS-19717'}]
+
+        '''
+        response = self.catalog.experiments(instrument)
+        result = None
+        if response is not None:
+            try:
+                result = [{
+                    'title': entry['title'],
+                    'ipts': entry['name'],
+                    'size': entry['size'],
+                    } for entry in response]
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
+
+        # logger.debug(pformat(result))
+        return result
+
+    def runs(self, instrument, ipts, *args, **kwargs):
+        '''
+
+
+        '''
+        response = self.catalog.runs(instrument, ipts)
+        result = None
+        if response is not None:
+            try:
+                # pprint(response)
+                result = [dict(
+                    {
+                        # subset
+                        k: entry[k] for k in ('location',)
+                    },
+                    **{
+                        # This gets rid of None values in the metadata
+                        'metadata': {(key): (value if value is not None else "") for key, value in
+                                     entry['metadata']['entry'].items()},
+                        # frame_skipping=speed1 - frequency / 2.0) < 1.0
+                        'is_frame_skipping': entry['metadata']['entry']['daslogs']['speed1']['average_value'] \
+                            - entry['metadata']['entry']['daslogs']['frequency']['average_value'] / 2.0 < 1.0,
+                        'start_time': dateparse.parse_datetime(entry['metadata']['entry']['start_time']),
+                        'end_time': dateparse.parse_datetime(entry['metadata']['entry']['end_time']),
+                    }) for entry in response  # if entry['ext'] == 'xml'
+                ]
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
+        # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
+        return result
+
+    def run(self, instrument, ipts, file_location):
+        '''
+
+        '''
+        response = self.catalog.run(instrument, ipts, file_location)
+        result = None
+        if response is not None:
+            try:
+                entry = response
+                result = dict(
+                    {
+                        # subset
+                        k: entry[k] for k in ('location',)
+
+                    }, **{
+                        'metadata': entry['metadata']['entry'],
+                    })
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
+        return result
+
+
 class HFIR(Catalog):
     '''
     '''
 
-    def __init__(self, *arguments, **keywords):
+    def __init__(self, facility, request, *args, **kwargs):
         '''
         '''
-        self.catalog = HFIRCom()
+        self.catalog = HFIRCom(request)
 
     def experiments(self, instrument):
         '''
@@ -280,95 +372,6 @@ class HFIR(Catalog):
         return run_info
 
 
-class SNS(Catalog):
-    '''
-    '''
-
-    def __init__(self, *arguments, **keywords):
-        '''
-        '''
-        self.catalog = SNSCom()
-
-    def experiments(self, instrument):
-        '''
-        @return: [...
-            {'ipts': 'IPTS-19574'},
-            {'ipts': 'IPTS-19658'},
-            {'ipts': 'IPTS-19717'}]
-
-        '''
-        response = self.catalog.experiments(instrument)
-        result = None
-        if response is not None:
-            try:
-                result = [{
-                    'title': entry['title'],
-                    'ipts': entry['name'],
-                    'size': entry['size'],
-                    } for entry in response]
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
-
-        # logger.debug(pformat(result))
-        return result
-
-    def runs(self, instrument, ipts, *args, **kwargs):
-        '''
-
-
-        '''
-        response = self.catalog.runs(instrument, ipts)
-        result = None
-        if response is not None:
-            try:
-                # pprint(response)
-                result = [dict(
-                    {
-                        # subset
-                        k: entry[k] for k in ('location',)
-                    },
-                    **{
-                        # This gets rid of None values in the metadata
-                        'metadata': {(key): (value if value is not None else "") for key, value in
-                                     entry['metadata']['entry'].items()},
-                        # frame_skipping=speed1 - frequency / 2.0) < 1.0
-                        'is_frame_skipping': entry['metadata']['entry']['daslogs']['speed1']['average_value'] \
-                            - entry['metadata']['entry']['daslogs']['frequency']['average_value'] / 2.0 < 1.0,
-                        'start_time': dateparse.parse_datetime(entry['metadata']['entry']['start_time']),
-                        'end_time': dateparse.parse_datetime(entry['metadata']['entry']['end_time']),
-                    }) for entry in response  # if entry['ext'] == 'xml'
-                ]
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
-        # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
-        return result
-
-    def run(self, instrument, ipts, file_location):
-        '''
-
-        '''
-        response = self.catalog.run(instrument, ipts, file_location)
-        result = None
-        if response is not None:
-            try:
-                entry = response
-                result = dict(
-                    {
-                        # subset
-                        k: entry[k] for k in ('location',)
-
-                    }, **{
-                        'metadata': entry['metadata']['entry'],
-                    })
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
-        return result
 
 
 

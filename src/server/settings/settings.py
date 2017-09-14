@@ -192,7 +192,9 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 # Data catalog configuration
 ONCAT_URL = 'https://oncat.ornl.gov/api'
-ONCAT_TOKEN = env('ONCAT_TOKEN')
+ONCAT_TOKEN_URL = 'https://oncat.ornl.gov/oauth/token'
+ONCAT_CLIENT_ID = env("ONCAT_CLIENT_ID")
+ONCAT_CLIENT_SECRET = env("ONCAT_CLIENT_SECRET")
 
 # Custom data format (comment out to us standard machine)
 USE_L10N = False

@@ -24,6 +24,7 @@ class InstrumentMixin(object):
     Context enhancer
     mixin that sets the shared context variables:
     instrument
+    ipts
     '''
     def get_context_data(self, **kwargs):
         context = super(InstrumentMixin, self).get_context_data(**kwargs)
@@ -53,7 +54,7 @@ class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
     def get_context_data(self, **kwargs):
         logger.debug("Listing IPTSs for: %s", kwargs['instrument'])
         facility = self.request.user.profile.instrument.facility.name
-        iptss = Catalog(facility).experiments(kwargs['instrument'])
+        iptss = Catalog(facility, self.request).experiments(kwargs['instrument'])
         self.template_name = 'catalog/' + facility.lower() + '/' \
             + self.template_name
         context = super(IPTSs, self).get_context_data(**kwargs)
@@ -93,7 +94,7 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
         if user_has_permission_to_see_this_ipts(
                 self.request.user,
                 self.request.user.profile.instrument, ipts):
-            runs = Catalog(facility).runs(instrument, ipts, exp)
+            runs = Catalog(facility, self.request).runs(instrument, ipts, exp)
         else:
             # from django.http import HttpResponseForbidden
             # return HttpResponseForbidden()
@@ -128,7 +129,7 @@ class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
         if user_has_permission_to_see_this_ipts(
                 self.request.user,
                 self.request.user.profile.instrument, ipts):
-            run = Catalog(facility).run(instrument, ipts, filename)
+            run = Catalog(facility, self.request).run(instrument, ipts, filename)
             # logger.debug(pformat(run)) # prints data => slow!
             # logger.debug(pformat(run['sample_info'])) # prints data => slow!
         else:
