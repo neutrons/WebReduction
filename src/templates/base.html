@@ -178,10 +178,11 @@
         This notifications will appear at the same time as the notifications above
         These ones will show up on the right upper corner
         */
-        // I'm overwrritng the default style bootstrap because I need to
+        // I'm overwriting the default style bootstrap because I need to
         // Send notifications with html
         // I replaced: data-notify-text by data-notify-html
         // I copied style from here: https://github.com/jpillora/notifyjs/blob/master/dist/notify.js#L585-L625
+        $.notify.removeStyle("bootstrap");
         $.notify.addStyle("bootstrap", {
             html: "<div>\n<span data-notify-html></span>\n</div>",
             classes: {
