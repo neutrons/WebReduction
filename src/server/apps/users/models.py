@@ -49,135 +49,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
 
-class IptsManager(models.Manager):
-    """
-    """
-    use_for_related_fields = True
-
-    def get_queryset(self):
-        '''
-        This overrrides the default query set
-        We want to have only the IPTSs!!
-        '''
-        return super(
-            IptsManager,
-            self
-        ).get_queryset().filter(name__istartswith="IPTS")
-
-
-class Ipts(Group):
-    '''
-    Inherits name from the Group
-    It is a subset of Group with Only groups starting with "IPTS-"
-    '''
-
-    number = models.IntegerField(
-        null=True,
-        blank=True,
-        help_text="This IPTS Number (IPTS-XXX)",
-    )
-
-    instrument = models.ForeignKey(
-        Instrument,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="%(class)s_instruments",
-        related_query_name="%(class)s_instrument",
-    )
-
-    # Manager
-    objects = IptsManager()
-
-    class Meta:
-        verbose_name = "Integrated Proposal Tracking System (IPTS) number"
-        verbose_name_plural = "IPTSs"
-
-    def __str__(self):
-        return u'%s' % (self.name)
-
-
-class ExperimentManager(models.Manager):
-    '''
-    Queries go here!!
-    '''
-    use_for_related_fields = True
-
-    def populate_experiments(self):
-        '''
-        Used after each login. Populates experiment table with
-        ICat information (IPTS + exp - for hfir)
-
-        ipts_exp_json is of the form
-        [ {'exp': ['exp307', 'exp314', 'exp360'], 'ipts': 'IPTS-11518'},
-          {'exp': ['exp316'], 'ipts': 'IPTS-14466'}, ... ]
-        '''
-
-        logger.debug("Populate_experiments: IPTSs + Exps")
-
-        instruments = Instrument.objects.filter(reduction_available=True)
-        for instrument in instruments:
-            logger.debug("Populating IPTS and Experiments for %s.", instrument)
-            iptss_json = Catalog(
-                instrument.facility.name).experiments(instrument.icat_name)
-            for entry in iptss_json:
-                try:
-                    # SNS
-                    this_ipts = entry["id"]
-                except KeyError:
-                    # HFIR
-                    this_ipts = entry["ipts"]
-                try:
-                    r = re.search(r"IPTS-(\d+)", this_ipts)
-                    ipts_number = int(r.group(1)) if r else None
-                    ipts_obj, _ = Ipts.objects.get_or_create(
-                        name=this_ipts,
-                        number=ipts_number,
-                        instrument=instrument
-                    )
-                except IntegrityError as e:
-                    # logger.warning("Ignoring Duplicated IPTS: %s.", e)
-                    continue
-                # If it's SNS entry.get("exp" is None!
-                for this_exp in entry.get("exp", []):
-                    r = re.search(r"exp(\d+)", this_exp)
-                    if r is not None:
-                        exp_number = int(r.group(1))
-                        self.update_or_create(
-                            number=exp_number,
-                            ipts=ipts_obj
-                        )
-
-
-class Experiment(models.Model):
-    '''
-    Experiment number. Only used for HFIR.
-    '''
-    number = models.IntegerField(
-        null=True,
-        blank=True,
-        help_text="HFIR Experiment Number (expXXX)",
-    )
-
-    ipts = models.ForeignKey(
-        Ipts,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="%(class)s_iptss",
-        related_query_name="%(class)s_ipts",
-        help_text="This IPTS will be used to find your data on ICat."
-                  " If you leave it empty the ICat lookup will not work!",
-        verbose_name="Integrated Proposal Tracking System (IPTS) number",
-    )
-
-    # Manager
-    objects = ExperimentManager()
-
-    def __str__(self):
-        return "exp{}".format(self.number)
-
-
 class UserProfileManager(models.Manager):
     '''
     Queries go here!!
@@ -211,35 +82,15 @@ class UserProfile(models.Model):
         chained_field="facility",
         chained_model_field="facility",
         show_all=False,
-        auto_choose=True,
+        auto_choose=False,
         # sort=True
         # This will show only instruments with the field:
         limit_choices_to={'reduction_available': True},
     )
 
-    ipts = ChainedForeignKey(
-        Ipts,
-        null=True,
-        blank=True,
-        chained_field="instrument",
-        chained_model_field="instrument",
-        show_all=False,
-        auto_choose=True,
-        sort=True,
-        #limit_choices_to = Q("name" in list(user.groups.all().values_list("name", flat=True)))
-        # limit_choices_to= {'user' : user}
-    )
+    ipts = models.CharField(max_length=20, blank=True)
 
-    experiment = ChainedForeignKey(
-        Experiment,
-        null=True,
-        blank=True,
-        chained_field="ipts",
-        chained_model_field="ipts",
-        show_all=False,
-        auto_choose=True,
-        sort=True
-    )
+    experiment = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -252,10 +103,3 @@ class UserProfile(models.Model):
         verbose_name = _("Profile")
 
 
-from django.core.signals import request_started
-from django.dispatch import receiver
-
-
-@receiver(request_started, sender=UserProfile)
-def my_callback(sender, **kwargs):
-    print("Request started!")

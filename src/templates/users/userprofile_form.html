@@ -45,5 +45,28 @@
     $( "#id_facility" ).change(function() {
         show_hide_experiment_number();
     });
+
+    // Smart selects changes the stydle of the drop down. Get it back!
+    $('#id_instrument').addClass("select form-control")
+
+
+    // Setting up jQuery to pass csrf tokens to Django when using ajax.
+	$.ajaxSetup({
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        }
+    });
+
+    $("#id_instrument").change(function () {
+        console.log( $('#id_facility').val(), "-->", $(this).val() );
+        $.ajax({
+            url: "{% url 'catalog:list_iptss_ajax' 1234 5678 %}".replace(1234, $('#id_facility').val()).replace(5678, $(this).val()),
+            type: "get", // or "get"
+            success: function(data) {
+              console.log(data);
+            }});
+      });
+
+    
 </script>
 {% endblock %}

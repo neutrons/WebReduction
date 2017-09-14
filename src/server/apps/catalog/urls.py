@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^(?P<instrument>[\w\-]+)/$',
         # cache_page(60*60)(views.IPTSs.as_view()), name='list_iptss'),
         (views.IPTSs.as_view()), name='list_iptss'),
-    
+     
     # Just for SNS
     # View all Runs for an instrument
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/$',
@@ -24,4 +24,10 @@ urlpatterns = [
         views.Runs.as_view(), name='list_runs'),
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/(?P<filename>/HFIR/[^\.]+\.[A-Za-z]{3})/$',
         views.RunDetail.as_view(), name='run_detail'),
+    
+    # AJAX Requests
+    url(r'^ajax/(?P<facility>\d+)/(?P<instrument>\d+)/$',
+        # cache_page(60*60)(views.IPTSs.as_view()), name='list_iptss_ajax'),
+        (views.IPTSsAjax.as_view()), name='list_iptss_ajax'),
+   
 ]

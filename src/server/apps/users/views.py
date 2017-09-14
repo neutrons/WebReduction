@@ -32,7 +32,7 @@ from django_remote_submission.models import Server
 from server.settings.env import env
 
 from .forms import UserProfileForm, LoginForm
-from .models import UserProfile, Experiment
+from .models import UserProfile
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ class LoginView(FormView):
             # let's save the credentials to login on analysisis later
             self._save_credentials_in_session(password)
             # Populates Icat into database
-            Experiment.objects.populate_experiments()
+            # Experiment.objects.populate_experiments(self.request)
         else:
             messages.error(
                 self.request,

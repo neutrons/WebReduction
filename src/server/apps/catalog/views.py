@@ -1,20 +1,18 @@
-import os
 import logging
+import os
 from pprint import pformat
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import select_template
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView, View
-from django.template.loader import select_template
-from .oncat.facade import Catalog
 
-from .models import Instrument
-from .permissions import (filter_user_permission,
-                          user_has_permission_to_see_this_ipts)
+from .models import Facility, Instrument
+from .oncat.facade import Catalog
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +60,21 @@ class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
         return context
 
 
+class IPTSsAjax(LoginRequiredMixin, TemplateView):
+    '''
+    List of IPTSs for a given instrument
+    '''
+
+    def get(self, request, *args, **kwargs):
+
+        logger.debug("Listing IPTSsAjax for: %s", kwargs['instrument'])
+        
+        instrument = get_object_or_404(Instrument, id=kwargs['instrument'])
+        facility = get_object_or_404(Facility, id=kwargs['facility'])
+        iptss = Catalog(facility.name, request).experiments(instrument.icat_name)
+        logger.debug(iptss)
+        return JsonResponse(iptss, status=200, safe=False)
+
 class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
     '''
     List of runs for a given instrument
@@ -91,16 +104,7 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
         exp = kwargs.get('exp')
         logger.debug('Getting runs from catalog: %s %s %s %s',
                      facility, instrument, ipts, exp)
-        if user_has_permission_to_see_this_ipts(
-                self.request.user,
-                self.request.user.profile.instrument, ipts):
-            runs = Catalog(facility, self.request).runs(instrument, ipts, exp)
-        else:
-            # from django.http import HttpResponseForbidden
-            # return HttpResponseForbidden()
-            messages.error(self.request, "You do not have permission to see \
-                the details of the %s from %s." % (ipts, instrument))
-            runs = []
+        runs = Catalog(facility, self.request).runs(instrument, ipts, exp)
         context = super(Runs, self).get_context_data(**kwargs)
         # logger.debug("Sent to template:\n%s", pformat(runs))
         context['runs'] = runs
@@ -126,18 +130,7 @@ class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
         filename = kwargs['filename']
         logger.debug('Getting run detail from catalog: %s %s %s %s %s',
                      facility, instrument, ipts, exp, filename)
-        if user_has_permission_to_see_this_ipts(
-                self.request.user,
-                self.request.user.profile.instrument, ipts):
-            run = Catalog(facility, self.request).run(instrument, ipts, filename)
-            # logger.debug(pformat(run)) # prints data => slow!
-            # logger.debug(pformat(run['sample_info'])) # prints data => slow!
-        else:
-            # from django.http import HttpResponseForbidden
-            # return HttpResponseForbidden()
-            messages.error(self.request, "You do not have permission to see \
-                the details of the %s from %s." % (ipts, instrument))
-            run = None
+        run = Catalog(facility, self.request).run(instrument, ipts, filename)
         context = super(RunDetail, self).get_context_data(**kwargs)
         context['run'] = run
         return context
