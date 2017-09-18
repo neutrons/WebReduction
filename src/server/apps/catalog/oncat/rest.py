@@ -40,6 +40,12 @@ class TokenStorage(object):
         '''
         self._request.session['token'] = val
 
+    def set_token(self, val):
+        '''
+        Set it in the session
+        '''
+        self._request.session['token'] = val
+    
     @property
     def username(self):
         '''
@@ -58,7 +64,6 @@ class TokenStorage(object):
 class OAuthClient(object):
     '''
     '''
-    OAUTH_TOKEN_URL = settings.ONCAT_TOKEN_URL
 
     def __init__(self, request):
         '''
@@ -82,7 +87,7 @@ class OAuthClient(object):
             )
         )
         token = initial_oauth_client.fetch_token(
-            self.OAUTH_TOKEN_URL,
+            settings.ONCAT_TOKEN_URL,
             username=self._storage.username,
             password=self._storage.password,
             client_id=settings.ONCAT_CLIENT_ID,
@@ -98,11 +103,12 @@ class OAuthClient(object):
         client = requests_oauthlib.OAuth2Session(
             settings.ONCAT_CLIENT_ID,
             token=self._storage.token,
-            auto_refresh_url=self.OAUTH_TOKEN_URL,
+            auto_refresh_url=settings.ONCAT_TOKEN_URL,
             auto_refresh_kwargs={
                 'client_id': settings.ONCAT_CLIENT_ID,
+                'client_secret': settings.ONCAT_CLIENT_SECRET,
             },
-            token_updater=self._storage.token,
+            token_updater=self._storage.set_token,
         )
         return client
 

@@ -81,16 +81,16 @@ class UserProfile(models.Model):
         Instrument,
         chained_field="facility",
         chained_model_field="facility",
-        show_all=False,
-        auto_choose=False,
+        # show_all=False,
+        # auto_choose=False,
         # sort=True
         # This will show only instruments with the field:
         limit_choices_to={'reduction_available': True},
     )
 
-    ipts = models.CharField(max_length=20, blank=True)
+    ipts = models.CharField("Integrated Proposal Tracking System (IPTS)", max_length=20, blank=True)
 
-    experiment = models.CharField(max_length=20, blank=True)
+    experiment = models.CharField("Experiment (Only used at HFIR!)", max_length=20, blank=True)
 
     def __str__(self):
         return self.user.username

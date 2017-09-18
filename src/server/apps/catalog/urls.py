@@ -26,6 +26,7 @@ urlpatterns = [
         views.RunDetail.as_view(), name='run_detail'),
     
     # AJAX Requests
+    # Get all IPTSs for an inxtrument
     url(r'^ajax/(?P<facility>\d+)/(?P<instrument>\d+)/$',
         # cache_page(60*60)(views.IPTSs.as_view()), name='list_iptss_ajax'),
         (views.IPTSsAjax.as_view()), name='list_iptss_ajax'),

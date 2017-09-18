@@ -29,6 +29,7 @@ from django.views.generic import (CreateView, FormView, ListView, RedirectView,
                                   TemplateView, UpdateView)
 from django_remote_submission.models import Server
 
+from pprint import pformat
 from server.settings.env import env
 
 from .forms import UserProfileForm, LoginForm
@@ -134,6 +135,15 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin,
     # fields = '__all__'
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
+
+    # def get_context_data(self, **kwargs):
+    #     """
+    #     To debug!
+    #     """
+    #     context = super(ProfileUpdate, self).get_context_data(**kwargs)
+    #     logger.debug(pformat(context))
+    #     logger.debug(pformat(context['form'].fields))
+    #     return context
 
 
 class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin,

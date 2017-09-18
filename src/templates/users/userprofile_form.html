@@ -31,24 +31,9 @@
 {% block footer_js%}
 {{ block.super }}
 <script>
-    function show_hide_experiment_number(){
-        if($("#id_facility option:selected").text() == 'HFIR'){
-            console.log("HFIR");
-            $('#div_id_experiment_number').show();
-        }
-        else {
-            console.log("Other");
-            $('#div_id_experiment_number').hide();
-        }
-    }
-    show_hide_experiment_number();
-    $( "#id_facility" ).change(function() {
-        show_hide_experiment_number();
-    });
 
-    // Smart selects changes the stydle of the drop down. Get it back!
+    // Smart selects changes the style of the drop down. Get it back!
     $('#id_instrument').addClass("select form-control")
-
 
     // Setting up jQuery to pass csrf tokens to Django when using ajax.
 	$.ajaxSetup({
@@ -57,15 +42,69 @@
         }
     });
 
-    $("#id_instrument").change(function () {
-        console.log( $('#id_facility').val(), "-->", $(this).val() );
-        $.ajax({
-            url: "{% url 'catalog:list_iptss_ajax' 1234 5678 %}".replace(1234, $('#id_facility').val()).replace(5678, $(this).val()),
-            type: "get", // or "get"
-            success: function(data) {
-              console.log(data);
-            }});
-      });
+    // id = 'id_ipts', name = 'ipts'
+    function replaceWithSelect(id, name ) {
+        var value = $('#'+id).val();
+        $('#'+id).replaceWith('<select name="'+name+'" class="select form-control" id="'+id+'"></select>');
+        if (value){
+            $('<option value="" selected>-------------------</option>').appendTo('#'+id);
+            //$("<option value=" + value + " selected>" + value + "</option>").appendTo('#'+id);
+        }
+    };
+
+    var iptss = [];
+    function fetchIptsInfo(){
+        // Those are IDs!
+        var facility = $('#id_facility').val();
+        var instrument = $('#id_instrument').val();
+        var facilityName = $("#id_facility option:selected").text();
+        if (!facility || !instrument){
+            $.notify("You must select both Facility and Instrument to fetch information from the Catalog.", "warn");
+            return;
+        }
+        // Tansform text fields into dropdowns. If they have value, assign to it (update view only!)
+        replaceWithSelect('id_ipts','ipts');
+        
+        $.getJSON(
+            "{% url 'catalog:list_iptss_ajax' 1234 5678 %}"
+                .replace(1234, facility)
+                .replace(5678, instrument),
+            function (data) {
+                iptss = data;
+                $.each(data, function (i, value) {
+                    var div_data = "<option value=" + value.ipts + ">" + value.ipts + " :: " + value.title + "</option>";
+                    $(div_data).appendTo('#id_ipts');
+            });
+        });
+        ('#id_experiment').value = "";
+        if (facilityName == "HFIR"){
+            $("#id_ipts").change( function () {
+                console.log("IPTS changed...");
+                replaceWithSelect('id_experiment','experiment');
+                // Let's find the experiments for the select IPTS
+                var selectedIpts = $(this).val();
+                //console.log( "selected IPTS:",  selectedIpts);
+                var iptsDetails = $.grep(iptss, function(e){ return e.ipts == selectedIpts; });
+                console.log( iptsDetails );
+                
+                if (iptsDetails.length > 0){
+                    replaceWithSelect('id_experiment','experiment');
+                    $.each(iptsDetails[0].exp, function (i, value) {
+                        if (i < iptsDetails[0].exp.length - 1){
+                            console.log( value );
+                            var div_data = "<option value=" + value + ">" + value + "</option>";
+                            $(div_data).appendTo('#id_experiment');
+                        }
+                    });
+                }
+            });
+        }
+    };
+
+
+
+
+
 
     
 </script>

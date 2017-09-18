@@ -62,7 +62,7 @@ class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
 
 class IPTSsAjax(LoginRequiredMixin, TemplateView):
     '''
-    List of IPTSs for a given instrument
+    List of IPTSs for a given instrument as ajax
     '''
 
     def get(self, request, *args, **kwargs):
@@ -71,9 +71,11 @@ class IPTSsAjax(LoginRequiredMixin, TemplateView):
         
         instrument = get_object_or_404(Instrument, id=kwargs['instrument'])
         facility = get_object_or_404(Facility, id=kwargs['facility'])
-        iptss = Catalog(facility.name, request).experiments(instrument.icat_name)
-        logger.debug(iptss)
+        iptss = Catalog(facility.name, request).experiments(
+            instrument.icat_name)
+        logger.debug(pformat(iptss))
         return JsonResponse(iptss, status=200, safe=False)
+
 
 class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
     '''
