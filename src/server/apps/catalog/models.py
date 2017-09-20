@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
+from natsort import natsorted
 
 class Facility(models.Model):
     name = models.CharField(
@@ -39,7 +39,10 @@ class InstrumentManager(models.Manager):
     use_for_related_fields = True
 
     def visible_instruments(self, **kwargs):
-        return self.filter(active="True", **kwargs).order_by("beamline")
+        visible_instruments = self.filter(active="True", **kwargs).values()
+        natsorted_visible_instruments = natsorted(
+            visible_instruments, key=lambda i: i['beamline'])
+        return natsorted_visible_instruments
 
 
 class Instrument(models.Model):
@@ -118,7 +121,7 @@ class Instrument(models.Model):
     )
 
     active = models.BooleanField(
-        'instrument is active',
+        'instrument is active (i.e, visble in the catalog)',
         help_text=(
             'Whether the instrument is active and working in the dashboard'
         ),
