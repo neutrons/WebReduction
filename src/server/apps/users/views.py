@@ -28,12 +28,14 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import (CreateView, FormView, ListView, RedirectView,
                                   TemplateView, UpdateView)
 from django_remote_submission.models import Server
-from django_remote_submission.remote import RemoteWrapper
 
+from pprint import pformat
 from server.settings.env import env
 
 from .forms import UserProfileForm, LoginForm
-from .models import UserProfile, Experiment
+from .models import UserProfile
+from server.apps.catalog.models import Instrument
+
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +70,7 @@ class LoginView(FormView):
             # let's save the credentials to login on analysisis later
             self._save_credentials_in_session(password)
             # Populates Icat into database
-            Experiment.objects.populate_experiments()
+            # Experiment.objects.populate_experiments(self.request)
         else:
             messages.error(
                 self.request,
@@ -135,6 +137,17 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin,
     # fields = '__all__'
     success_url = reverse_lazy('index')
     success_message = "Your profile was updated successfully."
+
+    # def get_context_data(self, **kwargs):
+    #     """
+    #     I was trying to get all the instruments where reduction is available
+    #     but at this point we don't know the facility yet. Let's postpone it.
+    #     """
+    #     context = super(ProfileUpdate, self).get_context_data(**kwargs)
+    #     context['instruments_with_reduction'] = list(
+    #         Instrument.objects.filter(reduction_available=True).values_list("name", flat=True)
+    #     )
+    #     return context
 
 
 class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin,

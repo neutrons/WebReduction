@@ -2,6 +2,12 @@
 
 {% load staticfiles %}
 
+{% block header %}
+{{ block.super }}
+<!-- Plotly.js only works in the header, not in the footer! -->
+<script src='{% static "thirdparty/plotly/plotly.min.js" %}'></script>
+{% endblock header %}
+
 {% block breadcrumbs %}
 <div class="container">
     <ol class="breadcrumb">
@@ -39,31 +45,75 @@
     </div>
     <hr/>
 
-    <h2>Results (files)</h2>
-
+    <!--Plot-->
     <div class="container-fluid">
-        {% for result in object.results.all %}
         <div class="panel panel-default">
-            <div class="panel-heading">Result {{ result.id }}</div>
-            <div class="panel-body">{{ result.remote_filename }}
-                <br/>
-                <a href="{{result.local_file.url}}"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Download</a>
-                <br/>
-                <a href="{% url 'results:result_plot' result.id %}"
-                   title="Click to see thethe plot for this file."><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Plot this file</a>
-                
+            <div class="panel-heading">Plot</div>
+            <div class="panel-body">
+                <div id="plot_files" class="center-block"> {{plot|safe}} </div>
+            </div>
+            <div class="panel-footer">
+                <label class="checkbox-inline"><input type="checkbox" onclick='handleClickLogX(this);' value="">Log X</label>
+                <label class="checkbox-inline"><input type="checkbox" onclick='handleClickLogY(this);' value="">Log Y</label>
             </div>
         </div>
-        {% endfor %}
     </div>
     
-    <h2>Log</h2>
+    <hr/>
+
+    <!--File list-->
+    <div class="container-fluid">
+         <div class="panel panel-default">
+            <div class="panel-heading"> Files to download
+            </div>
+            <div class="panel-body">
+                <form id="frm-table_results" action="{% url 'results:zipfiles' %}" method="POST">
+                    {% csrf_token %}
+                    <table id="table_results" class="table table-bordered table-striped" width="100%">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" name="rows" id="table_results-select-all"></th>
+                                <!--<th></th>-->
+                                <th>Id</th>
+                                <th>Filename</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in object.results.all %}
+                            <tr>
+                                <td><input id="row{{ result.id }}" type="checkbox" name="row" value="{{ result.id }}"></td>
+                                <td>{{ result.id }}</td>
+                                <td><a href="{{result.local_file.url}}">{{ result.remote_filename }}</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th>Id</th>
+                                <th>Filename</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                
+                    <button name="download" type="submit" class="btn btn-primary" data-toggle="tooltip" data-placement="top"
+                        title="Download selected files in Zip format">Download selected files...</button>
+
+                </form>
+            </div>
+         </div>
+    </div>
+
+    <hr/>
 
     <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">Log</div>
             <div class="panel-body">
-               <pre><code>{% for log in object.logs.all %}{{ log.content }}{% endfor %}</code></pre>
+                <a role="button" data-toggle="collapse" data-target="#log"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Click to see the log</a>
+                <div id="log" class="collapse">
+                    <pre><code>{% for log in object.logs.all %}{{ log.content }}{% endfor %}</code></pre>
+                </div>
             </div>
         </div>
     </div>
@@ -73,4 +123,120 @@
             href="#" title="Go back.">Go Back</a>
     </p>
 </div>
+
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+
+<!-- page script -->
+<script>
+        $(function () {
+
+        var table = $('#table_results').DataTable({
+            'order': [[1, 'asc']],
+            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": true
+        });
+
+        // Handle click on "Select all" control
+        $('#table_results-select-all').on('click', function(){
+            // Get all rows with search applied
+            var rows = table.rows({ 'search': 'applied' }).nodes();
+            // Check/uncheck checkboxes for all rows in the table
+            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        });
+
+        // Handle click on checkbox to set state of "Select all" control
+        $('#table_results tbody').on('change', 'input[type="checkbox"]', function(){
+            // If checkbox is not checked
+            if(!this.checked){
+                var el = $('#table_results-select-all').get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if(el && el.checked && ('indeterminate' in el)){
+                    // Set visual state of "Select all" control
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+        });
+
+        // Handle form submission event
+        $('#frm-table_results').on('submit', function(e){
+            var form = this;
+            $('<input>').attr({
+                type: 'hidden',
+                id: 'ids_selected',
+                name: 'ids_selected',
+                value: "",
+            }).appendTo(this);
+
+            var ids_to_download = [];
+            // Iterate over all checkboxes in the table
+            $('input[id^="row"]').each(function(){
+                //console.log("here", this.checked)
+                // If checkbox is checked
+                if(this.checked){
+                    console.log("checked:", this.id, this.value);
+                    ids_to_download.push(this.value);
+                }
+        
+            });
+            this.ids_selected.value = ids_to_download;
+
+            // FOR TESTING ONLY
+            
+            // Output form data to a console
+            
+            console.log("Form submission:", $(form).serialize()); 
+            //console.log("Form submission", $(form));
+            // Prevent actual form submission
+            //e.preventDefault();
+        });
+
+
+        });
+        
+
+        /**
+        * Functions for the plot
+        */
+        function handleClickLogX(cb) {
+            // Convert jquery element to html element
+            var plotDiv = $('.plotly-graph-div')[0];
+            if (cb.checked == true) {
+                var update = {
+                    'xaxis.type': "log"
+                };
+            }
+            else {
+                var update = {
+                    'xaxis.type': "linear"
+                };
+            }
+            Plotly.relayout(plotDiv, update)
+        }
+
+        function handleClickLogY(cb) {
+            // Convert jquery element to html element
+            var plotDiv = $('.plotly-graph-div')[0];
+            if (cb.checked == true) {
+                var update = {
+                    'yaxis.type': "log"
+                };
+            }
+            else {
+                var update = {
+                    'yaxis.type': "linear"
+                };
+            }
+            Plotly.relayout(plotDiv, update)
+        }
+    </script>
 {% endblock %}

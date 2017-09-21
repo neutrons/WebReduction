@@ -15,7 +15,6 @@ from django.utils.translation import ugettext_lazy as _
 from django_auth_ldap.backend import LDAPBackend
 from django_remote_submission.models import Interpreter, Job
 
-from server.apps.users.models import Ipts, Experiment
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 

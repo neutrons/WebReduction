@@ -1,0 +1,25 @@
+{% extends "catalog/sns/list_runs.html" %}
+ 
+{% block table_header %}
+	<th>SDD</th>
+	<th>Lambda Req.</th>
+	<th>Frame Skip.</th>
+{%endblock%}
+
+{% block table_content %}
+	<td>{{run.metadata.daslogs.detectorz.average_value|floatformat:2}}</td>
+	<td>{{run.metadata.daslogs.lambdarequest.average_value|floatformat:2}}</td>
+	<td>{{run.is_frame_skipping}}</td>
+{%endblock%}
+
+{% block table_footer %}
+	<th>SDD</th>
+	<th>Lambda Req.</th>
+	<th>Frame Skip.</th>
+{%endblock%}
+
+{% block footer_js_data_table_config%}
+	{{ block.super }}
+	data_table_config.columnDefs.push({ type: "scientific", targets: 6 });
+	data_table_config.columnDefs.push({ visible: false, targets: [4,5] });
+{%endblock%}

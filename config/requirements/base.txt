@@ -1,25 +1,21 @@
-django>=1.10
-
-
-# Django Packages
+# Django
+Django>=1.11.4
 django-crispy-forms
 django-auth-ldap>=1.2.12
+# for .env file
+django-environ
+# Chained Selects (e.g. Pick facility then the associated instrument)
+django-smart-selects
 
-
-# For icat
+# For The catalog
 requests
+requests_oauthlib
 
 # PostGres
 psycopg2>=2.6.1
 
-# for .env file
-django-environ
-
-# Chained Selects (e.g. Pick facility then the associated instrument)
-django-smart-selects
-
 # Remote job submission
-django-remote-submission>=0.7.0
+django-remote-submission>=1.1.2
 #../django-remote-submission/dist/django-remote-submission-0.3.1.tar.gz
 celery[redis]
 django-celery-results
@@ -34,3 +30,5 @@ uwsgi
 numpy>=1.12.0
 plotly>=2.0.2
 
+# Natutal sorting:
+natsort

@@ -20,76 +20,92 @@
 
 {% block content %}
 <div class="container">
-	
     <div class="page-header">
         <h1>Catalog {{instrument}} <small> Runs for {{ipts}}</small></h1>
     </div>
 
-<table id="tableruns" class="table table-bordered table-striped">
-						<thead>
-							<tr>
-								<th>Run</th>
-								<th>Title</th>
-								<th>Proton Charge</th>
-								<th>Start Time</th>
-								<th>End Time</th>
-								<th>Duration (s)</th>
-								<th>Total Counts</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for run in runs.proposal.runs.run %}
-							<tr>
-								<td>{{run.id}}</td>
-								<td>{{run.title}}</td>
-								<td class="text-right">{{ run.protonCharge }}</td>
-								<td>{{run.startTime}}</td>
-								<td>{{run.endTime}}</td>
-								<td class="text-right">{{run.duration | floatformat }}</td>
-								<td class="text-right">{{run.totalCounts }}</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-						<tfoot>
-							<tr>
-								<th>Run</th>
-								<th>Title</th>
-								<th>Proton Charge</th>
-								<th>Start Time</th>
-								<th>End Time</th>
-								<th>Duration</th>
-								<th>Total Counts</th>
-							</tr>
-						</tfoot>
-					</table>
+	<table id="tableruns" class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Run</th>
+				<th>Title</th>
+				<th>Start Time</th>
+				<th>End Time</th>
+				<th>Duration (s)</th>
+				<th>Total Counts</th>
+				{% block table_header %}{%endblock%}
+			</tr>
+		</thead>
+		<tbody>
+			{% for run in runs %}
+			<tr>
+				<td>{{run.metadata.run_number}}</td>
+				<!-- <td>{{run.metadata.title}}</td> -->
+				<td><a href="{% url 'catalog:run_detail' instrument  ipts run.location %}">{{run.metadata.title}}</a></td>
+				<td>{{run.start_time | date:"DATETIME_FORMAT"}}</td>
+				<td>{{run.end_time | date:"DATETIME_FORMAT"}}</td>
+				<td>{{run.metadata.duration|floatformat:2}}</td>
+				<td>{{run.metadata.total_counts|stringformat:".2e"}}</td>
+				{% block table_content %}{%endblock%}
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<th>Run</th>
+				<th>Title</th>
+				<th>Start Time</th>
+				<th>End Time</th>
+				<th>Duration (s)</th>
+				<th>Total Counts</th>
+				{% block table_footer %}{%endblock%}
+			</tr>
+		</tfoot>
+	</table>
 </div>
 {% endblock %}
 
 {% block footer_js%}
 {{ block.super }}
 <script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/dataTables.buttons.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.bootstrap.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.colVis.min.js" %}'></script>
 <!-- page script -->
 <script>
-        $(function () {
-            $("#tableruns").DataTable({
-                "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 0, 'desc' ]],
-                "columnDefs": [
-                	{ "type": "scientific", "targets": 2 },
-    				{ "type": "date", "targets": 3 },
-    				{ "type": "date", "targets": 4 }
-  				],
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": true,
-    			"initComplete": function( settings, json ) {
-   					 $('div.loading').remove();
- 				}
-            });
-            
-        });
+	{% block footer_js_data_table_config%}
+	var data_table_config = {
+		dom: 'Bflrtip',
+		lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+		order: [[ 0, 'desc' ]],
+		// Default config only has 6 collumns
+		columnDefs: [
+			{ type: "scientific", targets: 4 },
+			{ type: "date", targets: [2,3] }
+		  ],
+		paging: true,
+		lengthChange: true,
+		searching: true,
+		ordering: true,
+		info: true,
+		autoWidth: true,
+		buttons: [
+			{
+				extend: 'colvis',
+				postfixButtons: [ 'colvisRestore' ]
+			},
+			{
+				extend: 'copy',
+				text: 'Copy to clipboard'
+			},
+			'csv'
+		],
+		stateSave: true // saves
+	};
+	{% endblock footer_js_data_table_config %}
+
+	$(function () {
+		$("#tableruns").DataTable(data_table_config);
+	});
     </script>
-{% endblock %}
+{% endblock footer_js %}

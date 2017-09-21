@@ -49,12 +49,9 @@ class BioSANSConfigurationForm(ConfigurationForm, ModelForm):
         q_min = cleaned_data.get("stiching_q_min")
         q_max = cleaned_data.get("stiching_q_max")
 
-        if not q_min and not q_max:
-            self.add_error('stiching_q_min', "Please select one of the fields!")
-            self.add_error('stiching_q_max', "Please select one of the fields!")
-        elif q_min and q_max:
-            self.add_error('stiching_q_min', "Please select only of the fields!")
-            self.add_error('stiching_q_max', "Please select only of the fields!")
+        if (not q_min and not q_max) or (q_min and q_max):
+            self.add_error('stiching_q_min', "Please fill only one of these two fields!")
+            self.add_error('stiching_q_max', "Please fill only one of these two fields!")
 
         return cleaned_data
 

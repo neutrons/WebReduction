@@ -15,8 +15,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from django_remote_submission.models import Job, Server
 from django_remote_submission.tasks import LogPolicy, submit_job_to_server
 from django.urls import reverse
-from server.apps.catalog.icat.facade import (get_expriments, get_runs,
-                                             get_runs_as_table)
+from server.apps.catalog.oncat.facade import Catalog
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
 from server.settings.env import env
@@ -235,10 +234,10 @@ class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin,
         # This get's all users from LDAP
         # users_and_uids = ldap_server.get_all_users_name_and_uid()
         # This only gets users that have IPTS for this beamline
-        this_instrument_ipts = get_expriments(
+        this_instrument_ipts = Catalog(
             facility=self.request.user.profile.instrument.facility.name,
-            instrument=self.request.user.profile.instrument.icat_name
-        )
+            request=self.request).experiments(
+            self.request.user.profile.instrument.icat_name)
         this_instrument_ipts = [d['ipts'] for d in this_instrument_ipts]
         # logger.debug(this_instrument_ipts)
         users_and_uids = []
@@ -278,8 +277,9 @@ class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin,
         # all_ipts = ldap_server.get_all_ipts()
         # logger.debug(all_ipts)
         # For now, I'm getting the IPTSs from ICAT
-        this_instrument_ipts = get_expriments(
+        this_instrument_ipts = Catalog(
             facility=self.request.user.profile.instrument.facility.name,
+            request=self.request).experiments(
             instrument=self.request.user.profile.instrument.icat_name
         )
         logger.debug(this_instrument_ipts)
@@ -423,8 +423,8 @@ class ReductionFormMixin(ReductionMixin):
                       catalog: %s %s %s %s',
                      facility_name, instrument_icat_name, ipts, exp)
         try:
-            header, runs = get_runs_as_table(facility_name,
-                                             instrument_icat_name, ipts, exp)
+            header, runs = Catalog(facility_name, self.request).runs_as_table(
+                instrument_icat_name, ipts, exp)
         except Exception as e:
             logger.warning("Catalog function get_runs_as_table failed %s", e)
             messages.error(self.request, "An exception occurred while getting \
@@ -654,7 +654,9 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
                     job.pk,
                     password=self.request.session["password"],
                     log_policy=LogPolicy.LOG_LIVE,
-                    store_results=["*.txt"])
+                    store_results=["*.txt"],
+                    remote=True,
+                )
                 messages.success(
                     self.request,
                     "Reduction submitted to the cluster. See status: \

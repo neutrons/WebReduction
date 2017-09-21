@@ -29,16 +29,22 @@
         <tr>
             <th>IPTS</th>
             <th>Experiment</th>
+            <th>Title</th>
+            <th>Length</th>
         </tr>
     </thead>
     <tbody>
         {% for ipts in iptss %}
                 {% for exp in ipts.exp %}
-                    <tr>
-                        <td><a href="{% url 'catalog:list_runs' instrument ipts.ipts exp %}" data-toggle="tooltip" data-placement="right" 
-                            title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
-                        <td>{{exp}}</td>
-                    </tr>
+                    {% if exp|slice:":3" == "exp" %}
+                        <tr>
+                            <td>{{ipts.ipts}}</td>
+                            <td><a href="{% url 'catalog:list_runs' instrument ipts.ipts exp %}" data-toggle="tooltip" data-placement="right" 
+                                title="Click to see the runs for this experiment...">{{exp}}</a></td>
+                            <td>{{ipts.title}}</td>
+                            <td>{{ipts.size}}</td>
+                        </tr>
+                {% endif %}
             {% endfor %}
         {% endfor %}
     </tbody>
@@ -46,6 +52,8 @@
         <tr>
             <th>IPTS</th>
             <th>Experiment</th>
+            <th>Title</th>
+            <th>Length</th>
         </tr>
     </tfoot>
 </table>
@@ -62,7 +70,7 @@
         $(function () {
             $("#tableipts").DataTable({
                 "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 0, 'desc' ]],
+                "order": [[ 2, 'desc' ]],
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,
@@ -70,9 +78,9 @@
                 "info": true,
                 "autoWidth": true,
                 columnDefs: [
-                    { type: 'natural', targets: 0 },
-                    { type: 'natural', targets: 1 }
-                ]
+                    { type: 'natural', targets: [0,1] }
+                ],
+                order: [[ 1, 'desc' ]]
             });
             
         });

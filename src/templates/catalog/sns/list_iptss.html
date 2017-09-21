@@ -24,58 +24,55 @@
         <h1>Catalog <small> List of IPTSs for {{instrument}}</small></h1>
     </div>
 
-<table id="tableipts" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>IPTS</th>
-                                <th>Title</th>
-                                <th>Date</th>
-                                <th>Collection</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for ipts in iptss %}
-                            <tr>
-                                <td><a href="{% url 'catalog:list_runs' instrument ipts.id %}" data-toggle="tooltip" data-placement="right" title="Click to see the runs for this experiment...">{{ipts.id}}</a></td>
-                                <td>{{ipts.title}}</td>
-                                <td>{{ipts.createTime }}</td>
-                                <td>{{ipts.collection}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>IPTS</th>
-                                <th>Title</th>
-                                <th>Date</th>
-                                <th>Collection</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+    <table id="tableipts" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>IPTS</th>
+                <th>Title</th>
+                <th>Length</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ipts in iptss %}
+            <tr>
+                <td><a href="{% url 'catalog:list_runs' instrument ipts.ipts %}" data-toggle="tooltip"
+                    data-placement="right" title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
+                <td>{{ipts.title}}</td>
+                <td>{{ipts.size}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>IPTS</th>
+                <th>Title</th>
+                <th>Length</th>
+            </tr>
+        </tfoot>
+    </table>
 </div>
 {% endblock %}
 
 {% block footer_js%}
 {{ block.super }}
 <script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<!-- This CDN is for natural sorting : see columnDefs type: 'natural' -->
+<script src='https://cdn.datatables.net/plug-ins/1.10.13/sorting/natural.js'></script>
 <!-- page script -->
 <script>
         $(function () {
             $("#tableipts").DataTable({
-                "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 2, 'desc' ]],
-                "columnDefs": [
-    				{ "type": "date", "targets": 2 }
-  				],
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": true,
-    			"initComplete": function( settings, json ) {
-   					 $('div.loading').remove();
- 				}
+                lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: true,
+                columnDefs: [
+                    { type: 'natural', targets: 0 }
+                ],
+                order: [[ 0, 'desc' ]]
             });
             
         });

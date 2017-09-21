@@ -5,6 +5,7 @@
  {% block header %}
  {{ block.super }}
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/Buttons/css/buttons.bootstrap.min.css" %}'>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -93,21 +94,37 @@
 {% block footer_js%}
 {{ block.super }}
 <script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/dataTables.buttons.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.bootstrap.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.colVis.min.js" %}'></script>
 <!-- page script -->
 <script>
         $(function () {
             $("#tableruns").DataTable({
-                "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 7, 'desc' ]],
-                "columnDefs": [
-    				{ "type": "date", "targets": 7 },
+				dom: 'Bflrtip',
+                lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+                order: [[ 7, 'desc' ]],
+                columnDefs: [
+					{ type: "date", targets: 7 },
+					{ visible: false, targets: [5,6] },
   				],
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": true,
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+				autoWidth: true,
+				buttons: [
+					{
+						extend: 'colvis',
+						postfixButtons: [ 'colvisRestore' ]
+					},
+					{
+						extend: 'copy',
+						text: 'Copy to clipboard'
+					},'csv'
+				],
+				stateSave: true, // saves 
             });
             
         });
