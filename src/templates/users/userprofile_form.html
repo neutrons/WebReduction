@@ -65,6 +65,7 @@
         // Tansform text fields into dropdowns. If they have value, assign to it (update view only!)
         replaceWithSelect('id_ipts','ipts');
         
+        // Get all the IPTS and experiments for tthis instrument
         $.getJSON(
             "{% url 'catalog:list_iptss_ajax' 1234 5678 %}"
                 .replace(1234, facility)
@@ -100,11 +101,6 @@
             });
         }
     };
-
-
-
-
-
 
     
 </script>

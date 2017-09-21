@@ -34,6 +34,8 @@ from server.settings.env import env
 
 from .forms import UserProfileForm, LoginForm
 from .models import UserProfile
+from server.apps.catalog.models import Instrument
+
 
 logger = logging.getLogger(__name__)
 
@@ -138,11 +140,13 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin,
 
     # def get_context_data(self, **kwargs):
     #     """
-    #     To debug!
+    #     I was trying to get all the instruments where reduction is available
+    #     but at this point we don't know the facility yet. Let's postpone it.
     #     """
     #     context = super(ProfileUpdate, self).get_context_data(**kwargs)
-    #     logger.debug(pformat(context))
-    #     logger.debug(pformat(context['form'].fields))
+    #     context['instruments_with_reduction'] = list(
+    #         Instrument.objects.filter(reduction_available=True).values_list("name", flat=True)
+    #     )
     #     return context
 
 

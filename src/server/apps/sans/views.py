@@ -235,7 +235,8 @@ class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin,
         # users_and_uids = ldap_server.get_all_users_name_and_uid()
         # This only gets users that have IPTS for this beamline
         this_instrument_ipts = Catalog(
-            facility=self.request.user.profile.instrument.facility.name).experiments(
+            facility=self.request.user.profile.instrument.facility.name,
+            request=self.request).experiments(
             self.request.user.profile.instrument.icat_name)
         this_instrument_ipts = [d['ipts'] for d in this_instrument_ipts]
         # logger.debug(this_instrument_ipts)
@@ -277,7 +278,8 @@ class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin,
         # logger.debug(all_ipts)
         # For now, I'm getting the IPTSs from ICAT
         this_instrument_ipts = Catalog(
-            facility=self.request.user.profile.instrument.facility.name).experiments(
+            facility=self.request.user.profile.instrument.facility.name,
+            request=self.request).experiments(
             instrument=self.request.user.profile.instrument.icat_name
         )
         logger.debug(this_instrument_ipts)
@@ -421,8 +423,8 @@ class ReductionFormMixin(ReductionMixin):
                       catalog: %s %s %s %s',
                      facility_name, instrument_icat_name, ipts, exp)
         try:
-            header, runs = get_runs_as_table(facility_name,
-                                             instrument_icat_name, ipts, exp)
+            header, runs = Catalog(facility_name, self.request).runs_as_table(
+                instrument_icat_name, ipts, exp)
         except Exception as e:
             logger.warning("Catalog function get_runs_as_table failed %s", e)
             messages.error(self.request, "An exception occurred while getting \

@@ -373,27 +373,4 @@ class HFIR(Catalog):
 
 
 
-
-
-if __name__ == "__main__":
-    # cat = HFIR()
-    # res = cat.experiments("CG3")
-    # res = cat.runs("CG3", 'IPTS-18347','exp379')
-    # res = cat.run("CG3", 'IPTS-18289', '/HFIR/CG3/IPTS-18289/exp400/Datafiles/BioSANS_exp400_scan0001_0001.xml')
-    # res.pop('data')
-    # res = cat.runs("CG3", "IPTS-18512", "exp394")
-    # res = cat.runs_as_table("CG3", "IPTS-18512", "exp394")
-    # res = cat._parse_filename('BioSANS_exp379_scan0500_0001.xml')
-    # res = cat._parse_filename('BioSANS_exp394_scan0001_0001.xml')
-    
-    cat = Catalog('SNS')
-    # res = cat.experiments("EQSANS")
-    res = cat.runs("EQSANS", "IPTS-18418")
-    # res = cat.run("EQSANS", "IPTS-18418", '/SNS/EQSANS/IPTS-18418/0/79170/NeXus/EQSANS_79170_event.nxs')
-    
-    # It should be called like this!
-    # cat = Catalog('HFIR')
-    # res = cat.experiments("CG3")
-
-    pprint(res)
     

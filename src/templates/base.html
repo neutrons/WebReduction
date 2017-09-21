@@ -61,10 +61,15 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                
                 <ul class="nav navbar-nav">
+                    <!-- Catalog -->
                     <li><a href="{% url 'catalog:list_instruments' %}" data-toggle="tooltip" title="Shows the catalog for all instruments in your selected profile facility!" >
                     	<span class="glyphicon glyphicon-book"></span> &nbsp;Catalog</a></li>
-
+                    
+                    <!-- This only shows if the user has selected an IPTS -->
+                    {% if user.profile.ipts %}
+                    <!-- Configuration -->
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th-list"></span> &nbsp;Configuration <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -73,7 +78,8 @@
                             <li><a href="{%if request.user.profile.instrument %}{% url 'sans:configuration_create' %}{% endif %}">New</a></li>
                         </ul>
                     </li>
-
+                    
+                    <!-- Reduction -->
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th"></span> &nbsp;Reduction <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -83,6 +89,7 @@
                         </ul>
                     </li>
                     
+                    <!-- Results -->
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-play"></span> &nbsp;Results <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -94,11 +101,13 @@
                             <li><a href="#">Fitting</a></li>
                         </ul>
                     </li>
+                    {%endif%}
 
                 </ul>
 
+                <!-- Profile -->
                 <ul class="nav navbar-nav navbar-right">
-                	<li>{%if request.user.profile.instrument %}<p class="navbar-text">{{request.user.profile.instrument.name}}</p>{%endif%}</li>
+                	<li>{%if user.profile.instrument %}<p class="navbar-text">{{user.profile.instrument.name}}</p>{%endif%}</li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                           <img src="{{ request.session.gravatar_url|safe }}&s=16"  class="user-image" alt="{{ user.username }}"/> &nbsp; <strong>{{user}}</strong>  <span class="caret"></span></a>
@@ -110,6 +119,7 @@
                         </ul>
                     </li>
                 </ul>
+                
             </div>
             <!-- /.navbar-collapse -->
         </div>
