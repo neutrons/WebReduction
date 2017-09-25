@@ -110,6 +110,7 @@ psql --username=reduction -W reduction
 
 # To enable a service at startup
 systemctl enable [name.service]
+# this will create a link in /etc/systemd/system/
 
 # List services
 systemctl list-unit-files --type=service
@@ -132,23 +133,35 @@ systemctl list-units --type service --all
 
 ```
 
+**Remove a service**
+
+```
+sudo systemctl stop reduction_nginx
+sudo systemctl disable reduction_nginx
+sudo rm /etc/systemd/system/reduction_nginx.service 
+sudo rm /lib/systemd/system/reduction_nginx.service 
+sudo rm /usr/lib/systemd/system/reduction_nginx.service 
+sudo systemctl daemon-reload
+sudo systemctl reset-failed
+```
+
 **User mode**:
 
 See https://wiki.archlinux.org/index.php/Systemd/User
 
-TODO!!
-Only nginx needs to start as root! (port 80!)
-Wrong! Need the services to start on boot!
+Nginx needs to start as root! (port 80!), the others could start as user.
+However, all services to start on boot thus need root!
 
 ## Redis
 
 Not in init by default:
 
-```
+```bash
 $ systemctl list-unit-files | grep redis
 redis-sentinel.service                      disabled
 redis.service                               disabled
 ```
+
 
 
 

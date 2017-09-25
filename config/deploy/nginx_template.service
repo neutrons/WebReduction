@@ -1,14 +1,18 @@
 [Unit]
-Description=The NGINX HTTP and reverse proxy server
+Description=The NGINX HTTP server for Reduction
 After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
 PIDFile=%(project_root)s/dist/nginx.pid
-ExecStartPre=/usr/sbin/nginx -t
-ExecStart=/usr/sbin/nginx -c %(nginx_conf_file)s
+ExecStartPre=/usr/bin/rm -f /run/nginx.pid %(project_root)s/dist/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t -c %(nginx_conf_file)s -g 'daemon on; master_process on;'
+ExecStart=/usr/sbin/nginx -c %(nginx_conf_file)s -g 'daemon on; master_process on;'
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
+KillSignal=SIGQUIT
+TimeoutStopSec=5
+KillMode=process
 PrivateTmp=true
 
 [Install]
