@@ -145,6 +145,19 @@ sudo systemctl daemon-reload
 sudo systemctl reset-failed
 ```
 
+**Logs**
+
+```
+# See all systemd logs
+journalctl
+
+# Tail logs
+journalctl -f
+
+# Show logs for specific service
+journalctl -u my_daemon.service
+```
+
 **User mode**:
 
 See https://wiki.archlinux.org/index.php/Systemd/User

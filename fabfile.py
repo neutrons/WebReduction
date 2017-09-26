@@ -119,44 +119,65 @@ def apply_role(func):
     return wrapper
 
 ###############################################################################
+# Auxiliary functions for the tasks
+#
+
+###############################################################################
 # TASKS
 #
 
 
 @task
 @apply_role
-#@roles('staging', 'production')
 def start_nginx():
+    '''
+    Start NGINX
+
+    # Run as:
+    fab -f fabfile.py -R staging start_nginx
+
+    # To delete manualy this service:
+    sudo systemctl stop reduction_nginx
+    sudo systemctl disable reduction_nginx
+    sudo rm /lib/systemd/system/reduction_nginx.service 
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
+
+    # To list this service
+    systemctl list-unit-files --all | grep nginx
+
+    '''
     files.upload_template(env['nginx_conf_template'],
         env['nginx_conf_file'], context=env)
     files.upload_template(env['nginx_service_template'],
         env['nginx_service_file'], context=env)
     
+    # To avoid stopping the procedure if the link exists
     with settings(warn_only=True):
-        sudo('ln -s {} {}'.format(
+        sudo('ln -f -s {} {}'.format(
             env['nginx_service_file'],
             '/usr/lib/systemd/system/reduction_nginx.service'))
-    # This is to enable on boot
-    #sudo('systemctl enable reduction_nginx')
     
-    # This is to reload the systemcl
-    sudo('systemctl daemon-reload')
-    sudo('systemctl restart reduction_nginx')
+    # This is to enable on boot
+    # sudo('systemctl enable reduction_nginx.service')
+    sudo('systemctl start reduction_nginx.service')
+
 
 @task
 @apply_role
-#@roles('staging', 'production')
 def start_redis():
     files.upload_template(env['redis_conf_template'],
         env['redis_conf_file'], context=env)
     files.upload_template(env['redis_service_template'],
         env['redis_service_file'], context=env)
     
-    sudo('ln -s {} {}'.format(
+    sudo('ln -f -s {} {}'.format(
         env['redis_service_file'],
         '/usr/lib/systemd/system/reduction_redis.service'))
-    sudo('systemctl enable reduction_redis')
-    sudo('systemctl start reduction_redis')
+    
+    #sudo('systemctl enable reduction_redis.service')
+    
+    sudo('systemctl start reduction_redis.service')
 
 
     
