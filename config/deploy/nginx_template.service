@@ -15,8 +15,8 @@ KillSignal=SIGQUIT
 TimeoutStopSec=5
 KillMode=process
 PrivateTmp=true
-User=nginx
-Group=nginx
+#User=nginx
+#Group=nginx
 
 [Install]
 WantedBy=multi-user.target

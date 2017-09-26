@@ -165,39 +165,6 @@ def clone_or_pull():
         run('python manage.py migrate --no-input')
         run('python manage.py loaddata catalog jobs')
 
-@task
-@apply_role
-def start_nginx():
-    '''
-    Start NGINX
-
-    # Run as:
-    fab -f fabfile.py -R staging start_nginx
-
-    # To delete manualy this service:
-    sudo systemctl stop reduction_nginx
-    sudo systemctl disable reduction_nginx
-    sudo rm /lib/systemd/system/reduction_nginx.service 
-    sudo systemctl daemon-reload
-    sudo systemctl reset-failed
-
-    # To list this service
-    systemctl list-unit-files --all | grep nginx
-
-    '''
-    files.upload_template(env['nginx_conf_template'],
-        env['nginx_conf_file'], context=env)
-    files.upload_template(env['nginx_service_template'],
-        env['nginx_service_file'], context=env)
-    
-    sudo('ln -f -s {} {}'.format(
-        env['nginx_service_file'],
-        '/usr/lib/systemd/system/reduction_nginx.service'))
-
-    # This is to enable on boot
-    # sudo('systemctl enable reduction_nginx.service')
-    sudo('systemctl daemon-reload')
-    sudo('systemctl start reduction_nginx.service')
 
 @task
 @apply_role
@@ -219,12 +186,13 @@ def start_uwsgi():
     systemctl list-unit-files --all | grep uwsgi
 
     '''
+    
     files.upload_template(env['uwsgi_params_template'],
-        env['uwsgi_params_file'], context=env)
+        env['uwsgi_params_file'], context=env, backup=False)
     files.upload_template(env['uwsgi_ini_template'],
-        env['uwsgi_ini_file'], context=env)
+        env['uwsgi_ini_file'], context=env, backup=False)
     files.upload_template(env['uwsgi_service_template'],
-        env['uwsgi_service_file'], context=env)
+        env['uwsgi_service_file'], context=env, backup=False)
     
     sudo('ln -f -s {} {}'.format(
         env['uwsgi_service_file'],
@@ -234,6 +202,41 @@ def start_uwsgi():
     # sudo('systemctl enable reduction_uwsgi.service')
     sudo('systemctl daemon-reload')
     sudo('systemctl start reduction_uwsgi.service')
+
+
+@task
+@apply_role
+def start_nginx():
+    '''
+    Start NGINX
+
+    # Run as:
+    fab -f fabfile.py -R staging start_nginx
+
+    # To delete manualy this service:
+    sudo systemctl stop reduction_nginx
+    sudo systemctl disable reduction_nginx
+    sudo rm /lib/systemd/system/reduction_nginx.service 
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
+
+    # To list this service
+    systemctl list-unit-files --all | grep nginx
+
+    '''
+    files.upload_template(env['nginx_conf_template'],
+        env['nginx_conf_file'], context=env, backup=False)
+    files.upload_template(env['nginx_service_template'],
+        env['nginx_service_file'], context=env, backup=False)
+    
+    sudo('ln -f -s {} {}'.format(
+        env['nginx_service_file'],
+        '/usr/lib/systemd/system/reduction_nginx.service'))
+
+    # This is to enable on boot
+    # sudo('systemctl enable reduction_nginx.service')
+    sudo('systemctl daemon-reload')
+    sudo('systemctl start reduction_nginx.service')
 
 @task
 @apply_role
