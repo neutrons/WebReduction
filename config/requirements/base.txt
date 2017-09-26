@@ -24,6 +24,7 @@ asgi_redis
 #For deploy
 Fabric3>=1.13.1
 python-dotenv
+fabric3-virtualenv
 uwsgi
 
 # For visualizing data

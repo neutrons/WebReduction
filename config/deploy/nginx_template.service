@@ -4,8 +4,9 @@ After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=%(project_root)s/dist/nginx.pid
-ExecStartPre=/usr/bin/rm -f %(project_root)s/dist/nginx.pid
+PIDFile=%(project_root)s/dist/nginx/nginx.pid
+ExecStartPre=/bin/chown nginx:nginx %(project_root)s/dist/nginx
+ExecStartPre=/usr/bin/rm -f %(project_root)s/dist/nginx/nginx.pid
 ExecStartPre=/usr/sbin/nginx -t -c %(nginx_conf_file)s -g 'daemon on; master_process on;'
 ExecStart=/usr/sbin/nginx -c %(nginx_conf_file)s -g 'daemon on; master_process on;'
 ExecReload=/bin/kill -s HUP $MAINPID
@@ -14,8 +15,8 @@ KillSignal=SIGQUIT
 TimeoutStopSec=5
 KillMode=process
 PrivateTmp=true
-# User=nginx
-# Group=nginx
+User=nginx
+Group=nginx
 
 [Install]
 WantedBy=multi-user.target

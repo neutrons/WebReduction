@@ -3,11 +3,12 @@ Description=Reduction Redis persistent key-value database
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/redis-server %(project_root)s/dist/redis.conf --daemonize no
+ExecStartPre=/bin/chown redis:redis %(project_root)s/dist/redis
+ExecStart=/usr/bin/redis-server %(redis_conf_file)s --daemonize no
 ExecStop=/usr/libexec/redis-shutdown
 # As this user it has no access to other folders (e.g. $HOME)
-# User=redis
-# Group=redis
+User=redis
+Group=redis
 
 [Install]
 WantedBy=multi-user.target

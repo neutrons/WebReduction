@@ -9,6 +9,7 @@ from fabric.contrib import files
 
 from pprint import pprint
 from functools import wraps
+from fabvenv import make_virtualenv, virtualenv
 
 '''
 This file is never called direcly
@@ -23,6 +24,7 @@ fab -f fabfile.py -R staging deploy
 fab -R staging deploy
 '''
 
+git_repo = "https://github.com/ricleal/sns-reduction.git"
 
 # Fabric hangs without this
 env.shell = "/bin/bash -c"
@@ -57,29 +59,37 @@ def append_to_active_role(role_name):
         'nginx_conf_template': os.path.join(
             local_project_root, 'config', 'deploy', 'nginx_staging_template.conf'),
         'nginx_conf_file': os.path.join(
-            remote_project_root, 'dist', 'nginx.conf'),
+            remote_project_root, 'dist', 'nginx', 'nginx.conf'),
         'nginx_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'nginx_template.service'),
         'nginx_service_file': os.path.join(
-            remote_project_root, 'dist', 'nginx.service'),
+            remote_project_root, 'dist', 'nginx', 'nginx.service'),
         # uwsgi
         'uwsgi_ini_template': os.path.join(
             local_project_root, 'config', 'deploy', 'uwsgi_template.ini'),
         'uwsgi_ini_file': os.path.join(
-            remote_project_root, 'dist', 'uwsgi.ini'),
+            remote_project_root, 'dist', 'uwsgi', 'uwsgi.ini'),
+        'uwsgi_service_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'uwsgi_template.service'),
+        'uwsgi_service_file': os.path.join(
+            remote_project_root, 'dist', 'uwsgi', 'uwsgi.service'),
+        'uwsgi_params_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'uwsgi_params'),
+        'uwsgi_params_file': os.path.join(
+            remote_project_root, 'dist', 'uwsgi_params'),
         # Redis
         'redis_conf_template': os.path.join(
             local_project_root, 'config', 'deploy', 'redis_template.conf'),
         'redis_conf_file': os.path.join(
-            remote_project_root, 'dist', 'redis.conf'),
+            remote_project_root, 'dist', 'redis', 'redis.conf'),
         'redis_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'redis_template.service'),
         'redis_service_file': os.path.join(
-            remote_project_root, 'dist', 'redis.service'),
+            remote_project_root, 'dist', 'redis', 'redis.service'),
         #
         'requirements_file': os.path.join(
             remote_project_root, 'config', 'requirements', 'production.txt'),
-    }
+    }   
 
     if role_name == 'production':
         roles.update({
@@ -126,6 +136,34 @@ def apply_role(func):
 # TASKS
 #
 
+@task
+@apply_role
+def clone_or_pull():
+    '''
+    Clones or pull the repo
+    Runs migrations
+    '''
+    if files.exists(env['project_root']):
+        with cd(env['project_root']):
+            # run("git pull origin master")
+            run("git pull")
+    else:
+        run('git clone {} {}'.format(git_repo, env['project_root']))
+    
+    venv_root = os.path.join(env['project_root'], 'venv')
+    src_root = os.path.join(env['project_root'], 'src')
+
+    # Create Virtual env
+    if not files.exists(venv_root):
+        make_virtualenv(venv_root)
+    with virtualenv(venv_root), cd(src_root):
+        run("pip install -U -r %(requirements_file)s" % env)
+        # Collect all the static files
+        run('python manage.py collectstatic --noinput')
+        # Migrate and Update the database
+        run('python manage.py makemigrations --noinput')
+        run('python manage.py migrate --no-input')
+        run('python manage.py loaddata catalog jobs')
 
 @task
 @apply_role
@@ -152,17 +190,50 @@ def start_nginx():
     files.upload_template(env['nginx_service_template'],
         env['nginx_service_file'], context=env)
     
-    # To avoid stopping the procedure if the link exists
-    with settings(warn_only=True):
-        sudo('ln -f -s {} {}'.format(
-            env['nginx_service_file'],
-            '/usr/lib/systemd/system/reduction_nginx.service'))
-    
+    sudo('ln -f -s {} {}'.format(
+        env['nginx_service_file'],
+        '/usr/lib/systemd/system/reduction_nginx.service'))
+
     # This is to enable on boot
     # sudo('systemctl enable reduction_nginx.service')
     sudo('systemctl daemon-reload')
     sudo('systemctl start reduction_nginx.service')
 
+@task
+@apply_role
+def start_uwsgi():
+    '''
+    Start uwsgi
+
+    # Run as:
+    fab -f fabfile.py -R staging start_uwsgi
+
+    # To delete manualy this service:
+    sudo systemctl stop reduction_uwsgi
+    sudo systemctl disable reduction_uwsgi
+    sudo rm /lib/systemd/system/reduction_uwsgi.service 
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
+
+    # To list this service
+    systemctl list-unit-files --all | grep uwsgi
+
+    '''
+    files.upload_template(env['uwsgi_params_template'],
+        env['uwsgi_params_file'], context=env)
+    files.upload_template(env['uwsgi_ini_template'],
+        env['uwsgi_ini_file'], context=env)
+    files.upload_template(env['uwsgi_service_template'],
+        env['uwsgi_service_file'], context=env)
+    
+    sudo('ln -f -s {} {}'.format(
+        env['uwsgi_service_file'],
+        '/usr/lib/systemd/system/reduction_uwsgi.service'))
+
+    # This is to enable on boot
+    # sudo('systemctl enable reduction_uwsgi.service')
+    sudo('systemctl daemon-reload')
+    sudo('systemctl start reduction_uwsgi.service')
 
 @task
 @apply_role

@@ -1,16 +1,20 @@
-
 [Unit]
-Description=uWSGI Emperor Service
+Description=Reduction uWSGI Emperor Service
 After=syslog.target
 
 [Service]
-ExecStart=/usr/bin/uwsgi --ini %(project_root)s/dist/uwsgi.ini
+EnvironmentFile=-/etc/sysconfig/uwsgi
+# ExecStartPre=/bin/mkdir -p %(project_root)s/dist/uwsgi
+ExecStartPre=/bin/chown uwsgi:uwsgi %(project_root)s/dist/uwsgi
+ExecStart=/usr/sbin/uwsgi --ini %(project_root)s/dist/uwsgi/uwsgi.ini
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
 Restart=always
-KillSignal=SIGQUIT
 Type=notify
 StandardError=syslog
 NotifyAccess=all
+User=uwsgi
+Group=uwsgi
 
 [Install]
 WantedBy=multi-user.target
-
