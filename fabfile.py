@@ -160,12 +160,22 @@ def start_nginx():
     
     # This is to enable on boot
     # sudo('systemctl enable reduction_nginx.service')
+    sudo('systemctl daemon-reload')
     sudo('systemctl start reduction_nginx.service')
 
 
 @task
 @apply_role
 def start_redis():
+    '''
+    
+    # To delete manualy this service:
+    sudo systemctl stop reduction_redis
+    sudo systemctl disable reduction_redis
+    sudo rm /lib/systemd/system/reduction_redis.service 
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
+    '''
     files.upload_template(env['redis_conf_template'],
         env['redis_conf_file'], context=env)
     files.upload_template(env['redis_service_template'],
@@ -176,7 +186,7 @@ def start_redis():
         '/usr/lib/systemd/system/reduction_redis.service'))
     
     #sudo('systemctl enable reduction_redis.service')
-    
+    sudo('systemctl daemon-reload')
     sudo('systemctl start reduction_redis.service')
 
 
