@@ -165,6 +165,31 @@ See https://wiki.archlinux.org/index.php/Systemd/User
 Nginx needs to start as root! (port 80!), the others could start as user.
 However, all services to start on boot thus need root!
 
+## The python code
+
+Use fabric:
+
+```bash
+# 
+fab -f fabfile.py -R staging -p vagrant start
+
+# Then copy and edit the .env file
+cp config/envs/env.prod .env
+# change the permissions
+sudo chmod u=rw,g=rw,o= .env 
+
+fab -f fabfile.py -R staging -p vagrant migrate
+```
+
+## uWSGI
+
+```bash
+# Backup files
+sudo cp /usr/lib/systemd/system/uwsgi.service /usr/lib/systemd/system/uwsgi.service.orig
+sudo cp /etc/uwsgi.ini /etc/uwsgi.ini.orig
+```
+
+
 ## Redis
 
 Not in init by default:
@@ -174,8 +199,6 @@ $ systemctl list-unit-files | grep redis
 redis-sentinel.service                      disabled
 redis.service                               disabled
 ```
-
-
 
 
 ## NGINX

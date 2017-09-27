@@ -9,7 +9,6 @@ from fabric.contrib import files
 
 from pprint import pprint
 from functools import wraps
-from fabvenv import make_virtualenv, virtualenv
 
 '''
 This file is never called direcly
@@ -33,11 +32,11 @@ env.shell = "/bin/bash -c"
 env.roledefs = {
     'staging': {
         'hosts': ['vagrant@127.0.0.1:2222'],
-        'project_root': '/home/vagrant/sns-reduction',
+        'project_root': '/usr/local/reduction',
     },
     'production': {
         'hosts': ['rhf@reduction.sns.gov'],
-        'project_root': '/var/www/sns-reduction',
+        'project_root': '/usr/local/reduction',
     }
 }
 
@@ -55,6 +54,16 @@ def append_to_active_role(role_name):
     remote_project_root = env.roledefs[role_name]['project_root']
     local_project_root = os.path.dirname(os.path.realpath(__file__))
     roles = {
+        # project directories
+        'project_src': os.path.join(remote_project_root, 'src'),
+        'project_venv': os.path.join(remote_project_root, 'venv'),
+        # uwsgi
+        'uwsgi_ini_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'uwsgi_template.ini'),
+        'uwsgi_ini_file': '/etc/uwsgi.ini',
+        'uwsgi_service_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'uwsgi_template.service'),
+        'uwsgi_service_file': '/usr/lib/systemd/system/uwsgi.service',
         # nginx
         'nginx_conf_template': os.path.join(
             local_project_root, 'config', 'deploy', 'nginx_staging_template.conf'),
@@ -64,19 +73,6 @@ def append_to_active_role(role_name):
             local_project_root, 'config', 'deploy', 'nginx_template.service'),
         'nginx_service_file': os.path.join(
             remote_project_root, 'dist', 'nginx', 'nginx.service'),
-        # uwsgi
-        'uwsgi_ini_template': os.path.join(
-            local_project_root, 'config', 'deploy', 'uwsgi_template.ini'),
-        'uwsgi_ini_file': os.path.join(
-            remote_project_root, 'dist', 'uwsgi', 'uwsgi.ini'),
-        'uwsgi_service_template': os.path.join(
-            local_project_root, 'config', 'deploy', 'uwsgi_template.service'),
-        'uwsgi_service_file': os.path.join(
-            remote_project_root, 'dist', 'uwsgi', 'uwsgi.service'),
-        'uwsgi_params_template': os.path.join(
-            local_project_root, 'config', 'deploy', 'uwsgi_params'),
-        'uwsgi_params_file': os.path.join(
-            remote_project_root, 'dist', 'uwsgi_params'),
         # Redis
         'redis_conf_template': os.path.join(
             local_project_root, 'config', 'deploy', 'redis_template.conf'),
@@ -138,26 +134,48 @@ def apply_role(func):
 
 @task
 @apply_role
-def clone_or_pull():
+def start(branch='master'):
     '''
     Clones or pull the repo
-    Runs migrations
+    Note that the project folder will be owned by uwsgi
     '''
-    if files.exists(env['project_root']):
-        with cd(env['project_root']):
-            # run("git pull origin master")
-            run("git pull")
-    else:
-        run('git clone {} {}'.format(git_repo, env['project_root']))
-    
-    venv_root = os.path.join(env['project_root'], 'venv')
-    src_root = os.path.join(env['project_root'], 'src')
 
-    # Create Virtual env
-    if not files.exists(venv_root):
-        make_virtualenv(venv_root)
-    with virtualenv(venv_root), cd(src_root):
-        run("pip install -U -r %(requirements_file)s" % env)
+    login = run('id -u -n')
+    # gid = run('id -g')
+ 
+    with settings(warn_only=True):
+        sudo('groupadd reduction')
+        sudo('usermod -a -G reduction {}'.format(login))
+        sudo('usermod -a -G reduction uwsgi')
+
+    # clone in ./data. Sets permissions to uwsgi
+    if not files.exists(env.project_root):
+        sudo('mkdir -p {}'.format(env.project_root))
+        sudo('chown {}:{} {}'.format(
+              login, 'reduction', env.project_root))
+        sudo('chmod u+rwx,g+rwxs,o-rwxs {}'.format(env.project_root))
+        run('git clone {} {}'.format(git_repo, env.project_root))
+    else:
+        with cd(env.project_root):
+            run("git pull origin {}".format(branch))
+
+    # VirtualEnv: ./venv set with persmissions of who runs the script
+    if not files.exists(env.project_venv) or \
+            not files.exists(os.path.join(env.project_venv, 'bin')):
+        run('virtualenv {}'.format(env.project_venv))
+    
+    # Activate the environment and install requirements
+    with prefix('. ' + env.project_venv + '/bin/activate'):
+        run("pip install -r {}".format(env.requirements_file))
+
+@task
+@apply_role
+def migrate():
+    '''
+    Don't forget to put the .env in ./data!
+    and do: sudo chmod u=rw,g=rw,o= .env 
+    ''' 
+    with  prefix('. ' + env.project_venv + '/bin/activate'), cd(env.project_src):
         # Collect all the static files
         run('python manage.py collectstatic --noinput')
         # Migrate and Update the database
@@ -187,21 +205,15 @@ def start_uwsgi():
 
     '''
     
-    files.upload_template(env['uwsgi_params_template'],
-        env['uwsgi_params_file'], context=env, backup=False)
     files.upload_template(env['uwsgi_ini_template'],
-        env['uwsgi_ini_file'], context=env, backup=False)
+        env['uwsgi_ini_file'], context=env, backup=False, use_sudo=True)
     files.upload_template(env['uwsgi_service_template'],
-        env['uwsgi_service_file'], context=env, backup=False)
-    
-    sudo('ln -f -s {} {}'.format(
-        env['uwsgi_service_file'],
-        '/usr/lib/systemd/system/reduction_uwsgi.service'))
+        env['uwsgi_service_file'], context=env, backup=False, use_sudo=True)
 
     # This is to enable on boot
     # sudo('systemctl enable reduction_uwsgi.service')
     sudo('systemctl daemon-reload')
-    sudo('systemctl start reduction_uwsgi.service')
+    sudo('systemctl start uwsgi.service')
 
 
 @task

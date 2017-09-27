@@ -1,20 +1,22 @@
+#
+# Based on /usr/lib/systemd/system/uwsgi.service
+# sudo cp /usr/lib/systemd/system/uwsgi.service /usr/lib/systemd/system/uwsgi.service.orig
+#
 [Unit]
-Description=Reduction uWSGI Emperor Service
+Description=uWSGI Emperor Service
 After=syslog.target
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/uwsgi
-# ExecStartPre=/bin/mkdir -p %(project_root)s/dist/uwsgi
-ExecStartPre=/bin/chown uwsgi:uwsgi %(project_root)s/dist/uwsgi
-ExecStart=/usr/sbin/uwsgi --ini %(project_root)s/dist/uwsgi/uwsgi.ini
+ExecStartPre=/bin/mkdir -p /run/uwsgi
+ExecStartPre=/bin/chown uwsgi:uwsgi /run/uwsgi
+ExecStart=/usr/sbin/uwsgi --ini /etc/uwsgi.ini
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
 Restart=always
 Type=notify
 StandardError=syslog
 NotifyAccess=all
-User=uwsgi
-Group=uwsgi
 
 [Install]
 WantedBy=multi-user.target
