@@ -66,7 +66,7 @@ def append_to_active_role(role_name):
         'uwsgi_service_file': '/usr/lib/systemd/system/uwsgi.service',
         # nginx
         'nginx_conf_template': os.path.join(
-            local_project_root, 'config', 'deploy', 'nginx_staging_template.conf'),
+            local_project_root, 'config', 'deploy', 'nginx_template.conf'),
         'nginx_conf_file': os.path.join(
             remote_project_root, 'dist', 'nginx', 'nginx.conf'),
         'nginx_service_template': os.path.join(
@@ -85,12 +85,15 @@ def append_to_active_role(role_name):
         #
         'requirements_file': os.path.join(
             remote_project_root, 'config', 'requirements', 'production.txt'),
-    }   
+        # Certificates:
+        'ssl_certificate_file': os.path.join(
+            remote_project_root, 'config', 'certificates', 'domain.crt'),
+        'ssl_certificate_key_file': os.path.join(
+            remote_project_root, 'config', 'certificates', 'domain.key'),
+    }
 
     if role_name == 'production':
         roles.update({
-            'nginx_conf_template': os.path.join(
-                local_project_root, 'config', 'deploy', 'nginx_production_template.conf'),
             'ssl_certificate_file': '/etc/ssl/certs/wildcard.sns.gov.crt',
             'ssl_certificate_key_file': '/etc/pki/tls/private/wildcard.sns.gov.key',
         })
@@ -130,7 +133,7 @@ def apply_role(func):
 
 ###############################################################################
 # TASKS
-#
+# By order of execution
 
 @task
 @apply_role
