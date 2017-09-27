@@ -1,12 +1,13 @@
+# Based on
+# /usr/lib/systemd/system/redis.service
+
 [Unit]
 Description=Reduction Redis persistent key-value database
 After=network.target
 
 [Service]
-ExecStartPre=/bin/chown redis:redis %(project_root)s/dist/redis
-ExecStart=/usr/bin/redis-server %(redis_conf_file)s --daemonize no
+ExecStart=/usr/bin/redis-server %(redis_conf_file)s  --daemonize no
 ExecStop=/usr/libexec/redis-shutdown
-# As this user it has no access to other folders (e.g. $HOME)
 User=redis
 Group=redis
 

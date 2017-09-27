@@ -71,16 +71,13 @@ def append_to_active_role(role_name):
         'nginx_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'nginx_template.service'),
         'nginx_service_file': '/etc/systemd/system/nginx.service',
-        
         # Redis
         'redis_conf_template': os.path.join(
             local_project_root, 'config', 'deploy', 'redis_template.conf'),
-        'redis_conf_file': os.path.join(
-            remote_project_root, 'dist', 'redis', 'redis.conf'),
+        'redis_conf_file': '/etc/redis.conf',
         'redis_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'redis_template.service'),
-        'redis_service_file': os.path.join(
-            remote_project_root, 'dist', 'redis', 'redis.service'),
+        'redis_service_file': '/usr/lib/systemd/system/redis.service',
         #
         'requirements_file': os.path.join(
             remote_project_root, 'config', 'requirements', 'production.txt'),
@@ -255,24 +252,20 @@ def start_redis():
     '''
     
     # To delete manualy this service:
-    sudo systemctl stop reduction_redis
-    sudo systemctl disable reduction_redis
-    sudo rm /lib/systemd/system/reduction_redis.service 
+    sudo systemctl stop redis
+    sudo systemctl disable redis
+    sudo rm /lib/systemd/system/redis.service 
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
     '''
     files.upload_template(env['redis_conf_template'],
-        env['redis_conf_file'], context=env)
+        env['redis_conf_file'], context=env, backup=False, use_sudo=True)
     files.upload_template(env['redis_service_template'],
-        env['redis_service_file'], context=env)
+        env['redis_service_file'], context=env, backup=False, use_sudo=True)
     
-    sudo('ln -f -s {} {}'.format(
-        env['redis_service_file'],
-        '/usr/lib/systemd/system/reduction_redis.service'))
-    
-    #sudo('systemctl enable reduction_redis.service')
+    #sudo('systemctl enable redis.service')
     sudo('systemctl daemon-reload')
-    sudo('systemctl start reduction_redis.service')
+    sudo('systemctl restart redis.service')
 
 
     

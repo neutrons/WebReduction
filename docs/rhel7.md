@@ -189,8 +189,19 @@ sudo cp /usr/lib/systemd/system/uwsgi.service /usr/lib/systemd/system/uwsgi.serv
 sudo cp /etc/uwsgi.ini /etc/uwsgi.ini.orig
 ```
 
+## NGINX
 
+```sh
+sudo cp /etc/systemd/system/nginx.service /etc/systemd/system/nginx.service.orig
+sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
+```
 ## Redis
+
+```sh
+# backup
+sudo cp /usr/lib/systemd/system/redis.service /usr/lib/systemd/system/redis.service.orig
+sudo cp /etc/redis.conf /etc/redis.conf.orig
+```
 
 Not in init by default:
 
@@ -199,8 +210,3 @@ $ systemctl list-unit-files | grep redis
 redis-sentinel.service                      disabled
 redis.service                               disabled
 ```
-
-
-## NGINX
-
-
