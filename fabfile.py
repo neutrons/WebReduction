@@ -67,12 +67,11 @@ def append_to_active_role(role_name):
         # nginx
         'nginx_conf_template': os.path.join(
             local_project_root, 'config', 'deploy', 'nginx_template.conf'),
-        'nginx_conf_file': os.path.join(
-            remote_project_root, 'dist', 'nginx', 'nginx.conf'),
+        'nginx_conf_file': '/etc/nginx/nginx.conf',
         'nginx_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'nginx_template.service'),
-        'nginx_service_file': os.path.join(
-            remote_project_root, 'dist', 'nginx', 'nginx.service'),
+        'nginx_service_file': '/etc/systemd/system/nginx.service',
+        
         # Redis
         'redis_conf_template': os.path.join(
             local_project_root, 'config', 'deploy', 'redis_template.conf'),
@@ -150,6 +149,7 @@ def start(branch='master'):
         sudo('groupadd reduction')
         sudo('usermod -a -G reduction {}'.format(login))
         sudo('usermod -a -G reduction uwsgi')
+        sudo('usermod -a -G reduction nginx')
 
     # clone in ./data. Sets permissions to uwsgi
     if not files.exists(env.project_root):
@@ -197,9 +197,9 @@ def start_uwsgi():
     fab -f fabfile.py -R staging start_uwsgi
 
     # To delete manualy this service:
-    sudo systemctl stop reduction_uwsgi
-    sudo systemctl disable reduction_uwsgi
-    sudo rm /lib/systemd/system/reduction_uwsgi.service 
+    sudo systemctl stop uwsgi
+    sudo systemctl disable uwsgi
+    sudo rm /lib/systemd/system/uwsgi.service 
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
 
@@ -214,9 +214,9 @@ def start_uwsgi():
         env['uwsgi_service_file'], context=env, backup=False, use_sudo=True)
 
     # This is to enable on boot
-    # sudo('systemctl enable reduction_uwsgi.service')
+    # sudo('systemctl enable uwsgi.service')
     sudo('systemctl daemon-reload')
-    sudo('systemctl start uwsgi.service')
+    sudo('systemctl restart uwsgi.service')
 
 
 @task
@@ -229,9 +229,9 @@ def start_nginx():
     fab -f fabfile.py -R staging start_nginx
 
     # To delete manualy this service:
-    sudo systemctl stop reduction_nginx
-    sudo systemctl disable reduction_nginx
-    sudo rm /lib/systemd/system/reduction_nginx.service 
+    sudo systemctl stop nginx
+    sudo systemctl disable nginx
+    sudo rm /lib/systemd/system/nginx.service 
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
 
@@ -240,18 +240,14 @@ def start_nginx():
 
     '''
     files.upload_template(env['nginx_conf_template'],
-        env['nginx_conf_file'], context=env, backup=False)
+        env['nginx_conf_file'], context=env, backup=False, use_sudo=True)
     files.upload_template(env['nginx_service_template'],
-        env['nginx_service_file'], context=env, backup=False)
+        env['nginx_service_file'], context=env, backup=False, use_sudo=True)
     
-    sudo('ln -f -s {} {}'.format(
-        env['nginx_service_file'],
-        '/usr/lib/systemd/system/reduction_nginx.service'))
-
     # This is to enable on boot
-    # sudo('systemctl enable reduction_nginx.service')
+    # sudo('systemctl enable nginx.service')
     sudo('systemctl daemon-reload')
-    sudo('systemctl start reduction_nginx.service')
+    sudo('systemctl restart nginx.service')
 
 @task
 @apply_role

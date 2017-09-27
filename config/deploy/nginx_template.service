@@ -1,22 +1,21 @@
+# Based on
+# /etc/systemd/system/nginx.service
+
 [Unit]
-Description=The NGINX HTTP server for Reduction
-After=syslog.target network.target remote-fs.target nss-lookup.target
+Description=The nginx HTTP and reverse proxy server
+After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=%(project_root)s/dist/nginx/nginx.pid
-ExecStartPre=/bin/chown nginx:nginx %(project_root)s/dist/nginx
-ExecStartPre=/usr/bin/rm -f %(project_root)s/dist/nginx/nginx.pid
-ExecStartPre=/usr/sbin/nginx -t -c %(nginx_conf_file)s -g 'daemon on; master_process on;'
-ExecStart=/usr/sbin/nginx -c %(nginx_conf_file)s -g 'daemon on; master_process on;'
+PIDFile=/run/nginx.pid
+# Nginx will fail to start if /run/nginx.pid already exists but has the wrong
+# SELinux context. This might happen when running `nginx -t` from the cmdline.
+# https://bugzilla.redhat.com/show_bug.cgi?id=1268621
+ExecStartPre=/usr/bin/rm -f /run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t
+ExecStart=/usr/sbin/nginx
 ExecReload=/bin/kill -s HUP $MAINPID
-ExecStop=/bin/kill -s QUIT $MAINPID
 KillSignal=SIGQUIT
 TimeoutStopSec=5
 KillMode=process
 PrivateTmp=true
-#User=nginx
-#Group=nginx
-
-[Install]
-WantedBy=multi-user.target
