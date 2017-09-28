@@ -18,7 +18,7 @@ source ~/.bash_profile
 echo $'Host github.com\n\tHostname ssh.github.com\n\tPort 443\n' >> ~/.ssh/config
 chmod 600 ~/.ssh/config
 
-## RHEL python 3.5 (otherwise won't work in systemd sh -c)
+## RHEL python 3.5 (otherwise won't work in systemd with sh -c)
 sudo echo $'/opt/rh/rh-python35/root/lib64\n' > /etc/ld.so.conf.d/rh-python35.conf
 # Then run:
 sudo ldconfig 
@@ -47,19 +47,17 @@ sudo yum install nginx
 
 ## Installing the server
 
+Use Fabric:
+
+
 ```bash
 
-cd ~
-git clone git@github.com:ricleal/sns-reduction.git
-
-##
-cd /home/vagrant/sns-reduction
-virtualenv-3.5 venv -p /opt/rh/rh-python35/root/usr/bin/python3.5
-source venv/bin/activate
-pip install -r config/requirements/production.txt 
+fab -R staging start:branch='master'
 
 # Create .env file:
 cp config/envs/env.prod .env
+
+fab -R staging migrate
 
 ```
 
@@ -184,20 +182,13 @@ sudo chmod u=rw,g=rw,o= .env
 fab -f fabfile.py -R staging -p vagrant migrate
 ```
 
-## uWSGI
-
-```bash
-# Backup files
-sudo cp /usr/lib/systemd/system/uwsgi.service /usr/lib/systemd/system/uwsgi.service.orig
-sudo cp /etc/uwsgi.ini /etc/uwsgi.ini.orig
-```
-
 ## NGINX
 
 ```sh
 sudo cp /etc/systemd/system/nginx.service /etc/systemd/system/nginx.service.orig
 sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
 ```
+
 ## Redis
 
 ```sh
@@ -206,10 +197,10 @@ sudo cp /usr/lib/systemd/system/redis.service /usr/lib/systemd/system/redis.serv
 sudo cp /etc/redis.conf /etc/redis.conf.orig
 ```
 
-Not in init by default:
+Not that it's not started on boot by default:
 
 ```bash
-$ systemctl list-unit-files | grep redis
+# systemctl list-unit-files | grep redis
 redis-sentinel.service                      disabled
 redis.service                               disabled
 ```
