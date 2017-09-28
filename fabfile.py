@@ -41,6 +41,17 @@ env.roledefs = {
 }
 
 def get_active_role_name():
+    '''
+    Get active role name. For example:
+    If in the command line:
+    $ fab -R staging start_celery
+    The active role is staging
+    If the in the function heder there's a decorator:
+    @roles('webserver', 'dbserver')
+    The active roles is an array: ['webserver', 'dbserver']
+    and are treated one at the time
+    '''
+    # I think both instruction are equivalent:
     #for role in env.effective_roles:
     for role in env.roledefs.keys():
         if env.host_string in env.roledefs[role]['hosts']:
@@ -106,7 +117,13 @@ def append_to_active_role(role_name):
 
 def set_active_role_as_env(role_name):
     '''
-    This sets the env.roledefs[<active role>] as env variable 
+    This sets the env.roledefs[<active role>] as env variable
+    E.g.:
+    The entry:
+    env.roledefs['staging']['project_root']
+    Will be
+    env.project_root
+    When the 'staging' role is active
     '''
     for k, v in env.roledefs[role_name].items():
         if k in env and isinstance(env[k], list) and isinstance(v, list):
@@ -120,7 +137,7 @@ def set_active_role_as_env(role_name):
 def apply_role(func):
     """
     Decorator
-    Make sure all the role settings are available in the env 
+    Make sure all the active role settings are available in the env
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -131,24 +148,28 @@ def apply_role(func):
     return wrapper
 
 ###############################################################################
-# Auxiliary functions for the tasks
-#
-
-###############################################################################
 # TASKS
 # By order of execution
-
+# Do: fab --list
+# To see what is available as tasks
 @task
 @apply_role
 def start(branch='master'):
     '''
-    Clones or pull the repo
-    Note that the project folder will be owned by uwsgi
+    Clones or pull the repo into the project root
+    Creates reduction group
+    Sets the virtual env
+
+    # Run as:
+    fab -R staging start:branch='dev_deploy'
+
     '''
 
     login = run('id -u -n')
     # gid = run('id -g')
- 
+    
+    # creates a group reduction for all the users running this and web
+    # related users
     with settings(warn_only=True):
         sudo('groupadd reduction')
         sudo('usermod -a -G reduction {}'.format(login))
@@ -182,7 +203,8 @@ def migrate():
     ATTENTION: Don't forget to put the .env in the project root!!!
     and do: sudo chmod u=rw,g=rw,o= .env 
     ''' 
-    with  prefix('. ' + env.project_venv + '/bin/activate'), cd(env.project_src):
+    with  prefix('. ' + env.project_venv + '/bin/activate'),\
+            cd(env.project_src):
         # Collect all the static files
         run('python manage.py collectstatic --noinput')
         # Migrate and Update the database
@@ -303,7 +325,17 @@ def start_celery():
     #sudo('systemctl enable celery.service')
     sudo('systemctl daemon-reload')
     sudo('systemctl restart celery.service')
-    
+
+
+@task
+@apply_role
+def full_deploy():
+    start()
+    migrate()
+    start_redis()
+    start_celery()
+    start_nginx()
+    start_uwsgi()
 
 # def deploy():
 #     venv_root = os.path.join(env['project_root'], 'venv')
