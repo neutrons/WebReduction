@@ -9,6 +9,8 @@ After=syslog.target
 [Service]
 EnvironmentFile=-/etc/sysconfig/uwsgi
 ExecStartPre=/bin/mkdir -p /run/uwsgi
+ExecStartPre=/bin/mkdir -p /var/log/uwsgi
+
 ExecStartPre=/bin/chown uwsgi:uwsgi /run/uwsgi
 # ExecStart=/usr/sbin/uwsgi --ini /etc/uwsgi.ini
 # I'm having the local version of uwsgi working as the RHEL7 is for python3.4

@@ -96,6 +96,13 @@ def append_to_active_role(role_name):
         'celery_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'celery_template.service'),
         'celery_service_file': '/usr/lib/systemd/system/celery.service',
+        # Daphne
+        'daphne_service_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'daphne_template.service'),
+        'daphne_service_file': '/usr/lib/systemd/system/daphne.service',
+        'runworker_service_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'runworker_template.service'),
+        'runworker_service_file': '/usr/lib/systemd/system/runworker.service',
         #
         'requirements_file': os.path.join(
             remote_project_root, 'config', 'requirements', 'production.txt'),
@@ -244,6 +251,61 @@ def start_uwsgi():
     sudo('systemctl daemon-reload')
     sudo('systemctl restart uwsgi.service')
 
+@task
+@apply_role
+def start_daphne():
+    '''
+    Start daphne
+
+    # Run as:
+    fab -f fabfile.py -R staging start_daphne
+
+    # To delete manualy this service:
+    sudo systemctl stop daphne
+    sudo systemctl disable daphne
+    sudo rm /lib/systemd/system/daphne.service
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
+
+    # To list this service
+    systemctl list-unit-files --all | grep daphne
+
+    '''
+    files.upload_template(env['daphne_service_template'],
+        env['daphne_service_file'], context=env, backup=False, use_sudo=True)
+
+    # This is to enable on boot
+    # sudo('systemctl enable daphne.service')
+    sudo('systemctl daemon-reload')
+    sudo('systemctl restart daphne.service')
+
+@task
+@apply_role
+def start_runworker():
+    '''
+    Start runworker
+
+    # Run as:
+    fab -f fabfile.py -R staging start_runworker
+
+    # To delete manualy this service:
+    sudo systemctl stop runworker
+    sudo systemctl disable runworker
+    sudo rm /lib/systemd/system/runworker.service
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
+
+    # To list this service
+    systemctl list-unit-files --all | grep runworker
+
+    '''
+    files.upload_template(env['runworker_service_template'],
+        env['runworker_service_file'], context=env, backup=False, use_sudo=True)
+
+    # This is to enable on boot
+    # sudo('systemctl enable runworker.service')
+    sudo('systemctl daemon-reload')
+    sudo('systemctl restart runworker.service')
 
 @task
 @apply_role
@@ -291,9 +353,6 @@ def start_redis():
         env['redis_conf_file'], context=env, backup=False, use_sudo=True)
     files.upload_template(env['redis_service_template'],
         env['redis_service_file'], context=env, backup=False, use_sudo=True)
-    
-    # it blows if the directories don't exist
-    sudo('mkdir -p /var/log/uwsgi')
 
     #sudo('systemctl enable redis.service')
     sudo('systemctl daemon-reload')
@@ -317,10 +376,6 @@ def start_celery():
         env['celery_conf_file'], context=env, backup=False, use_sudo=True)
     files.upload_template(env['celery_service_template'],
         env['celery_service_file'], context=env, backup=False, use_sudo=True)
-    
-    # it blows if the directories don't exist
-    sudo('mkdir -p /var/log/celery')
-    sudo('mkdir -p /var/run/celery')
 
     #sudo('systemctl enable celery.service')
     sudo('systemctl daemon-reload')
@@ -336,94 +391,4 @@ def full_deploy():
     start_celery()
     start_nginx()
     start_uwsgi()
-
-# def deploy():
-#     venv_root = os.path.join(env['project_root'], 'venv')
-#     src_root = os.path.join(env['project_root'], 'src')
-
-#     # Create Virtual env
-#     if not os.path.isdir(venv_root):
-#         with cd(env['project_root']):
-#             run('virtualenv venv')
-
-#     # Activate the environment and install requirements
-#     with settings(warn_only=True), prefix('. ' + venv_root + '/bin/activate'):
-#         run("pip install -U -r %(requirements_file)s"%env)
-
-#     with cd(src_root), prefix('. ' + venv_root + '/bin/activate'):
-#         # Collect all the static files
-#         run('python manage.py collectstatic --noinput')
-#         # Migrate and Update the database
-#         run('python manage.py makemigrations --noinput')
-#         run('python manage.py migrate --no-input')
-#         run('python manage.py migrate --no-input')
-#         run('python manage.py loaddata catalog jobs')
-
-#     # Fills in the templates
-#     files.upload_template(env['nginx_conf_template'], env['nginx_conf_file'], context=env)
-#     files.upload_template(env['uwsgi_ini_template'], env['uwsgi_ini_file'], context=env)
-#     files.upload_template(env['redis_conf_template'], env['redis_conf_file'], context=env)
-
-#     with prefix('. ' + venv_root + '/bin/activate'), settings(warn_only=True):
-#         run("killall -w -q -s INT $(which uwsgi)")
-#         run("$(which uwsgi) --ini %(uwsgi_ini_file)s"%env)
-
-#     with settings(warn_only=True):
-#         run("killall -w -q -s INT $(which redis-server)")
-#     run_background("$(which redis-server) %(redis_conf_file)s"%env)
-
-#     with cd(src_root), prefix('. ' + venv_root + '/bin/activate'), settings(warn_only=True):
-#         run("kill -9 $(ps -ef  | grep $(which celery) | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)")
-#         run_background("$(which celery) -A server.celery worker --loglevel=info --logfile=%(project_root)s/dist/celery.log"%env)
-    
-    
-
-# #
-# # Tasks
-# #
-
-# @task
-# def cleandb():
-#     local('psql -U reduction -d reduction -c "drop owned by reduction;" && find . -iname "$????_*.py*" | grep migrations | xargs rm')
-    
-# @task
-# @roles('dev')
-# def killall():
-#     update_env()
-#     venv_root = os.path.join(env['project_root'], 'venv')
-#     with prefix('. ' + venv_root + '/bin/activate'), settings(warn_only=True):
-#         run("kill -9 $(ps -ef  | grep $(which celery) | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)")
-#         run("killall -w -q -s INT $(which redis-server)")
-#         run("killall -w -q -s INT $(which uwsgi)")
-#         run("killall -w -q -s INT $(which nginx)")
-#         #run("ps -e | grep -e $(which celery) -e $(which redis-server) -e $(which uwsgi) -e $(which nginx)")
-#         run("ps -ef | grep -e celery -e redis-server -e uwsgi -e nginx")
-# @task
-# @roles('dev')
-# def deploy_dev():
-#     update_env()
-#     deploy()
-#     restart_nginx()
-#     run("ps -e | grep -e celery -e redis-server -e uwsgi -e nginx")
-
-# @task
-# @roles('dev_ssl')
-# def deploy_dev_ssl():
-#     update_env()
-#     deploy()
-#     restart_nginx(run_as_sudo=True)
-
-# @task
-# @roles('staging')
-# def deploy_staging():
-#     print("TODO")
-#     pass
-
-# @task
-# @roles('production')
-# def deploy_prod():
-#     print("TODO")
-#     pass
-
-
 

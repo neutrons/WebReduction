@@ -1,0 +1,21 @@
+
+[Unit]
+Description=Django Worker Service
+After=syslog.target
+After=network.target
+After=postgresql-9.5.service
+After=nginx.service
+
+[Service]
+Type=simple
+RuntimeDirectory=django
+PIDFile=/run/django-runworker.pid
+WorkingDirectory=%(project_root)s/src
+
+ExecStart=%(project_venv)s/bin/python manage.py runworker
+ExecStop=/bin/kill -s TERM $MAINPID
+; Restart=always
+; RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

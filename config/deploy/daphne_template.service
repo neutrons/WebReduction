@@ -1,0 +1,21 @@
+
+[Unit]
+Description=Daphne Service For Django
+After=syslog.target
+After=network.target
+After=postgresql-9.5.service
+After=nginx.service
+
+[Service]
+Type=simple
+RuntimeDirectory=daphne
+PIDFile=/run/daphne.pid
+WorkingDirectory=%(project_root)s/src
+
+ExecStart=%(project_venv)s/bin/daphne -u %(project_root)s/dist/daphne.sock \
+    server.asgi:channel_layer
+ExecStop=/bin/kill -s TERM $MAINPID
+
+
+[Install]
+WantedBy=multi-user.target
