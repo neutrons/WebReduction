@@ -68,13 +68,6 @@ def append_to_active_role(role_name):
         # project directories
         'project_src': os.path.join(remote_project_root, 'src'),
         'project_venv': os.path.join(remote_project_root, 'venv'),
-        # uwsgi
-        'uwsgi_ini_template': os.path.join(
-            local_project_root, 'config', 'deploy', 'uwsgi_template.ini'),
-        'uwsgi_ini_file': '/etc/uwsgi.ini',
-        'uwsgi_service_template': os.path.join(
-            local_project_root, 'config', 'deploy', 'uwsgi_template.service'),
-        'uwsgi_service_file': '/usr/lib/systemd/system/uwsgi.service',
         # nginx
         'nginx_conf_template': os.path.join(
             local_project_root, 'config', 'deploy', 'nginx_template.conf'),
@@ -219,38 +212,6 @@ def migrate():
         run('python manage.py migrate --no-input')
         run('python manage.py loaddata catalog jobs')
 
-
-@task
-@apply_role
-def start_uwsgi():
-    '''
-    Start uwsgi
-
-    # Run as:
-    fab -f fabfile.py -R staging start_uwsgi
-
-    # To delete manualy this service:
-    sudo systemctl stop uwsgi
-    sudo systemctl disable uwsgi
-    sudo rm /lib/systemd/system/uwsgi.service 
-    sudo systemctl daemon-reload
-    sudo systemctl reset-failed
-
-    # To list this service
-    systemctl list-unit-files --all | grep uwsgi
-
-    '''
-    
-    files.upload_template(env['uwsgi_ini_template'],
-        env['uwsgi_ini_file'], context=env, backup=False, use_sudo=True)
-    files.upload_template(env['uwsgi_service_template'],
-        env['uwsgi_service_file'], context=env, backup=False, use_sudo=True)
-
-    # This is to enable on boot
-    # sudo('systemctl enable uwsgi.service')
-    sudo('systemctl daemon-reload')
-    sudo('systemctl restart uwsgi.service')
-
 @task
 @apply_role
 def start_daphne():
@@ -387,8 +348,8 @@ def start_celery():
 def full_deploy():
     start()
     migrate()
+    start_daphne()
+    start_runworker()
     start_redis()
     start_celery()
     start_nginx()
-    start_uwsgi()
-

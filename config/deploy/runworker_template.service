@@ -12,7 +12,7 @@ RuntimeDirectory=django
 PIDFile=/run/django-runworker.pid
 WorkingDirectory=%(project_root)s/src
 
-ExecStart=%(project_venv)s/bin/python manage.py runworker
+ExecStart=%(project_venv)s/bin/python manage.py runworker --threads 4
 ExecStop=/bin/kill -s TERM $MAINPID
 ; Restart=always
 ; RestartSec=10
