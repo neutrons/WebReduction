@@ -78,6 +78,13 @@ def append_to_active_role(role_name):
         'redis_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'redis_template.service'),
         'redis_service_file': '/usr/lib/systemd/system/redis.service',
+        # Celery
+        'celery_conf_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'celery_template.conf'),
+        'celery_conf_file': '/etc/celery.conf',
+        'celery_service_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'celery_template.service'),
+        'celery_service_file': '/usr/lib/systemd/system/celery.service',
         #
         'requirements_file': os.path.join(
             remote_project_root, 'config', 'requirements', 'production.txt'),
@@ -148,7 +155,7 @@ def start(branch='master'):
         sudo('usermod -a -G reduction uwsgi')
         sudo('usermod -a -G reduction nginx')
 
-    # clone in ./data. Sets permissions to uwsgi
+    # clone the repo. Sets permissions to the group reduction
     if not files.exists(env.project_root):
         sudo('mkdir -p {}'.format(env.project_root))
         sudo('chown {}:{} {}'.format(
@@ -172,7 +179,7 @@ def start(branch='master'):
 @apply_role
 def migrate():
     '''
-    Don't forget to put the .env in ./data!
+    ATTENTION: Don't forget to put the .env in the project root!!!
     and do: sudo chmod u=rw,g=rw,o= .env 
     ''' 
     with  prefix('. ' + env.project_venv + '/bin/activate'), cd(env.project_src):
@@ -263,11 +270,39 @@ def start_redis():
     files.upload_template(env['redis_service_template'],
         env['redis_service_file'], context=env, backup=False, use_sudo=True)
     
+    # it blows if the directories don't exist
+    sudo('mkdir -p /var/log/uwsgi')
+
     #sudo('systemctl enable redis.service')
     sudo('systemctl daemon-reload')
     sudo('systemctl restart redis.service')
 
 
+
+@task
+@apply_role
+def start_celery():
+    '''
+    
+    # To delete manualy this service:
+    sudo systemctl stop celery
+    sudo systemctl disable celery
+    sudo rm /lib/systemd/system/celery.service 
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
+    '''
+    files.upload_template(env['celery_conf_template'],
+        env['celery_conf_file'], context=env, backup=False, use_sudo=True)
+    files.upload_template(env['celery_service_template'],
+        env['celery_service_file'], context=env, backup=False, use_sudo=True)
+    
+    # it blows if the directories don't exist
+    sudo('mkdir -p /var/log/celery')
+    sudo('mkdir -p /var/run/celery')
+
+    #sudo('systemctl enable celery.service')
+    sudo('systemctl daemon-reload')
+    sudo('systemctl restart celery.service')
     
 
 # def deploy():

@@ -18,6 +18,11 @@ source ~/.bash_profile
 echo $'Host github.com\n\tHostname ssh.github.com\n\tPort 443\n' >> ~/.ssh/config
 chmod 600 ~/.ssh/config
 
+## RHEL python 3.5 (otherwise won't work in systemd sh -c)
+sudo echo $'/opt/rh/rh-python35/root/lib64\n' > /etc/ld.so.conf.d/rh-python35.conf
+# Then run:
+sudo ldconfig 
+
 ```
 
 ## Software needed:

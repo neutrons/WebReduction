@@ -1,13 +1,16 @@
 [Unit]
 Description=Celery Service
 After=network.target
+After=redis.service
 
 [Service]
 Type=forking
-User=celery
-Group=celery
-EnvironmentFile=-%(project_root)s/dist/celery.conf
+
+EnvironmentFile=/etc/celery.conf
+
 WorkingDirectory=%(project_root)s/src
+#WorkingDirectory=%(project_venv)s/bin
+
 ExecStart=/bin/sh -c '${CELERY_BIN} multi start ${CELERYD_NODES} \
   -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
   --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
