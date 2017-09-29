@@ -91,4 +91,5 @@ ENV/
 *~
 dump.rdb
 nohup.out
+db.sqlite3
 

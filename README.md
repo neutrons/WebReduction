@@ -1,5 +1,12 @@
-# sns-reduction
-sns-reduction
+# HFIR and SNS Web Data Reduction
+
+The new version of the HFIR and SNS Web Data Reduction
+
+## Features:
+
+- Catalog data for all SNS instruments and HFIR SANS
+- 
+
 
 ## Launching with fab file:
 

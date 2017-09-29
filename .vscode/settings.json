@@ -10,7 +10,10 @@
         "**/*.*~": true,
         "**/venv": true,
         "**/dist": true,
-        "**/.settings": true
+        "**/.settings": true,
+        "**/.vscode": true,
+        "**/.project": true,
+        "**/.pydevproject": true
     },
     "files.associations": {
         "*.tpl": "jinja",

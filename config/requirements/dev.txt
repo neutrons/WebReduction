@@ -2,8 +2,8 @@
 -r base.txt
 
 # To have a nice ./manage.py shell
-ipython
+ipython>=6.2.0
 
-pep8
-autopep8
+pep8>=1.7.0
+autopep8>=1.3.2
 

@@ -81,6 +81,19 @@ class LoginView(FormView):
         # auth_login(self.request, form.get_user())
         return super(LoginView, self).form_valid(form)
 
+    def get(self, request, *args, **kwargs):
+        """
+        Same as django.views.generic.edit.ProcessFormView.get()
+        If the user is logged in anf hits: /users/login
+        Rather than show the login form, redirect it to index
+        """
+        if request.user.is_authenticated():
+            # Redirect to profile
+            return redirect(reverse_lazy('index'))
+        else:
+            return super(LoginView, self).get(request, *args, **kwargs)
+
+
     def get_success_url(self):
         try:
             UserProfile.objects.get(user=self.request.user)
@@ -99,6 +112,8 @@ class LoginView(FormView):
 
     def _save_credentials_in_session(self, password):
         '''
+        I need to save the password to authenticate in OnCat and analysis later
+        TODO: Sessions should be saved in memory. See redis option also.
         '''
         logger.debug("Setting credentials in the session...")
         self.request.session["password"] = password

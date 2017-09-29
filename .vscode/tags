@@ -3413,12 +3413,15 @@ append	../venv/lib/python3.5/_collections_abc.py	/^    def append(self, value):$
 append	../venv/lib/python3.5/collections/__init__.py	/^    def append(self, item): self.data.append(item)$/;"	kind:member	line:1074
 append	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    def append(self, item):$/;"	kind:member	line:989
 append	../venv/lib/python3.5/sre_parse.py	/^    def append(self, code):$/;"	kind:member	line:165
+append_to_active_role	../fabfile.py	/^def append_to_active_role(role_name):$/;"	kind:function	line:61
 application	../src/server/wsgi.py	/^application = get_wsgi_application()$/;"	kind:variable	line:16
+apply_role	../fabfile.py	/^def apply_role(func):$/;"	kind:function	line:137
 apps.py	../src/server/apps/catalog/apps.py	1;"	kind:file	line:1
 apps.py	../src/server/apps/results/apps.py	1;"	kind:file	line:1
 apps.py	../src/server/apps/sans/apps.py	1;"	kind:file	line:1
 apps.py	../src/server/apps/users/apps.py	1;"	kind:file	line:1
 ascii.py	../venv/lib/python3.5/encodings/ascii.py	1;"	kind:file	line:1
+asgi.py	../src/server/asgi.py	1;"	kind:file	line:1
 atexit	../venv/lib/python3.5/weakref.py	/^    def atexit(self):$/;"	kind:member	line:543
 atexit	../venv/lib/python3.5/weakref.py	/^    def atexit(self, value):$/;"	kind:member	line:549
 atof	../venv/lib/python3.5/locale.py	/^def atof(string, func=float):$/;"	kind:function	line:315
@@ -3523,6 +3526,7 @@ celery.py	../src/server/celery.py	1;"	kind:file	line:1
 center	../venv/lib/python3.5/collections/__init__.py	/^    def center(self, width, *args):$/;"	kind:member	line:1163
 chained_field	../src/server/apps/users/models.py	/^        chained_field="facility",$/;"	kind:variable	line:82
 chained_model_field	../src/server/apps/users/models.py	/^        chained_model_field="facility",$/;"	kind:variable	line:83
+channel_layer	../src/server/asgi.py	/^channel_layer = get_channel_layer()$/;"	kind:variable	line:9
 channel_routing	../src/server/routing.py	/^channel_routing = [$/;"	kind:variable	line:6
 characters	../venv/lib/python3.5/tempfile.py	/^    characters = "abcdefghijklmnopqrstuvwxyz0123456789_"$/;"	kind:variable	line:283
 charbuffertype	../venv/lib/python3.5/codecs.py	/^    charbuffertype = str$/;"	kind:variable	line:420
@@ -3556,7 +3560,6 @@ choices	../src/server/apps/sans/gpsans/models.py	/^        choices=SOLID_ANGLE_C
 chown	../venv/lib/python3.5/shutil.py	/^def chown(path, user=None, group=None):$/;"	kind:function	line:1007
 chown	../venv/lib/python3.5/tarfile.py	/^    def chown(self, tarinfo, targetpath, numeric_owner):$/;"	kind:member	line:2212
 clean	../src/server/apps/sans/biosans/forms.py	/^    def clean(self):$/;"	kind:member	line:40
-cleandb	../fabfile.py	/^def cleandb():$/;"	kind:function	line:307
 cleanup	../venv/lib/python3.5/tempfile.py	/^    def cleanup(self):$/;"	kind:member	line:949
 clear	../venv/lib/python3.5/_collections_abc.py	/^    def clear(self):$/;"	kind:member	line:531
 clear	../venv/lib/python3.5/_collections_abc.py	/^    def clear(self):$/;"	kind:member	line:748
@@ -3822,7 +3825,6 @@ data_encoding	../venv/lib/python3.5/codecs.py	/^    data_encoding = 'unknown'$/;
 data_file_path_template	../src/server/apps/catalog/models.py	/^    data_file_path_template = models.CharField($/;"	kind:variable	line:104
 datafiles	../src/server/scripts/hfir.py	/^    def datafiles(self):$/;"	kind:member	line:156
 date_joined	../src/server/apps/users/models.py	/^    date_joined = models.DateField(auto_now=True)$/;"	kind:variable	line:31
-debug	../fabfile.py	/^def debug():$/;"	kind:function	line:294
 debug	../venv/lib/python3.5/tarfile.py	/^    debug = 0                   # May be set from 0 (no msgs) to 3 (all msgs)$/;"	kind:variable	line:1379
 decimal_places	../src/server/apps/sans/biosans/models.py	/^        decimal_places=2,$/;"	kind:variable	line:29
 decimal_places	../src/server/apps/sans/biosans/models.py	/^        decimal_places=5,$/;"	kind:variable	line:183
@@ -4191,18 +4193,11 @@ dependencies	../src/server/apps/catalog/migrations/0001_initial.py	/^    depende
 dependencies	../src/server/apps/sans/migrations/0001_initial.py	/^    dependencies = [$/;"	kind:variable	line:17
 dependencies	../src/server/apps/users/migrations/0001_initial.py	/^    dependencies = [$/;"	kind:variable	line:16
 dependencies	../src/server/apps/users/migrations/0002_auto_20170918_1452.py	/^    dependencies = [$/;"	kind:variable	line:10
-deploy	../fabfile.py	/^def deploy():$/;"	kind:function	line:249
-deploy_dev	../fabfile.py	/^def deploy_dev():$/;"	kind:function	line:327
-deploy_dev_ssl	../fabfile.py	/^def deploy_dev_ssl():$/;"	kind:function	line:336
-deploy_pre_prod	../fabfile.py	/^def deploy_pre_prod():$/;"	kind:function	line:344
-deploy_prod	../fabfile.py	/^def deploy_prod():$/;"	kind:function	line:351
 dereference	../venv/lib/python3.5/tarfile.py	/^    dereference = False         # If true, add content of linked file to the$/;"	kind:variable	line:1381
 description	../src/server/apps/catalog/models.py	/^    description = models.CharField($/;"	kind:variable	line:12
 description	../src/server/apps/catalog/models.py	/^    description = models.CharField($/;"	kind:variable	line:55
 detach	../venv/lib/python3.5/weakref.py	/^    def detach(self):$/;"	kind:member	line:521
 detect_encoding	../venv/lib/python3.5/tokenize.py	/^def detect_encoding(readline):$/;"	kind:function	line:357
-dev_roles	../fabfile.py	/^dev_roles = {$/;"	kind:variable	line:59
-dev_ssl_roles	../fabfile.py	/^dev_ssl_roles = dev_roles$/;"	kind:variable	line:74
 devnull	../venv/lib/python3.5/ntpath.py	/^devnull = 'nul'$/;"	kind:variable	line:33
 devnull	../venv/lib/python3.5/posixpath.py	/^devnull = '\/dev\/null'$/;"	kind:variable	line:37
 dict_itemiterator	../venv/lib/python3.5/_collections_abc.py	/^dict_itemiterator = type(iter({}.items()))$/;"	kind:variable	line:40
@@ -4217,8 +4212,6 @@ digest	../venv/lib/python3.5/hmac.py	/^    def digest(self):$/;"	kind:member	lin
 digest_size	../venv/lib/python3.5/hmac.py	/^digest_size = None$/;"	kind:variable	line:15
 digits	../venv/lib/python3.5/encodings/punycode.py	/^digits = b"abcdefghijklmnopqrstuvwxyz0123456789"$/;"	kind:variable	line:77
 direct_beam_file	../src/server/apps/sans/gpsans/models.py	/^    direct_beam_file = models.CharField($/;"	kind:variable	line:77
-dirlist	../dist/static/thirdparty/jqueryfiletree-2.1.4/connectors/jqueryFileTree.py	/^def dirlist(request):$/;"	kind:function	line:9
-dirlist	../dist/static/thirdparty/jqueryfiletree/connectors/jqueryFileTree.py	/^def dirlist(request):$/;"	kind:function	line:9
 dirlist	../src/server/util/views.py	/^def dirlist(request):$/;"	kind:function	line:17
 dirlist	../src/static/thirdparty/jqueryfiletree-2.1.4/connectors/jqueryFileTree.py	/^def dirlist(request):$/;"	kind:function	line:9
 dirlist	../src/static/thirdparty/jqueryfiletree/connectors/jqueryFileTree.py	/^def dirlist(request):$/;"	kind:function	line:9
@@ -4570,6 +4563,7 @@ entries	../src/server/apps/sans/models.py	/^    entries = JSONField()$/;"	kind:v
 env	../src/server/settings/env.py	/^env = environ.Env()$/;"	kind:variable	line:6
 env.py	../src/server/settings/env.py	1;"	kind:file	line:1
 environ	../venv/lib/python3.5/os.py	/^environ = _createenviron()$/;"	kind:variable	line:810
+epylint	../venv/bin/epylint	1;"	kind:file	line:1
 eq	../venv/lib/python3.5/operator.py	/^def eq(a, b):$/;"	kind:function	line:35
 error	../venv/lib/python3.5/_dummy_thread.py	/^error = RuntimeError$/;"	kind:variable	line:27
 error	../venv/lib/python3.5/copy.py	/^error = Error   # backward compatibility$/;"	kind:variable	line:58
@@ -4739,6 +4733,7 @@ fromkeys	../venv/lib/python3.5/collections/__init__.py	/^    def fromkeys(cls, i
 fromtarfile	../venv/lib/python3.5/tarfile.py	/^    def fromtarfile(cls, tarfile):$/;"	kind:member	line:1078
 fsdecode	../venv/lib/python3.5/os.py	/^    def fsdecode(filename):$/;"	kind:function	line:864
 fsencode	../venv/lib/python3.5/os.py	/^    def fsencode(filename):$/;"	kind:function	line:851
+full_deploy	../fabfile.py	/^def full_deploy():$/;"	kind:function	line:348
 fullmatch	../venv/lib/python3.5/re.py	/^def fullmatch(pattern, string, flags=0):$/;"	kind:function	line:165
 fullname	../src/server/apps/users/models.py	/^    fullname = models.CharField(max_length=100, blank=False,$/;"	kind:variable	line:27
 func	../venv/lib/python3.5/operator.py	/^            def func(obj):$/;"	kind:function	line:242
@@ -4784,6 +4779,7 @@ get_absolute_url	../src/server/apps/sans/biosans/models.py	/^    def get_absolut
 get_absolute_url	../src/server/apps/sans/biosans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:206
 get_absolute_url	../src/server/apps/sans/gpsans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:105
 get_absolute_url	../src/server/apps/sans/gpsans/models.py	/^    def get_absolute_url(self):$/;"	kind:member	line:112
+get_active_role_name	../fabfile.py	/^def get_active_role_name():$/;"	kind:function	line:43
 get_all_fields	../src/server/apps/sans/models.py	/^    def get_all_fields(self, fields_to_ignore=('id', 'user')):$/;"	kind:member	line:32
 get_all_ipts	../src/server/apps/users/ldap_util.py	/^    def get_all_ipts(self):$/;"	kind:member	line:41
 get_all_ipts_for_an_uid	../src/server/apps/users/ldap_util.py	/^    def get_all_ipts_for_an_uid(self, uid):$/;"	kind:member	line:136
@@ -5035,6 +5031,7 @@ gi_code	../venv/lib/python3.5/types.py	/^    def gi_code(self):$/;"	kind:member	
 gi_frame	../venv/lib/python3.5/types.py	/^    def gi_frame(self):$/;"	kind:member	line:186
 gi_running	../venv/lib/python3.5/types.py	/^    def gi_running(self):$/;"	kind:member	line:189
 gi_yieldfrom	../venv/lib/python3.5/types.py	/^    def gi_yieldfrom(self):$/;"	kind:member	line:192
+git_repo	../fabfile.py	/^git_repo = "https:\/\/github.com\/ricleal\/sns-reduction.git"$/;"	kind:variable	line:26
 global_matches	../venv/lib/python3.5/rlcompleter.py	/^    def global_matches(self, text):$/;"	kind:member	line:102
 group	../venv/lib/python3.5/tokenize.py	/^def group(*choices): return '(' + '|'.join(choices) + ')'$/;"	kind:function	line:111
 groups	../venv/lib/python3.5/sre_parse.py	/^    def groups(self):$/;"	kind:member	line:76
@@ -5242,6 +5239,7 @@ iso8859_6.py	../venv/lib/python3.5/encodings/iso8859_6.py	1;"	kind:file	line:1
 iso8859_7.py	../venv/lib/python3.5/encodings/iso8859_7.py	1;"	kind:file	line:1
 iso8859_8.py	../venv/lib/python3.5/encodings/iso8859_8.py	1;"	kind:file	line:1
 iso8859_9.py	../venv/lib/python3.5/encodings/iso8859_9.py	1;"	kind:file	line:1
+isort	../venv/bin/isort	1;"	kind:file	line:1
 isprintable	../venv/lib/python3.5/collections/__init__.py	/^    def isprintable(self): return self.data.isprintable()$/;"	kind:member	line:1196
 isreg	../venv/lib/python3.5/tarfile.py	/^    def isreg(self):$/;"	kind:member	line:1353
 isspace	../venv/lib/python3.5/collections/__init__.py	/^    def isspace(self): return self.data.isspace()$/;"	kind:member	line:1197
@@ -5270,8 +5268,6 @@ join	../venv/lib/python3.5/collections/__init__.py	/^    def join(self, seq): re
 join	../venv/lib/python3.5/ntpath.py	/^def join(path, *paths):$/;"	kind:function	line:74
 join	../venv/lib/python3.5/posixpath.py	/^def join(a, *p):$/;"	kind:function	line:71
 joinuser	../venv/lib/python3.5/site.py	/^    def joinuser(*args):$/;"	kind:function	line:324
-jqueryFileTree.py	../dist/static/thirdparty/jqueryfiletree-2.1.4/connectors/jqueryFileTree.py	1;"	kind:file	line:1
-jqueryFileTree.py	../dist/static/thirdparty/jqueryfiletree/connectors/jqueryFileTree.py	1;"	kind:file	line:1
 jqueryFileTree.py	../src/static/thirdparty/jqueryfiletree-2.1.4/connectors/jqueryFileTree.py	1;"	kind:file	line:1
 jqueryFileTree.py	../src/static/thirdparty/jqueryfiletree/connectors/jqueryFileTree.py	1;"	kind:file	line:1
 k	../venv/lib/python3.5/locale.py	/^    k = k.replace('_', '')$/;"	kind:variable	line:713
@@ -5281,7 +5277,6 @@ keys	../venv/lib/python3.5/collections/__init__.py	/^    def keys(self):$/;"	kin
 keys	../venv/lib/python3.5/weakref.py	/^    def keys(self):$/;"	kind:member	line:199
 keys	../venv/lib/python3.5/weakref.py	/^    def keys(self):$/;"	kind:member	line:416
 keyword.py	../venv/lib/python3.5/keyword.py	1;"	kind:file	line:1
-killall	../fabfile.py	/^def killall():$/;"	kind:function	line:313
 koi8_r.py	../venv/lib/python3.5/encodings/koi8_r.py	1;"	kind:file	line:1
 koi8_t.py	../venv/lib/python3.5/encodings/koi8_t.py	1;"	kind:file	line:1
 koi8_u.py	../venv/lib/python3.5/encodings/koi8_u.py	1;"	kind:file	line:1
@@ -5289,7 +5284,6 @@ kwlist	../venv/lib/python3.5/keyword.py	/^kwlist = [$/;"	kind:variable	line:15
 kz1048.py	../venv/lib/python3.5/encodings/kz1048.py	1;"	kind:file	line:1
 l	../src/server/apps/users/ldap_util.py	/^    l = LdapSns()$/;"	kind:variable	line:152
 latin_1.py	../venv/lib/python3.5/encodings/latin_1.py	1;"	kind:file	line:1
-launch_in_terminal	../fabfile.py	/^def launch_in_terminal(command):$/;"	kind:function	line:221
 lazycache	../venv/lib/python3.5/linecache.py	/^def lazycache(filename, module_globals):$/;"	kind:function	line:147
 ldap_group_name	../src/server/apps/catalog/models.py	/^    ldap_group_name = models.CharField($/;"	kind:variable	line:81
 ldap_util.py	../src/server/apps/users/ldap_util.py	1;"	kind:file	line:1
@@ -5391,7 +5385,6 @@ makelink	../venv/lib/python3.5/tarfile.py	/^    def makelink(self, tarinfo, targ
 makepath	../venv/lib/python3.5/site.py	/^def makepath(*paths):$/;"	kind:function	line:92
 maketrans	../venv/lib/python3.5/collections/__init__.py	/^    maketrans = str.maketrans$/;"	kind:variable	line:1205
 makeunknown	../venv/lib/python3.5/tarfile.py	/^    def makeunknown(self, tarinfo, targetpath):$/;"	kind:member	line:2158
-manage.py	../dist/media/job_1/manage.py	1;"	kind:file	line:1
 manage.py	../src/manage.py	1;"	kind:file	line:1
 managers	../src/server/apps/users/migrations/0001_initial.py	/^            managers=[$/;"	kind:variable	line:42
 mappingproxy	../venv/lib/python3.5/_collections_abc.py	/^mappingproxy = type(type.__dict__)$/;"	kind:variable	line:53
@@ -5444,6 +5437,7 @@ maybe	../venv/lib/python3.5/tokenize.py	/^def maybe(*choices): return group(*cho
 mbcs.py	../venv/lib/python3.5/encodings/mbcs.py	1;"	kind:file	line:1
 merge	../venv/lib/python3.5/heapq.py	/^def merge(*iterables, key=None, reverse=False):$/;"	kind:function	line:314
 methodcaller	../venv/lib/python3.5/operator.py	/^class methodcaller:$/;"	kind:class	line:296
+migrate	../fabfile.py	/^def migrate():$/;"	kind:function	line:201
 minor	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^def minor(dev):$/;"	kind:function	line:521
 minor	../venv/lib/python3.5/plat-x86_64-linux-gnu/TYPES.py	/^def minor(dev): return ((dev).__val[0] & 0xff)$/;"	kind:function	line:170
 minor	../venv/lib/python3.5/plat-x86_64-linux-gnu/TYPES.py	/^def minor(dev): return ((dev).__val[1] & 0xff)$/;"	kind:function	line:166
@@ -5665,17 +5659,17 @@ post	../src/server/apps/sans/views.py	/^    def post(self, request, **kwargs):$/
 post	../src/server/apps/sans/views.py	/^    def post(self, request, **kwargs):$/;"	kind:member	line:607
 post	../src/server/util/formsets.py	/^    def post(self, request, *args, **kwargs):$/;"	kind:member	line:48
 pow	../venv/lib/python3.5/operator.py	/^def pow(a, b):$/;"	kind:function	line:124
-pre_prod_roles	../fabfile.py	/^pre_prod_roles = dev_ssl_roles$/;"	kind:variable	line:134
 prepare_class	../venv/lib/python3.5/types.py	/^def prepare_class(name, bases=(), kwds=None):$/;"	kind:function	line:59
 prev_sys_path	../venv/bin/activate_this.py	/^prev_sys_path = list(sys.path)$/;"	kind:variable	line:23
 prf	../venv/lib/python3.5/hashlib.py	/^        def prf(msg, inner=inner, outer=outer):$/;"	kind:function	line:173
 print_function	../venv/lib/python3.5/__future__.py	/^print_function = _Feature((2, 6, 0, "alpha", 2),$/;"	kind:variable	line:126
-prod_roles	../fabfile.py	/^prod_roles = pre_prod_roles$/;"	kind:variable	line:142
 ptcp154.py	../venv/lib/python3.5/encodings/ptcp154.py	1;"	kind:file	line:1
 punycode.py	../venv/lib/python3.5/encodings/punycode.py	1;"	kind:file	line:1
 punycode_decode	../venv/lib/python3.5/encodings/punycode.py	/^def punycode_decode(text, errors):$/;"	kind:function	line:182
 punycode_encode	../venv/lib/python3.5/encodings/punycode.py	/^def punycode_encode(text):$/;"	kind:function	line:117
 purge	../venv/lib/python3.5/re.py	/^def purge():$/;"	kind:function	line:226
+pylint	../venv/bin/pylint	1;"	kind:file	line:1
+pyreverse	../venv/bin/pyreverse	1;"	kind:file	line:1
 python-config	../venv/bin/python-config	1;"	kind:file	line:1
 python-config.py	../venv/lib/python3.5/config-3.5m-x86_64-linux-gnu/python-config.py	1;"	kind:file	line:1
 pyver	../venv/bin/python-config	/^pyver = sysconfig.get_config_var('VERSION')$/;"	kind:variable	line:30
@@ -5819,7 +5813,6 @@ resetlocale	../venv/lib/python3.5/locale.py	/^def resetlocale(category=LC_ALL):$
 resetwarnings	../venv/lib/python3.5/warnings.py	/^def resetwarnings():$/;"	kind:function	line:92
 resolve_name	../venv/lib/python3.5/importlib/util.py	/^def resolve_name(name, package):$/;"	kind:function	line:20
 rest.py	../src/server/apps/catalog/oncat/rest.py	1;"	kind:file	line:1
-restart_nginx	../fabfile.py	/^def restart_nginx(run_as_sudo=False):$/;"	kind:function	line:228
 reverse	../venv/lib/python3.5/_collections_abc.py	/^    def reverse(self):$/;"	kind:member	line:909
 reverse	../venv/lib/python3.5/collections/__init__.py	/^    def reverse(self): self.data.reverse()$/;"	kind:member	line:1082
 rfind	../venv/lib/python3.5/collections/__init__.py	/^    def rfind(self, sub, start=0, end=_sys.maxsize):$/;"	kind:member	line:1214
@@ -5843,7 +5836,6 @@ run	../src/server/apps/catalog/oncat/communication.py	/^    def run(self, instru
 run	../src/server/apps/catalog/oncat/facade.py	/^    def run(self, instrument, ipts, *args, **kwargs):$/;"	kind:member	line:45
 run	../src/server/apps/catalog/oncat/facade.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:116
 run	../src/server/apps/catalog/oncat/facade.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:365
-run_background	../fabfile.py	/^def run_background(command, run_as_sudo=False):$/;"	kind:function	line:210
 run_info	../src/server/apps/catalog/oncat/facade.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:340
 runs	../src/server/apps/catalog/oncat/communication.py	/^    def runs(self, instrument, ipts, exp, extensions=['.xml', '.dat']):$/;"	kind:member	line:92
 runs	../src/server/apps/catalog/oncat/communication.py	/^    def runs(self, instrument, ipts, extensions=['.nxs', '.nxs.h5']):$/;"	kind:member	line:168
@@ -5896,6 +5888,7 @@ sep	../venv/lib/python3.5/posixpath.py	/^sep = '\/'$/;"	kind:variable	line:33
 setBEGINLIBPATH	../venv/lib/python3.5/site.py	/^def setBEGINLIBPATH():$/;"	kind:function	line:362
 setUp	../src/server/apps/catalog/tests/hfir.py	/^    def setUp(self):$/;"	kind:member	line:10
 setUp	../src/server/scripts/hfir.py	/^    def setUp(self):$/;"	kind:member	line:203
+set_active_role_as_env	../fabfile.py	/^def set_active_role_as_env(role_name):$/;"	kind:function	line:118
 set_data	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    def set_data(self, path, data):$/;"	kind:member	line:704
 set_data	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    def set_data(self, path, data, *, _mode=0o666):$/;"	kind:member	line:836
 set_data	../venv/lib/python3.5/importlib/abc.py	/^    def set_data(self, path, data):$/;"	kind:member	line:319
@@ -5983,11 +5976,13 @@ sre_parse.py	../venv/lib/python3.5/sre_parse.py	1;"	kind:file	line:1
 stack_size	../venv/lib/python3.5/_dummy_thread.py	/^def stack_size(size=None):$/;"	kind:function	line:78
 standard_b64decode	../venv/lib/python3.5/base64.py	/^def standard_b64decode(s):$/;"	kind:function	line:98
 standard_b64encode	../venv/lib/python3.5/base64.py	/^def standard_b64encode(s):$/;"	kind:function	line:91
-start_celery_as_service	../fabfile.py	/^def start_celery_as_service():$/;"	kind:function	line:201
+start	../fabfile.py	/^def start(branch='master'):$/;"	kind:function	line:157
+start_celery	../fabfile.py	/^def start_celery():$/;"	kind:function	line:326
+start_daphne	../fabfile.py	/^def start_daphne():$/;"	kind:function	line:217
 start_new_thread	../venv/lib/python3.5/_dummy_thread.py	/^def start_new_thread(function, args, kwargs={}):$/;"	kind:function	line:29
-start_nginx_as_service	../fabfile.py	/^def start_nginx_as_service():$/;"	kind:function	line:189
-start_redis_as_service	../fabfile.py	/^def start_redis_as_service():$/;"	kind:function	line:183
-start_uwsgi_as_service	../fabfile.py	/^def start_uwsgi_as_service():$/;"	kind:function	line:195
+start_nginx	../fabfile.py	/^def start_nginx():$/;"	kind:function	line:273
+start_redis	../fabfile.py	/^def start_redis():$/;"	kind:function	line:303
+start_runworker	../fabfile.py	/^def start_runworker():$/;"	kind:function	line:245
 startswith	../venv/lib/python3.5/collections/__init__.py	/^    def startswith(self, prefix, start=0, end=_sys.maxsize):$/;"	kind:member	line:1231
 stat	../venv/lib/python3.5/os.py	/^    def stat(self, *, follow_symlinks=True):$/;"	kind:member	line:447
 stat.py	../venv/lib/python3.5/stat.py	1;"	kind:file	line:1
@@ -6026,6 +6021,7 @@ supports_follow_symlinks	../venv/lib/python3.5/os.py	/^    supports_follow_symli
 supports_unicode_filenames	../venv/lib/python3.5/ntpath.py	/^supports_unicode_filenames = (hasattr(sys, "getwindowsversion") and$/;"	kind:variable	line:547
 supports_unicode_filenames	../venv/lib/python3.5/posixpath.py	/^supports_unicode_filenames = (sys.platform == 'darwin')$/;"	kind:variable	line:428
 swapcase	../venv/lib/python3.5/collections/__init__.py	/^    def swapcase(self): return self.__class__(self.data.swapcase())$/;"	kind:member	line:1234
+symilar	../venv/bin/symilar	1;"	kind:file	line:1
 symlink_exception	../venv/lib/python3.5/tarfile.py	/^symlink_exception = (AttributeError, NotImplementedError)$/;"	kind:variable	line:58
 symmetric_difference	../venv/lib/python3.5/_weakrefset.py	/^    def symmetric_difference(self, other):$/;"	kind:member	line:174
 symmetric_difference_update	../venv/lib/python3.5/_weakrefset.py	/^    def symmetric_difference_update(self, other):$/;"	kind:member	line:180
@@ -6134,8 +6130,6 @@ update	../venv/lib/python3.5/collections/__init__.py	/^    def update(*args, **k
 update	../venv/lib/python3.5/hmac.py	/^    def update(self, msg):$/;"	kind:member	line:90
 update	../venv/lib/python3.5/weakref.py	/^    def update(*args, **kwargs):$/;"	kind:member	line:261
 update	../venv/lib/python3.5/weakref.py	/^    def update(self, dict=None, **kwargs):$/;"	kind:member	line:458
-update_env	../fabfile.py	/^def update_env():$/;"	kind:function	line:169
-update_env	../fabfile.py	/^def update_env():$/;"	kind:function	line:241
 update_wrapper	../venv/lib/python3.5/functools.py	/^def update_wrapper(wrapper,$/;"	kind:function	line:43
 updatecache	../venv/lib/python3.5/linecache.py	/^def updatecache(filename, module_globals=None):$/;"	kind:function	line:82
 upper	../venv/lib/python3.5/collections/__init__.py	/^    def upper(self): return self.__class__(self.data.upper())$/;"	kind:member	line:1238
@@ -6200,7 +6194,6 @@ views.py	../src/server/apps/users/views.py	1;"	kind:file	line:1
 views.py	../src/server/util/views.py	1;"	kind:file	line:1
 virtual_addsitepackages	../venv/lib/python3.5/site.py	/^def virtual_addsitepackages(known_paths):$/;"	kind:function	line:642
 virtual_install_main_packages	../venv/lib/python3.5/site.py	/^def virtual_install_main_packages():$/;"	kind:function	line:552
-virtualenv	../fabfile.py	/^def virtualenv():$/;"	kind:function	line:157
 visible_instruments	../src/server/apps/catalog/models.py	/^    def visible_instruments(self, **kwargs):$/;"	kind:member	line:41
 vonmisesvariate	../venv/lib/python3.5/random.py	/^    def vonmisesvariate(self, mu, kappa):$/;"	kind:member	line:426
 vonmisesvariate	../venv/lib/python3.5/random.py	/^vonmisesvariate = _inst.vonmisesvariate$/;"	kind:variable	line:731
@@ -6217,6 +6210,7 @@ which	../venv/lib/python3.5/shutil.py	/^def which(cmd, mode=os.F_OK | os.X_OK, p
 windows_locale	../venv/lib/python3.5/locale.py	/^windows_locale = {$/;"	kind:variable	line:1395
 with_statement	../venv/lib/python3.5/__future__.py	/^with_statement = _Feature((2, 5, 0, "alpha", 1),$/;"	kind:variable	line:122
 wrapped	../venv/lib/python3.5/types.py	/^    def wrapped(*args, **kwargs):$/;"	kind:function	line:242
+wrapper	../fabfile.py	/^    def wrapper(*args, **kwargs):$/;"	kind:function	line:143
 wrapper	../venv/lib/python3.5/functools.py	/^        def wrapper(*args, **kwds):$/;"	kind:function	line:444
 wrapper	../venv/lib/python3.5/functools.py	/^        def wrapper(*args, **kwds):$/;"	kind:function	line:453
 wrapper	../venv/lib/python3.5/functools.py	/^        def wrapper(*args, **kwds):$/;"	kind:function	line:468
