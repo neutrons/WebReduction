@@ -35,9 +35,7 @@
             margin-top: 60px;
             padding: 20px;
         }
-        .notifyjs-corner {
-            top: 50px !important;
-        }   
+
     </style>
     {% endblock header %}
 </head>
@@ -207,6 +205,7 @@
             clickToHide: true,
             gap: 100,
             autoHideDelay: 10000,
+            position: "right bottom"
         });
         {% if messages %}
             {% for message in messages %}

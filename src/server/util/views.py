@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 def dirlist(request):
     '''
     This wil be called by the server side file browser
-
     '''
     default_dir = request.user.profile.instrument.drive_path
     

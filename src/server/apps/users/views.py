@@ -136,6 +136,10 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
+        '''
+        If the user exists show the profile,
+        otherwise redirect to create profile
+        '''
         if UserProfile.objects.filter(user=request.user).count() > 0:
             return super(ProfileView, self).get(request, *args, **kwargs)
         else:

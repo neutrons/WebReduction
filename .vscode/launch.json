@@ -111,6 +111,26 @@
             ]
         },
         {
+            "name": "Django Test",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "pythonPath": "${config:python.pythonPath}",
+            "program": "${workspaceRoot}/src/manage.py",
+            "cwd": "${workspaceRoot}",
+            "args": [
+                "test"
+            ],
+            "env": {},
+            "envFile": "${workspaceRoot}/.env",
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput",
+                "DjangoDebugging"
+            ]
+        },
+        {
             "name": "Flask",
             "type": "python",
             "request": "launch",

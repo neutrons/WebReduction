@@ -50,7 +50,8 @@ class UserProfileForm(forms.ModelForm):
         # <span class="glyphicon glyphicon-search"></span>
         self.helper.layout.insert(4, Button('fecth_oncat',  'Get IPTS info',
                                          css_class='btn-info',
-                                         onclick="fetchIptsInfo()"))
+                                         onclick="fetchIptsInfo()",
+                                         data_loading_text="Getting IPTS info..."))
         
         self.helper.layout.append(Submit('submit', 'Submit'))
         self.helper.layout.append(Button('cancel', 'Cancel',

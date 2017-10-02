@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
 {% load crispy_forms_tags %}
 
 {% block breadcrumbs %}
@@ -54,12 +55,14 @@
 
     var iptss = [];
     function fetchIptsInfo(){
+        $('#button-id-fecth_oncat').button('loading');
         // Those are IDs!
         var facility = $('#id_facility').val();
         var instrument = $('#id_instrument').val();
         var facilityName = $("#id_facility option:selected").text();
         if (!facility || !instrument){
             $.notify("You must select both Facility and Instrument to fetch information from the Catalog.", "warn");
+            $('#button-id-fecth_oncat').button('reset'); 
             return;
         }
         // Tansform text fields into dropdowns. If they have value, assign to it (update view only!)
@@ -100,6 +103,7 @@
                 }
             });
         }
+        $('#button-id-fecth_oncat').button('reset');        
     };
 
     
