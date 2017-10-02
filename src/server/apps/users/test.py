@@ -12,30 +12,34 @@ from .views import ProfileView, ProfileCreate, ProfileUpdate
 from .models import UserProfile
 
 class TestLogin(TestCase):
-    def setUp(self):
-        # get_user_model().objects.create_user(username=env(
-        #     "TEST_USERNAME"), password=env("TEST_PASSWORD"))
-        self.c = Client()
 
-    def test_login(self):
-        login = self.client.login(username=env(
-            "TEST_USERNAME"), password=env("TEST_PASSWORD"))
+    def setUp(self):
+        self.client = Client()
+
+    def test_login_real_credentials(self):
+        login = self.client.login(
+            username=env("TEST_USERNAME"),
+            password=env("TEST_PASSWORD"),
+        )
         self.assertTrue(login)
     
-    def test_login_pafe(self):
-        response = self.c.get('/users/login/')
-
-        print(response)
-        print(dir(response))
+    def test_login_real_credentials_return_code(self):
+        
+        response = self.client.get('/users/login')
         self.assertEqual(200, response.status_code, "Expected ok status.")
 
-        response = self.c.post('/users/login/', dict(
-            username=env("TEST_USERNAME"), password=env("TEST_PASSWORD")
-        ))
+        response = self.client.post('/users/login',
+            dict(
+                username=env("TEST_USERNAME"),
+                password=env("TEST_PASSWORD"),
+            ),
+        )
         
-        self.assertEqual(302, response.status_code, "Expected ok redirect status.")
+        self.assertEqual(302, response.status_code,
+            "Expected redirect status to profile create.")
         
-        response = self.c.get('/users/login/')
+        # "Expected redirect status to profile create.
+        response = self.client.get('/users/profile', follow=True,)
         self.assertEqual(200, response.status_code, "Expected ok status.")
         
 
