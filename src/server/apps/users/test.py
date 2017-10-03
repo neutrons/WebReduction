@@ -1,101 +1,105 @@
 
-from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.test import Client
-import unittest
-from server.settings.env import env
-from django.contrib.auth.models import User
+from django.test import Client, TestCase
 from django.test.client import RequestFactory
-from django.test import Client
+from django.urls import reverse
 
-from .views import ProfileView, ProfileCreate, ProfileUpdate
+from server.settings.env import env
+
 from .models import UserProfile
+from .views import ProfileCreate, ProfileView
+
 
 class TestLogin(TestCase):
+    '''
+    To test:
+    ./manage.py test server.apps.users
+    '''
+
+    fixtures = ['catalog', 'jobs']
 
     def setUp(self):
         self.client = Client()
+        self.factory = RequestFactory()
 
-    def test_login_real_credentials(self):
+    def test_login_function_real_credentials(self):
         login = self.client.login(
             username=env("TEST_USERNAME"),
             password=env("TEST_PASSWORD"),
         )
         self.assertTrue(login)
-    
+
     def test_login_real_credentials_return_code(self):
-        
-        response = self.client.get('/users/login')
+
+        response = self.client.get(reverse('users:login'))
         self.assertEqual(200, response.status_code, "Expected ok status.")
 
-        response = self.client.post('/users/login',
+        response = self.client.post(
+            '/users/login',
             dict(
                 username=env("TEST_USERNAME"),
                 password=env("TEST_PASSWORD"),
             ),
         )
-        
+
         self.assertEqual(302, response.status_code,
-            "Expected redirect status to profile create.")
-        
+                         "Expected redirect status to profile create.")
+
         # "Expected redirect status to profile create.
-        response = self.client.get('/users/profile', follow=True,)
+        response = self.client.get(reverse('users:profile_view'), follow=True,)
         self.assertEqual(200, response.status_code, "Expected ok status.")
-        
 
-class TestUserProfileDummyUser(TestCase):
-    '''
+    def test_factory_dummy_user(self):
 
-    '''
-    fixtures = ['catalog', 'jobs']
-
-    def setUp(self):
-        # Every test needs access to the request factory.
-        self.factory = RequestFactory()
-        self.client = Client()
-        
-    def test_view_profile(self):
-
-        dummy_user = get_user_model().objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-
-        request = self.factory.get('/users/profile')
+        # create and set user
+        dummy_user = get_user_model().objects.create_user(
+            'john',
+            'lennon@thebeatles.com',
+            'johnpassword'
+        )
+        request = self.factory.get(reverse('users:login'))
         request.user = dummy_user
 
-        # redirect
+        # redirect to create profile
+        # User profile inexistant => create a new user profile
         response = ProfileView.as_view()(request)
         self.assertEqual(response.status_code, 302)
 
-        # User profile inexistant => create a new user profile
         response = ProfileCreate.as_view()(request)
         self.assertEqual(response.status_code, 200)
-    
-    def test_create_profile(self):
 
+    def test_create_profile(self):
+        '''
+        To run this test:
+        ./manage.py test server.apps.users.test.TestLogin.test_create_profile
+        '''
         login = self.client.login(username=env(
             "TEST_USERNAME"), password=env("TEST_PASSWORD"))
         self.assertTrue(login)
 
-        user = get_user_model().objects.get(username=env(
-            "TEST_USERNAME"))
+        user = get_user_model().objects.get(username=env("TEST_USERNAME"))
+        self.assertEqual(user.username, env("TEST_USERNAME"))
+
+        response = self.client.post(
+            reverse('users:profile_create'),
+            {
+                'user': user,
+                'home_institution': 'Test',
+                'facility': 1,
+                'instrument': 2,
+                'ipts': 'IPTS-828',
+                'experiment': 'exp100'
+            },
+            follow=True
+        )
+
+        user_profile = UserProfile.objects.get(
+            user__username=env("TEST_USERNAME"))
+
+        self.assertEqual(user_profile.user.username, env("TEST_USERNAME"))
         
-        self.assertEqual(user.username, env(
-            "TEST_USERNAME"))
-
-        response = self.client.post('/users/profile/create', {
-            'user': user,
-            'home_institution': 'Test',
-            'facility': 1,
-            'instrument': 2,
-            'ipts': 'IPTS-828',
-            'experiment': 'exp100'
-        }, follow=True)
-
-        print(UserProfile.objects.all())
-        user_profile = UserProfile.objects.get(user__username=env(
-            "TEST_USERNAME"))
-
-        self.assertEqual(user_profile.user.username, env(
-            "TEST_USERNAME"))
-
-        print(response.redirect_chain)
+        # response.redirect_chain = [('/', 302), ('/users/profile', 302)]
+        self.assertTrue(
+            reverse('users:profile_view') in [
+                red[0] for red in response.redirect_chain])
         self.assertEqual(response.status_code, 200)

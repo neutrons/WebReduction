@@ -13,7 +13,7 @@
         <li><a href="{% url 'catalog:list_instruments'%}">Catalog</a></li>
         <li><a href="{% url 'catalog:list_iptss' instrument %}">{{instrument}}</a></li>
         <li><a href="{% url 'catalog:list_runs' instrument ipts %}">{{ipts}}</a></li>        
-		<li class="active">{{run.filename}}</li>
+		<li class="active">{{run.location}}</li>
     </ol>
 </div>
 {% endblock %}

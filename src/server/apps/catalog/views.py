@@ -31,15 +31,33 @@ class InstrumentMixin(object):
         return context
 
 
-class Instruments(LoginRequiredMixin, View):
+class Instruments(LoginRequiredMixin, TemplateView):
     '''
     List of visible instruments in the database
     '''
-    def get(self, request):
+    template_name = 'catalog/list_instruments.html'
+
+    def get_context_data(self, **kwargs):
+
+        facility = self.request.user.profile.instrument.facility
         instruments = Instrument.objects.visible_instruments(
-            facility=request.user.profile.instrument.facility)
-        return render(request, 'catalog/list_instruments.html',
-                      {'instruments': instruments})
+            facility=facility)
+        logger.debug("Listing all instruments for %s.", facility)
+        context = super(Instruments, self).get_context_data(**kwargs)
+        context['instruments'] = instruments
+        return context
+
+
+    # def get(self, request):
+    #     facility = request.user.profile.instrument.facility
+    #     instruments = Instrument.objects.visible_instruments(
+    #         facility=facility)
+    #     logger.debug("Listing all instruments for %s.", facility)
+    #     return render(
+    #         request,
+    #         'catalog/list_instruments.html',
+    #         {'instruments': instruments}
+    #     )
 
 
 class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
