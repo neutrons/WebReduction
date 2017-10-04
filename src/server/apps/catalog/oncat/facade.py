@@ -64,14 +64,13 @@ class SNS(Catalog):
 
         '''
         response = self.catalog.experiments(instrument)
-        result = None
+        result = []
         if response is not None:
             try:
-                result = [{
-                    'title': entry['title'],
-                    'ipts': entry['name'],
-                    'size': entry['size'],
-                    } for entry in response]
+                for entry in response:
+                    entry['ipts'] = entry.pop('name')
+                    entry['date'] = dateparse.parse_datetime(entry['latest']['created'])
+                    result.append(entry)
             except KeyError as this_exception:
                 logger.exception(this_exception)
             except IndexError as this_exception:
@@ -161,16 +160,16 @@ class HFIR(Catalog):
 
         '''
         response = self.catalog.experiments(instrument)
-        result = None
+        result = []
         if response is not None:
             try:
-                result = [{
-                    'ipts': entry['name'],
-                    'size': entry['size'],
-                    'title': entry['title'],
-                    'exp': sorted([
-                        tag.split('/')[1] for tag in entry['tags']])}
-                          for entry in response]
+                for entry in response:
+                    entry['ipts'] = entry.pop('name')
+                    entry['date'] = dateparse.parse_datetime(entry['latest']['created'])
+                    entry['exp'] = sorted([
+                            tag.split('/')[1] for tag in entry['tags']])
+                    result.append(entry)
+                    
             except KeyError as this_exception:
                 logger.exception(this_exception)
             except IndexError as this_exception:

@@ -38,7 +38,7 @@ class ONCat(RESTInterface):
         params_json = {
             'facility': facility,
             'instrument': instrument,
-            'projection': ['tags', 'name', 'title', 'exts', 'size'],
+            # 'projection': ['tags', 'name', 'title', 'exts', 'size'],
         }
         return self._request("/experiments", params_json)
 

@@ -156,7 +156,7 @@ class RESTInterface(object):
             )
             response.raise_for_status()
             logger.debug("ICat response status code: %s", response.status_code)
-            # logger.debug("ICat response content: %s", pformat(response.json()))
+            # logger.debug("ICat response content:\n%s\n%s", pformat(response.json()), 80*"*")
             return response.json()
         except requests.exceptions.Timeout as this_exception:
             # Maybe set up for a retry, or continue in a retry loop

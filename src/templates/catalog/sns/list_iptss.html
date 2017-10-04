@@ -29,7 +29,10 @@
             <tr>
                 <th>IPTS</th>
                 <th>Title</th>
-                <th>Length</th>
+                <th>Scans</th>
+                <th>Date modified</th>
+                <th>Users</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +42,16 @@
                     data-placement="right" title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
                 <td>{{ipts.title}}</td>
                 <td>{{ipts.size}}</td>
+                <td>{{ipts.date | date:"DATETIME_FORMAT"}}</td>
+                <td>
+                    {% for user in ipts.users %}
+                        <span style="cursor: pointer;" data-toggle="tooltip" title="{{user.name}}">{{ user.id }}</span>
+                        {% if not forloop.last %}|{% endif%}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for user in ipts.users %} {{user.name}} {% endfor %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -46,7 +59,10 @@
             <tr>
                 <th>IPTS</th>
                 <th>Title</th>
-                <th>Length</th>
+                <th>Scans</th>
+                <th>Date modified</th>
+                <th>Users</th>
+                <th></th>
             </tr>
         </tfoot>
     </table>
@@ -68,9 +84,13 @@
                 searching: true,
                 ordering: true,
                 info: true,
-                autoWidth: true,
+                autoWidth: false,
                 columnDefs: [
-                    { type: 'natural', targets: 0 }
+                    { type: 'natural', targets: 0 },
+                    { type: "date", targets: 3 },
+                    { width: "50%", targets: 1 },
+                    { width: "10%", targets: 4 },
+                    { visible: false, searchable: true, targets: 5 }
                 ],
                 order: [[ 0, 'desc' ]]
             });

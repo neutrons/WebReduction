@@ -47,19 +47,6 @@ class Instruments(LoginRequiredMixin, TemplateView):
         context['instruments'] = instruments
         return context
 
-
-    # def get(self, request):
-    #     facility = request.user.profile.instrument.facility
-    #     instruments = Instrument.objects.visible_instruments(
-    #         facility=facility)
-    #     logger.debug("Listing all instruments for %s.", facility)
-    #     return render(
-    #         request,
-    #         'catalog/list_instruments.html',
-    #         {'instruments': instruments}
-    #     )
-
-
 class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
     '''
     List of IPTSs for a given instrument
@@ -75,6 +62,7 @@ class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
             + self.template_name
         context = super(IPTSs, self).get_context_data(**kwargs)
         context['iptss'] = iptss
+        logger.debug(pformat(iptss))
         return context
 
 
@@ -91,7 +79,7 @@ class IPTSsAjax(LoginRequiredMixin, TemplateView):
         facility = get_object_or_404(Facility, id=kwargs['facility'])
         iptss = Catalog(facility.name, request).experiments(
             instrument.icat_name)
-        logger.debug(pformat(iptss))
+        # logger.debug(pformat(iptss))
         return JsonResponse(iptss, status=200, safe=False)
 
 
