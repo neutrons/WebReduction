@@ -24,6 +24,8 @@
         <h1>Catalog <small> List of IPTSs for {{instrument}}</small></h1>
     </div>
 
+
+    {% if iptss %}
     <table id="tableipts" class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -66,6 +68,12 @@
             </tr>
         </tfoot>
     </table>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        <strong>No Data to show!</strong>
+        <p>Either you have no IPTSs available for this instrument or the ONCat is down...</p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 

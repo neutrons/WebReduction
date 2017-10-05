@@ -85,30 +85,30 @@ class SNS(Catalog):
 
         '''
         response = self.catalog.runs(instrument, ipts)
-        result = None
+        result = []
         if response is not None:
-            try:
-                # pprint(response)
-                result = [dict(
-                    {
-                        # subset
-                        k: entry[k] for k in ('location',)
-                    },
-                    **{
-                        # This gets rid of None values in the metadata
-                        'metadata': {(key): (value if value is not None else "") for key, value in
-                                     entry['metadata']['entry'].items()},
-                        # frame_skipping=speed1 - frequency / 2.0) < 1.0
-                        'is_frame_skipping': entry['metadata']['entry']['daslogs']['speed1']['average_value'] \
-                            - entry['metadata']['entry']['daslogs']['frequency']['average_value'] / 2.0 < 1.0,
-                        'start_time': dateparse.parse_datetime(entry['metadata']['entry']['start_time']),
-                        'end_time': dateparse.parse_datetime(entry['metadata']['entry']['end_time']),
-                    }) for entry in response  # if entry['ext'] == 'xml'
-                ]
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
+            for entry in response:
+                try:
+                    elem = dict(
+                        {
+                            # subset
+                            k: entry[k] for k in ('location',)
+                        },
+                        **{
+                            # This gets rid of None values in the metadata
+                            'metadata': {(key): (value if value is not None else "") for key, value in
+                                        entry['metadata']['entry'].items()},
+                            # frame_skipping=speed1 - frequency / 2.0) < 1.0
+                            'is_frame_skipping': entry['metadata']['entry']['daslogs']['speed1']['average_value'] \
+                                - entry['metadata']['entry']['daslogs']['frequency']['average_value'] / 2.0 < 1.0,
+                            'start_time': dateparse.parse_datetime(entry['metadata']['entry']['start_time']),
+                            'end_time': dateparse.parse_datetime(entry['metadata']['entry']['end_time']),
+                        })
+                    result.append(elem)
+                except KeyError as this_exception:
+                    logger.exception(this_exception)
+                except IndexError as this_exception:
+                    logger.exception(this_exception)
         # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
         return result
 
