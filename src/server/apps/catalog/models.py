@@ -46,6 +46,9 @@ class InstrumentManager(models.Manager):
 
 
 class Instrument(models.Model):
+
+    ordering = ['name']
+
     name = models.CharField(
         'instrument name',
         help_text='Instrument name (e.g. "EQSANS" or "BioSANS")',

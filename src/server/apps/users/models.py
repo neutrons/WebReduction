@@ -83,7 +83,7 @@ class UserProfile(models.Model):
         chained_model_field="facility",
         # show_all=False,
         # auto_choose=False,
-        sort=True,
+        # sort=True,
         # This will show only instruments with the field:
         limit_choices_to={'active': True},
     )
