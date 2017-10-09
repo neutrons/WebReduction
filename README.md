@@ -8,6 +8,34 @@ The new version of the HFIR and SNS Web Data Reduction
 - 
 
 
+# Running
+
+## Development OSx
+
+Run in different shells:
+
+Database:
+```
+postgres.sh
+```
+
+Redis:
+```
+redis-server
+```
+
+Celery:
+```
+cd src/
+celery -A server.celery worker -B --loglevel=debug
+```
+
+Django:
+```
+cd src
+./manage.py runserver
+```
+
 ## Launching with fab file:
 
 ```
