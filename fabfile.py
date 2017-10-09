@@ -200,6 +200,7 @@ def start(branch='master'):
 @apply_role
 def migrate():
     '''
+    Make the Django migrations and load fixtures
     ATTENTION: Don't forget to put the .env in the project root!!!
     and do: sudo chmod u=rw,g=rw,o= .env 
     ''' 
@@ -302,6 +303,7 @@ def start_nginx():
 @apply_role
 def start_redis():
     '''
+    Start Redis Server
     
     # To delete manualy this service:
     sudo systemctl stop redis
@@ -325,7 +327,8 @@ def start_redis():
 @apply_role
 def start_celery():
     '''
-    
+    Start Celery
+
     # To delete manualy this service:
     sudo systemctl stop celery
     sudo systemctl disable celery
@@ -345,8 +348,11 @@ def start_celery():
 
 @task
 @apply_role
-def full_deploy():
-    start()
+def full_deploy(branch='master'):
+    '''
+    Updates the project, make migrations and start all the services.
+    '''
+    start(branch)
     migrate()
     start_daphne()
     start_runworker()
