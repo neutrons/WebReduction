@@ -47,7 +47,11 @@ class ONCat(RESTInterface):
 
         '''
         # logger.debug("func runs:\n%s", pformat(params_json))
-        return self._request("/datafiles", params_json=params_json)
+        result = self._request("/datafiles", params_json=params_json)
+        if result is not None and len(result) > 0:
+            return result
+        else:
+            return []
 
     def run(self, facility, instrument, ipts, file_location):
         '''
@@ -107,27 +111,24 @@ class HFIR(ONCat):
                                'DetectorWing': ....
                                }
         '''
-        for extension in extensions:
-            params_json = {
-                'facility': self.facility,
-                'instrument': instrument,
-                'experiment': ipts,
-                'tags': ['spice/{}'.format(exp)],
-                'ext': extension,
-                'projection': [
-                    'location',
-                    'metadata.spicerack.@filename',
-                    'metadata.spicerack.@end_time',
-                    'metadata.spicerack.header',
-                    'metadata.spicerack.sample_info',
-                    'thumbnails',
-                    'metadata.spicerack.motor_positions',
-                ],
-            }
-            result = super().runs(params_json)
-            if len(result) > 0:
-                return result
-        return []
+        
+        params_json = {
+            'facility': self.facility,
+            'instrument': instrument,
+            'experiment': ipts,
+            'tags': ['spice/{}'.format(exp)],
+            'exts': extensions,
+            'projection': [
+                'location',
+                'metadata.spicerack.@filename',
+                'metadata.spicerack.@end_time',
+                'metadata.spicerack.header',
+                'metadata.spicerack.sample_info',
+                'thumbnails',
+                'metadata.spicerack.motor_positions',
+            ],
+        }
+        return super().runs(params_json)
 
     def run(self, instrument, ipts, file_location):
         '''
@@ -151,6 +152,45 @@ class HFIR(ONCat):
 
 class SNS(ONCat):
 
+    RUNS_PROJECTIONS = {
+        'DEFAULT': [
+            'location',
+            'metadata.entry.run_number',
+            'metadata.entry.title',
+            'metadata.entry.start_time',
+            'metadata.entry.end_time',
+            'metadata.entry.duration',
+            'metadata.entry.total_counts',
+            'metadata.entry.daslogs.lambdarequest.average_value',
+        ],
+        'EQSANS': [
+            'location',
+            'metadata.entry.run_number',
+            'metadata.entry.title',
+            'metadata.entry.start_time',
+            'metadata.entry.end_time',
+            'metadata.entry.duration',
+            'metadata.entry.total_counts',
+            'metadata.entry.daslogs.detectorz.average_value',
+            'metadata.entry.daslogs.lambdarequest.average_value',
+            'metadata.entry.daslogs.frequency.average_value',
+            'metadata.entry.daslogs.speed1.average_value',
+        ],
+        'REF_M': [
+            'location',
+            'metadata.entry.run_number',
+            'metadata.entry.title',
+            'metadata.entry.start_time',
+            'metadata.entry.end_time',
+            'metadata.entry.duration',
+            'metadata.entry.total_counts',
+            'metadata.entry.daslogs.detectorz.average_value',
+            'metadata.entry.daslogs.lambdarequest.average_value',
+            'metadata.entry.daslogs.frequency.average_value',
+            'metadata.entry.daslogs.speed1.average_value',
+        ]
+    }
+
     def __init__(self, request):
         super().__init__(request)
         self.facility = 'SNS'
@@ -169,30 +209,26 @@ class SNS(ONCat):
         '''
 
         '''
-        for extension in extensions:
-            params_json = {
-                'facility': self.facility,
-                'instrument': instrument,
-                'experiment': ipts,
-                'ext': extension,
-                'projection': [
-                    'location',
-                    'metadata.entry.run_number',
-                    'metadata.entry.title',
-                    'metadata.entry.start_time',
-                    'metadata.entry.end_time',
-                    'metadata.entry.duration',
-                    'metadata.entry.total_counts',
-                    'metadata.entry.daslogs.detectorz.average_value',
-                    'metadata.entry.daslogs.lambdarequest.average_value',
-                    'metadata.entry.daslogs.frequency.average_value',
-                    'metadata.entry.daslogs.speed1.average_value',
-                ],
-            }
-            result = super().runs(params_json)
-            if result is not None and len(result) > 0:
-                return result
-        return []
+        params_json = {
+            'facility': self.facility,
+            'instrument': instrument,
+            'experiment': ipts,
+            'exts': extensions,
+            'projection': [
+                'location',
+                'metadata.entry.run_number',
+                'metadata.entry.title',
+                'metadata.entry.start_time',
+                'metadata.entry.end_time',
+                'metadata.entry.duration',
+                'metadata.entry.total_counts',
+                'metadata.entry.daslogs.detectorz.average_value',
+                'metadata.entry.daslogs.lambdarequest.average_value',
+                'metadata.entry.daslogs.frequency.average_value',
+                'metadata.entry.daslogs.speed1.average_value',
+            ],
+        }
+        return super().runs(params_json)
     
     def run(self, instrument, ipts, file_location):
         '''
