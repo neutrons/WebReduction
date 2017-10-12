@@ -49,6 +49,24 @@ class Catalog(ABC):
 class SNS(Catalog):
     '''
     '''
+    # Some of the NeXus files don't have an entry as first group
+
+    RUNS_ENTRY_KEYWORD = {
+        'DEFAULT': 'entry',
+        'REF_M': 'entry-off_off',
+    }
+
+    def _runs_eqsans(entry_name, entry):
+        elem = {}
+        # frame_skipping=speed1 - frequency / 2.0) < 1.0
+        elem['is_frame_skipping'] = entry['metadata'][entry_name]['daslogs']['speed1']['average_value'] \
+            - entry['metadata'][entry_name]['daslogs']['frequency']['average_value'] / 2.0 < 1.0
+        return elem
+
+    RUNS_PARSE_FUNCS = {
+        'DEFAULT': 'entry',
+        'EQSANS': _runs_eqsans,
+    }
 
     def __init__(self, facility, request):
         '''
@@ -79,37 +97,36 @@ class SNS(Catalog):
         # logger.debug(pformat(result))
         return result
 
+
+
     def runs(self, instrument, ipts, *args, **kwargs):
         '''
 
 
         '''
         response = self.catalog.runs(instrument, ipts)
+        # logger.debug("Raw Response from Communication: %s:\n%s", instrument, pformat(response))
         result = []
+        entry_name = self.RUNS_ENTRY_KEYWORD.get(
+            instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
         if response is not None:
             for entry in response:
-                try:
-                    elem = dict(
-                        {
-                            # subset
-                            k: entry[k] for k in ('location',)
-                        },
-                        **{
-                            # This gets rid of None values in the metadata
-                            'metadata': {(key): (value if value is not None else "") for key, value in
-                                        entry['metadata']['entry'].items()},
-                            # frame_skipping=speed1 - frequency / 2.0) < 1.0
-                            'is_frame_skipping': entry['metadata']['entry']['daslogs']['speed1']['average_value'] \
-                                - entry['metadata']['entry']['daslogs']['frequency']['average_value'] / 2.0 < 1.0,
-                            'start_time': dateparse.parse_datetime(entry['metadata']['entry']['start_time']),
-                            'end_time': dateparse.parse_datetime(entry['metadata']['entry']['end_time']),
-                        })
-                    result.append(elem)
-                except KeyError as this_exception:
-                    logger.exception(this_exception)
-                except IndexError as this_exception:
-                    logger.exception(this_exception)
-        # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
+                elem = {}
+                elem['location'] = entry['location']
+                elem['metadata'] = {
+                    (key): (value if value is not None else "") for key, value in entry['metadata'][entry_name].items()
+                }
+                elem['start_time'] = dateparse.parse_datetime(entry['metadata'][entry_name]['start_time'])
+                elem['end_time'] = dateparse.parse_datetime(entry['metadata'][entry_name]['end_time'])
+
+                specific_func = self.RUNS_PARSE_FUNCS.get(instrument)
+                if specific_func:
+                    elem.update(specific_func(entry_name, entry))
+                print(pformat(elem))
+                result.append(elem)
+
+
+        # logger.debug("Response sent to view for Get Run %s:\n%s", instrument, pformat(result))
         return result
 
     def run(self, instrument, ipts, file_location):
@@ -117,6 +134,8 @@ class SNS(Catalog):
 
         '''
         response = self.catalog.run(instrument, ipts, file_location)
+        entry_name = self.RUNS_ENTRY_KEYWORD.get(
+            instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
         result = None
         if response is not None:
             try:
@@ -127,7 +146,7 @@ class SNS(Catalog):
                         k: entry[k] for k in ('location',)
 
                     }, **{
-                        'metadata': entry['metadata']['entry'],
+                        'metadata': entry['metadata'][entry_name],
                     })
             except KeyError as this_exception:
                 logger.exception(this_exception)

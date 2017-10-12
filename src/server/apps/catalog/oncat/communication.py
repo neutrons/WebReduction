@@ -38,7 +38,8 @@ class ONCat(RESTInterface):
         params_json = {
             'facility': facility,
             'instrument': instrument,
-            # 'projection': ['tags', 'name', 'title', 'exts', 'size'],
+            'projection': ['tags', 'name', 'title', 'exts',
+                           'size', 'latest', 'users'],
         }
         return self._request("/experiments", params_json)
 
@@ -152,6 +153,8 @@ class HFIR(ONCat):
 
 class SNS(ONCat):
 
+    # Projection for RUNS. Define here the projection for SNS instruments.
+    # Otherwise default is used
     RUNS_PROJECTIONS = {
         'DEFAULT': [
             'location',
@@ -161,7 +164,6 @@ class SNS(ONCat):
             'metadata.entry.end_time',
             'metadata.entry.duration',
             'metadata.entry.total_counts',
-            'metadata.entry.daslogs.lambdarequest.average_value',
         ],
         'EQSANS': [
             'location',
@@ -178,18 +180,15 @@ class SNS(ONCat):
         ],
         'REF_M': [
             'location',
-            'metadata.entry.run_number',
-            'metadata.entry.title',
-            'metadata.entry.start_time',
-            'metadata.entry.end_time',
-            'metadata.entry.duration',
-            'metadata.entry.total_counts',
-            'metadata.entry.daslogs.detectorz.average_value',
-            'metadata.entry.daslogs.lambdarequest.average_value',
-            'metadata.entry.daslogs.frequency.average_value',
-            'metadata.entry.daslogs.speed1.average_value',
+            'metadata.entry-off_off.run_number',
+            'metadata.entry-off_off.title',
+            'metadata.entry-off_off.start_time',
+            'metadata.entry-off_off.end_time',
+            'metadata.entry-off_off.duration',
+            'metadata.entry-off_off.total_counts',
         ]
     }
+
 
     def __init__(self, request):
         super().__init__(request)
@@ -214,19 +213,8 @@ class SNS(ONCat):
             'instrument': instrument,
             'experiment': ipts,
             'exts': extensions,
-            'projection': [
-                'location',
-                'metadata.entry.run_number',
-                'metadata.entry.title',
-                'metadata.entry.start_time',
-                'metadata.entry.end_time',
-                'metadata.entry.duration',
-                'metadata.entry.total_counts',
-                'metadata.entry.daslogs.detectorz.average_value',
-                'metadata.entry.daslogs.lambdarequest.average_value',
-                'metadata.entry.daslogs.frequency.average_value',
-                'metadata.entry.daslogs.speed1.average_value',
-            ],
+            'projection': self.RUNS_PROJECTIONS.get(
+                instrument, self.RUNS_PROJECTIONS['DEFAULT'])
         }
         return super().runs(params_json)
     

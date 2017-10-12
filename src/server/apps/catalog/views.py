@@ -62,7 +62,7 @@ class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
             + self.template_name
         context = super(IPTSs, self).get_context_data(**kwargs)
         context['iptss'] = iptss
-        logger.debug(pformat(iptss))
+        # logger.debug(pformat(iptss))
         return context
 
 
@@ -93,7 +93,7 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
     def get_template_names(self):
         """
         Let's override this function.
-        Returns a lits of pripority templates to render
+        Returns a list of priority templates to render
         """
         facility = self.request.user.profile.instrument.facility.name.lower()
         instrument = self.kwargs['instrument'].lower()

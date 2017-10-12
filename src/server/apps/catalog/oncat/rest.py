@@ -141,10 +141,10 @@ class RESTInterface(object):
         '''
         pass
 
-    def _request(self, url_suffix="", params_json=None, verbose=False):
+    def _request(self, url_suffix="", params_json=None):
         try:
             request_str = self._url_prefix + url_suffix
-            logger.debug("URL (%s): %s\n%s",
+            logger.debug("URL (%s): %s :: Params:\n%s",
                          self._http_method_call.__name__, request_str,
                          pformat(params_json))
             response = self._http_method_call(
