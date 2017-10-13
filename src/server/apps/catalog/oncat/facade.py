@@ -58,9 +58,12 @@ class SNS(Catalog):
 
     def _runs_eqsans(entry_name, entry):
         elem = {}
-        # frame_skipping=speed1 - frequency / 2.0) < 1.0
-        elem['is_frame_skipping'] = entry['metadata'][entry_name]['daslogs']['speed1']['average_value'] \
-            - entry['metadata'][entry_name]['daslogs']['frequency']['average_value'] / 2.0 < 1.0
+        try:
+            # frame_skipping=speed1 - frequency / 2.0) < 1.0
+            elem['is_frame_skipping'] = entry['metadata'][entry_name]['daslogs']['speed1']['average_value'] \
+                - entry['metadata'][entry_name]['daslogs']['frequency']['average_value'] / 2.0 < 1.0
+        except KeyError:
+            elem['is_frame_skipping'] = ""
         return elem
 
     RUNS_PARSE_FUNCS = {
