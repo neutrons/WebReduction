@@ -10,6 +10,27 @@ The new version of the HFIR and SNS Web Data Reduction
 
 # Running
 
+## Python Virtual environment
+
+After cloning the project in e.g. `WebReduction`, create a virtual env called `venv`:
+
+```sh
+cd WebReduction
+virtualenv venv -p $(which python3)
+```
+
+Activate it:
+
+```
+source venv/bin/activate
+```
+
+Install project dependencies (dev or production):
+
+```
+pip install -r config/requirements/dev.txt
+```
+
 ## Create `.env` File
 
 Create `WebReduction/.env`.

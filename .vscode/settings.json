@@ -18,5 +18,9 @@
     "files.associations": {
         "*.tpl": "jinja",
         "**/*.service": "ini"
-    }
+    },
+    "cSpell.words": [
+        "oncat",
+        "pformat"
+    ]
 }

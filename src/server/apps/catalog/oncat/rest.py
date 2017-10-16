@@ -30,7 +30,7 @@ class TokenStorage(object):
     @property
     def token(self):
         '''
-        Fecth forom the session?
+        Fetch token from the session
         '''
         return self._request.session.get('token')
 
@@ -46,8 +46,9 @@ class TokenStorage(object):
         Set it in the session
         @token.setter does not work in the function below....
         '''
+        logger.debug("New token set:\n%s", pformat(val))
         self._request.session['token'] = val
-    
+
     @property
     def username(self):
         '''

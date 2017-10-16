@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import select_template
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView, View
+from django.db import transaction
 
 from .models import Facility, Instrument
 from .oncat.facade import Catalog
@@ -24,6 +25,16 @@ class InstrumentMixin(object):
     instrument
     ipts
     '''
+
+    def dispatch(self, request, *args, **kwargs):
+        '''
+        First method being called
+        Usefull for debug
+        '''
+        logger.debug('Token in session (starting the request):\n%s',
+                     pformat(request.session.get('token')))
+        return super(InstrumentMixin, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(InstrumentMixin, self).get_context_data(**kwargs)
         context["instrument"] = kwargs.get('instrument', None)
@@ -46,6 +57,7 @@ class Instruments(LoginRequiredMixin, TemplateView):
         context = super(Instruments, self).get_context_data(**kwargs)
         context['instruments'] = instruments
         return context
+
 
 class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
     '''
@@ -78,7 +90,7 @@ class IPTSsAjax(LoginRequiredMixin, TemplateView):
         instrument = get_object_or_404(Instrument, id=kwargs['instrument'])
         facility = get_object_or_404(Facility, id=kwargs['facility'])
         iptss = Catalog(facility.name, request).experiments(
-            instrument.icat_name)
+                instrument.icat_name)
         # logger.debug(pformat(iptss))
         return JsonResponse(iptss, status=200, safe=False)
 

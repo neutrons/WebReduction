@@ -125,7 +125,6 @@ class SNS(Catalog):
                 specific_func = self.RUNS_PARSE_FUNCS.get(instrument)
                 if specific_func:
                     elem.update(specific_func(entry_name, entry))
-                print(pformat(elem))
                 result.append(elem)
 
 
