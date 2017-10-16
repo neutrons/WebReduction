@@ -3,6 +3,7 @@ import logging
 import sys
 from pprint import pformat, pprint
 from django.conf import settings
+from django.core import signing
 import requests
 
 import oauthlib
@@ -43,6 +44,7 @@ class TokenStorage(object):
     def set_token(self, val):
         '''
         Set it in the session
+        @token.setter does not work in the function below....
         '''
         self._request.session['token'] = val
     
@@ -58,7 +60,9 @@ class TokenStorage(object):
         '''
         Fecth password from the session
         '''
-        return self._request.session["password"]
+        password_encrypted = self._request.session["password"]
+        password = signing.loads(password_encrypted)
+        return password
 
 
 class OAuthClient(object):

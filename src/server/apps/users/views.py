@@ -10,7 +10,6 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import (REDIRECT_FIELD_NAME, authenticate,
                                  get_user_model)
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
@@ -28,6 +27,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import (CreateView, FormView, ListView, RedirectView,
                                   TemplateView, UpdateView)
 from django_remote_submission.models import Server
+from django.core import signing
 
 from pprint import pformat
 from server.settings.env import env
@@ -116,7 +116,7 @@ class LoginView(FormView):
         TODO: Sessions should be saved in memory. See redis option also.
         '''
         logger.debug("Setting credentials in the session...")
-        self.request.session["password"] = password
+        self.request.session["password"] = signing.dumps(password)
 
 
 class LogoutView(RedirectView):
