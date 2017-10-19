@@ -94,7 +94,7 @@ class HFIR(ONCat):
         '''
         return super().experiments(self.facility, instrument)
 
-    def runs(self, instrument, ipts, exp, extensions=['.xml', '.dat']):
+    def runs(self, instrument, ipts, exp, extensions=['.xml']):
         '''
         @param ipts : IPTS-17471
         @param exp : exp371

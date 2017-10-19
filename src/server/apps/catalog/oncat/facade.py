@@ -214,37 +214,30 @@ class HFIR(Catalog):
 
         '''
         response = self.catalog.runs(instrument, ipts, exp)
-        result = None
+        result = []
         if response is not None:
-            try:
-                # pprint(response)
-                result = [dict(
-                    {
-                        # subset
-                        k: entry[k] for k in ('location', 'thumbnails')
-                    }, **{
-                        # Metadata here:
-                        'filename': entry['metadata']['spicerack']['@filename'],
-                        'end_time':  entry['metadata']['spicerack']['@end_time'],
-                        'title': entry['metadata']['spicerack']['header']['scan_title'],
-                        'sample_info': entry['metadata']['spicerack']['sample_info']['sample']['field']
-                                       if entry['metadata']['spicerack']['sample_info']['sample'] else "",
-                        'sample_background': entry['metadata']['spicerack']['sample_info']['background']['field']
-                                             if entry['metadata']['spicerack']['sample_info']['background'] else "",
-                        'sample_parameters': entry['metadata']['spicerack']['sample_info']['parameters']['field']
-                                             if entry['metadata']['spicerack']['sample_info']['parameters'] else "",
-                        # This gets rid of None values in the metadata
-                        'metadata': {(key): (value if value is not None else "") for key, value in
-                                     entry['metadata']['spicerack']['header'].items()},
-                        'motor_positions': {(key): (value if value is not None else "") for key, value in
-                                     entry['metadata']['spicerack']['motor_positions'].items()}
-                    })
-                          for entry in response  # if entry['ext'] == 'xml'
-                         ]
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
+            # logger.debug("Response from comunication Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
+            for entry in response:
+                elem = {}
+                try:
+                    elem['location'] = entry['location']
+                    elem['thumbnails'] = entry['thumbnails']
+                    elem['filename'] = entry['metadata']['spicerack']['@filename']
+                    elem['end_time'] = entry['metadata']['spicerack']['@end_time']
+                    elem['title'] = entry['metadata']['spicerack']['header']['scan_title']
+                    elem['sample_info'] = entry['metadata']['spicerack']['sample_info']['sample']['field'] if entry['metadata']['spicerack']['sample_info']['sample'] else ""
+                    elem['sample_background'] = entry['metadata']['spicerack']['sample_info']['background']['field'] if entry['metadata']['spicerack']['sample_info']['background'] else ""
+                    elem['sample_parameters'] = entry['metadata']['spicerack']['sample_info']['parameters']['field'] if entry['metadata']['spicerack']['sample_info']['parameters'] else ""
+                    # This gets rid of None values in the metadata
+                    elem['metadata'] = {(key): (value if value is not None else "") for key, value in entry['metadata']['spicerack']['header'].items()}
+                    elem['motor_positions'] = {(key): (value if value is not None else "") for key, value in entry['metadata']['spicerack']['motor_positions'].items()}
+                except KeyError as this_exception:
+                    logger.error(elem['location'])
+                    logger.exception(this_exception)
+                except IndexError as this_exception:
+                    logger.exception(this_exception)
+                result.append(elem)
+
         # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
         return result
 
