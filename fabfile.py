@@ -108,8 +108,8 @@ def append_to_active_role(role_name):
 
     if role_name == 'production':
         roles.update({
-            'ssl_certificate_file': '/etc/ssl/certs/wildcard.sns.gov.crt',
-            'ssl_certificate_key_file': '/etc/pki/tls/private/wildcard.sns.gov.key',
+            'ssl_certificate_file': '/etc/pki/tls/certs/star.sns.gov.cert.pem',
+            'ssl_certificate_key_file': '/etc/pki/tls/private/star.sns.gov.key.pem',
         })
 
     env.roledefs[role_name].update(roles)
@@ -181,7 +181,8 @@ def start(branch='master'):
         sudo('mkdir -p {}'.format(env.project_root))
         sudo('chown {}:{} {}'.format(
               login, 'reduction', env.project_root))
-        sudo('chmod u+rwx,g+rwxs,o-rwxs {}'.format(env.project_root))
+        # sudo('chmod 770 {}'.format(env.project_root))
+        run('umask 007')
         run('git clone {} {}'.format(git_repo, env.project_root))
     else:
         with cd(env.project_root):
@@ -190,11 +191,16 @@ def start(branch='master'):
     # VirtualEnv: ./venv set with persmissions of who runs the script
     if not files.exists(env.project_venv) or \
             not files.exists(os.path.join(env.project_venv, 'bin')):
-        run('virtualenv {}'.format(env.project_venv))
-    
+        run('virtualenv {} -p $(which python3.5)'.format(env.project_venv))
+        # Upgrade PIP
+        with prefix('. ' + env.project_venv + '/bin/activate'):
+            run("pip install pip -U")
+
     # Activate the environment and install requirements
     with prefix('. ' + env.project_venv + '/bin/activate'):
         run("pip install -r {}".format(env.requirements_file))
+    
+    # run('chmod -R u+rwX,g+rwX,o-rwX {}'.format(env.project_root))
 
 @task
 @apply_role
@@ -233,13 +239,14 @@ def start_daphne():
     systemctl list-unit-files --all | grep daphne
 
     '''
-    files.upload_template(env['daphne_service_template'],
-        env['daphne_service_file'], context=env, backup=False, use_sudo=True)
+    with settings(warn_only=True):
+        files.upload_template(env['daphne_service_template'],
+            env['daphne_service_file'], context=env, backup=False, use_sudo=True)
 
-    # This is to enable on boot
-    # sudo('systemctl enable daphne.service')
-    sudo('systemctl daemon-reload')
-    sudo('systemctl restart daphne.service')
+        sudo('systemctl daemon-reload')
+        # This is to enable on boot
+        sudo('systemctl enable daphne.service')
+        sudo('systemctl start daphne.service')
 
 @task
 @apply_role
@@ -261,13 +268,13 @@ def start_runworker():
     systemctl list-unit-files --all | grep runworker
 
     '''
-    files.upload_template(env['runworker_service_template'],
-        env['runworker_service_file'], context=env, backup=False, use_sudo=True)
+    with settings(warn_only=True):
+        files.upload_template(env['runworker_service_template'],
+            env['runworker_service_file'], context=env, backup=False, use_sudo=True)
 
-    # This is to enable on boot
-    # sudo('systemctl enable runworker.service')
-    sudo('systemctl daemon-reload')
-    sudo('systemctl restart runworker.service')
+        sudo('systemctl daemon-reload')
+        sudo('systemctl enable runworker.service')
+        sudo('systemctl start runworker.service')
 
 @task
 @apply_role
@@ -289,15 +296,17 @@ def start_nginx():
     systemctl list-unit-files --all | grep nginx
 
     '''
-    files.upload_template(env['nginx_conf_template'],
-        env['nginx_conf_file'], context=env, backup=False, use_sudo=True)
-    files.upload_template(env['nginx_service_template'],
-        env['nginx_service_file'], context=env, backup=False, use_sudo=True)
-    
-    # This is to enable on boot
-    # sudo('systemctl enable nginx.service')
-    sudo('systemctl daemon-reload')
-    sudo('systemctl restart nginx.service')
+    with settings(warn_only=True):
+        files.upload_template(env['nginx_conf_template'],
+            env['nginx_conf_file'], context=env, backup=False, use_sudo=True)
+        files.upload_template(env['nginx_service_template'],
+            env['nginx_service_file'], context=env, backup=False, use_sudo=True)
+        
+        
+        sudo('systemctl daemon-reload')
+        # This is to enable on boot
+        sudo('systemctl enable nginx.service')
+        sudo('systemctl restart nginx.service')
 
 @task
 @apply_role
@@ -312,14 +321,15 @@ def start_redis():
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
     '''
-    files.upload_template(env['redis_conf_template'],
-        env['redis_conf_file'], context=env, backup=False, use_sudo=True)
-    files.upload_template(env['redis_service_template'],
-        env['redis_service_file'], context=env, backup=False, use_sudo=True)
+    with settings(warn_only=True):
+        files.upload_template(env['redis_conf_template'],
+            env['redis_conf_file'], context=env, backup=False, use_sudo=True)
+        files.upload_template(env['redis_service_template'],
+            env['redis_service_file'], context=env, backup=False, use_sudo=True)
 
-    #sudo('systemctl enable redis.service')
-    sudo('systemctl daemon-reload')
-    sudo('systemctl restart redis.service')
+        sudo('systemctl daemon-reload')
+        sudo('systemctl enable redis.service')
+        sudo('systemctl restart redis.service')
 
 
 
@@ -336,14 +346,16 @@ def start_celery():
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
     '''
-    files.upload_template(env['celery_conf_template'],
-        env['celery_conf_file'], context=env, backup=False, use_sudo=True)
-    files.upload_template(env['celery_service_template'],
-        env['celery_service_file'], context=env, backup=False, use_sudo=True)
 
-    #sudo('systemctl enable celery.service')
-    sudo('systemctl daemon-reload')
-    sudo('systemctl restart celery.service')
+    with settings(warn_only=True):
+        files.upload_template(env['celery_conf_template'],
+            env['celery_conf_file'], context=env, backup=False, use_sudo=True)
+        files.upload_template(env['celery_service_template'],
+            env['celery_service_file'], context=env, backup=False, use_sudo=True)
+
+        sudo('systemctl daemon-reload')
+        sudo('systemctl enable celery.service')
+        sudo('systemctl restart celery.service')
 
 
 @task

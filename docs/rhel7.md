@@ -78,6 +78,9 @@ createuser -P -s -e reduction
 # Once postgres user, create a db
 createdb -O reduction -W reduction
 
+# leave pgsql shell
+exit
+
 # edit and get the authentication method as
 sudo vi /var/lib/pgsql/9.5/data/pg_hba.conf
 # local   all             all                                     md5
