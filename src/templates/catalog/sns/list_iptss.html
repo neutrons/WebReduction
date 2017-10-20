@@ -47,7 +47,7 @@
                 <td>{{ipts.date | date:"DATETIME_FORMAT"}}</td>
                 <td>
                     {% for user in ipts.users %}
-                        <span style="cursor: pointer;" data-toggle="tooltip" title="{{user.name}}">{{ user.id }}</span>
+                        <span data-toggle="tooltip" title="{{user.name}}">{{ user.id }}</span>
                         {% if not forloop.last %}|{% endif%}
                     {% endfor %}
                 </td>
@@ -84,25 +84,30 @@
 <script src='https://cdn.datatables.net/plug-ins/1.10.13/sorting/natural.js'></script>
 <!-- page script -->
 <script>
-        $(function () {
-            $("#tableipts").DataTable({
-                lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                paging: true,
-                lengthChange: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                autoWidth: false,
-                columnDefs: [
-                    { type: 'natural', targets: 0 },
-                    { type: "date", targets: 3 },
-                    { width: "50%", targets: 1 },
-                    { width: "10%", targets: 4 },
-                    { visible: false, searchable: true, targets: 5 }
-                ],
-                order: [[ 0, 'desc' ]]
-            });
-            
-        });
-    </script>
+
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip(); 
+    });
+    
+    tableIPTSsConfiguration = {
+        lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+        paging: true,
+        lengthChange: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        autoWidth: false,
+        columnDefs: [
+            { type: 'natural', targets: 0 },
+            { type: "date", targets: 3 },
+            { width: "50%", targets: 1 },
+            { width: "10%", targets: 4 },
+            { visible: false, searchable: true, targets: 5 }
+        ],
+        order: [[ 3, 'desc' ]]
+    };
+    $("#tableipts").DataTable(tableIPTSsConfiguration);
+
+
+</script>
 {% endblock %}

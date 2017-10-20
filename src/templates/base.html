@@ -61,11 +61,14 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 
                 <ul class="nav navbar-nav">
+
+                    <!-- This only shows if the user has selected an IPTS -->
+                    {% if user.profile.ipts %}
                     <!-- Catalog -->
                     <li><a href="{% url 'catalog:list_instruments' %}" data-toggle="tooltip" title="Shows the catalog for all instruments in your selected profile facility!" >
                     	<span class="glyphicon glyphicon-book"></span> &nbsp;Catalog</a></li>
-                    
-                    <!-- This only shows if the user has selected an IPTS -->
+                    {% endif %}
+
                     {% if user.profile.ipts and user.profile.instrument.reduction_available %}
                     <!-- Configuration -->
                     <li class="dropdown">
