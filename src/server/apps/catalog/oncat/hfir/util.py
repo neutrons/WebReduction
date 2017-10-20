@@ -26,7 +26,7 @@ class Parser(object):
             self._root = None
         else:
             self._root = self._parse(filename)
-    
+
     def is_valid(self):
         if self._root:
             return True
@@ -34,23 +34,25 @@ class Parser(object):
             return False
 
     def _parse(self, filename):
-        logger.info("Parsing: %s."%filename)
+        logger.info("Parsing: %s.", filename)
         tree = ET.parse(filename)
         root = tree.getroot()
-        return root  
+        return root
 
     def getMetadata(self, xpath):
         '''
         Given Xpath returns either float or string
         '''
-        if not self._root: return None
+        if not self._root:
+            return None
 
         elems = self._root.findall(xpath)
         if not elems:
-            logger.warning("xpath %s is not valid!"%xpath)
+            logger.warning("xpath %s is not valid!", xpath)
             return None
-        elif len(elems) >1:
-            logger.warning("xpath %s has more than one element (len = %d)! Returning first!"%(xpath,len(elems)))
+        elif len(elems) > 1:
+            logger.warning("xpath %s has more than one element (len = %d)!"
+                           " Returning first!", xpath, len(elems))
         value_as_string = elems[0].text
         try:
             return float(value_as_string)
@@ -59,11 +61,12 @@ class Parser(object):
 
         return
 
-    def getData(self,xpath):
+    def getData(self, xpath):
         '''
         Parses the XML xpath data into a 2D Xarray
         '''
-        if not self._root: return None
+        if not self._root:
+            return None
         data_str = self.getMetadata(xpath)
         if data_str:
             data_list_of_chars = [line.split("\t") for line in data_str.strip().split("\n")]

@@ -12,10 +12,14 @@ RuntimeDirectory=django
 PIDFile=/run/django-runworker.pid
 WorkingDirectory=%(project_root)s/src
 
-ExecStart=%(project_venv)s/bin/python manage.py runworker --threads 4
+ExecStart=%(project_venv)s/bin/python manage.py runworker --threads 8
 ExecStop=/bin/kill -s TERM $MAINPID
-; Restart=always
-; RestartSec=10
+Restart=always
+RestartSec=10
+
+# This is temporary. We need a user with access to /HFIR /SNS
+User=rhf
+Group=reduction
 
 [Install]
 WantedBy=multi-user.target
