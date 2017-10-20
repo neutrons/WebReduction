@@ -43,17 +43,17 @@ class UserProfileForm(forms.ModelForm):
         # self.fields['ipts'].widget.choices = [('bf','bof')]
         # self.fields['experiment'].widget = forms.Select()
 
-        self.helper.layout.insert(3, HTML('''
+        self.helper.layout.insert(2, HTML('''
+        <h1><span class="label label-warning"><span class="glyphicon glyphicon-warning-sign"> This is not working yet!</span></h1>
         <H3>Reduction Parameters</H3>
-        <p><span class="label label-warning">This has no effect if your instrument has no Reduction available yet.</span></p>
         '''))
         # <span class="glyphicon glyphicon-search"></span>
-        self.helper.layout.insert(4, Button('fecth_oncat',  'Get IPTS info',
+        self.helper.layout.insert(3, Button('fecth_oncat',  'Get IPTS info',
                                          css_class='btn-info',
                                          onclick="fetchIptsInfo()",
                                          data_loading_text="Getting IPTS info..."))
         
-        self.helper.layout.append(Submit('submit', 'Submit'))
+        self.helper.layout.append(Submit('submit', 'Save'))
         self.helper.layout.append(Button('cancel', 'Cancel',
                                          css_class='btn-default',
                                          onclick="window.history.back()"))

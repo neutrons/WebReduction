@@ -76,7 +76,7 @@
 			"ldap_group_name": "sns_eqsans_team",
 			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/HFIR/EQSANS",
-			"reduction_available": true,
+			"reduction_available": false,
 			"active": true,
 			"facility": 2
 		}

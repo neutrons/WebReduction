@@ -41,7 +41,15 @@
 			<tr>
 				<td>{{run.metadata.run_number}}</td>
 				<!-- <td>{{run.metadata.title}}</td> -->
-				<td><a href="{% url 'catalog:run_detail' instrument  ipts run.location %}">{{run.metadata.title}}</a></td>
+				<td>
+					<a href="{% url 'catalog:run_detail' instrument  ipts run.location %}">{{run.metadata.title}}</a>
+					<div class="pull-right">
+						<a href="https://monitor.sns.gov/report/{{instrument|lower}}/{{run.metadata.run_number}}/"  target="_blank"
+							class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="Click to see this run in the monitor.">
+							<span class="glyphicon glyphicon-new-window"></span>
+						</a>
+					</div>
+				</td>
 				<td>{{run.start_time | date:"DATETIME_FORMAT"}}</td>
 				<td>{{run.end_time | date:"DATETIME_FORMAT"}}</td>
 				<td>{{run.metadata.duration|floatformat:2}}</td>

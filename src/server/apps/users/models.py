@@ -73,8 +73,6 @@ class UserProfile(models.Model):
         related_query_name="profile",
     )
 
-    home_institution = models.CharField(max_length=200, blank=True)
-
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
 
     instrument = ChainedForeignKey(
