@@ -441,5 +441,26 @@
 			"active": true,
 			"facility": 2
 		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 23,
+		"fields": 
+		{
+			"name": "DevBeam",
+			"description": "Instrument Development Beam Line",
+			"beamline": "CG1B",
+			"type": "Development",
+			"icat_name": "CG1B",
+			"ldap_group_name": "hfir_cg1bteam",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/CG1B",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
 	}
 ]
