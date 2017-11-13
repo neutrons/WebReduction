@@ -17,13 +17,13 @@ requests_oauthlib>=0.8.0
 psycopg2>=2.6.1
 
 # Remote job submission
-django-remote-submission>=1.1.2
+django-remote-submission>=1.2.1
 #../django-remote-submission/dist/django-remote-submission-0.3.1.tar.gz
 celery[redis]>=4.1.0
 django-celery-results>=1.0.1
 asgi_redis>=1.4.3
 
-#For deploy
+# For deploy
 Fabric3>=1.13.1
 python-dotenv>=0.7.1
 

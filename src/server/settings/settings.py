@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'django_remote_submission',
     'django_celery_results',
     'channels',
+    # For VueJS
+    'rest_framework',
+    'django_filters',
     # My apps
     'server.apps.sans',
     'server.apps.users',
@@ -217,3 +220,12 @@ CHANNEL_LAYERS = {
     },
 }
 
+# Rest framework only available for authenticated users
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+}

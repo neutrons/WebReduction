@@ -31,8 +31,12 @@ urlpatterns = [
     # For smart_selects
     url(r'^chaining/', include('smart_selects.urls')),
     # Redirects all to Homepage
-    url(r'^$', RedirectView.as_view(url=reverse_lazy('users:profile_view'),
-                                    permanent=False), name='index')
+    url(r'^$', RedirectView.as_view(
+            url=reverse_lazy('users:profile_view'), permanent=False),
+        name='index',
+        ),
+    # Django remote REST API
+    url(r'^api/', include('django_remote_submission.urls')),
 
 ]
 
