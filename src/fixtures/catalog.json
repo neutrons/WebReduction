@@ -450,12 +450,201 @@
 		{
 			"name": "DevBeam",
 			"description": "Instrument Development Beam Line",
-			"beamline": "CG1B",
+			"beamline": "CG-1B",
 			"type": "Development",
 			"icat_name": "CG1B",
 			"ldap_group_name": "hfir_cg1bteam",
 			"icat_url": "https://hfir-icat-testing.ornl.gov",
 			"drive_path": "/HFIR/CG1B",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 24,
+		"fields": 
+		{
+			"name": "IMAGING",
+			"description": "Neutron Imaging Facility",
+			"beamline": "CG-1D",
+			"type": "Imaging",
+			"icat_name": "CG1D",
+			"ldap_group_name": "hfir_cg1dteam",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/CG1D",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 25,
+		"fields": 
+		{
+			"name": "CTAX",
+			"description": "Cold Neutron Triple-Axis Spectrometer",
+			"beamline": "CG-4C",
+			"type": "TAS",
+			"icat_name": "CG4C",
+			"ldap_group_name": "hfir_cg4cteam",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/CG4C",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 26,
+		"fields": 
+		{
+			"name": "PTAX",
+			"description": "Polarized Triple-Axis Spectrometer",
+			"beamline": "HB-1",
+			"type": "TAS",
+			"icat_name": "HB1",
+			"ldap_group_name": "hfir_hb1team",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/HB1",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 27,
+		"fields": 
+		{
+			"name": "FIE-TAX",
+			"description": "Fixed-Incident-Energy Triple-Axis Spectrometer",
+			"beamline": "HB-1A",
+			"type": "TAS",
+			"icat_name": "HB1A",
+			"ldap_group_name": "hfir_hb1ateam",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/HB1A",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 28,
+		"fields": 
+		{
+			"name": "POWDER",
+			"description": "Neutron Powder Diffractometer",
+			"beamline": "HB-2A",
+			"type": "Diffraction",
+			"icat_name": "HB2A",
+			"ldap_group_name": "hfir_hb2ateam",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/HB2A",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 29,
+		"fields": 
+		{
+			"name": "NRSF2",
+			"description": "Neutron Residual Stress Mapping Facility",
+			"beamline": "HB-2B",
+			"type": "Diffraction",
+			"icat_name": "HB2B",
+			"ldap_group_name": "hfir_hb2bteam",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/HB2B",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 30,
+		"fields": 
+		{
+			"name": "WAND",
+			"description": "Wide-Angle Neutron Diffractometer",
+			"beamline": "HB-2C",
+			"type": "Diffraction",
+			"icat_name": "HB2C",
+			"ldap_group_name": "hfir_hb2cteam",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/HB2C",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 30,
+		"fields": 
+		{
+			"name": "TAX",
+			"description": "Triple-Axis Spectrometer",
+			"beamline": "HB-3",
+			"type": "TAS",
+			"icat_name": "HB3",
+			"ldap_group_name": "hfir_hb3team",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/HB3",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"reduction_available": false,
+			"active": true,
+			"facility": 1
+		}
+	},
+
+	{
+		"model": "catalog.instrument",
+		"pk": 31,
+		"fields": 
+		{
+			"name": "FOUR-CIRCLE",
+			"description": "Four-Circle Diffractometer",
+			"beamline": "HB-3A",
+			"type": "Diffraction",
+			"icat_name": "HB3A",
+			"ldap_group_name": "hfir_hb3ateam",
+			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"drive_path": "/HFIR/HB3A",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
 			"reduction_available": false,
