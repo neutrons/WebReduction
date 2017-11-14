@@ -62,15 +62,13 @@ class LoginView(FormView):
         # Mathieu athentication
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
-        user = authenticate(username=username, password=password)
+        user = authenticate(self.request, username=username, password=password)
         if user is not None and not user.is_anonymous():
             logger.debug("Authenticating user %s...", username)
             auth_login(self.request, user)
             logger.debug("User %s authenticated.", username)
             # let's save the credentials to login on analysisis later
             self._save_credentials_in_session(password)
-            # Populates Icat into database
-            # Experiment.objects.populate_experiments(self.request)
         else:
             messages.error(
                 self.request,
@@ -92,7 +90,6 @@ class LoginView(FormView):
             return redirect(reverse_lazy('index'))
         else:
             return super(LoginView, self).get(request, *args, **kwargs)
-
 
     def get_success_url(self):
         try:

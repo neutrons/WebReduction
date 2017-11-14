@@ -71,83 +71,60 @@ class ONCat(RESTInterface):
 
 class HFIR(ONCat):
 
+    # different instruments have different file types (TAS has .dat)
+    RUNS_EXTENSIONS = {
+        'DEFAULT': ['.xml'],
+        'CG4C': ['.dat'],
+        'HB1': ['.dat'],
+        'HB1A': ['.dat'],
+    }
+
+    RUNS_PROJECTIONS = {
+        'DEFAULT': [],
+        'CG2': [
+            'location',
+            'metadata.spicerack.@filename',
+            'metadata.spicerack.@end_time',
+            'metadata.spicerack.header',
+            'metadata.spicerack.sample_info',
+            'thumbnails',
+            'metadata.spicerack.motor_positions',
+        ],
+        'CG3': [
+            'location',
+            'metadata.spicerack.@filename',
+            'metadata.spicerack.@end_time',
+            'metadata.spicerack.header',
+            'metadata.spicerack.sample_info',
+            'thumbnails',
+            'metadata.spicerack.motor_positions',
+        ]
+    }
+
     def __init__(self, request):
         super().__init__(request)
         self.facility = 'HFIR'
 
     def experiments(self, instrument):
-        '''
-        @return:
-          [{'id': 'IPTS-18141',
-            'name': 'IPTS-18141',
-            'tags': ['spice/exp437', 'type/raw'],
-            'type': 'experiment'},
-            {'id': 'IPTS-18155',
-            'name': 'IPTS-18155',
-            'tags': ['spice/exp401',
-                    'spice/exp405',
-                    'spice/exp410',
-                    'spice/exp429',
-                    'spice/exp438',
-                    'type/raw'],
-            'type': 'experiment'}, ... ]
-        '''
         return super().experiments(self.facility, instrument)
 
-    def runs(self, instrument, ipts, exp, extensions=['.xml']):
-        '''
-        @param ipts : IPTS-17471
-        @param exp : exp371
-
-         [{'ext': None,
-                'location': '/HFIR/CG3/IPTS-18265/exp359/Datafiles/BioSANS_exp359_scan0014_0001.xml',
-                'metadata': {'spicerack': {'@end_time': '2016-11-18 11:01:07',
-                                            'header': {'scan_title': 'Rich_Glu(IC: '
-                                                                    'SVP_6A_SDD15.5m_Banjo '
-                                                                    'S: 0.003-0.8 P:[ '
-                                                                    'Chiller Temp (C): '
-                                                                    '20.000000])'}}},
-                'tags': None,
-                'thumbnails': {'Detector':  ...
-                               'DetectorWing': ....
-                               }
-        '''
+    def runs(self, instrument, ipts, exp):
         
+        extensions = self.RUNS_EXTENSIONS.get(
+            instrument, self.RUNS_EXTENSIONS['DEFAULT'])
+
         params_json = {
             'facility': self.facility,
             'instrument': instrument,
             'experiment': ipts,
             'tags': ['spice/{}'.format(exp)],
             'exts': extensions,
-            'projection': [
-                'location',
-                'metadata.spicerack.@filename',
-                'metadata.spicerack.@end_time',
-                'metadata.spicerack.header',
-                'metadata.spicerack.sample_info',
-                'thumbnails',
-                'metadata.spicerack.motor_positions',
-            ],
+            'projection': self.RUNS_PROJECTIONS.get(
+                instrument, self.RUNS_PROJECTIONS['DEFAULT'])
         }
         return super().runs(params_json)
 
     def run(self, instrument, ipts, file_location):
-        '''
-
-        {'ext': 'xml',
- 'location': '/HFIR/CG3/IPTS-18265/exp359/Datafiles/BioSANS_exp359_scan0014_0001.xml',
- 'metadata': {'spicerack': {'@end_time': '2016-11-18 11:01:07',
-                            '@filename': 'BioSANS_exp359_scan0014_0001.xml',
-                            '@spice_version': '1.7',
-                        'parameter_positions': {'chillerp': 20.0,
-                                                    'tumbler1': 0.0},
-                            'sample_info': {'background': {'field': {'Cell Thickness (mm) (mm)': '1',
-                                                                     'background': 'Empty '
-                                                                                   'Banjo'}},
-                                            'parameters': {'field': {'Chiller Temp (C)': '20.000000'}},
-                                            'sample': {'field': {'content': 'ground'}}}}},
-
-        '''
         return super().run(self.facility, instrument, ipts, file_location)
 
 

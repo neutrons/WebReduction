@@ -15,15 +15,16 @@ logger = logging.getLogger(__name__)
 
 class Catalog(ABC):
     '''
-    Abstract class
+    Abstract class for both HFIR and SNS catalog.
+    The main methods to be defined in the subclasses are here.
     '''
 
     def __new__(cls, facility, *args, **kwargs):
         '''
         This allows to great subclasses from this base class,
-        gievn a facility name
+        given a facility name
 
-        The Calatlog should be constructed like this:
+        The Catalog should be constructed like this:
         cat = Catalog(Facility)
         Where facility is the name of the classes below
         '''
@@ -31,7 +32,6 @@ class Catalog(ABC):
             if str(subclass.__name__) == facility:
                 return super(cls, subclass).__new__(subclass)
         raise Exception('Facility not supported!')
-
 
     @abstractmethod
     def experiments(self, instrument):
@@ -56,6 +56,7 @@ class SNS(Catalog):
         'REF_M': 'entry-off_off',
     }
 
+    @staticmethod
     def _runs_eqsans(entry_name, entry):
         elem = {}
         try:

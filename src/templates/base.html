@@ -63,7 +63,7 @@
                 <ul class="nav navbar-nav">
 
                     <!-- This only shows if the user has selected an IPTS -->
-                    {% if user.profile.ipts %}
+                    {% if user.profile %}
                     <!-- Catalog -->
                     <li><a href="{% url 'catalog:list_instruments' %}" data-toggle="tooltip" title="Shows the catalog for all instruments in your selected profile facility!" >
                     	<span class="glyphicon glyphicon-book"></span> &nbsp;Catalog</a></li>
