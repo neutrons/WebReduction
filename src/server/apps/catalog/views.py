@@ -17,6 +17,7 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.http import HttpResponse
 from django.http import FileResponse
+from django.urls import reverse
 
 from .models import Facility, Instrument
 from .oncat.facade import Catalog
@@ -153,8 +154,21 @@ class RunsAjax(LoginRequiredMixin, TemplateView):
         logger.debug('Getting runs from catalog: %s %s %s %s',
                      facility, instrument, ipts, exp)
         runs = Catalog(facility, self.request).runs(instrument, ipts, exp)
+        # Let's filter the catalog results and just provide sime miminal results
+        runs_out = [
+            {
+                'url': reverse('catalog:run_file', kwargs={
+                    'instrument': instrument,
+                    'ipts': ipts,
+                    'exp': exp,
+                    'filename': r['location'],
+                }),
+                'scan': r['metadata']['scan'],
+                'scan_title': r['metadata']['scan_title'],
+            } for r in runs
+        ]
         # logger.debug(pformat(iptss))
-        return JsonResponse(runs, status=200, safe=False)
+        return JsonResponse(runs_out, status=200, safe=False)
 
 class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
     '''
