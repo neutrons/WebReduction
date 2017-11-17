@@ -10,9 +10,9 @@
 0002_remove_userprofile_home_institution.py	../src/server/apps/users/migrations/0002_remove_userprofile_home_institution.py	1;"	kind:file	line:1
 ABC	../venv/lib/python3.5/abc.py	/^class ABC(metaclass=ABCMeta):$/;"	kind:class	line:234
 ABCMeta	../venv/lib/python3.5/abc.py	/^class ABCMeta(type):$/;"	kind:class	line:109
-ACCOUNT_AUTHENTICATION_METHOD	../src/server/settings/settings.py	/^ACCOUNT_AUTHENTICATION_METHOD = 'username'$/;"	kind:variable	line:156
-ACCOUNT_EMAIL_REQUIRED	../src/server/settings/settings.py	/^ACCOUNT_EMAIL_REQUIRED = True$/;"	kind:variable	line:157
-ACCOUNT_EMAIL_VERIFICATION	../src/server/settings/settings.py	/^ACCOUNT_EMAIL_VERIFICATION = 'mandatory'$/;"	kind:variable	line:158
+ACCOUNT_AUTHENTICATION_METHOD	../src/server/settings/settings.py	/^ACCOUNT_AUTHENTICATION_METHOD = 'username'$/;"	kind:variable	line:159
+ACCOUNT_EMAIL_REQUIRED	../src/server/settings/settings.py	/^ACCOUNT_EMAIL_REQUIRED = True$/;"	kind:variable	line:160
+ACCOUNT_EMAIL_VERIFICATION	../src/server/settings/settings.py	/^ACCOUNT_EMAIL_VERIFICATION = 'mandatory'$/;"	kind:variable	line:161
 ADJ_ESTERROR	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^ADJ_ESTERROR = 0x0008$/;"	kind:variable	line:298
 ADJ_FREQUENCY	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^ADJ_FREQUENCY = 0x0002$/;"	kind:variable	line:296
 ADJ_MAXERROR	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^ADJ_MAXERROR = 0x0004$/;"	kind:variable	line:297
@@ -26,7 +26,7 @@ ADJ_STATUS	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^ADJ_STATUS = 0x00
 ADJ_TAI	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^ADJ_TAI = 0x0080$/;"	kind:variable	line:301
 ADJ_TICK	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^ADJ_TICK = 0x4000$/;"	kind:variable	line:305
 ADJ_TIMECONST	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^ADJ_TIMECONST = 0x0020$/;"	kind:variable	line:300
-ADMIN_URL	../src/server/settings/settings.py	/^ADMIN_URL = env('ADMIN_URL', default='\/admin\/')$/;"	kind:variable	line:173
+ADMIN_URL	../src/server/settings/settings.py	/^ADMIN_URL = env('ADMIN_URL', default='\/admin\/')$/;"	kind:variable	line:176
 AF_ALG	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^AF_ALG = PF_ALG$/;"	kind:variable	line:657
 AF_APPLETALK	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^AF_APPLETALK = PF_APPLETALK$/;"	kind:variable	line:623
 AF_ASH	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^AF_ASH = PF_ASH$/;"	kind:variable	line:637
@@ -85,7 +85,7 @@ AT_LOCALE	../venv/lib/python3.5/sre_constants.py	/^AT_LOCALE = {$/;"	kind:variab
 AT_MULTILINE	../venv/lib/python3.5/sre_constants.py	/^AT_MULTILINE = {$/;"	kind:variable	line:127
 AT_UNICODE	../venv/lib/python3.5/sre_constants.py	/^AT_UNICODE = {$/;"	kind:variable	line:137
 AUTHENTICATION_BACKENDS	../src/server/settings/ldapauth.py	/^AUTHENTICATION_BACKENDS = ($/;"	kind:variable	line:52
-AUTHENTICATION_BACKENDS	../src/server/settings/settings.py	/^AUTHENTICATION_BACKENDS = ($/;"	kind:variable	line:150
+AUTHENTICATION_BACKENDS	../src/server/settings/settings.py	/^AUTHENTICATION_BACKENDS = ($/;"	kind:variable	line:153
 AUTH_LDAP_ALWAYS_UPDATE_USER	../src/server/settings/ldapauth.py	/^AUTH_LDAP_ALWAYS_UPDATE_USER = True$/;"	kind:variable	line:23
 AUTH_LDAP_BIND_DN	../src/server/settings/ldapauth.py	/^AUTH_LDAP_BIND_DN = ''$/;"	kind:variable	line:9
 AUTH_LDAP_BIND_PASSWORD	../src/server/settings/ldapauth.py	/^AUTH_LDAP_BIND_PASSWORD = ''$/;"	kind:variable	line:10
@@ -97,8 +97,8 @@ AUTH_LDAP_MIRROR_GROUPS	../src/server/settings/ldapauth.py	/^AUTH_LDAP_MIRROR_GR
 AUTH_LDAP_SERVER_URI	../src/server/settings/ldapauth.py	/^AUTH_LDAP_SERVER_URI = 'ldaps:\/\/ldap-vip.sns.gov'$/;"	kind:variable	line:6
 AUTH_LDAP_USER_ATTR_MAP	../src/server/settings/ldapauth.py	/^AUTH_LDAP_USER_ATTR_MAP = {$/;"	kind:variable	line:45
 AUTH_LDAP_USER_FLAGS_BY_GROUP	../src/server/settings/ldapauth.py	/^AUTH_LDAP_USER_FLAGS_BY_GROUP = {$/;"	kind:variable	line:38
-AUTH_PASSWORD_VALIDATORS	../src/server/settings/settings.py	/^AUTH_PASSWORD_VALIDATORS = [$/;"	kind:variable	line:101
-AUTH_USER_MODEL	../src/server/settings/settings.py	/^AUTH_USER_MODEL = 'users.User'$/;"	kind:variable	line:165
+AUTH_PASSWORD_VALIDATORS	../src/server/settings/settings.py	/^AUTH_PASSWORD_VALIDATORS = [$/;"	kind:variable	line:104
+AUTH_USER_MODEL	../src/server/settings/settings.py	/^AUTH_USER_MODEL = 'users.User'$/;"	kind:variable	line:168
 AWAIT	../venv/lib/python3.5/token.py	/^AWAIT = 54$/;"	kind:variable	line:67
 AsyncIterable	../venv/lib/python3.5/_collections_abc.py	/^class AsyncIterable(metaclass=ABCMeta):$/;"	kind:class	line:154
 AsyncIterator	../venv/lib/python3.5/_collections_abc.py	/^class AsyncIterator(AsyncIterable):$/;"	kind:class	line:170
@@ -252,15 +252,15 @@ CD_XA_HEAD	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^CD_XA_HEAD = (
 CD_XA_SYNC_HEAD	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^CD_XA_SYNC_HEAD = (CD_SYNC_SIZE+CD_XA_HEAD)$/;"	kind:variable	line:74
 CD_XA_TAIL	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^CD_XA_TAIL = (CD_EDC_SIZE+CD_ECC_SIZE)$/;"	kind:variable	line:73
 CD_ZERO_SIZE	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^CD_ZERO_SIZE = 8$/;"	kind:variable	line:65
-CELERY_BROKER_URL	../src/server/settings/settings.py	/^CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis:\/\/127.0.0.1:6379')$/;"	kind:variable	line:206
-CELERY_RESULT_BACKEND	../src/server/settings/settings.py	/^CELERY_RESULT_BACKEND = 'django-db'$/;"	kind:variable	line:205
+CELERY_BROKER_URL	../src/server/settings/settings.py	/^CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis:\/\/127.0.0.1:6379')$/;"	kind:variable	line:209
+CELERY_RESULT_BACKEND	../src/server/settings/settings.py	/^CELERY_RESULT_BACKEND = 'django-db'$/;"	kind:variable	line:208
 CG2	../src/server/scripts/hfir.py	/^class CG2(Experiment):$/;"	kind:class	line:186
 CG3	../src/server/scripts/hfir.py	/^class CG3(Experiment):$/;"	kind:class	line:190
 CGC_DATA_NONE	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^CGC_DATA_NONE = 3$/;"	kind:variable	line:53
 CGC_DATA_READ	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^CGC_DATA_READ = 2$/;"	kind:variable	line:52
 CGC_DATA_UNKNOWN	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^CGC_DATA_UNKNOWN = 0$/;"	kind:variable	line:50
 CGC_DATA_WRITE	../venv/lib/python3.5/plat-x86_64-linux-gnu/CDROM.py	/^CGC_DATA_WRITE = 1$/;"	kind:variable	line:51
-CHANNEL_LAYERS	../src/server/settings/settings.py	/^CHANNEL_LAYERS = {$/;"	kind:variable	line:210
+CHANNEL_LAYERS	../src/server/settings/settings.py	/^CHANNEL_LAYERS = {$/;"	kind:variable	line:213
 CHRTYPE	../venv/lib/python3.5/tarfile.py	/^CHRTYPE = b"3"                  # character special device$/;"	kind:variable	line:86
 CH_LOCALE	../venv/lib/python3.5/sre_constants.py	/^CH_LOCALE = {$/;"	kind:variable	line:142
 CH_UNICODE	../venv/lib/python3.5/sre_constants.py	/^CH_UNICODE = {$/;"	kind:variable	line:153
@@ -304,7 +304,7 @@ CO_FUTURE_UNICODE_LITERALS	../venv/lib/python3.5/__future__.py	/^CO_FUTURE_UNICO
 CO_FUTURE_WITH_STATEMENT	../venv/lib/python3.5/__future__.py	/^CO_FUTURE_WITH_STATEMENT  = 0x8000   # with statement$/;"	kind:variable	line:72
 CO_GENERATOR_ALLOWED	../venv/lib/python3.5/__future__.py	/^CO_GENERATOR_ALLOWED = 0        # generators (obsolete, was 0x1000)$/;"	kind:variable	line:69
 CO_NESTED	../venv/lib/python3.5/__future__.py	/^CO_NESTED            = 0x0010   # nested_scopes$/;"	kind:variable	line:68
-CRISPY_TEMPLATE_PACK	../src/server/settings/settings.py	/^CRISPY_TEMPLATE_PACK = 'bootstrap3'$/;"	kind:variable	line:171
+CRISPY_TEMPLATE_PACK	../src/server/settings/settings.py	/^CRISPY_TEMPLATE_PACK = 'bootstrap3'$/;"	kind:variable	line:174
 CSIGNAL	../venv/lib/python3.5/plat-x86_64-linux-gnu/TYPES.py	/^CSIGNAL = 0x000000ff$/;"	kind:variable	line:87
 C_BUILTIN	../venv/lib/python3.5/imp.py	/^C_BUILTIN = 6$/;"	kind:variable	line:42
 C_EXTENSION	../venv/lib/python3.5/imp.py	/^C_EXTENSION = 3$/;"	kind:variable	line:39
@@ -450,8 +450,8 @@ Container	../venv/lib/python3.5/_collections_abc.py	/^class Container(metaclass=
 Coroutine	../venv/lib/python3.5/_collections_abc.py	/^class Coroutine(Awaitable):$/;"	kind:class	line:103
 CoroutineType	../venv/lib/python3.5/types.py	/^CoroutineType = type(_c)$/;"	kind:variable	line:24
 Counter	../venv/lib/python3.5/collections/__init__.py	/^class Counter(dict):$/;"	kind:class	line:461
-DATABASES	../src/server/settings/settings.py	/^DATABASES = {$/;"	kind:variable	line:91
-DATETIME_FORMAT	../src/server/settings/settings.py	/^DATETIME_FORMAT = 'Y-m-d H:i:s'$/;"	kind:variable	line:201
+DATABASES	../src/server/settings/settings.py	/^DATABASES = {$/;"	kind:variable	line:94
+DATETIME_FORMAT	../src/server/settings/settings.py	/^DATETIME_FORMAT = 'Y-m-d H:i:s'$/;"	kind:variable	line:204
 DEBUG	../src/server/settings/settings.py	/^DEBUG = env('DEBUG', default=True)$/;"	kind:variable	line:25
 DEBUG	../venv/lib/python3.5/re.py	/^DEBUG = sre_compile.SRE_FLAG_DEBUG # dump pattern after compilation$/;"	kind:variable	line:152
 DEBUG_BUILD	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    DEBUG_BUILD = False  # Changed in _setup()$/;"	kind:variable	line:589
@@ -545,7 +545,7 @@ FILE_ATTRIBUTE_SYSTEM	../venv/lib/python3.5/stat.py	/^FILE_ATTRIBUTE_SYSTEM = 4$
 FILE_ATTRIBUTE_TEMPORARY	../venv/lib/python3.5/stat.py	/^FILE_ATTRIBUTE_TEMPORARY = 256$/;"	kind:variable	line:170
 FILE_ATTRIBUTE_VIRTUAL	../venv/lib/python3.5/stat.py	/^FILE_ATTRIBUTE_VIRTUAL = 65536$/;"	kind:variable	line:171
 FIOGETOWN	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^FIOGETOWN = 0x8903$/;"	kind:variable	line:689
-FIXTURE_DIRS	../src/server/settings/settings.py	/^FIXTURE_DIRS = ($/;"	kind:variable	line:181
+FIXTURE_DIRS	../src/server/settings/settings.py	/^FIXTURE_DIRS = ($/;"	kind:variable	line:184
 FLAGS	../venv/lib/python3.5/sre_parse.py	/^FLAGS = {$/;"	kind:variable	line:55
 Facility	../src/server/apps/catalog/models.py	/^class Facility(models.Model):$/;"	kind:class	line:5
 FacilityAdmin	../src/server/apps/catalog/admin.py	/^class FacilityAdmin(admin.ModelAdmin):$/;"	kind:class	line:8
@@ -642,7 +642,7 @@ GeneratorType	../venv/lib/python3.5/types.py	/^GeneratorType = type(_g())$/;"	ki
 GetSetDescriptorType	../venv/lib/python3.5/types.py	/^GetSetDescriptorType = type(FunctionType.__code__)$/;"	kind:variable	line:45
 HEXDIGITS	../venv/lib/python3.5/sre_parse.py	/^HEXDIGITS = frozenset("0123456789abcdefABCDEF")$/;"	kind:variable	line:23
 HFIR	../src/server/apps/catalog/oncat/communication.py	/^class HFIR(ONCat):$/;"	kind:class	line:72
-HFIR	../src/server/apps/catalog/oncat/facade.py	/^class HFIR(Catalog):$/;"	kind:class	line:160
+HFIR	../src/server/apps/catalog/oncat/facade.py	/^class HFIR(Catalog):$/;"	kind:class	line:161
 HMAC	../venv/lib/python3.5/hmac.py	/^class HMAC:$/;"	kind:class	line:19
 Hashable	../venv/lib/python3.5/_collections_abc.py	/^class Hashable(metaclass=ABCMeta):$/;"	kind:class	line:65
 HeaderError	../venv/lib/python3.5/tarfile.py	/^class HeaderError(TarError):$/;"	kind:class	line:282
@@ -1110,7 +1110,7 @@ JobsList	../src/server/apps/results/views.py	/^class JobsList(LoginRequiredMixin
 K	../venv/lib/python3.5/functools.py	/^    class K(object):$/;"	kind:class	line:212
 KeyedRef	../venv/lib/python3.5/weakref.py	/^class KeyedRef(ref):$/;"	kind:class	line:293
 KeysView	../venv/lib/python3.5/_collections_abc.py	/^class KeysView(MappingView, Set):$/;"	kind:class	line:641
-LANGUAGE_CODE	../src/server/settings/settings.py	/^LANGUAGE_CODE = 'en-us'$/;"	kind:variable	line:120
+LANGUAGE_CODE	../src/server/settings/settings.py	/^LANGUAGE_CODE = 'en-us'$/;"	kind:variable	line:123
 LBRACE	../venv/lib/python3.5/token.py	/^LBRACE = 25$/;"	kind:variable	line:38
 LEFTSHIFT	../venv/lib/python3.5/token.py	/^LEFTSHIFT = 33$/;"	kind:variable	line:46
 LEFTSHIFTEQUAL	../venv/lib/python3.5/token.py	/^LEFTSHIFTEQUAL = 44$/;"	kind:variable	line:57
@@ -1125,7 +1125,7 @@ LNKTYPE	../venv/lib/python3.5/tarfile.py	/^LNKTYPE = b"1"                  # lin
 LOCATIONS	../src/server/scripts/builder.py	/^    LOCATIONS = {$/;"	kind:variable	line:16
 LOG4	../venv/lib/python3.5/random.py	/^LOG4 = _log(4.0)$/;"	kind:variable	line:56
 LOGGING	../src/server/settings/log.py	/^LOGGING = {$/;"	kind:variable	line:17
-LOGIN_URL	../src/server/settings/settings.py	/^LOGIN_URL = 'users:login'$/;"	kind:variable	line:164
+LOGIN_URL	../src/server/settings/settings.py	/^LOGIN_URL = 'users:login'$/;"	kind:variable	line:167
 LPAR	../venv/lib/python3.5/token.py	/^LPAR = 7$/;"	kind:variable	line:20
 LSQB	../venv/lib/python3.5/token.py	/^LSQB = 9$/;"	kind:variable	line:22
 LambdaType	../venv/lib/python3.5/types.py	/^LambdaType = type(lambda: None)         # Same as FunctionType$/;"	kind:variable	line:13
@@ -1135,7 +1135,7 @@ Loader	../venv/lib/python3.5/importlib/abc.py	/^class Loader(metaclass=abc.ABCMe
 LockType	../venv/lib/python3.5/_dummy_thread.py	/^class LockType(object):$/;"	kind:class	line:88
 LoginForm	../src/server/apps/users/forms.py	/^class LoginForm(AuthenticationForm):$/;"	kind:class	line:15
 LoginView	../src/server/apps/users/views.py	/^class LoginView(FormView):$/;"	kind:class	line:43
-LogoutView	../src/server/apps/users/views.py	/^class LogoutView(RedirectView):$/;"	kind:class	line:122
+LogoutView	../src/server/apps/users/views.py	/^class LogoutView(RedirectView):$/;"	kind:class	line:119
 MAGIC	../venv/lib/python3.5/sre_constants.py	/^MAGIC = 20140917$/;"	kind:variable	line:16
 MAGIC_NUMBER	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^MAGIC_NUMBER = (3350).to_bytes(2, 'little') + b'\\r\\n'$/;"	kind:variable	line:234
 MAXBINSIZE	../venv/lib/python3.5/base64.py	/^MAXBINSIZE = (MAXLINESIZE\/\/4)*3$/;"	kind:variable	line:490
@@ -1152,10 +1152,10 @@ MCAST_LEAVE_GROUP	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^MCAST_LEAV
 MCAST_LEAVE_SOURCE_GROUP	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^MCAST_LEAVE_SOURCE_GROUP = 47$/;"	kind:variable	line:776
 MCAST_MSFILTER	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^MCAST_MSFILTER = 48$/;"	kind:variable	line:777
 MCAST_UNBLOCK_SOURCE	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^MCAST_UNBLOCK_SOURCE = 44$/;"	kind:variable	line:773
-MEDIA_ROOT	../src/server/settings/settings.py	/^MEDIA_ROOT = env("MEDIA_ROOT", default=ROOT_DIR('..\/dist\/media'))$/;"	kind:variable	line:145
-MEDIA_URL	../src/server/settings/settings.py	/^MEDIA_URL = '\/media\/'$/;"	kind:variable	line:144
-MESSAGE_TAGS	../src/server/settings/settings.py	/^MESSAGE_TAGS = {$/;"	kind:variable	line:177
-MIDDLEWARE	../src/server/settings/settings.py	/^MIDDLEWARE = [$/;"	kind:variable	line:54
+MEDIA_ROOT	../src/server/settings/settings.py	/^MEDIA_ROOT = env("MEDIA_ROOT", default=ROOT_DIR('..\/dist\/media'))$/;"	kind:variable	line:148
+MEDIA_URL	../src/server/settings/settings.py	/^MEDIA_URL = '\/media\/'$/;"	kind:variable	line:147
+MESSAGE_TAGS	../src/server/settings/settings.py	/^MESSAGE_TAGS = {$/;"	kind:variable	line:180
+MIDDLEWARE	../src/server/settings/settings.py	/^MIDDLEWARE = [$/;"	kind:variable	line:57
 MINEQUAL	../venv/lib/python3.5/token.py	/^MINEQUAL = 37$/;"	kind:variable	line:50
 MINUS	../venv/lib/python3.5/token.py	/^MINUS = 15$/;"	kind:variable	line:28
 MOD_CLKA	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^MOD_CLKA = ADJ_OFFSET_SINGLESHOT$/;"	kind:variable	line:315
@@ -1222,10 +1222,10 @@ NullImporter	../venv/lib/python3.5/imp.py	/^class NullImporter:$/;"	kind:class	l
 Number	../venv/lib/python3.5/tokenize.py	/^Number = group(Imagnumber, Floatnumber, Intnumber)$/;"	kind:variable	line:132
 OAuthClient	../src/server/apps/catalog/oncat/rest.py	/^class OAuthClient(object):$/;"	kind:class	line:69
 OCTDIGITS	../venv/lib/python3.5/sre_parse.py	/^OCTDIGITS = frozenset("01234567")$/;"	kind:variable	line:22
-ONCAT_CLIENT_ID	../src/server/settings/settings.py	/^ONCAT_CLIENT_ID = env("ONCAT_CLIENT_ID")$/;"	kind:variable	line:196
-ONCAT_CLIENT_SECRET	../src/server/settings/settings.py	/^ONCAT_CLIENT_SECRET = env("ONCAT_CLIENT_SECRET")$/;"	kind:variable	line:197
-ONCAT_TOKEN_URL	../src/server/settings/settings.py	/^ONCAT_TOKEN_URL = 'https:\/\/oncat.ornl.gov\/oauth\/token'$/;"	kind:variable	line:195
-ONCAT_URL	../src/server/settings/settings.py	/^ONCAT_URL = 'https:\/\/oncat.ornl.gov\/api'$/;"	kind:variable	line:194
+ONCAT_CLIENT_ID	../src/server/settings/settings.py	/^ONCAT_CLIENT_ID = env("ONCAT_CLIENT_ID")$/;"	kind:variable	line:199
+ONCAT_CLIENT_SECRET	../src/server/settings/settings.py	/^ONCAT_CLIENT_SECRET = env("ONCAT_CLIENT_SECRET")$/;"	kind:variable	line:200
+ONCAT_TOKEN_URL	../src/server/settings/settings.py	/^ONCAT_TOKEN_URL = 'https:\/\/oncat.ornl.gov\/oauth\/token'$/;"	kind:variable	line:198
+ONCAT_URL	../src/server/settings/settings.py	/^ONCAT_URL = 'https:\/\/oncat.ornl.gov\/api'$/;"	kind:variable	line:197
 ONCat	../src/server/apps/catalog/oncat/communication.py	/^class ONCat(RESTInterface):$/;"	kind:class	line:21
 OP	../venv/lib/python3.5/token.py	/^OP = 53$/;"	kind:variable	line:66
 OPEN_METH	../venv/lib/python3.5/tarfile.py	/^    OPEN_METH = {$/;"	kind:variable	line:1699
@@ -1310,9 +1310,9 @@ Point	../venv/lib/python3.5/collections/__main__.py	/^class Point(namedtuple('Po
 Point	../venv/lib/python3.5/collections/__main__.py	/^class Point(namedtuple('Point', 'x y')):$/;"	kind:class	line:24
 Point3D	../venv/lib/python3.5/collections/__main__.py	/^Point3D = namedtuple('Point3D', Point._fields + ('z',))$/;"	kind:variable	line:33
 Pointfloat	../venv/lib/python3.5/tokenize.py	/^Pointfloat = group(r'[0-9]+\\.[0-9]*', r'\\.[0-9]+') + maybe(Exponent)$/;"	kind:variable	line:128
-ProfileCreate	../src/server/apps/users/views.py	/^                    CreateView):$/;"	kind:class	line:173
-ProfileUpdate	../src/server/apps/users/views.py	/^                    UpdateView):$/;"	kind:class	line:150
-ProfileView	../src/server/apps/users/views.py	/^class ProfileView(LoginRequiredMixin, TemplateView):$/;"	kind:class	line:134
+ProfileCreate	../src/server/apps/users/views.py	/^                    CreateView):$/;"	kind:class	line:170
+ProfileUpdate	../src/server/apps/users/views.py	/^                    UpdateView):$/;"	kind:class	line:147
+ProfileView	../src/server/apps/users/views.py	/^class ProfileView(LoginRequiredMixin, TemplateView):$/;"	kind:class	line:131
 ProxyTypes	../venv/lib/python3.5/weakref.py	/^ProxyTypes = (ProxyType, CallableProxyType)$/;"	kind:variable	line:27
 PseudoExtras	../venv/lib/python3.5/tokenize.py	/^PseudoExtras = group(r'\\\\\\r?\\n|\\Z', Comment, Triple)$/;"	kind:variable	line:169
 PseudoToken	../venv/lib/python3.5/tokenize.py	/^PseudoToken = Whitespace + group(PseudoExtras, Number, Funny, ContStr, Name)$/;"	kind:variable	line:170
@@ -1329,11 +1329,12 @@ REGULAR_TYPES	../venv/lib/python3.5/tarfile.py	/^REGULAR_TYPES = (REGTYPE, AREGT
 REPEAT_CHARS	../venv/lib/python3.5/sre_parse.py	/^REPEAT_CHARS = "*+?{"$/;"	kind:variable	line:18
 REQUIRED_FIELDS	../src/server/apps/users/models.py	/^    REQUIRED_FIELDS = ['email']$/;"	kind:variable	line:40
 RESTInterface	../src/server/apps/catalog/oncat/rest.py	/^class RESTInterface(object):$/;"	kind:class	line:121
+REST_FRAMEWORK	../src/server/settings/settings.py	/^REST_FRAMEWORK = {$/;"	kind:variable	line:224
 RIGHTSHIFT	../venv/lib/python3.5/token.py	/^RIGHTSHIFT = 34$/;"	kind:variable	line:47
 RIGHTSHIFTEQUAL	../venv/lib/python3.5/token.py	/^RIGHTSHIFTEQUAL = 45$/;"	kind:variable	line:58
 RLock	../venv/lib/python3.5/functools.py	/^    class RLock:$/;"	kind:class	line:27
 ROOT_DIR	../src/server/settings/env.py	/^ROOT_DIR = environ.Path(__file__) - 3  # (\/a\/b\/myfile.py - 3 = \/)$/;"	kind:variable	line:3
-ROOT_URLCONF	../src/server/settings/settings.py	/^ROOT_URLCONF = 'server.urls'$/;"	kind:variable	line:64
+ROOT_URLCONF	../src/server/settings/settings.py	/^ROOT_URLCONF = 'server.urls'$/;"	kind:variable	line:67
 RPAR	../venv/lib/python3.5/token.py	/^RPAR = 8$/;"	kind:variable	line:21
 RSQB	../venv/lib/python3.5/token.py	/^RSQB = 10$/;"	kind:variable	line:23
 RTLD_BINDING_MASK	../venv/lib/python3.5/plat-x86_64-linux-gnu/DLFCN.py	/^RTLD_BINDING_MASK = 0x3$/;"	kind:variable	line:79
@@ -1343,9 +1344,12 @@ RTLD_LOCAL	../venv/lib/python3.5/plat-x86_64-linux-gnu/DLFCN.py	/^RTLD_LOCAL = 0
 RTLD_NODELETE	../venv/lib/python3.5/plat-x86_64-linux-gnu/DLFCN.py	/^RTLD_NODELETE = 0x01000$/;"	kind:variable	line:83
 RTLD_NOLOAD	../venv/lib/python3.5/plat-x86_64-linux-gnu/DLFCN.py	/^RTLD_NOLOAD = 0x00004$/;"	kind:variable	line:80
 RTLD_NOW	../venv/lib/python3.5/plat-x86_64-linux-gnu/DLFCN.py	/^RTLD_NOW = 0x00002$/;"	kind:variable	line:78
+RUNS_ELEM_FUNC	../src/server/apps/catalog/oncat/facade.py	/^    RUNS_ELEM_FUNC = {$/;"	kind:variable	line:236
 RUNS_ENTRY_KEYWORD	../src/server/apps/catalog/oncat/facade.py	/^    RUNS_ENTRY_KEYWORD = {$/;"	kind:variable	line:54
-RUNS_PARSE_FUNCS	../src/server/apps/catalog/oncat/facade.py	/^    RUNS_PARSE_FUNCS = {$/;"	kind:variable	line:69
-RUNS_PROJECTIONS	../src/server/apps/catalog/oncat/communication.py	/^    RUNS_PROJECTIONS = {$/;"	kind:variable	line:158
+RUNS_EXTENSIONS	../src/server/apps/catalog/oncat/communication.py	/^    RUNS_EXTENSIONS = {$/;"	kind:variable	line:75
+RUNS_PARSE_FUNCS	../src/server/apps/catalog/oncat/facade.py	/^    RUNS_PARSE_FUNCS = {$/;"	kind:variable	line:70
+RUNS_PROJECTIONS	../src/server/apps/catalog/oncat/communication.py	/^    RUNS_PROJECTIONS = {$/;"	kind:variable	line:135
+RUNS_PROJECTIONS	../src/server/apps/catalog/oncat/communication.py	/^    RUNS_PROJECTIONS = {$/;"	kind:variable	line:82
 Random	../venv/lib/python3.5/random.py	/^class Random(_random.Random):$/;"	kind:class	line:68
 RawIOBase	../venv/lib/python3.5/io.py	/^class RawIOBase(_io._RawIOBase, IOBase):$/;"	kind:class	line:75
 ReadError	../venv/lib/python3.5/shutil.py	/^class ReadError(OSError):$/;"	kind:class	line:62
@@ -1390,7 +1394,7 @@ SEEK_END	../venv/lib/python3.5/os.py	/^SEEK_END = 2$/;"	kind:variable	line:211
 SEEK_SET	../venv/lib/python3.5/io.py	/^SEEK_SET = 0$/;"	kind:variable	line:65
 SEEK_SET	../venv/lib/python3.5/os.py	/^SEEK_SET = 0$/;"	kind:variable	line:209
 SEMI	../venv/lib/python3.5/token.py	/^SEMI = 13$/;"	kind:variable	line:26
-SESSION_SERIALIZER	../src/server/settings/settings.py	/^SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'$/;"	kind:variable	line:191
+SESSION_SERIALIZER	../src/server/settings/settings.py	/^SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'$/;"	kind:variable	line:194
 SF_APPEND	../venv/lib/python3.5/stat.py	/^SF_APPEND    = 0x00040000  # file may only be appended to$/;"	kind:variable	line:107
 SF_ARCHIVED	../venv/lib/python3.5/stat.py	/^SF_ARCHIVED  = 0x00010000  # file may be archived$/;"	kind:variable	line:105
 SF_IMMUTABLE	../venv/lib/python3.5/stat.py	/^SF_IMMUTABLE = 0x00020000  # file may not be changed$/;"	kind:variable	line:106
@@ -1406,7 +1410,7 @@ SIOCGSTAMPNS	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^SIOCGSTAMPNS = 
 SIOCSPGRP	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^SIOCSPGRP = 0x8902$/;"	kind:variable	line:688
 SLASH	../venv/lib/python3.5/token.py	/^SLASH = 17$/;"	kind:variable	line:30
 SLASHEQUAL	../venv/lib/python3.5/token.py	/^SLASHEQUAL = 39$/;"	kind:variable	line:52
-SNS	../src/server/apps/catalog/oncat/communication.py	/^class SNS(ONCat):$/;"	kind:class	line:154
+SNS	../src/server/apps/catalog/oncat/communication.py	/^class SNS(ONCat):$/;"	kind:class	line:131
 SNS	../src/server/apps/catalog/oncat/facade.py	/^class SNS(Catalog):$/;"	kind:class	line:49
 SOLARIS_XHDTYPE	../venv/lib/python3.5/tarfile.py	/^SOLARIS_XHDTYPE = b"X"          # Solaris extended header$/;"	kind:variable	line:98
 SOLID_ANGLE_CHOICES	../src/server/apps/sans/biosans/models.py	/^    SOLID_ANGLE_CHOICES = ($/;"	kind:variable	line:34
@@ -1491,9 +1495,9 @@ SRE_INFO_LITERAL	../venv/lib/python3.5/sre_constants.py	/^SRE_INFO_LITERAL = 2 #
 SRE_INFO_PREFIX	../venv/lib/python3.5/sre_constants.py	/^SRE_INFO_PREFIX = 1 # has prefix$/;"	kind:variable	line:176
 STAR	../venv/lib/python3.5/token.py	/^STAR = 16$/;"	kind:variable	line:29
 STAREQUAL	../venv/lib/python3.5/token.py	/^STAREQUAL = 38$/;"	kind:variable	line:51
-STATICFILES_DIRS	../src/server/settings/settings.py	/^STATICFILES_DIRS = [$/;"	kind:variable	line:137
-STATIC_ROOT	../src/server/settings/settings.py	/^STATIC_ROOT = env("STATIC_ROOT", default=ROOT_DIR('..\/dist\/static'))$/;"	kind:variable	line:141
-STATIC_URL	../src/server/settings/settings.py	/^STATIC_URL = '\/static\/'$/;"	kind:variable	line:134
+STATICFILES_DIRS	../src/server/settings/settings.py	/^STATICFILES_DIRS = [$/;"	kind:variable	line:140
+STATIC_ROOT	../src/server/settings/settings.py	/^STATIC_ROOT = env("STATIC_ROOT", default=ROOT_DIR('..\/dist\/static'))$/;"	kind:variable	line:144
+STATIC_URL	../src/server/settings/settings.py	/^STATIC_URL = '\/static\/'$/;"	kind:variable	line:137
 STA_CLK	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^STA_CLK = 0x8000$/;"	kind:variable	line:334
 STA_CLOCKERR	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^STA_CLOCKERR = 0x1000$/;"	kind:variable	line:331
 STA_DEL	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^STA_DEL = 0x0020$/;"	kind:variable	line:324
@@ -1835,13 +1839,13 @@ SubmitWithCss	../src/server/apps/sans/forms.py	/^class SubmitWithCss(Submit):$/;
 SubsequentHeaderError	../venv/lib/python3.5/tarfile.py	/^class SubsequentHeaderError(HeaderError):$/;"	kind:class	line:297
 SystemRandom	../venv/lib/python3.5/random.py	/^class SystemRandom(Random):$/;"	kind:class	line:639
 T	../venv/lib/python3.5/encodings/punycode.py	/^def T(j, bias):$/;"	kind:function	line:70
-TEMPLATES	../src/server/settings/settings.py	/^TEMPLATES = [$/;"	kind:variable	line:66
+TEMPLATES	../src/server/settings/settings.py	/^TEMPLATES = [$/;"	kind:variable	line:69
 TILDE	../venv/lib/python3.5/token.py	/^TILDE = 31$/;"	kind:variable	line:44
 TIMEOUT_MAX	../venv/lib/python3.5/_dummy_thread.py	/^TIMEOUT_MAX = 2**31$/;"	kind:variable	line:20
 TIMER_ABSTIME	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^TIMER_ABSTIME = 1$/;"	kind:variable	line:291
 TIMER_ABSTIME	../venv/lib/python3.5/plat-x86_64-linux-gnu/TYPES.py	/^TIMER_ABSTIME = 1$/;"	kind:variable	line:106
 TIME_UTC	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^TIME_UTC = 1$/;"	kind:variable	line:342
-TIME_ZONE	../src/server/settings/settings.py	/^TIME_ZONE = 'America\/New_York'$/;"	kind:variable	line:122
+TIME_ZONE	../src/server/settings/settings.py	/^TIME_ZONE = 'America\/New_York'$/;"	kind:variable	line:125
 TMP_MAX	../venv/lib/python3.5/tempfile.py	/^    TMP_MAX = 10000$/;"	kind:variable	line:204
 TWOPI	../venv/lib/python3.5/random.py	/^TWOPI = 2.0*_pi$/;"	kind:variable	line:55
 TYPES.py	../venv/lib/python3.5/plat-x86_64-linux-gnu/TYPES.py	1;"	kind:file	line:1
@@ -1893,11 +1897,11 @@ UIO_MAXIOV	../venv/lib/python3.5/plat-x86_64-linux-gnu/IN.py	/^UIO_MAXIOV = 1024
 USERNAME_FIELD	../src/server/apps/users/models.py	/^    USERNAME_FIELD = 'username'$/;"	kind:variable	line:39
 USER_BASE	../venv/lib/python3.5/site.py	/^USER_BASE = None$/;"	kind:variable	line:84
 USER_SITE	../venv/lib/python3.5/site.py	/^USER_SITE = None$/;"	kind:variable	line:83
-USE_DJANGO_JQUERY	../src/server/settings/settings.py	/^USE_DJANGO_JQUERY = False$/;"	kind:variable	line:186
-USE_I18N	../src/server/settings/settings.py	/^USE_I18N = True$/;"	kind:variable	line:124
-USE_L10N	../src/server/settings/settings.py	/^USE_L10N = False$/;"	kind:variable	line:200
-USE_L10N	../src/server/settings/settings.py	/^USE_L10N = True$/;"	kind:variable	line:126
-USE_TZ	../src/server/settings/settings.py	/^USE_TZ = True$/;"	kind:variable	line:128
+USE_DJANGO_JQUERY	../src/server/settings/settings.py	/^USE_DJANGO_JQUERY = False$/;"	kind:variable	line:189
+USE_I18N	../src/server/settings/settings.py	/^USE_I18N = True$/;"	kind:variable	line:127
+USE_L10N	../src/server/settings/settings.py	/^USE_L10N = False$/;"	kind:variable	line:203
+USE_L10N	../src/server/settings/settings.py	/^USE_L10N = True$/;"	kind:variable	line:129
+USE_TZ	../src/server/settings/settings.py	/^USE_TZ = True$/;"	kind:variable	line:131
 USTAR_FORMAT	../venv/lib/python3.5/tarfile.py	/^USTAR_FORMAT = 0                # POSIX.1-1988 (ustar) format$/;"	kind:variable	line:100
 Untokenizer	../venv/lib/python3.5/tokenize.py	/^class Untokenizer:$/;"	kind:class	line:224
 User	../src/server/apps/users/models.py	/^class User(AbstractBaseUser, PermissionsMixin):$/;"	kind:class	line:21
@@ -1915,7 +1919,7 @@ ValuesView	../venv/lib/python3.5/_collections_abc.py	/^class ValuesView(MappingV
 WHITESPACE	../venv/lib/python3.5/sre_parse.py	/^WHITESPACE = frozenset(" \\t\\n\\r\\v\\f")$/;"	kind:variable	line:26
 WRAPPER_ASSIGNMENTS	../venv/lib/python3.5/functools.py	/^WRAPPER_ASSIGNMENTS = ('__module__', '__name__', '__qualname__', '__doc__',$/;"	kind:variable	line:40
 WRAPPER_UPDATES	../venv/lib/python3.5/functools.py	/^WRAPPER_UPDATES = ('__dict__',)$/;"	kind:variable	line:42
-WSGI_APPLICATION	../src/server/settings/settings.py	/^WSGI_APPLICATION = 'server.wsgi.application'$/;"	kind:variable	line:85
+WSGI_APPLICATION	../src/server/settings/settings.py	/^WSGI_APPLICATION = 'server.wsgi.application'$/;"	kind:variable	line:88
 WarningMessage	../venv/lib/python3.5/warnings.py	/^class WarningMessage(object):$/;"	kind:class	line:313
 WeakKeyDictionary	../venv/lib/python3.5/weakref.py	/^class WeakKeyDictionary(collections.MutableMapping):$/;"	kind:class	line:314
 WeakMethod	../venv/lib/python3.5/weakref.py	/^class WeakMethod(ref):$/;"	kind:class	line:35
@@ -2546,11 +2550,11 @@ __import__	../venv/lib/python3.5/importlib/_bootstrap.py	/^def __import__(name, 
 __imul__	../venv/lib/python3.5/collections/__init__.py	/^    def __imul__(self, n):$/;"	kind:member	line:1071
 __imul__	../venv/lib/python3.5/operator.py	/^__imul__ = imul$/;"	kind:variable	line:457
 __index__	../venv/lib/python3.5/operator.py	/^__index__ = index$/;"	kind:variable	line:431
-__init__	../src/server/apps/catalog/oncat/communication.py	/^    def __init__(self, request):$/;"	kind:member	line:193
+__init__	../src/server/apps/catalog/oncat/communication.py	/^    def __init__(self, request):$/;"	kind:member	line:104
+__init__	../src/server/apps/catalog/oncat/communication.py	/^    def __init__(self, request):$/;"	kind:member	line:170
 __init__	../src/server/apps/catalog/oncat/communication.py	/^    def __init__(self, request):$/;"	kind:member	line:26
-__init__	../src/server/apps/catalog/oncat/communication.py	/^    def __init__(self, request):$/;"	kind:member	line:74
-__init__	../src/server/apps/catalog/oncat/facade.py	/^    def __init__(self, facility, request):$/;"	kind:member	line:74
-__init__	../src/server/apps/catalog/oncat/facade.py	/^    def __init__(self, facility, request, *args, **kwargs):$/;"	kind:member	line:164
+__init__	../src/server/apps/catalog/oncat/facade.py	/^    def __init__(self, facility, request):$/;"	kind:member	line:75
+__init__	../src/server/apps/catalog/oncat/facade.py	/^    def __init__(self, facility, request, *args, **kwargs):$/;"	kind:member	line:165
 __init__	../src/server/apps/catalog/oncat/hfir/util.py	/^    def __init__(self, filename):$/;"	kind:member	line:23
 __init__	../src/server/apps/catalog/oncat/rest.py	/^    def __init__(self, request):$/;"	kind:member	line:25
 __init__	../src/server/apps/catalog/oncat/rest.py	/^    def __init__(self, request):$/;"	kind:member	line:73
@@ -2772,7 +2776,7 @@ __ne__	../venv/lib/python3.5/operator.py	/^__ne__ = ne$/;"	kind:variable	line:42
 __ne__	../venv/lib/python3.5/weakref.py	/^    def __ne__(self, other):$/;"	kind:member	line:79
 __neg__	../venv/lib/python3.5/collections/__init__.py	/^    def __neg__(self):$/;"	kind:member	line:769
 __neg__	../venv/lib/python3.5/operator.py	/^__neg__ = neg$/;"	kind:variable	line:438
-__new__	../src/server/apps/catalog/oncat/facade.py	/^    def __new__(cls, facility, *args, **kwargs):$/;"	kind:member	line:21
+__new__	../src/server/apps/catalog/oncat/facade.py	/^    def __new__(cls, facility, *args, **kwargs):$/;"	kind:member	line:22
 __new__	../venv/lib/python3.5/abc.py	/^    def __new__(mcls, name, bases, namespace):$/;"	kind:member	line:132
 __new__	../venv/lib/python3.5/codecs.py	/^    def __new__(cls, encode, decode, streamreader=None, streamwriter=None,$/;"	kind:member	line:93
 __new__	../venv/lib/python3.5/sre_constants.py	/^    def __new__(cls, value, name):$/;"	kind:member	line:44
@@ -3053,7 +3057,7 @@ _create_pax_generic_header	../venv/lib/python3.5/tarfile.py	/^    def _create_pa
 _create_payload	../venv/lib/python3.5/tarfile.py	/^    def _create_payload(payload):$/;"	kind:member	line:937
 _createenviron	../venv/lib/python3.5/os.py	/^def _createenviron():$/;"	kind:function	line:779
 _current	../venv/lib/python3.5/hmac.py	/^    def _current(self):$/;"	kind:member	line:108
-_data	../src/server/apps/catalog/oncat/facade.py	/^    def _data(self, filename):$/;"	kind:member	line:322
+_data	../src/server/apps/catalog/oncat/facade.py	/^    def _data(self, filename):$/;"	kind:member	line:354
 _dbg	../venv/lib/python3.5/tarfile.py	/^    def _dbg(self, level, msg):$/;"	kind:member	line:2381
 _decode	../venv/lib/python3.5/encodings/cp65001.py	/^_decode = functools.partial(codecs.code_page_decode, 65001)$/;"	kind:variable	line:14
 _decode_pax_field	../venv/lib/python3.5/tarfile.py	/^    def _decode_pax_field(self, value, encoding, fallback_encoding, fallback_errors):$/;"	kind:member	line:1336
@@ -3221,7 +3225,7 @@ _optimize_charset	../venv/lib/python3.5/sre_compile.py	/^def _optimize_charset(c
 _override_localeconv	../venv/lib/python3.5/locale.py	/^_override_localeconv = {}$/;"	kind:variable	line:106
 _parse	../src/server/apps/catalog/oncat/hfir/util.py	/^    def _parse(self, filename):$/;"	kind:member	line:36
 _parse	../venv/lib/python3.5/sre_parse.py	/^def _parse(source, state):$/;"	kind:function	line:491
-_parse_filename	../src/server/apps/catalog/oncat/facade.py	/^    def _parse_filename(self, filename):$/;"	kind:member	line:308
+_parse_filename	../src/server/apps/catalog/oncat/facade.py	/^    def _parse_filename(self, filename):$/;"	kind:member	line:340
 _parse_localename	../venv/lib/python3.5/locale.py	/^def _parse_localename(localename):$/;"	kind:function	line:458
 _parse_sub	../venv/lib/python3.5/sre_parse.py	/^def _parse_sub(source, state, nested=True):$/;"	kind:function	line:429
 _parse_sub_cond	../venv/lib/python3.5/sre_parse.py	/^def _parse_sub_cond(source, state, condgroup):$/;"	kind:function	line:479
@@ -3282,12 +3286,14 @@ _rmtree_safe_fd	../venv/lib/python3.5/tempfile.py	/^  def _rmtree_safe_fd(topfd,
 _rmtree_unsafe	../venv/lib/python3.5/shutil.py	/^def _rmtree_unsafe(path, onerror):$/;"	kind:function	line:357
 _rmtree_unsafe	../venv/lib/python3.5/tempfile.py	/^  def _rmtree_unsafe(path, onerror):$/;"	kind:function	line:50
 _rolled	../venv/lib/python3.5/tempfile.py	/^    _rolled = False$/;"	kind:variable	line:773
-_runs_eqsans	../src/server/apps/catalog/oncat/facade.py	/^    def _runs_eqsans(entry_name, entry):$/;"	kind:member	line:59
+_runs_elem_sans	../src/server/apps/catalog/oncat/facade.py	/^    def _runs_elem_sans(entry):$/;"	kind:member	line:204
+_runs_elem_tas	../src/server/apps/catalog/oncat/facade.py	/^    def _runs_elem_tas(entry):$/;"	kind:member	line:225
+_runs_eqsans	../src/server/apps/catalog/oncat/facade.py	/^    def _runs_eqsans(entry_name, entry):$/;"	kind:member	line:60
 _safe_print	../venv/lib/python3.5/tarfile.py	/^def _safe_print(s):$/;"	kind:function	line:260
 _samefile	../venv/lib/python3.5/shutil.py	/^def _samefile(src, dst):$/;"	kind:function	line:78
 _sanitize_params	../venv/lib/python3.5/tempfile.py	/^def _sanitize_params(prefix, suffix, dir):$/;"	kind:function	line:257
 _sanity_check	../venv/lib/python3.5/importlib/_bootstrap.py	/^def _sanity_check(name, package, level):$/;"	kind:function	line:919
-_save_credentials_in_session	../src/server/apps/users/views.py	/^    def _save_credentials_in_session(self, password):$/;"	kind:member	line:113
+_save_credentials_in_session	../src/server/apps/users/views.py	/^    def _save_credentials_in_session(self, password):$/;"	kind:member	line:110
 _script	../venv/lib/python3.5/site.py	/^def _script():$/;"	kind:function	line:705
 _scrub_removals	../venv/lib/python3.5/weakref.py	/^    def _scrub_removals(self):$/;"	kind:member	line:355
 _search_registry	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    def _search_registry(cls, fullname):$/;"	kind:member	line:599
@@ -3728,6 +3734,7 @@ compile	../venv/lib/python3.5/re.py	/^def compile(pattern, flags=0):$/;"	kind:fu
 compile	../venv/lib/python3.5/sre_compile.py	/^def compile(p, flags=0):$/;"	kind:function	line:531
 complete	../venv/lib/python3.5/rlcompleter.py	/^    def complete(self, text, state):$/;"	kind:member	line:66
 concat	../venv/lib/python3.5/operator.py	/^def concat(a, b):$/;"	kind:function	line:146
+config	../dist/media/results/7001c158-776e-4f35-8d21-ea6a00620df6/eq-sans_testreduce.py	/^config = ConfigService.Instance()$/;"	kind:variable	line:7
 configuration	../src/server/apps/sans/biosans/models.py	/^    configuration = models.ForeignKey(BioSANSConfiguration, on_delete=models.CASCADE,$/;"	kind:variable	line:218
 configuration	../src/server/apps/sans/gpsans/models.py	/^    configuration = models.ForeignKey(GPSANSConfiguration, on_delete=models.CASCADE,$/;"	kind:variable	line:123
 constructor	../venv/lib/python3.5/copyreg.py	/^def constructor(object):$/;"	kind:function	line:22
@@ -4572,6 +4579,7 @@ env	../src/server/settings/env.py	/^env = environ.Env()$/;"	kind:variable	line:6
 env.py	../src/server/settings/env.py	1;"	kind:file	line:1
 environ	../venv/lib/python3.5/os.py	/^environ = _createenviron()$/;"	kind:variable	line:810
 eq	../venv/lib/python3.5/operator.py	/^def eq(a, b):$/;"	kind:function	line:35
+eq-sans_testreduce.py	../dist/media/results/7001c158-776e-4f35-8d21-ea6a00620df6/eq-sans_testreduce.py	1;"	kind:file	line:1
 error	../venv/lib/python3.5/_dummy_thread.py	/^error = RuntimeError$/;"	kind:variable	line:27
 error	../venv/lib/python3.5/copy.py	/^error = Error   # backward compatibility$/;"	kind:variable	line:58
 error	../venv/lib/python3.5/re.py	/^error = sre_compile.error$/;"	kind:variable	line:155
@@ -4618,11 +4626,11 @@ expandvars	../venv/lib/python3.5/ntpath.py	/^def expandvars(path):$/;"	kind:func
 expandvars	../venv/lib/python3.5/posixpath.py	/^def expandvars(path):$/;"	kind:function	line:266
 experiment	../src/server/apps/users/models.py	/^    experiment = models.CharField("Experiment (Only used at HFIR!)", max_length=20, blank=True)$/;"	kind:variable	line:91
 experiments	../src/server/apps/catalog/oncat/communication.py	/^    def experiments(self, facility, instrument):$/;"	kind:member	line:33
-experiments	../src/server/apps/catalog/oncat/communication.py	/^    def experiments(self, instrument):$/;"	kind:member	line:197
-experiments	../src/server/apps/catalog/oncat/communication.py	/^    def experiments(self, instrument):$/;"	kind:member	line:78
-experiments	../src/server/apps/catalog/oncat/facade.py	/^    def experiments(self, instrument):$/;"	kind:member	line:169
+experiments	../src/server/apps/catalog/oncat/communication.py	/^    def experiments(self, instrument):$/;"	kind:member	line:108
+experiments	../src/server/apps/catalog/oncat/communication.py	/^    def experiments(self, instrument):$/;"	kind:member	line:174
+experiments	../src/server/apps/catalog/oncat/facade.py	/^    def experiments(self, instrument):$/;"	kind:member	line:170
 experiments	../src/server/apps/catalog/oncat/facade.py	/^    def experiments(self, instrument):$/;"	kind:member	line:37
-experiments	../src/server/apps/catalog/oncat/facade.py	/^    def experiments(self, instrument):$/;"	kind:member	line:79
+experiments	../src/server/apps/catalog/oncat/facade.py	/^    def experiments(self, instrument):$/;"	kind:member	line:80
 expovariate	../venv/lib/python3.5/random.py	/^    def expovariate(self, lambd):$/;"	kind:member	line:407
 expovariate	../venv/lib/python3.5/random.py	/^expovariate = _inst.expovariate$/;"	kind:variable	line:730
 extend	../venv/lib/python3.5/_collections_abc.py	/^    def extend(self, values):$/;"	kind:member	line:915
@@ -4711,14 +4719,14 @@ form	../src/server/apps/sans/biosans/forms.py	/^    form=BioSANSRegionForm,$/;"	
 form_class	../src/server/apps/sans/views.py	/^    form_class = None$/;"	kind:variable	line:107
 form_class	../src/server/apps/sans/views.py	/^    form_class = None$/;"	kind:variable	line:337
 form_class	../src/server/apps/users/views.py	/^    form_class = LoginForm$/;"	kind:variable	line:47
-form_class	../src/server/apps/users/views.py	/^    form_class = UserProfileForm$/;"	kind:variable	line:155
-form_class	../src/server/apps/users/views.py	/^    form_class = UserProfileForm$/;"	kind:variable	line:175
-form_invalid	../src/server/apps/users/views.py	/^    def form_invalid(self, form):$/;"	kind:member	line:109
+form_class	../src/server/apps/users/views.py	/^    form_class = UserProfileForm$/;"	kind:variable	line:152
+form_class	../src/server/apps/users/views.py	/^    form_class = UserProfileForm$/;"	kind:variable	line:172
+form_invalid	../src/server/apps/users/views.py	/^    def form_invalid(self, form):$/;"	kind:member	line:106
 form_invalid	../src/server/util/formsets.py	/^    def form_invalid(self, form, formset):$/;"	kind:member	line:94
 form_valid	../src/server/apps/sans/views.py	/^    def form_valid(self, form):$/;"	kind:member	line:157
 form_valid	../src/server/apps/sans/views.py	/^    def form_valid(self, form):$/;"	kind:member	line:625
 form_valid	../src/server/apps/sans/views.py	/^    def form_valid(self, form, formset):$/;"	kind:member	line:458
-form_valid	../src/server/apps/users/views.py	/^    def form_valid(self, form):$/;"	kind:member	line:180
+form_valid	../src/server/apps/users/views.py	/^    def form_valid(self, form):$/;"	kind:member	line:177
 form_valid	../src/server/apps/users/views.py	/^    def form_valid(self, form):$/;"	kind:member	line:61
 form_valid	../src/server/util/formsets.py	/^    def form_valid(self, form, formset):$/;"	kind:member	line:85
 format	../venv/lib/python3.5/collections/__init__.py	/^    def format(self, *args, **kwds):$/;"	kind:member	line:1183
@@ -4770,9 +4778,9 @@ get	../src/server/apps/catalog/views.py	/^    def get(self, request, *args, **kw
 get	../src/server/apps/sans/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:300
 get	../src/server/apps/sans/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:315
 get	../src/server/apps/sans/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:501
-get	../src/server/apps/users/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:128
-get	../src/server/apps/users/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:138
-get	../src/server/apps/users/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:84
+get	../src/server/apps/users/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:125
+get	../src/server/apps/users/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:135
+get	../src/server/apps/users/views.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:82
 get	../src/server/util/formsets.py	/^    def get(self, request, *args, **kwargs):$/;"	kind:member	line:35
 get	../venv/lib/python3.5/_collections_abc.py	/^    def get(self, key, default=None):$/;"	kind:member	line:592
 get	../venv/lib/python3.5/collections/__init__.py	/^    def get(self, key, default=None):$/;"	kind:member	line:880
@@ -4853,7 +4861,7 @@ get_source	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    def get_
 get_source	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    def get_source(self, fullname):$/;"	kind:member	line:875
 get_source	../venv/lib/python3.5/importlib/_bootstrap_external.py	/^    def get_source(self, fullname):$/;"	kind:member	line:927
 get_source	../venv/lib/python3.5/importlib/abc.py	/^    def get_source(self, fullname):$/;"	kind:member	line:217
-get_success_url	../src/server/apps/users/views.py	/^    def get_success_url(self):$/;"	kind:member	line:97
+get_success_url	../src/server/apps/users/views.py	/^    def get_success_url(self):$/;"	kind:member	line:94
 get_suffixes	../venv/lib/python3.5/imp.py	/^def get_suffixes():$/;"	kind:function	line:105
 get_tag	../venv/lib/python3.5/imp.py	/^def get_tag():$/;"	kind:function	line:67
 get_template_names	../src/server/apps/catalog/views.py	/^    def get_template_names(self):$/;"	kind:member	line:105
@@ -5466,8 +5474,8 @@ model	../src/server/apps/sans/gpsans/forms.py	/^        model = GPSANSRegion$/;"
 model	../src/server/apps/sans/views.py	/^    model = None$/;"	kind:variable	line:106
 model	../src/server/apps/sans/views.py	/^    model = None$/;"	kind:variable	line:335
 model	../src/server/apps/users/forms.py	/^        model = UserProfile$/;"	kind:variable	line:62
-model	../src/server/apps/users/views.py	/^    model = UserProfile$/;"	kind:variable	line:154
-model	../src/server/apps/users/views.py	/^    model = UserProfile$/;"	kind:variable	line:174
+model	../src/server/apps/users/views.py	/^    model = UserProfile$/;"	kind:variable	line:151
+model	../src/server/apps/users/views.py	/^    model = UserProfile$/;"	kind:variable	line:171
 model_configuration	../src/server/apps/sans/views.py	/^    model_configuration = None$/;"	kind:variable	line:336
 model_name	../src/server/apps/users/migrations/0002_remove_userprofile_home_institution.py	/^            model_name='userprofile',$/;"	kind:variable	line:16
 models.py	../src/server/apps/catalog/models.py	1;"	kind:file	line:1
@@ -5508,6 +5516,7 @@ name	../src/server/apps/users/apps.py	/^    name = 'server.apps.users'$/;"	kind:
 name	../src/server/apps/users/migrations/0001_initial.py	/^            name='User',$/;"	kind:variable	line:23
 name	../src/server/apps/users/migrations/0001_initial.py	/^            name='UserProfile',$/;"	kind:variable	line:47
 name	../src/server/apps/users/migrations/0002_remove_userprofile_home_institution.py	/^            name='home_institution',$/;"	kind:variable	line:17
+name	../src/server/urls.py	/^        name='index',$/;"	kind:variable	line:36
 name	../venv/lib/python3.5/hmac.py	/^    def name(self):$/;"	kind:member	line:87
 name	../venv/lib/python3.5/os.py	/^    name = 'ce'$/;"	kind:variable	line:89
 name	../venv/lib/python3.5/os.py	/^    name = 'nt'$/;"	kind:variable	line:69
@@ -5576,7 +5585,7 @@ on_delete	../src/server/apps/sans/models.py	/^        on_delete=models.CASCADE,$
 on_delete	../src/server/apps/sans/models.py	/^        on_delete=models.CASCADE,$/;"	kind:variable	line:131
 on_delete	../src/server/apps/sans/models.py	/^        on_delete=models.CASCADE,$/;"	kind:variable	line:202
 on_delete	../src/server/apps/users/models.py	/^        on_delete=models.CASCADE,$/;"	kind:variable	line:71
-oncat	../src/server/apps/catalog/oncat/communication.py	/^    oncat = SNS()$/;"	kind:variable	line:246
+oncat	../src/server/apps/catalog/oncat/communication.py	/^    oncat = SNS()$/;"	kind:variable	line:223
 onceregistry	../venv/lib/python3.5/warnings.py	/^    onceregistry = _onceregistry$/;"	kind:variable	line:409
 onceregistry	../venv/lib/python3.5/warnings.py	/^    onceregistry = {}$/;"	kind:variable	line:414
 onerror	../venv/lib/python3.5/shutil.py	/^        def onerror(*args):$/;"	kind:function	line:451
@@ -5788,8 +5797,8 @@ repr_set	../venv/lib/python3.5/reprlib.py	/^    def repr_set(self, x, level):$/;
 repr_str	../venv/lib/python3.5/reprlib.py	/^    def repr_str(self, x, level):$/;"	kind:member	line:123
 repr_tuple	../venv/lib/python3.5/reprlib.py	/^    def repr_tuple(self, x, level):$/;"	kind:member	line:80
 reprlib.py	../venv/lib/python3.5/reprlib.py	1;"	kind:file	line:1
-requests_log	../src/server/apps/catalog/oncat/communication.py	/^    requests_log = logging.getLogger("requests.packages.urllib3")$/;"	kind:variable	line:234
-res	../src/server/apps/catalog/oncat/communication.py	/^    res = oncat.runs("EQSANS", 'IPTS-19298')$/;"	kind:variable	line:248
+requests_log	../src/server/apps/catalog/oncat/communication.py	/^    requests_log = logging.getLogger("requests.packages.urllib3")$/;"	kind:variable	line:211
+res	../src/server/apps/catalog/oncat/communication.py	/^    res = oncat.runs("EQSANS", 'IPTS-19298')$/;"	kind:variable	line:225
 res	../src/server/scripts/builder.py	/^    res = script_builder.build_script()$/;"	kind:variable	line:101
 reset	../venv/lib/python3.5/codecs.py	/^    def reset(self):$/;"	kind:member	line:202
 reset	../venv/lib/python3.5/codecs.py	/^    def reset(self):$/;"	kind:member	line:243
@@ -5837,19 +5846,19 @@ rshift	../venv/lib/python3.5/operator.py	/^def rshift(a, b):$/;"	kind:function	l
 rsplit	../venv/lib/python3.5/collections/__init__.py	/^    def rsplit(self, sep=None, maxsplit=-1):$/;"	kind:member	line:1228
 rstrip	../venv/lib/python3.5/collections/__init__.py	/^    def rstrip(self, chars=None):$/;"	kind:member	line:1224
 run	../src/server/apps/catalog/oncat/communication.py	/^    def run(self, facility, instrument, ipts, file_location):$/;"	kind:member	line:57
-run	../src/server/apps/catalog/oncat/communication.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:134
-run	../src/server/apps/catalog/oncat/communication.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:221
+run	../src/server/apps/catalog/oncat/communication.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:127
+run	../src/server/apps/catalog/oncat/communication.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:198
 run	../src/server/apps/catalog/oncat/facade.py	/^    def run(self, instrument, ipts, *args, **kwargs):$/;"	kind:member	line:45
-run	../src/server/apps/catalog/oncat/facade.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:134
-run	../src/server/apps/catalog/oncat/facade.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:378
-run_info	../src/server/apps/catalog/oncat/facade.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:353
-runs	../src/server/apps/catalog/oncat/communication.py	/^    def runs(self, instrument, ipts, exp, extensions=['.xml']):$/;"	kind:member	line:97
-runs	../src/server/apps/catalog/oncat/communication.py	/^    def runs(self, instrument, ipts, extensions=['.nxs', '.nxs.h5']):$/;"	kind:member	line:207
+run	../src/server/apps/catalog/oncat/facade.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:135
+run	../src/server/apps/catalog/oncat/facade.py	/^    def run(self, instrument, ipts, file_location):$/;"	kind:member	line:410
+run_info	../src/server/apps/catalog/oncat/facade.py	/^    def run_info(self, instrument, ipts, file_location):$/;"	kind:member	line:385
+runs	../src/server/apps/catalog/oncat/communication.py	/^    def runs(self, instrument, ipts, exp):$/;"	kind:member	line:111
+runs	../src/server/apps/catalog/oncat/communication.py	/^    def runs(self, instrument, ipts, extensions=['.nxs', '.nxs.h5']):$/;"	kind:member	line:184
 runs	../src/server/apps/catalog/oncat/communication.py	/^    def runs(self, params_json):$/;"	kind:member	line:46
-runs	../src/server/apps/catalog/oncat/facade.py	/^    def runs(self, instrument, ipts, *args, **kwargs):$/;"	kind:member	line:105
+runs	../src/server/apps/catalog/oncat/facade.py	/^    def runs(self, instrument, ipts, *args, **kwargs):$/;"	kind:member	line:106
 runs	../src/server/apps/catalog/oncat/facade.py	/^    def runs(self, instrument, ipts, *args, **kwargs):$/;"	kind:member	line:41
-runs	../src/server/apps/catalog/oncat/facade.py	/^    def runs(self, instrument, ipts, exp):$/;"	kind:member	line:202
-runs_as_table	../src/server/apps/catalog/oncat/facade.py	/^    def runs_as_table(self, instrument, ipts, exp):$/;"	kind:member	line:244
+runs	../src/server/apps/catalog/oncat/facade.py	/^    def runs(self, instrument, ipts, exp):$/;"	kind:member	line:246
+runs_as_table	../src/server/apps/catalog/oncat/facade.py	/^    def runs_as_table(self, instrument, ipts, exp):$/;"	kind:member	line:276
 sace_prefix	../venv/lib/python3.5/encodings/idna.py	/^sace_prefix = "xn--"$/;"	kind:variable	line:11
 samefile	../venv/lib/python3.5/genericpath.py	/^def samefile(f1, f2):$/;"	kind:function	line:88
 sameopenfile	../venv/lib/python3.5/genericpath.py	/^def sameopenfile(fp1, fp2):$/;"	kind:function	line:97
@@ -6007,8 +6016,8 @@ sub	../venv/lib/python3.5/operator.py	/^def sub(a, b):$/;"	kind:function	line:13
 sub	../venv/lib/python3.5/re.py	/^def sub(pattern, repl, string, count=0, flags=0):$/;"	kind:function	line:175
 subn	../venv/lib/python3.5/re.py	/^def subn(pattern, repl, string, count=0, flags=0):$/;"	kind:function	line:184
 subtract	../venv/lib/python3.5/collections/__init__.py	/^    def subtract(*args, **kwds):$/;"	kind:member	line:621
-success_message	../src/server/apps/users/views.py	/^    success_message = "Your profile was created successfully."$/;"	kind:variable	line:178
-success_message	../src/server/apps/users/views.py	/^    success_message = "Your profile was updated successfully."$/;"	kind:variable	line:158
+success_message	../src/server/apps/users/views.py	/^    success_message = "Your profile was created successfully."$/;"	kind:variable	line:175
+success_message	../src/server/apps/users/views.py	/^    success_message = "Your profile was updated successfully."$/;"	kind:variable	line:155
 success_url	../src/server/apps/sans/views.py	/^    success_url = reverse_lazy('sans:configuration_list')$/;"	kind:variable	line:155
 success_url	../src/server/apps/sans/views.py	/^    success_url = reverse_lazy('sans:configuration_list')$/;"	kind:variable	line:173
 success_url	../src/server/apps/sans/views.py	/^    success_url = reverse_lazy('sans:configuration_list')$/;"	kind:variable	line:179
@@ -6016,8 +6025,8 @@ success_url	../src/server/apps/sans/views.py	/^    success_url = reverse_lazy('s
 success_url	../src/server/apps/sans/views.py	/^    success_url = reverse_lazy('sans:reduction_list')$/;"	kind:variable	line:470
 success_url	../src/server/apps/sans/views.py	/^    success_url = reverse_lazy('sans:reduction_list')$/;"	kind:variable	line:516
 success_url	../src/server/apps/sans/views.py	/^    success_url = reverse_lazy('sans:reduction_list')$/;"	kind:variable	line:567
-success_url	../src/server/apps/users/views.py	/^    success_url = reverse_lazy('index')$/;"	kind:variable	line:157
-success_url	../src/server/apps/users/views.py	/^    success_url = reverse_lazy('index')$/;"	kind:variable	line:177
+success_url	../src/server/apps/users/views.py	/^    success_url = reverse_lazy('index')$/;"	kind:variable	line:154
+success_url	../src/server/apps/users/views.py	/^    success_url = reverse_lazy('index')$/;"	kind:variable	line:174
 success_url	../src/server/apps/users/views.py	/^    success_url = reverse_lazy('index')$/;"	kind:variable	line:50
 supports_bytes_environ	../venv/lib/python3.5/os.py	/^supports_bytes_environ = (name != 'nt')$/;"	kind:variable	line:820
 supports_dir_fd	../venv/lib/python3.5/os.py	/^    supports_dir_fd = _set$/;"	kind:variable	line:142
@@ -6073,7 +6082,7 @@ template_name	../src/server/apps/sans/views.py	/^    template_name = 'sans\/redu
 template_name	../src/server/apps/sans/views.py	/^    template_name = 'sans\/reduction_form.html'$/;"	kind:variable	line:515
 template_name	../src/server/apps/sans/views.py	/^    template_name = 'sans\/reduction_list.html'$/;"	kind:variable	line:393
 template_name	../src/server/apps/sans/views.py	/^    template_name = 'sans\/reduction_script_form.html'$/;"	kind:variable	line:566
-template_name	../src/server/apps/users/views.py	/^    template_name = "index.html"$/;"	kind:variable	line:136
+template_name	../src/server/apps/users/views.py	/^    template_name = "index.html"$/;"	kind:variable	line:133
 template_name	../src/server/apps/users/views.py	/^    template_name = 'users\/login.html'$/;"	kind:variable	line:48
 test	../venv/lib/python3.5/base64.py	/^def test():$/;"	kind:function	line:590
 test.py	../src/server/apps/catalog/test.py	1;"	kind:file	line:1
@@ -6146,7 +6155,8 @@ update	../venv/lib/python3.5/weakref.py	/^    def update(self, dict=None, **kwar
 update_wrapper	../venv/lib/python3.5/functools.py	/^def update_wrapper(wrapper,$/;"	kind:function	line:43
 updatecache	../venv/lib/python3.5/linecache.py	/^def updatecache(filename, module_globals=None):$/;"	kind:function	line:82
 upper	../venv/lib/python3.5/collections/__init__.py	/^    def upper(self): return self.__class__(self.data.upper())$/;"	kind:member	line:1238
-url	../src/server/apps/users/views.py	/^    url = reverse_lazy('users:login')$/;"	kind:variable	line:126
+url	../src/server/apps/users/views.py	/^    url = reverse_lazy('users:login')$/;"	kind:variable	line:123
+url	../src/server/urls.py	/^            url=reverse_lazy('users:profile_view'), permanent=False),$/;"	kind:variable	line:35
 urlpatterns	../src/server/apps/catalog/urls.py	/^urlpatterns = [$/;"	kind:variable	line:6
 urlpatterns	../src/server/apps/results/urls.py	/^urlpatterns = [$/;"	kind:variable	line:7
 urlpatterns	../src/server/apps/sans/urls.py	/^urlpatterns = [$/;"	kind:variable	line:5
