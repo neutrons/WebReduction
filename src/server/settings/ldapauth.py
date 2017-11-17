@@ -34,11 +34,13 @@ AUTH_LDAP_MIRROR_GROUPS = True
 # Determine Django group permissions from LDAP groups
 AUTH_LDAP_FIND_GROUP_PERMS = True
 
+LDAP_ADMIN_GROUP = 'SNS_Neutron_dev'
+
 # User flag groups from ldap
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     'is_active': 'cn=SNS_Neutron,ou=Groups,dc=sns,dc=ornl,dc=gov',
-    'is_staff': 'cn=SNS_Neutron_dev,ou=Groups,dc=sns,dc=ornl,dc=gov',
-    'is_superuser': 'cn=SNS_Neutron_dev,ou=Groups,dc=sns,dc=ornl,dc=gov',
+    'is_staff': 'cn={},ou=Groups,dc=sns,dc=ornl,dc=gov'.format(LDAP_ADMIN_GROUP),
+    'is_superuser': 'cn={},ou=Groups,dc=sns,dc=ornl,dc=gov'.format(LDAP_ADMIN_GROUP),
 }
 
 # User attributes from ldap

@@ -29,6 +29,7 @@
 <table id="tableruns" class="table table-bordered table-striped">
 	<thead>
 		<tr>
+			{% block table_header %}
 			<th>Thumbnails</th>
 			<th>Title</th>
 			<th>Scan Type</th>
@@ -37,11 +38,13 @@
 			<th>Parameters</th>
 			<th>Thickness</th>
 			<th>End Time</th>
+			{% endblock table_header %}
 		</tr>
 	</thead>
 	<tbody>
 		{% for run in runs %}
 		<tr>
+			{% block table_content %}
 			<td>
 				<a href="{% url 'catalog:run_detail' instrument  ipts  exp run.location %}">
 				<table><tr>
@@ -72,11 +75,13 @@
 			</td>
 			<td>{{run.metadata.sample_thickness}}</td>
 			<td>{{run.end_time}}</td>
+			{% endblock table_content %}
 		</tr>
 		{% endfor %}
 	</tbody>
 	<tfoot>
 		<tr>
+			{% block table_footer %}
 			<th>Thumbnails</th>
 			<th>Title</th>
 			<th>Scan Type</th>
@@ -85,6 +90,7 @@
 			<th>Parameters</th>
 			<th>Thickness</th>
 			<th>End Time</th>
+			{% endblock table_footer %}
 		</tr>
 	</tfoot>
 </table>
@@ -99,34 +105,38 @@
 <script src='{% static "thirdparty/DataTables/Buttons/js/buttons.colVis.min.js" %}'></script>
 <!-- page script -->
 <script>
-        $(function () {
-            $("#tableruns").DataTable({
-				dom: 'Bflrtip',
-                lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                order: [[ 7, 'desc' ]],
-                columnDefs: [
-					{ type: "date", targets: 7 },
-					{ visible: false, targets: [5,6] },
-  				],
-                paging: true,
-                lengthChange: true,
-                searching: true,
-                ordering: true,
-                info: true,
-				autoWidth: true,
-				buttons: [
-					{
-						extend: 'colvis',
-						postfixButtons: [ 'colvisRestore' ]
-					},
-					{
-						extend: 'copy',
-						text: 'Copy to clipboard'
-					},'csv'
-				],
-				stateSave: true, // saves 
-            });
-            
-        });
+	{% block footer_js_data_table_config%}
+	var data_table_config = {
+		dom: 'Bflrtip',
+		lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+		order: [[ 7, 'desc' ]],
+		columnDefs: [
+			{ type: "date", targets: 7 },
+			{ visible: false, targets: [5,6] },
+		  ],
+		paging: true,
+		lengthChange: true,
+		searching: true,
+		ordering: true,
+		info: true,
+		autoWidth: true,
+		buttons: [
+			{
+				extend: 'colvis',
+				postfixButtons: [ 'colvisRestore' ]
+			},
+			{
+				extend: 'copy',
+				text: 'Copy to clipboard'
+			},'csv'
+		],
+		stateSave: true, // saves
+	}
+	{% endblock footer_js_data_table_config %}
+
+	$(function () {
+		$("#tableruns").DataTable(data_table_config);
+	});
+
     </script>
 {% endblock %}

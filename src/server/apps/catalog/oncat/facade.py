@@ -200,6 +200,49 @@ class HFIR(Catalog):
         # logger.debug(pformat(result))
         return result
 
+    @staticmethod
+    def _runs_elem_sans(entry):
+        elem = {}
+        try:
+            elem['location'] = entry['location']
+            elem['thumbnails'] = entry['thumbnails']
+            elem['filename'] = entry['metadata']['spicerack']['@filename']
+            elem['end_time'] = entry['metadata']['spicerack']['@end_time']
+            elem['title'] = entry['metadata']['spicerack']['header']['scan_title']
+            elem['sample_info'] = entry['metadata']['spicerack']['sample_info']['sample']['field'] if entry['metadata']['spicerack']['sample_info']['sample'] else ""
+            elem['sample_background'] = entry['metadata']['spicerack']['sample_info']['background']['field'] if entry['metadata']['spicerack']['sample_info']['background'] else ""
+            elem['sample_parameters'] = entry['metadata']['spicerack']['sample_info']['parameters']['field'] if entry['metadata']['spicerack']['sample_info']['parameters'] else ""
+            # This gets rid of None values in the metadata
+            elem['metadata'] = {(key): (value if value is not None else "") for key, value in entry['metadata']['spicerack']['header'].items()}
+            elem['motor_positions'] = {(key): (value if value is not None else "") for key, value in entry['metadata']['spicerack']['motor_positions'].items()}
+        except KeyError as this_exception:
+            logger.exception(this_exception)
+        except IndexError as this_exception:
+            logger.exception(this_exception)
+        return elem
+
+    @staticmethod
+    def _runs_elem_tas(entry):
+        elem = {}
+        try:
+            elem['location'] = entry['location']
+            elem['metadata'] = entry['metadata']
+        except KeyError as this_exception:
+            logger.exception(this_exception)
+        except IndexError as this_exception:
+            logger.exception(this_exception)
+        return elem    
+
+    RUNS_ELEM_FUNC = {
+        'DEFAULT': _runs_elem_sans,
+        'CG2': _runs_elem_sans,
+        'CG3': _runs_elem_sans,
+        'CG4C': _runs_elem_tas,
+        'HB1': _runs_elem_tas,
+        'HB1A': _runs_elem_tas,
+        'HB3': _runs_elem_tas,
+    }
+
     def runs(self, instrument, ipts, exp):
         '''
         return a list of:
@@ -219,28 +262,15 @@ class HFIR(Catalog):
         if response is not None:
             # logger.debug("Response from comunication Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
             for entry in response:
-                elem = {}
-                try:
-                    elem['location'] = entry['location']
-                    elem['thumbnails'] = entry['thumbnails']
-                    elem['filename'] = entry['metadata']['spicerack']['@filename']
-                    elem['end_time'] = entry['metadata']['spicerack']['@end_time']
-                    elem['title'] = entry['metadata']['spicerack']['header']['scan_title']
-                    elem['sample_info'] = entry['metadata']['spicerack']['sample_info']['sample']['field'] if entry['metadata']['spicerack']['sample_info']['sample'] else ""
-                    elem['sample_background'] = entry['metadata']['spicerack']['sample_info']['background']['field'] if entry['metadata']['spicerack']['sample_info']['background'] else ""
-                    elem['sample_parameters'] = entry['metadata']['spicerack']['sample_info']['parameters']['field'] if entry['metadata']['spicerack']['sample_info']['parameters'] else ""
-                    # This gets rid of None values in the metadata
-                    elem['metadata'] = {(key): (value if value is not None else "") for key, value in entry['metadata']['spicerack']['header'].items()}
-                    elem['motor_positions'] = {(key): (value if value is not None else "") for key, value in entry['metadata']['spicerack']['motor_positions'].items()}
-                except KeyError as this_exception:
-                    logger.error(elem['location'])
-                    logger.exception(this_exception)
-                except IndexError as this_exception:
-                    logger.exception(this_exception)
+                # This is the only way to call static methods in a dict
+                elem = self.RUNS_ELEM_FUNC.get(
+                    instrument, self.RUNS_ELEM_FUNC['DEFAULT']).__func__(entry)
                 result.append(elem)
 
         # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
         return result
+
+
 
     def runs_as_table(self, instrument, ipts, exp):
         '''
@@ -384,7 +414,3 @@ class HFIR(Catalog):
         run_info.pop('thumbnails', None) # remove the thumbnails
         run_info['data'] = self._data(file_location)
         return run_info
-
-
-
-    

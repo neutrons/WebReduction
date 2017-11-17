@@ -77,10 +77,11 @@ class HFIR(ONCat):
         'CG4C': ['.dat'],
         'HB1': ['.dat'],
         'HB1A': ['.dat'],
+        'HB3': ['.dat'],
     }
 
     RUNS_PROJECTIONS = {
-        'DEFAULT': [],
+        'DEFAULT': [],  # all fields
         'CG2': [
             'location',
             'metadata.spicerack.@filename',

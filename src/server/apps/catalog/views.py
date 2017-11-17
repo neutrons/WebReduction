@@ -11,6 +11,12 @@ from django.template.loader import select_template
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView, View
 from django.db import transaction
+from django.contrib.auth.decorators import login_required
+from server.apps.users.ldap_util import LdapSns
+from django.conf import settings
+from django.http import HttpResponseForbidden
+from django.http import HttpResponse
+from django.http import FileResponse
 
 from .models import Facility, Instrument
 from .oncat.facade import Catalog
@@ -131,6 +137,25 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
         return context
 
 
+class RunsAjax(LoginRequiredMixin, TemplateView):
+    '''
+    List of RUNS for a given ipts as ajax
+    '''
+
+    def get(self, request, *args, **kwargs):
+
+        logger.debug("Listing RunsAjax for: %s", kwargs['instrument'])
+        
+        facility = self.request.user.profile.instrument.facility.name
+        instrument = kwargs['instrument']
+        ipts = kwargs['ipts']
+        exp = kwargs.get('exp')
+        logger.debug('Getting runs from catalog: %s %s %s %s',
+                     facility, instrument, ipts, exp)
+        runs = Catalog(facility, self.request).runs(instrument, ipts, exp)
+        # logger.debug(pformat(iptss))
+        return JsonResponse(runs, status=200, safe=False)
+
 class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
     '''
     Detail of run
@@ -154,3 +179,34 @@ class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
         context = super(RunDetail, self).get_context_data(**kwargs)
         context['run'] = run
         return context
+
+
+class RunFile(LoginRequiredMixin, InstrumentMixin, TemplateView):
+    '''
+    Raw File for a run
+    Downloadable as attachment
+    It first verifies if the user has permissions
+    '''
+
+    def get(self, request, *args, **kwargs):
+        ipts = kwargs['ipts']
+        filename = kwargs['filename']
+        logger.debug("RunFile: Fetching file: %s", filename)
+        
+        all_groups_for_this_user = list(
+            request.user.groups.values_list('name', flat=True))
+
+        if ipts not in  all_groups_for_this_user \
+                and settings.LDAP_ADMIN_GROUP not in all_groups_for_this_user:
+            logger.error("User {} belongs to groups: {}."
+                         " It has no permission to see {}.".format(
+                request.user, all_groups_for_this_user, ipts
+            ))
+            return HttpResponseForbidden()
+
+        response = FileResponse(open(filename, 'rb'))
+        response['Content-Disposition'] = "attachment; filename={}".format(filename)
+        # wrapper = FileWrapper(open(filename))
+        # response = HttpResponse(wrapper, content_type='text/plain')
+        # response['Content-Length'] = os.path.getsize(filename)
+        return response
