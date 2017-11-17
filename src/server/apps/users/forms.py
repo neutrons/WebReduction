@@ -44,7 +44,8 @@ class UserProfileForm(forms.ModelForm):
         # self.fields['experiment'].widget = forms.Select()
 
         self.helper.layout.insert(2, HTML('''
-        <h1><span class="label label-warning"><span class="glyphicon glyphicon-warning-sign"> This is not working yet!</span></h1>
+        <h2><span class="label label-warning"><span class="glyphicon glyphicon-warning-sign"> ^^^ Select above your facility and instrument ^^^</span></h2>
+        <h2><span class="label label-danger"><span class="glyphicon glyphicon-warning-sign"> vvv The parameter below are not working yet! vvv</span></h2>
         <H3>Reduction Parameters</H3>
         '''))
         # <span class="glyphicon glyphicon-search"></span>
