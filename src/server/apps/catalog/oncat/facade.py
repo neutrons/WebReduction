@@ -348,23 +348,7 @@ class HFIR(Catalog):
 
     def _data(self, filename):
         '''
-        Only for HFIR we need to have the real detector XML paths
-       @returns:
-        {'data': [{'Detector': array([[0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0],
-       ..., 
-       [0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0]])},
-          {'DetectorWing': array([[0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0],
-       ..., 
-       [0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0]])}]
-
+        Parses the HFIR SANS XML file and extracts the detector data
         '''
         res = {}
         logger.debug("Parsing: {}.".format(filename))

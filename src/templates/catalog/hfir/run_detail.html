@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load catalog_filters %}
 
 {% block header %}
 {{ block.super }}
@@ -122,4 +123,25 @@
 
     <hr/>
 </div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Run Detail <small> {{ run.metadata.scan_title }}</small></h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body"><div style="font-family: monospace;" id="json-renderer"></div></div>
+    </div>    
+</div>
+
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/jquery.json-viewer/json-viewer/jquery.json-viewer.js" %}'></script>
+<!-- page script -->
+<script>
+var data = {{run|remove_none|safe}};
+delete data.data;
+$('#json-renderer').jsonViewer(data, {collapsed: false, withQuotes: false});
+</script>
 {% endblock %}
