@@ -22,16 +22,16 @@ urlpatterns = [
     # HFIR has exp field
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/$',
         views.Runs.as_view(), name='list_runs'),
-    url(r'^ajax/(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/$',
+    url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/ajax/$',
         views.RunsAjax.as_view(), name='list_runs_ajax'),
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/(?P<filename>/HFIR/[^\.]+\.[A-Za-z]{3})/$',
         views.RunDetail.as_view(), name='run_detail'),
-    url(r'^file/(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/(?P<filename>/HFIR/[^\.]+\.[A-Za-z]{3})/$',
+    url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/(?P<filename>/HFIR/[^\.]+\.[A-Za-z]{3})/file/$',
         views.RunFile.as_view(), name='run_file'),
     
     # AJAX Requests
     # Get all IPTSs for an instrument
-    url(r'^ajax/(?P<facility>\d+)/(?P<instrument>\d+)/$',
+    url(r'^(?P<facility>\d+)/(?P<instrument>\d+)/ajax/$',
         # cache_page(60*60)(views.IPTSs.as_view()), name='list_iptss_ajax'),
         (views.IPTSsAjax.as_view()), name='list_iptss_ajax'),
    

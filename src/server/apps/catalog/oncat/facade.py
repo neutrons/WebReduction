@@ -1,5 +1,6 @@
 import logging
 import re
+import json
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from pprint import pformat, pprint
@@ -123,7 +124,7 @@ class SNS(Catalog):
                 elem['start_time'] = dateparse.parse_datetime(entry['metadata'][entry_name]['start_time'])
                 elem['end_time'] = dateparse.parse_datetime(entry['metadata'][entry_name]['end_time'])
 
-                specific_func = self.RUNS_PARSE_FUNCS.get(instrument)
+                specific_func = self.RUNS_PARSE_FUNCS.get(instrument).__func__
                 if specific_func:
                     elem.update(specific_func(entry_name, entry))
                 result.append(elem)
@@ -137,9 +138,13 @@ class SNS(Catalog):
 
         '''
         response = self.catalog.run(instrument, ipts, file_location)
+
         entry_name = self.RUNS_ENTRY_KEYWORD.get(
             instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
         result = None
+
+        logger.debug("Getting run details for %s %s -> %s", instrument, ipts, file_location)
+        logger.debug(entry_name)
         if response is not None:
             try:
                 entry = response
@@ -155,7 +160,8 @@ class SNS(Catalog):
                 logger.exception(this_exception)
             except IndexError as this_exception:
                 logger.exception(this_exception)
-        return result
+        # This solves de None / NaN conversion
+        return json.dumps(result)
 
 
 class HFIR(Catalog):
@@ -245,16 +251,6 @@ class HFIR(Catalog):
 
     def runs(self, instrument, ipts, exp):
         '''
-        return a list of:
-        {'end_time': '2017-02-06 10:03:18',
-        'filename': 'BioSANS_exp379_scan0500_0001.xml',
-        'location': '/HFIR/CG3/IPTS-18347/exp379/Datafiles/BioSANS_exp379_scan0500_0001.xml',
-        'sample_background': {'buffer D2O': '35'},
-        'sample_info': {'Sample type': 'd25'},
-        'sample_parameters': {'Chiller Temp (C)': '20.000000',
-                                'Min Wait (sec)': '1.000000'},
-        'title': 'DAS Test 6(IC: DAS_test_SVP_p0015top8_Banjo S: 0.003-0.8 P:[ '
-                'Chiller Temp (C): 20.000000 Min Wait (sec): 1.000000])'}]
 
         '''
         response = self.catalog.runs(instrument, ipts, exp)
