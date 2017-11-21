@@ -28,11 +28,5 @@ urlpatterns = [
         views.RunDetail.as_view(), name='run_detail'),
     url(r'^(?P<instrument>[\w\-]+)/(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/(?P<filename>/HFIR/[^\.]+\.[A-Za-z]{3})/file/$',
         views.RunFile.as_view(), name='run_file'),
-    
-    # AJAX Requests
-    # Get all IPTSs for an instrument
-    url(r'^(?P<facility>\d+)/(?P<instrument>\d+)/ajax/$',
-        # cache_page(60*60)(views.IPTSs.as_view()), name='list_iptss_ajax'),
-        (views.IPTSsAjax.as_view()), name='list_iptss_ajax'),
    
 ]

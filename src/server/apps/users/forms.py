@@ -60,8 +60,13 @@ class UserProfileReductionForm(forms.ModelForm):
         self.helper.layout.append(Button('cancel', 'Cancel',
                                          css_class='btn-default',
                                          onclick="window.history.back()"))
-
     class Meta:
         model = UserProfile
         # exclude = ['user']
         fields = ['ipts', 'experiment']
+
+        # widgets = {
+        #     'ipts': forms.Select(),
+        #     'experiment': forms.Select(),
+        # }
+    

@@ -35,7 +35,7 @@ from server.settings.env import env
 from .forms import UserProfileCatalogForm, UserProfileReductionForm, LoginForm
 from .models import UserProfile
 from server.apps.catalog.models import Instrument
-
+from server.apps.catalog.oncat.facade import Catalog
 
 logger = logging.getLogger(__name__)
 
@@ -192,9 +192,9 @@ class ProfileCatalogCreate(LoginRequiredMixin, SuccessMessageMixin,
 #
 
 class ProfileReductionUpdate(LoginRequiredMixin, SuccessMessageMixin,
-                           UpdateView):
+                             UpdateView):
     '''
-    I'm using form_class to test crispy forms
+    
     '''
     model = UserProfile
     form_class = UserProfileReductionForm
@@ -203,3 +203,38 @@ class ProfileReductionUpdate(LoginRequiredMixin, SuccessMessageMixin,
     success_url = reverse_lazy('index')
     success_message = "Your Profile for the Reduction was updated successfully."
 
+    # def get(self, request, *args, **kwargs):
+
+    #     instrument = request.user.profile.instrument
+    #     facility = request.user.profile.facility
+
+    #     logger.debug("Listing IPTS for: %s", instrument)
+        
+    #     iptss = Catalog(facility.name, request).experiments(
+    #         instrument.catalog_name
+    #     )
+    #     logger.debug(pformat(iptss))
+        
+    #     return super(ProfileReductionUpdate, self).get(request, *args, **kwargs)
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(ProfileReductionUpdate, self).get_initial()
+
+        from pprint import pprint
+        pprint(initial)
+
+        initial['ipts'] = (('IPTS-19988', 'Understanding and Manipulating Domain Wall Order in Mn3O4'),)
+        pprint(initial)
+        return initial
+
+
+    # def __init__(self, *args, **kwargs):
+        
+    #     super(UserProfileReductionForm, self).__init__(*args, **kwargs)
+    #     choices = self.fields['ipts'].choices
+    #     self.fields['ipts'].choices = choices.extend(('IPTS-123', 'IPTS-454545'), )
+
+    #     return initial

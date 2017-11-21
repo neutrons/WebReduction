@@ -91,26 +91,28 @@ class UserProfile(models.Model):
         "Integrated Proposal Tracking System (IPTS)",
         max_length=20,
         blank=True,
-        validators=[
-            RegexValidator(
-                regex='^IPTS-\d+$',
-                message='IPTS must be of the form: IPTS-XXXX',
-                code='invalid_ipts'
-            ),
-        ],
+        choices=(('', '-'*20),)
+        # validators=[
+        #     RegexValidator(
+        #         regex='^IPTS-\d+$',
+        #         message='IPTS must be of the form: IPTS-XXXX',
+        #         code='invalid_ipts'
+        #     ),
+        # ],
     )
 
     experiment = models.CharField(
         "Experiment (Only used at HFIR!)",
         max_length=20,
         blank=True,
-        validators=[
-            RegexValidator(
-                regex='^exp\d+$',
-                message='Exp must be of the form: expXXX',
-                code='invalid_exp'
-            ),
-        ],
+        choices=(('', '-'*20),)
+        # validators=[
+        #     RegexValidator(
+        #         regex='^exp\d+$',
+        #         message='Exp must be of the form: expXXX',
+        #         code='invalid_exp'
+        #     ),
+        # ],
     )
 
     def __str__(self):
