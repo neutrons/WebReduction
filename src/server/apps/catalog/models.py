@@ -15,10 +15,10 @@ class Facility(models.Model):
         max_length=1024,
     )
 
-    active = models.BooleanField(
-        'facility is active',
+    visible = models.BooleanField(
+        'facility is visible',
         help_text=(
-            'Whether the facility is active and working in the dashboard'
+            'Whether the facility is visible in the dashboard'
         ),
         default=False,
     )
@@ -38,8 +38,12 @@ class InstrumentManager(models.Manager):
 
     use_for_related_fields = True
 
-    def visible_instruments(self, **kwargs):
-        visible_instruments = self.filter(active="True", **kwargs).values()
+    def visible_catalog(self, **kwargs):
+        '''
+        Shows visible instruments in the catalog.
+        Order (naturally sorted) by beamline name
+        '''
+        visible_instruments = self.filter(visible_catalog="True", **kwargs).values()
         natsorted_visible_instruments = natsorted(
             visible_instruments, key=lambda i: i['beamline'])
         return natsorted_visible_instruments
@@ -69,31 +73,23 @@ class Instrument(models.Model):
         max_length=32,
     )
 
-    type = models.CharField(
-        'instrument type',
-        help_text='Instrument type (e.g. "SANS")',
+    technique = models.CharField(
+        'instrument technique',
+        help_text='Instrument technique (e.g. "SANS", "TAS")',
         max_length=256,
+        blank=True,
     )
 
-    icat_name = models.CharField(
-        'instrument icat name',
-        help_text='Name used for querying ICAT server (e.g. "EQSANS")',
+    catalog_name = models.CharField(
+        'instrument ONCat name',
+        help_text='Name used for querying ONCat server (e.g. "EQSANS")',
         max_length=32,
     )
 
     ldap_group_name = models.CharField(
-        'instrument ldap name',
-        help_text='Name used for querying LDAP server',
+        'instrument ldap group name',
+        help_text='Group name of the instrument team in the LDAP server (e.g. "sns_eqsans_team").',
         max_length=32,
-    )
-
-    icat_url = models.CharField(
-        'instrument icat url',
-        help_text=(
-            'Name used for querying ICAT server '
-            '(e.g. "https://icat.sns.gov:8081/")'
-        ),
-        max_length=256,
     )
 
     # /HFIR/CG3/
@@ -117,16 +113,16 @@ class Instrument(models.Model):
         blank=True,
     )
 
-    reduction_available = models.BooleanField(
+    visible_reduction= models.BooleanField(
         'instrument can do reductions',
         help_text='Whether the instrument can do reductions',
         default=False,
     )
 
-    active = models.BooleanField(
-        'instrument is active (i.e, visble in the catalog)',
+    visible_catalog = models.BooleanField(
+        'instrument is visible in the catalog',
         help_text=(
-            'Whether the instrument is active and working in the dashboard'
+            'Whether the instrument is visible for cataloging'
         ),
         default=False,
     )

@@ -2,653 +2,576 @@
 	{
 		"model": "catalog.facility",
 		"pk": 1,
-		"fields": 
-		{
+		"fields": {
 			"name": "HFIR",
 			"description": "High Flux Isotope Reactor",
-			"active": true
+			"visible": true
 		}
 	},
-
 	{
 		"model": "catalog.facility",
 		"pk": 2,
-		"fields": 
-		{
+		"fields": {
 			"name": "SNS",
 			"description": "Spallation Neutron Source",
-			"active": true
+			"visible": true
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 1,
-		"fields": 
-		{
+		"fields": {
 			"name": "BioSANS",
 			"description": "Biological Small-Angle Neutron Scattering Instrument",
 			"beamline": "CG-3",
-			"type": "SANS",
-			"icat_name": "CG3",
+			"technique": "SANS",
+			"catalog_name": "CG3",
 			"ldap_group_name": "hfir_cg3_team",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
 			"drive_path": "/HFIR/CG3",
 			"data_file_path_template": "/HFIR/CG3/IPTS-%(ipts_number)s/exp%(experiment_number)s/Datafiles/BioSANS_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml",
 			"reduction_path_template": "/HFIR/CG3/IPTS-%(ipts_number)s/exp%(experiment_number)s/Shared/Reduction",
-			"reduction_available": true,
-			"active": true,
+			"visible_reduction": true,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 2,
-		"fields": 
-		{
+		"fields": {
 			"name": "GPSANS",
 			"description": "General-Purpose Small-Angle Neutron Scattering Diffractometer",
 			"beamline": "CG-2",
-			"type": "SANS",
-			"icat_name": "CG2",
+			"technique": "SANS",
+			"catalog_name": "CG2",
 			"ldap_group_name": "hfir_cg2_team",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
 			"drive_path": "/HFIR/CG2",
 			"data_file_path_template": "/HFIR/CG2/IPTS-%(ipts_number)s/exp%(experiment_number)s/Datafiles/CG2_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml",
 			"reduction_path_template": "/HFIR/CG2/IPTS-%(ipts_number)s/exp%(experiment_number)s/Shared/Reduction",
-			"reduction_available": true,
-			"active": true,
+			"visible_reduction": true,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 3,
-		"fields": 
-		{
+		"fields": {
 			"name": "EQSANS",
 			"description": "Extended Q-Range Small-Angle Neutron Scattering Diffractometer",
 			"beamline": "BL-6",
-			"type": "SANS",
-			"icat_name": "EQSANS",
+			"technique": "SANS",
+			"catalog_name": "EQSANS",
 			"ldap_group_name": "sns_eqsans_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/HFIR/EQSANS",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 4,
-		"fields": 
-		{
+		"fields": {
 			"name": "USANS",
 			"description": "Ultra-Small-Angle Neutron Scattering Instrument",
 			"beamline": "BL-1A",
-			"type": "SANS",
-			"icat_name": "USANS",
+			"technique": "",
+			"catalog_name": "USANS",
 			"ldap_group_name": "sns_usans_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/HFIR/USANS",
-			"reduction_available": false,
-			"active": true,
+			"drive_path": "/HFIR/???",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": false,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 5,
-		"fields": 
-		{
+		"fields": {
 			"name": "NOMAD",
 			"description": "Nanoscale-Ordered Materials Diffractometer",
-			"beamline": "BL-1B ",
-			"type": "Diffraction",
-			"icat_name": "NOM",
-			"ldap_group_name": "sns_nomad_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/NOMAD",
-			"reduction_available": false,
-			"active": true,
+			"beamline": "BL-1B",
+			"technique": "",
+			"catalog_name": "NOM",
+			"ldap_group_name": "sns_nom_team",
+			"drive_path": "/SNS/NOM",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 6,
-		"fields": 
-		{
+		"fields": {
 			"name": "BASIS",
 			"description": "Backscattering Spectrometer",
 			"beamline": "BL-2",
-			"type": "Spectroscopy",
-			"icat_name": "BSS",
-			"ldap_group_name": "sns_basis_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/BASIS",
-			"reduction_available": false,
-			"active": true,
+			"technique": "",
+			"catalog_name": "BSS",
+			"ldap_group_name": "sns_bss_team",
+			"drive_path": "/SNS/BSS",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 7,
-		"fields": 
-		{
+		"fields": {
 			"name": "SNAP",
 			"description": "Spallation Neutrons and Pressure Diffractometer",
 			"beamline": "BL-3",
-			"type": "Diffraction",
-			"icat_name": "SNAP",
+			"technique": "",
+			"catalog_name": "SNAP",
 			"ldap_group_name": "sns_snap_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/SNS/SNAP",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 8,
-		"fields": 
-		{
+		"fields": {
 			"name": "MR",
 			"description": "Magnetism Reflectometer",
 			"beamline": "BL-4A",
-			"type": "Reflectometry",
-			"icat_name": "REF_M",
-			"ldap_group_name": "sns_mr_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/MR",
-			"reduction_available": false,
-			"active": true,
+			"technique": "Reflectometry",
+			"catalog_name": "REF_M",
+			"ldap_group_name": "sns_ref_m_team",
+			"drive_path": "/SNS/REF_M",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 9,
-		"fields": 
-		{
+		"fields": {
 			"name": "LR",
 			"description": "Liquids Reflectometer",
 			"beamline": "BL-4B",
-			"type": "Reflectometry",
-			"icat_name": "REF_L",
-			"ldap_group_name": "sns_lr_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/LR",
-			"reduction_available": false,
-			"active": true,
+			"technique": "Reflectometry",
+			"catalog_name": "REF_L",
+			"ldap_group_name": "sns_ref_l_team",
+			"drive_path": "/SNS/REF_L",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 10,
-		"fields": 
-		{
+		"fields": {
 			"name": "CNCS",
 			"description": "Cold Neutron Chopper Spectrometer",
 			"beamline": "BL-5",
-			"type": "Spectroscopy",
-			"icat_name": "CNCS",
+			"technique": "",
+			"catalog_name": "CNCS",
 			"ldap_group_name": "sns_cncs_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/SNS/CNCS",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 11,
-		"fields": 
-		{
+		"fields": {
 			"name": "VULCAN",
 			"description": "Engineering Materials Diffractometer",
 			"beamline": "BL-7",
-			"type": "Diffraction",
-			"icat_name": "VULCAN",
+			"technique": "",
+			"catalog_name": "VULCAN",
 			"ldap_group_name": "sns_vulcan_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/SNS/VULCAN",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 12,
-		"fields": 
-		{
+		"fields": {
 			"name": "CORELLI",
 			"description": "Elastic Diffuse Scattering Spectrometer",
 			"beamline": "BL-9",
-			"type": "Spectroscopy",
-			"icat_name": "CORELLI",
+			"technique": "",
+			"catalog_name": "CORELLI",
 			"ldap_group_name": "sns_corelli_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/SNS/CORELLI",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 13,
-		"fields": 
-		{
+		"fields": {
 			"name": "VENUS",
 			"description": "Versatile Neutron Imaging Instrument",
 			"beamline": "BL-10",
-			"type": "Imaging",
-			"icat_name": "VENUS",
+			"technique": "",
+			"catalog_name": "VENUS",
 			"ldap_group_name": "sns_venus_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/SNS/VENUS",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 14,
-		"fields": 
-		{
+		"fields": {
 			"name": "POWGEN",
 			"description": "Powder Diffractometer",
 			"beamline": "BL-11A",
-			"type": "Diffraction",
-			"icat_name": "POWGEN",
-			"ldap_group_name": "sns_powgen_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/POWGEN",
-			"reduction_available": false,
-			"active": true,
+			"technique": "Powder Diffraction",
+			"catalog_name": "PG3",
+			"ldap_group_name": "sns_pg3_team",
+			"drive_path": "/SNS/PG3",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 15,
-		"fields": 
-		{
+		"fields": {
 			"name": "MANDI",
 			"description": "Macromolecular Neutron Diffractometer",
 			"beamline": "BL-11B",
-			"type": "Diffraction",
-			"icat_name": "MANDI",
+			"technique": "Crystallography",
+			"catalog_name": "MANDI",
 			"ldap_group_name": "sns_mandi_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/SNS/MANDI",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 16,
-		"fields": 
-		{
+		"fields": {
 			"name": "TOPAZ",
 			"description": "Single-Crystal Diffractometer",
 			"beamline": "BL-12",
-			"type": "Diffraction",
-			"icat_name": "TOPAZ",
+			"technique": "Crystallography",
+			"catalog_name": "TOPAZ",
 			"ldap_group_name": "sns_topaz_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/SNS/TOPAZ",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 17,
-		"fields": 
-		{
+		"fields": {
 			"name": "FNPB",
 			"description": "Fundamental Neutron Physics Beam Line",
 			"beamline": "BL-13",
-			"type": "Spectroscopy",
-			"icat_name": "FNPB",
-			"ldap_group_name": "sns_fnpb_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/FNPB",
-			"reduction_available": false,
-			"active": true,
+			"technique": "",
+			"catalog_name": "FNPB",
+			"ldap_group_name": "sns_fd1_team",
+			"drive_path": "/SNS/???",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": false,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 18,
-		"fields": 
-		{
+		"fields": {
 			"name": "HYSPEC",
 			"description": "Hybrid Spectrometer",
 			"beamline": "BL-14B",
-			"type": "Spectroscopy",
-			"icat_name": "HYS",
-			"ldap_group_name": "sns_hyspec_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/HYSPEC",
-			"reduction_available": false,
-			"active": true,
+			"technique": "",
+			"catalog_name": "HYS",
+			"ldap_group_name": "sns_hys_team",
+			"drive_path": "/SNS/HYS",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 19,
-		"fields": 
-		{
+		"fields": {
 			"name": "NSE",
 			"description": "Neutron Spin Echo Spectrometer",
 			"beamline": "BL-15",
-			"type": "Spectroscopy",
-			"icat_name": "NSE",
+			"technique": "",
+			"catalog_name": "NSE",
 			"ldap_group_name": "sns_nse_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/NSE",
-			"reduction_available": false,
-			"active": true,
+			"drive_path": "/SNS/???",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": false,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 20,
-		"fields": 
-		{
+		"fields": {
 			"name": "VISION",
 			"description": "Vibrational Spectrometer",
 			"beamline": "BL-16B",
-			"type": "Spectroscopy",
-			"icat_name": "VIS",
-			"ldap_group_name": "sns_vision_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/VISION",
-			"reduction_available": false,
-			"active": true,
+			"technique": "",
+			"catalog_name": "VIS",
+			"ldap_group_name": "sns_vis_team",
+			"drive_path": "/SNS/VIS",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 21,
-		"fields": 
-		{
+		"fields": {
 			"name": "SEQUOIA",
 			"description": "Fine-Resolution Fermi Chopper Spectrometer",
 			"beamline": "BL-17",
-			"type": "Spectroscopy",
-			"icat_name": "SEQ",
-			"ldap_group_name": "sns_sequoia_team",
-			"icat_url": "http://icat.sns.gov:2080/",
-			"drive_path": "/SNS/SEQUOIA",
-			"reduction_available": false,
-			"active": true,
+			"technique": "",
+			"catalog_name": "SEQ",
+			"ldap_group_name": "sns_seq_team",
+			"drive_path": "/SNS/SEQ",
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 22,
-		"fields": 
-		{
+		"fields": {
 			"name": "ARCS",
 			"description": "Wide Angular-Range Chopper Spectrometer",
 			"beamline": "BL-18",
-			"type": "Spectroscopy",
-			"icat_name": "ARCS",
+			"technique": "",
+			"catalog_name": "ARCS",
 			"ldap_group_name": "sns_arcs_team",
-			"icat_url": "http://icat.sns.gov:2080/",
 			"drive_path": "/SNS/ARCS",
-			"reduction_available": false,
-			"active": true,
+			"data_file_path_template": "",
+			"reduction_path_template": "",
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 2
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 23,
-		"fields": 
-		{
+		"fields": {
 			"name": "DevBeam",
 			"description": "Instrument Development Beam Line",
 			"beamline": "CG-1B",
-			"type": "Development",
-			"icat_name": "CG1B",
-			"ldap_group_name": "hfir_cg1bteam",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "",
+			"catalog_name": "CG1B",
+			"ldap_group_name": "hfir_cg1b_team",
 			"drive_path": "/HFIR/CG1B",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 24,
-		"fields": 
-		{
+		"fields": {
 			"name": "IMAGING",
 			"description": "Neutron Imaging Facility",
 			"beamline": "CG-1D",
-			"type": "Imaging",
-			"icat_name": "CG1D",
-			"ldap_group_name": "hfir_cg1dteam",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "",
+			"catalog_name": "CG1D",
+			"ldap_group_name": "hfir_cg1d_team",
 			"drive_path": "/HFIR/CG1D",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 25,
-		"fields": 
-		{
+		"fields": {
 			"name": "CTAX",
 			"description": "Cold Neutron Triple-Axis Spectrometer",
 			"beamline": "CG-4C",
-			"type": "TAS",
-			"icat_name": "CG4C",
-			"ldap_group_name": "hfir_cg4cteam",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "TAS",
+			"catalog_name": "CG4C",
+			"ldap_group_name": "hfir_cg4c_team",
 			"drive_path": "/HFIR/CG4C",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 26,
-		"fields": 
-		{
+		"fields": {
 			"name": "PTAX",
 			"description": "Polarized Triple-Axis Spectrometer",
 			"beamline": "HB-1",
-			"type": "TAS",
-			"icat_name": "HB1",
-			"ldap_group_name": "hfir_hb1team",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "TAS",
+			"catalog_name": "HB1",
+			"ldap_group_name": "hfir_hb1_team",
 			"drive_path": "/HFIR/HB1",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": false,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 27,
-		"fields": 
-		{
+		"fields": {
 			"name": "FIE-TAX",
 			"description": "Fixed-Incident-Energy Triple-Axis Spectrometer",
 			"beamline": "HB-1A",
-			"type": "TAS",
-			"icat_name": "HB1A",
-			"ldap_group_name": "hfir_hb1ateam",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "TAS",
+			"catalog_name": "HB1A",
+			"ldap_group_name": "hfir_hb1a_team",
 			"drive_path": "/HFIR/HB1A",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 28,
-		"fields": 
-		{
+		"fields": {
 			"name": "POWDER",
 			"description": "Neutron Powder Diffractometer",
 			"beamline": "HB-2A",
-			"type": "Diffraction",
-			"icat_name": "HB2A",
-			"ldap_group_name": "hfir_hb2ateam",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "Powder Diffraction",
+			"catalog_name": "HB2A",
+			"ldap_group_name": "hfir_hb2a_team",
 			"drive_path": "/HFIR/HB2A",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 29,
-		"fields": 
-		{
+		"fields": {
 			"name": "NRSF2",
 			"description": "Neutron Residual Stress Mapping Facility",
 			"beamline": "HB-2B",
-			"type": "Diffraction",
-			"icat_name": "HB2B",
-			"ldap_group_name": "hfir_hb2bteam",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "",
+			"catalog_name": "HB2B",
+			"ldap_group_name": "hfir_hb2b_team",
 			"drive_path": "/HFIR/HB2B",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 30,
-		"fields": 
-		{
-			"name": "WAND",
-			"description": "Wide-Angle Neutron Diffractometer",
-			"beamline": "HB-2C",
-			"type": "Diffraction",
-			"icat_name": "HB2C",
-			"ldap_group_name": "hfir_hb2cteam",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
-			"drive_path": "/HFIR/HB2C",
-			"data_file_path_template": "",
-			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
-			"facility": 1
-		}
-	},
-
-	{
-		"model": "catalog.instrument",
-		"pk": 30,
-		"fields": 
-		{
+		"fields": {
 			"name": "TAX",
 			"description": "Triple-Axis Spectrometer",
 			"beamline": "HB-3",
-			"type": "TAS",
-			"icat_name": "HB3",
-			"ldap_group_name": "hfir_hb3team",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "TAS",
+			"catalog_name": "HB3",
+			"ldap_group_name": "hfir_hb3_team",
 			"drive_path": "/HFIR/HB3",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},
-
 	{
 		"model": "catalog.instrument",
 		"pk": 31,
-		"fields": 
-		{
+		"fields": {
 			"name": "FOUR-CIRCLE",
 			"description": "Four-Circle Diffractometer",
 			"beamline": "HB-3A",
-			"type": "Diffraction",
-			"icat_name": "HB3A",
-			"ldap_group_name": "hfir_hb3ateam",
-			"icat_url": "https://hfir-icat-testing.ornl.gov",
+			"technique": "Crystallography",
+			"catalog_name": "HB3A",
+			"ldap_group_name": "hfir_hb3a_team",
 			"drive_path": "/HFIR/HB3A",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"reduction_available": false,
-			"active": true,
+			"visible_reduction": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	}

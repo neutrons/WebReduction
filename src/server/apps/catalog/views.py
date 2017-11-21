@@ -58,7 +58,7 @@ class Instruments(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
 
         facility = self.request.user.profile.instrument.facility
-        instruments = Instrument.objects.visible_instruments(
+        instruments = Instrument.objects.visible_catalog(
             facility=facility)
         logger.debug("Listing all instruments for %s.", facility)
         context = super(Instruments, self).get_context_data(**kwargs)
