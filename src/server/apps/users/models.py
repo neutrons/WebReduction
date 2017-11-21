@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import IntegrityError
 from django.db.models import Q
 from smart_selects.db_fields import ChainedForeignKey
+from django.core.validators import RegexValidator
 
 from server.apps.catalog.oncat.facade import Catalog
 from server.apps.catalog.models import Facility, Instrument
@@ -86,9 +87,31 @@ class UserProfile(models.Model):
         # limit_choices_to={'visible': True},
     )
 
-    ipts = models.CharField("Integrated Proposal Tracking System (IPTS)", max_length=20, blank=True)
+    ipts = models.CharField(
+        "Integrated Proposal Tracking System (IPTS)",
+        max_length=20,
+        blank=True,
+        validators=[
+            RegexValidator(
+                regex='^IPTS-\d+$',
+                message='IPTS must be of the form: IPTS-XXXX',
+                code='invalid_ipts'
+            ),
+        ],
+    )
 
-    experiment = models.CharField("Experiment (Only used at HFIR!)", max_length=20, blank=True)
+    experiment = models.CharField(
+        "Experiment (Only used at HFIR!)",
+        max_length=20,
+        blank=True,
+        validators=[
+            RegexValidator(
+                regex='^exp\d+$',
+                message='Exp must be of the form: expXXX',
+                code='invalid_exp'
+            ),
+        ],
+    )
 
     def __str__(self):
         return self.user.username

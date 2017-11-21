@@ -32,7 +32,7 @@ from django.core import signing
 from pprint import pformat
 from server.settings.env import env
 
-from .forms import UserProfileForm, LoginForm
+from .forms import UserProfileCatalogForm, UserProfileReductionForm, LoginForm
 from .models import UserProfile
 from server.apps.catalog.models import Instrument
 
@@ -48,7 +48,7 @@ class LoginView(FormView):
     template_name = 'users/login.html'
     redirect_field_name = REDIRECT_FIELD_NAME
     success_url = reverse_lazy('index')
-    create_profile_url = reverse_lazy('users:profile_create')
+    create_profile_url = reverse_lazy('users:profile_catalog_create')
 
     @method_decorator(sensitive_post_parameters('password'))
     @method_decorator(csrf_protect)
@@ -127,6 +127,9 @@ class LogoutView(RedirectView):
         response = super(LogoutView, self).get(request, *args, **kwargs)
         return response
 
+#
+# Profile Catalog
+#
 
 class ProfileView(LoginRequiredMixin, TemplateView):
 
@@ -134,45 +137,47 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         '''
-        If the user exists show the profile,
-        otherwise redirect to create profile
+        If the user exists show the ProfileCatalog,
+        otherwise redirect to create ProfileCatalog
         '''
         if UserProfile.objects.filter(user=request.user).count() > 0:
             return super(ProfileView, self).get(request, *args, **kwargs)
         else:
-            return redirect(reverse_lazy('users:profile_create'))
+            return redirect(reverse_lazy('users:profile_catalog_create'))
 
 
-class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin,
-                    UpdateView):
+class ProfileCatalogUpdate(LoginRequiredMixin, SuccessMessageMixin,
+                           UpdateView):
     '''
     I'm using form_class to test crispy forms
     '''
     model = UserProfile
-    form_class = UserProfileForm
+    form_class = UserProfileCatalogForm
+    template_name = 'users/profile_catalog_form.html'
     # fields = '__all__'
     success_url = reverse_lazy('index')
-    success_message = "Your profile was updated successfully."
+    success_message = "Your Profile for the Catalog was updated successfully."
 
     # def get_context_data(self, **kwargs):
     #     """
     #     I was trying to get all the instruments where reduction is available
     #     but at this point we don't know the facility yet. Let's postpone it.
     #     """
-    #     context = super(ProfileUpdate, self).get_context_data(**kwargs)
+    #     context = super(ProfileCatalogUpdate, self).get_context_data(**kwargs)
     #     context['instruments_with_reduction'] = list(
     #         Instrument.objects.filter(reduction_available=True).values_list("name", flat=True)
     #     )
     #     return context
 
 
-class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin,
-                    CreateView):
+class ProfileCatalogCreate(LoginRequiredMixin, SuccessMessageMixin,
+                           CreateView):
     model = UserProfile
-    form_class = UserProfileForm
+    form_class = UserProfileCatalogForm
+    template_name = 'users/profile_catalog_form.html'
     # fields = ['home_institution', 'email_address']
     success_url = reverse_lazy('index')
-    success_message = "Your profile was created successfully."
+    success_message = "Your Profile for the Catalog was created successfully."
 
     def form_valid(self, form):
         '''
@@ -180,4 +185,21 @@ class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin,
         '''
         user = self.request.user
         form.instance.user = user
-        return super(ProfileCreate, self).form_valid(form)
+        return super(ProfileCatalogCreate, self).form_valid(form)
+
+#
+#
+#
+
+class ProfileReductionUpdate(LoginRequiredMixin, SuccessMessageMixin,
+                           UpdateView):
+    '''
+    I'm using form_class to test crispy forms
+    '''
+    model = UserProfile
+    form_class = UserProfileReductionForm
+    template_name = 'users/profile_reduction_form.html'
+    # fields = '__all__'
+    success_url = reverse_lazy('index')
+    success_message = "Your Profile for the Reduction was updated successfully."
+

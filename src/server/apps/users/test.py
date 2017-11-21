@@ -81,7 +81,7 @@ class TestLogin(TestCase):
         self.assertEqual(user.username, env("TEST_USERNAME"))
 
         response = self.client.post(
-            reverse('users:profile_create'),
+            reverse('users:profile_catalog_create'),
             {
                 'user': user,
                 'home_institution': 'Test',

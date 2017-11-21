@@ -29,31 +29,14 @@ class LoginForm(AuthenticationForm):
         )
 
 
-class UserProfileForm(forms.ModelForm):
+class UserProfileCatalogForm(forms.ModelForm):
     '''
     '''
     def __init__(self, *args, **kwargs):
-        super(UserProfileForm, self).__init__(*args, **kwargs)
+        super(UserProfileCatalogForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = 'form-horizontal'
 
-        #self.fields['ipts'] = forms.CharField(widget=forms.Select(attrs={'class':'regDropDown'}))
-        #self.fields['ipts'] = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}),)
-        # self.fields['ipts'].widget = forms.Select()
-        # self.fields['ipts'].widget.choices = [('bf','bof')]
-        # self.fields['experiment'].widget = forms.Select()
-
-        self.helper.layout.insert(2, HTML('''
-        <h2><span class="label label-warning"><span class="glyphicon glyphicon-warning-sign"> ^^^ Select above your facility and instrument ^^^</span></h2>
-        <h2><span class="label label-danger"><span class="glyphicon glyphicon-warning-sign"> vvv The parameter below are not working yet! vvv</span></h2>
-        <H3>Reduction Parameters</H3>
-        '''))
-        # <span class="glyphicon glyphicon-search"></span>
-        self.helper.layout.insert(3, Button('fecth_oncat',  'Get IPTS info',
-                                         css_class='btn-info',
-                                         onclick="fetchIptsInfo()",
-                                         data_loading_text="Getting IPTS info..."))
-        
         self.helper.layout.append(Submit('submit', 'Save'))
         self.helper.layout.append(Button('cancel', 'Cancel',
                                          css_class='btn-default',
@@ -61,4 +44,24 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = ['user']
+        # exclude = ['user']
+        fields = ['facility', 'instrument']
+
+
+class UserProfileReductionForm(forms.ModelForm):
+    '''
+    '''
+    def __init__(self, *args, **kwargs):
+        super(UserProfileReductionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'form-horizontal'
+
+        self.helper.layout.append(Submit('submit', 'Save'))
+        self.helper.layout.append(Button('cancel', 'Cancel',
+                                         css_class='btn-default',
+                                         onclick="window.history.back()"))
+
+    class Meta:
+        model = UserProfile
+        # exclude = ['user']
+        fields = ['ipts', 'experiment']

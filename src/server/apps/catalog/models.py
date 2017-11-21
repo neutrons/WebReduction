@@ -38,7 +38,7 @@ class InstrumentManager(models.Manager):
 
     use_for_related_fields = True
 
-    def visible_catalog(self, **kwargs):
+    def list_visible_catalog(self, **kwargs):
         '''
         Shows visible instruments in the catalog.
         Order (naturally sorted) by beamline name

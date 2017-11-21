@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{%if user.profile %}{% url 'users:profile_catalog_update' user.profile.pk %}{% endif %}">User Catalog Profile</a></li>
+        <li class="active">New: {{ user }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="page-header">
+        <h1>User Catalog Profile <small> New: {{ user }}</small></h1>
+    </div>
+
+    <div class="well">
+        <div class="panel-heading">Select the Facility and Instrument to display the catalog.</div>
+        <div class="panel-body">
+            {% crispy form  %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script>
+    // Smart selects changes the style of the drop down. Get it back!
+    $('#id_instrument').addClass("select form-control")
+</script>
+{% endblock %}
