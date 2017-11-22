@@ -40,30 +40,12 @@ class InstrumentMixin(object):
         '''
         logger.debug('Token in session (starting the request):\n%s',
                      pformat(request.session.get('token')))
+
+        self.facility = self.request.user.profile.instrument.facility
+        self.instrument = self.request.user.profile.instrument
+
         return super(InstrumentMixin, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super(InstrumentMixin, self).get_context_data(**kwargs)
-        context["instrument"] = kwargs.get('instrument', None)
-        context["ipts"] = kwargs.get('ipts', None)
-        return context
-
-
-class Instruments(LoginRequiredMixin, TemplateView):
-    '''
-    List of visible instruments in the database
-    '''
-    template_name = 'catalog/list_instruments.html'
-
-    def get_context_data(self, **kwargs):
-
-        facility = self.request.user.profile.instrument.facility
-        instruments = Instrument.objects.list_visible_catalog(
-            facility=facility)
-        logger.debug("Listing all instruments for %s.", facility)
-        context = super(Instruments, self).get_context_data(**kwargs)
-        context['instruments'] = instruments
-        return context
 
 
 class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
@@ -74,10 +56,13 @@ class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
     template_name = 'list_iptss.html'
 
     def get_context_data(self, **kwargs):
-        logger.debug("Listing IPTSs for: %s", kwargs['instrument'])
-        facility = self.request.user.profile.instrument.facility.name
-        iptss = Catalog(facility, self.request).experiments(kwargs['instrument'])
-        self.template_name = 'catalog/' + facility.lower() + '/' \
+        
+        logger.debug("Listing IPTSs for: %s %s", self.facility, self.instrument)
+        
+        iptss = Catalog(self.facility.name, self.request).experiments(
+            self.instrument.name
+        )
+        self.template_name = 'catalog/' + self.facility.name.lower() + '/' \
             + self.template_name
         context = super(IPTSs, self).get_context_data(**kwargs)
         context['iptss'] = iptss
@@ -108,8 +93,8 @@ class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         
-        facility = self.request.user.profile.instrument.facility.name
-        instrument = kwargs['instrument']
+        facility = self.facility.name
+        instrument = self.instrument.name
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
         logger.debug('Getting runs from catalog: %s %s %s %s',
