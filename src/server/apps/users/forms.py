@@ -65,6 +65,8 @@ class UserProfileReductionForm(forms.ModelForm):
         # exclude = ['user']
         fields = ['ipts', 'experiment']
 
+        # I have to remove this because otherwise the for update doesn't work
+        # somehow this deletes the values fetched from the database
         # widgets = {
         #     'ipts': forms.Select(),
         #     'experiment': forms.Select(),

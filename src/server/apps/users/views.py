@@ -194,47 +194,42 @@ class ProfileCatalogCreate(LoginRequiredMixin, SuccessMessageMixin,
 class ProfileReductionUpdate(LoginRequiredMixin, SuccessMessageMixin,
                              UpdateView):
     '''
-    
+    This will populate the form with the Catalog options
     '''
     model = UserProfile
     form_class = UserProfileReductionForm
     template_name = 'users/profile_reduction_form.html'
-    # fields = '__all__'
     success_url = reverse_lazy('index')
     success_message = "Your Profile for the Reduction was updated successfully."
 
-    # def get(self, request, *args, **kwargs):
-
-    #     instrument = request.user.profile.instrument
-    #     facility = request.user.profile.facility
-
-    #     logger.debug("Listing IPTS for: %s", instrument)
+    def _fetch_iptss_from_the_catalog(self):
         
-    #     iptss = Catalog(facility.name, request).experiments(
-    #         instrument.catalog_name
-    #     )
-    #     logger.debug(pformat(iptss))
+        facility = self.request.user.profile.facility
+        instrument = self.request.user.profile.instrument
+        iptss = Catalog(facility.name, self.request).experiments(
+                instrument.catalog_name)
+        return iptss
+
+    def _get_iptss_info(self):
+        '''
+        '''
+        iptss = self._fetch_iptss_from_the_catalog()
         
-    #     return super(ProfileReductionUpdate, self).get(request, *args, **kwargs)
+        filtered_iptss = [{k: v for k, v in d.items()
+            if k in ['ipts', 'title', 'exp']} for d in iptss]
+       
+        iptss = [{'ipts': d['ipts'], 
+                  'exp' : [exp for exp in d.get('exp', []) if exp.startswith('exp')],
+                  'title' : "{} :: {}".format(d['ipts'], d['title']) }
+            for d in filtered_iptss ]
+        return iptss
 
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        initial = super(ProfileReductionUpdate, self).get_initial()
-
-        from pprint import pprint
-        pprint(initial)
-
-        initial['ipts'] = (('IPTS-19988', 'Understanding and Manipulating Domain Wall Order in Mn3O4'),)
-        pprint(initial)
-        return initial
-
-
-    # def __init__(self, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        '''
+        Populates the context with the list of IPTSs and experiments
+        '''
+        context = super(ProfileReductionUpdate, self).get_context_data(**kwargs)
+        context['iptss'] = self._get_iptss_info()
+        logger.debug(pformat(context['iptss']))
+        return context
         
-    #     super(UserProfileReductionForm, self).__init__(*args, **kwargs)
-    #     choices = self.fields['ipts'].choices
-    #     self.fields['ipts'].choices = choices.extend(('IPTS-123', 'IPTS-454545'), )
-
-    #     return initial

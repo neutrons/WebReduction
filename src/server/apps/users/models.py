@@ -91,7 +91,6 @@ class UserProfile(models.Model):
         "Integrated Proposal Tracking System (IPTS)",
         max_length=20,
         blank=True,
-        choices=(('', '-'*20),)
         # validators=[
         #     RegexValidator(
         #         regex='^IPTS-\d+$',
@@ -105,7 +104,6 @@ class UserProfile(models.Model):
         "Experiment (Only used at HFIR!)",
         max_length=20,
         blank=True,
-        choices=(('', '-'*20),)
         # validators=[
         #     RegexValidator(
         #         regex='^exp\d+$',
