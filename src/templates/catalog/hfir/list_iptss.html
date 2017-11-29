@@ -11,8 +11,7 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'catalog:list_instruments'%}">Catalog</a></li>
-        <li class="active">{{instrument}}</li>
+        <li class="active">IPTSs for {{user.profile.instrument}}</li>
     </ol>
 </div>
 {% endblock %}
@@ -20,43 +19,50 @@
 {% block content %}
 <div class="container">
 	
-<div class="page-header">
-    <h1>Catalog <small> List of IPTSs for {{instrument}}</small></h1>
-</div>
+    <div class="page-header">
+        <h1>Catalog <small> List of IPTSs for {{user.profile.instrument}}</small></h1>
+    </div>
 
-<table id="tableipts" class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>IPTS</th>
-            <th>Experiment</th>
-            <th>Title</th>
-            <th>Length</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for ipts in iptss %}
-                {% for exp in ipts.exp %}
-                    {% if exp|slice:":3" == "exp" %}
-                        <tr>
-                            <td>{{ipts.ipts}}</td>
-                            <td><a href="{% url 'catalog:list_runs' instrument ipts.ipts exp %}" data-toggle="tooltip" data-placement="right" 
-                                title="Click to see the runs for this experiment...">{{exp}}</a></td>
-                            <td>{{ipts.title}}</td>
-                            <td>{{ipts.size}}</td>
-                        </tr>
-                {% endif %}
+    {% if iptss %}
+    <table id="tableipts" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>IPTS</th>
+                <th>Experiment</th>
+                <th>Title</th>
+                <th>Length</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ipts in iptss %}
+                    {% for exp in ipts.exp %}
+                        {% if exp|slice:":3" == "exp" %}
+                            <tr>
+                                <td>{{ipts.ipts}}</td>
+                                <td><a href="{% url 'catalog:list_runs' ipts.ipts exp %}" data-toggle="tooltip" data-placement="right" 
+                                    title="Click to see the runs for this experiment...">{{exp}}</a></td>
+                                <td>{{ipts.title}}</td>
+                                <td>{{ipts.size}}</td>
+                            </tr>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-    </tbody>
-    <tfoot>
-        <tr>
-            <th>IPTS</th>
-            <th>Experiment</th>
-            <th>Title</th>
-            <th>Length</th>
-        </tr>
-    </tfoot>
-</table>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>IPTS</th>
+                <th>Experiment</th>
+                <th>Title</th>
+                <th>Length</th>
+            </tr>
+        </tfoot>
+    </table>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        <strong>No Data to show!</strong>
+        <p>Either you have no IPTSs available for this instrument or the ONCat is down...</p>
+    </div>
+    {% endif %}    
 </div>
 {% endblock %}
 
@@ -69,14 +75,14 @@
 <script>
         $(function () {
             $("#tableipts").DataTable({
-                "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 2, 'desc' ]],
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": true,
+                lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+                order: [[ 2, 'desc' ]],
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: true,
                 columnDefs: [
                     { type: 'natural', targets: [0,1] }
                 ],

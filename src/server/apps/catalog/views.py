@@ -25,34 +25,49 @@ from .oncat.facade import Catalog
 logger = logging.getLogger(__name__)
 
 
-class InstrumentMixin(object):
+class CatalogMixin(object):
     '''
-    Context enhancer
-    mixin that sets the shared context variables:
-    instrument
-    ipts
+    Context enhancer for the Catalog
     '''
 
     def dispatch(self, request, *args, **kwargs):
         '''
         First method being called
-        Usefull for debug
+        Usefull for debug and set member variables
         '''
         logger.debug('Token in session (starting the request):\n%s',
                      pformat(request.session.get('token')))
 
+        # Set member variables
         self.facility = self.request.user.profile.instrument.facility
         self.instrument = self.request.user.profile.instrument
 
-        return super(InstrumentMixin, self).dispatch(request, *args, **kwargs)
+        return super(CatalogMixin, self).dispatch(request, *args, **kwargs)
+
+    def get_template_names(self):
+        """
+        Let's override this function.
+        Returns a list of priority templates to render. From specific to general.
+        facility/instrument/self.template
+        facility/self.template
+        self.template
+        Note that the method caling this must have self.template_name defined!!
+        """
+        
+        facility_name = self.facility.name.lower()
+        instrument_name = self.instrument.name.lower()
+
+        return [
+            os.path.join('catalog', facility_name, instrument_name, self.template_name),
+            os.path.join('catalog', facility_name, self.template_name),
+            self.template_name
+        ]
 
 
-
-class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
+class IPTSs(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
-    List of IPTSs for a given instrument
+    List of IPTSs
     '''
-
     template_name = 'list_iptss.html'
 
     def get_context_data(self, **kwargs):
@@ -60,36 +75,23 @@ class IPTSs(LoginRequiredMixin, InstrumentMixin, TemplateView):
         logger.debug("Listing IPTSs for: %s %s", self.facility, self.instrument)
         
         iptss = Catalog(self.facility.name, self.request).experiments(
-            self.instrument.name
+            self.instrument.catalog_name
         )
-        self.template_name = 'catalog/' + self.facility.name.lower() + '/' \
-            + self.template_name
+
         context = super(IPTSs, self).get_context_data(**kwargs)
         context['iptss'] = iptss
-        # logger.debug(pformat(iptss))
+        # logger.debug("Catalog returned:\n%s", pformat(iptss))
         return context
 
 
-class Runs(LoginRequiredMixin, InstrumentMixin, TemplateView):
+class Runs(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
     List of runs for a given instrument
     '''
 
     template_name = 'list_runs.html'
 
-    def get_template_names(self):
-        """
-        Let's override this function.
-        Returns a list of priority templates to render
-        """
-        facility = self.request.user.profile.instrument.facility.name.lower()
-        instrument = self.kwargs['instrument'].lower()
-
-        return [
-            os.path.join('catalog', facility, instrument, self.template_name),
-            os.path.join('catalog', facility, self.template_name),
-            self.template_name
-        ]
+    
 
     def get_context_data(self, **kwargs):
         
@@ -138,7 +140,7 @@ class RunsAjax(LoginRequiredMixin, TemplateView):
         # logger.debug(pformat(iptss))
         return JsonResponse(runs_out, status=200, safe=False)
 
-class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
+class RunDetail(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
     Detail of run
     '''
@@ -163,7 +165,7 @@ class RunDetail(LoginRequiredMixin, InstrumentMixin, TemplateView):
         return context
 
 
-class RunFile(LoginRequiredMixin, InstrumentMixin, TemplateView):
+class RunFile(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
     Raw File for a run
     Downloadable as attachment

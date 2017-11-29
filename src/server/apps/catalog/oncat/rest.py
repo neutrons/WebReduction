@@ -160,9 +160,9 @@ class RESTInterface(object):
                 timeout=self.timeout,
             )
             response.raise_for_status()
-            logger.debug("ICat response status code: %s", response.status_code)
-            # logger.debug("ICat response content:\n%s\n%s", pformat(response.json()), 80*"*")
-            # logger.debug("ICat response content:\n%s\n%s", pformat(response.text), 80*"*")
+            logger.debug("REST response status code: %s", response.status_code)
+            # logger.debug("REST response content:\n%s\n%s", pformat(response.json()), 80*"*")
+            # logger.debug("REST response content:\n%s\n%s", pformat(response.text), 80*"*")
             return response.json()
         except requests.exceptions.Timeout as this_exception:
             # Maybe set up for a retry, or continue in a retry loop
