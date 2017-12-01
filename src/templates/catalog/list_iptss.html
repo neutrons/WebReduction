@@ -26,13 +26,13 @@
     {% if iptss %}
     <table id="tableipts" class="table table-bordered table-striped">
         <thead>
-            {% block table_header %}{%endblock%}
+            <tr>{% block table_header %}{%endblock%}</tr>
         </thead>
         <tbody>
             {% block table_content %}{%endblock%}
         </tbody>
         <tfoot>
-            {% block table_footer %}{%endblock%}
+            <tr>{% block table_footer %}{%endblock%}</tr>
         </tfoot>
     </table>
     {% else %}

@@ -161,7 +161,7 @@ class RESTInterface(object):
             )
             response.raise_for_status()
             logger.debug("REST response status code: %s", response.status_code)
-            # logger.debug("REST response content:\n%s\n%s", pformat(response.json()), 80*"*")
+            logger.debug("REST response content:\n%s\n%s", pformat(response.json()), 80*"*")
             # logger.debug("REST response content:\n%s\n%s", pformat(response.text), 80*"*")
             return response.json()
         except requests.exceptions.Timeout as this_exception:

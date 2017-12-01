@@ -1,0 +1,86 @@
+ {% extends "base.html" %}
+ 
+ {% load staticfiles %}
+ 
+ {% block header %}
+ {{ block.super }}
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/Buttons/css/buttons.bootstrap.min.css" %}'>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'catalog:list_iptss' %}">Catalog for {{user.profile.instrument}}</a></li>
+		<li class="active">{{ipts}} {%if exp %} :: {{exp}} {%endif%}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	
+    <div class="page-header">
+        <h1>Catalog {{user.profile.instrument}} <small> Runs for {{ipts}} {%if exp %} :: {{exp}} {%endif%} </small></h1>
+    </div>
+
+<table id="tableruns" class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			{% block table_header %}
+			{% endblock table_header %}
+		</tr>
+	</thead>
+	<tbody>
+			{% block table_content %}
+			{% endblock table_content %}
+	</tbody>
+	<tfoot>
+		<tr>
+			{% block table_footer %}
+			{% endblock table_footer %}
+		</tr>
+	</tfoot>
+</table>
+</div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/dataTables.buttons.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.bootstrap.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.colVis.min.js" %}'></script>
+<!-- page script -->
+<script>
+	{% block footer_js_data_table_config%}
+	var data_table_config = {
+		dom: 'Bflrtip',
+		lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+		paging: true,
+		lengthChange: true,
+		searching: true,
+		ordering: true,
+		info: true,
+		autoWidth: true,
+		buttons: [
+			{
+				extend: 'colvis',
+				postfixButtons: [ 'colvisRestore' ]
+			},
+			{
+				extend: 'copy',
+				text: 'Copy to clipboard'
+			},'csv'
+		],
+		stateSave: true, // saves
+	}
+	{% endblock footer_js_data_table_config %}
+
+	$(function () {
+		$("#tableruns").DataTable(data_table_config);
+	});
+
+    </script>
+{% endblock %}

@@ -95,13 +95,14 @@ class Runs(LoginRequiredMixin, CatalogMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         
-        facility = self.facility.name
-        instrument = self.instrument.name
+        facility = self.facility
+        instrument = self.instrument
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
         logger.debug('Getting runs from catalog: %s %s %s %s',
                      facility, instrument, ipts, exp)
-        runs = Catalog(facility, self.request).runs(instrument, ipts, exp)
+        runs = Catalog(facility.name, self.request).runs(
+            instrument.catalog_name, ipts, exp)
         context = super(Runs, self).get_context_data(**kwargs)
         # logger.debug("Sent to template:\n%s", pformat(runs))
         context['runs'] = runs
