@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block header %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li class="active">IPTSs for {{user.profile.instrument}}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	
+    <div class="page-header">
+        <h1>Catalog <small> List of IPTSs for {{user.profile.instrument}}</small></h1>
+    </div>
+
+    {% if iptss %}
+    <table id="tableipts" class="table table-bordered table-striped">
+        <thead>
+            {% block table_header %}{%endblock%}
+        </thead>
+        <tbody>
+            {% block table_content %}{%endblock%}
+        </tbody>
+        <tfoot>
+            {% block table_footer %}{%endblock%}
+        </tfoot>
+    </table>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        <strong>No Data to show!</strong>
+        <p>Either you have no IPTSs available for this instrument or the ONCat is down...</p>
+    </div>
+    {% endif %}    
+</div>
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+<script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<!-- This CDN is for natural sorting : see columnDefs type: 'natural' -->
+<script src='https://cdn.datatables.net/plug-ins/1.10.13/sorting/natural.js'></script>
+<!-- page script -->
+<script>
+        $(function () {
+            $("#tableipts").DataTable({
+                lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+                order: [[ 2, 'desc' ]],
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: true,
+                columnDefs: [
+                    { type: 'natural', targets: [0,1] }
+                ],
+                order: [[ 1, 'desc' ]]
+            });
+            
+        });
+    </script>
+{% endblock %}
