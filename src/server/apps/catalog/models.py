@@ -142,5 +142,5 @@ class Instrument(models.Model):
         ordering = ('beamline',)
 
     def __str__(self):
-        #return "{} : {}".format(self.facility.name, self.name)
-        return self.name
+        return "{} : {}".format(self.beamline, self.name)
+        # return self.name

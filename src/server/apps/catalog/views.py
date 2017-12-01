@@ -108,27 +108,28 @@ class Runs(LoginRequiredMixin, CatalogMixin, TemplateView):
         return context
 
 
-class RunsAjax(LoginRequiredMixin, TemplateView):
+class RunsAjax(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
     List of RUNS for a given ipts as ajax
     '''
 
     def get(self, request, *args, **kwargs):
 
-        logger.debug("Listing RunsAjax for: %s", kwargs['instrument'])
+        facility = self.facility
+        instrument = self.instrument
         
-        facility = self.request.user.profile.instrument.facility.name
-        instrument = kwargs['instrument']
+        logger.debug("Listing RunsAjax for: %s", instrument)
+        
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
         logger.debug('Getting runs from catalog: %s %s %s %s',
                      facility, instrument, ipts, exp)
-        runs = Catalog(facility, self.request).runs(instrument, ipts, exp)
+        runs = Catalog(facility.name, self.request).runs(instrument.catalog_name, ipts, exp)
         # Let's filter the catalog results and just provide sime miminal results
         runs_out = [
             {
                 'url': reverse('catalog:run_file', kwargs={
-                    'instrument': instrument,
+                    # 'instrument': instrument.name,
                     'ipts': ipts,
                     'exp': exp,
                     'filename': r['location'],
