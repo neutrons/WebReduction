@@ -26,13 +26,64 @@
     {% if iptss %}
     <table id="tableipts" class="table table-bordered table-striped">
         <thead>
-            <tr>{% block table_header %}{%endblock%}</tr>
+            <th>IPTS</th>
+            {% if iptss.1.exp %}<th>Experiment</th>{% endif %}
+            <th>Title</th>
+            <th>Nr. Scans</th>
+            <th>Date modified</th>
+            <th>Users</th>
+            <th></th>
         </thead>
         <tbody>
-            {% block table_content %}{%endblock%}
+            {% for ipts in iptss %}
+                {% for exp in ipts.exp %}                    
+                    {% if exp|slice:":3" == "exp" %}
+                    <tr>
+                        <td>{{ipts.ipts}}</td>
+                        <td><a href="{% url 'catalog:list_runs' ipts.ipts exp %}" data-toggle="tooltip" data-placement="right" 
+                            title="Click to see the runs for this experiment...">{{exp}}</a></td>
+                        <td>{{ipts.title}}</td>
+                        <td>{{ipts.size}}</td>
+                        <td>{{ipts.date | date:"DATETIME_FORMAT"}}</td>
+                        <td>
+                            {% for user in ipts.users %}
+                                <span data-toggle="tooltip" title="{{user.name}}">{{ user.id }}</span>
+                                {% if not forloop.last %}|{% endif%}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for user in ipts.users %} {{user.name}} {% endfor %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                    <tr>
+                        <td><a href="{% url 'catalog:list_runs' ipts.ipts %}" data-toggle="tooltip"
+                            data-placement="right" title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
+                        <td>{{ipts.title}}</td>
+                        <td>{{ipts.size}}</td>
+                        <td>{{ipts.date | date:"DATETIME_FORMAT"}}</td>
+                        <td>
+                            {% for user in ipts.users %}
+                                <span data-toggle="tooltip" title="{{user.name}}">{{ user.id }}</span>
+                                {% if not forloop.last %}|{% endif%}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for user in ipts.users %} {{user.name}} {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
         </tbody>
         <tfoot>
-            <tr>{% block table_footer %}{%endblock%}</tr>
+            <th>IPTS</th>
+            {% if iptss.1.exp %}<th>Experiment</th>{% endif %}
+            <th>Title</th>
+            <th>Nr. Scans</th>
+            <th>Date modified</th>
+            <th>Users</th>
+            <th></th>
         </tfoot>
     </table>
     {% else %}
@@ -40,7 +91,7 @@
         <strong>No Data to show!</strong>
         <p>Either you have no IPTSs available for this instrument or the ONCat is down...</p>
     </div>
-    {% endif %}    
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -51,22 +102,40 @@
 <script src='https://cdn.datatables.net/plug-ins/1.10.13/sorting/natural.js'></script>
 <!-- page script -->
 <script>
-        $(function () {
-            $("#tableipts").DataTable({
-                lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                order: [[ 2, 'desc' ]],
-                paging: true,
-                lengthChange: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                autoWidth: true,
-                columnDefs: [
-                    { type: 'natural', targets: [0,1] }
-                ],
-                order: [[ 1, 'desc' ]]
-            });
-            
+        // To show the complete name once we over ucams uid
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
         });
-    </script>
+        
+        tableIPTSsConfiguration = {
+            lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+            paging: true,
+            lengthChange: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            autoWidth: false,
+            columnDefs: [
+                { type: 'natural', targets: 0 },
+                {% if iptss.0.exp %}
+                { type: "date", targets: 4 },
+                { width: "50%", targets: 2 },
+                { width: "10%", targets: 5 },
+                { visible: false, searchable: true, targets: 6 }
+                {% else %}
+                { type: "date", targets: 3 },
+                { width: "50%", targets: 1 },
+                { width: "10%", targets: 4 },
+                { visible: false, searchable: true, targets: 5 }
+                {% endif %}
+            ],
+            {% if iptss.0.exp %}
+            order: [[ 4, 'desc' ]]
+            {% else %}
+            order: [[ 3, 'desc' ]]
+            {% endif %}
+        };
+        $("#tableipts").DataTable(tableIPTSsConfiguration);
+
+</script>
 {% endblock %}

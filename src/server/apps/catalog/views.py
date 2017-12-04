@@ -60,7 +60,7 @@ class CatalogMixin(object):
         return [
             os.path.join('catalog', facility_name, instrument_name, self.template_name),
             os.path.join('catalog', facility_name, self.template_name),
-            self.template_name
+            os.path.join('catalog', self.template_name),
         ]
 
 
