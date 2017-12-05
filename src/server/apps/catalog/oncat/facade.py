@@ -162,7 +162,7 @@ class SNS(Catalog):
             except IndexError as this_exception:
                 logger.exception(this_exception)
         # This solves de None / NaN conversion
-        return json.dumps(result)
+        return result
 
 
 class HFIR(Catalog):
@@ -368,7 +368,8 @@ class HFIR(Catalog):
 
     def run_info(self, instrument, ipts, file_location):
         '''
-
+        Called by function run
+        Only deals with the metadata
         '''
         response = self.catalog.run(instrument, ipts, file_location)
         result = None
@@ -381,9 +382,9 @@ class HFIR(Catalog):
                         k: entry[k] for k in ('location', 'thumbnails')
                     }, **{
                         # Metadata here:
-                        'filename': entry['metadata']['spicerack']['@filename'],
-                        'metadata': entry['metadata']['spicerack']['header'],
-                        'sample_info': entry['metadata']['spicerack']['sample_info'],
+                        'filename': entry['metadata']['spicerack']['@filename'] if entry['metadata'].get('spicerack') else None,
+                        'metadata': entry['metadata']['spicerack']['header'] if entry['metadata'].get('spicerack') else  entry['metadata'],
+                        'sample_info': entry['metadata']['spicerack']['sample_info'] if entry['metadata'].get('spicerack') else None,
                     })
             except KeyError as this_exception:
                 logger.exception(this_exception)
@@ -393,9 +394,10 @@ class HFIR(Catalog):
 
     def run(self, instrument, ipts, file_location):
         '''
-        Gets run_info and adds the data
+        Gets run_info (metadata) and adds the data for plotting
         '''
         run_info = self.run_info(instrument, ipts, file_location)
-        run_info.pop('thumbnails', None) # remove the thumbnails
-        run_info['data'] = self._data(file_location)
+        if run_info.get('thumbnails'):
+            run_info.pop('thumbnails', None) # remove the thumbnails
+            run_info['data'] = self._data(file_location)
         return run_info

@@ -22,9 +22,8 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'catalog:list_instruments'%}">Catalog</a></li>
-        <li><a href="{% url 'catalog:list_iptss' instrument %}">{{instrument}}</a></li>
-        <li><a href="{% url 'catalog:list_runs' instrument ipts exp %}">{{ipts}} :: {{exp}}</a></li>        
+        <li><a href="{% url 'catalog:list_iptss' %}">{{user.profile.instrument}}</a></li>
+        <li><a href="{% url 'catalog:list_runs' ipts exp %}">{{ipts}} :: {{exp}}</a></li>        
 		<li class="active">{{run.filename}}</li>
     </ol>
 </div>
@@ -126,7 +125,7 @@
 
 <div class="container">
     <div class="page-header">
-        <h1>Run Detail <small> {{ run.metadata.scan_title }}</small></h1>
+        <h1>Run JSON info <small> {{ run.metadata.scan_title }}</small></h1>
     </div>
     <div class="panel panel-default">
         <div class="panel-body"><div style="font-family: monospace;" id="json-renderer"></div></div>

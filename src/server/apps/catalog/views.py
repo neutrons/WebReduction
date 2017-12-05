@@ -157,7 +157,8 @@ class RunDetail(LoginRequiredMixin, CatalogMixin, TemplateView):
         filename = kwargs['filename']
         logger.debug('Getting run detail from catalog: %s %s %s %s %s',
                      facility, instrument, ipts, exp, filename)
-        run = Catalog(facility.name, self.request).run(instrument.catalog_name, ipts, filename)
+        run = Catalog(facility.name, self.request).run(
+            instrument.catalog_name, ipts, filename)
         context = super(RunDetail, self).get_context_data(**kwargs)
         context['run'] = run
         return context

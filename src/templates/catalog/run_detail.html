@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load catalog_filters %}
 
 {% block header %}
 {{ block.super }}
@@ -10,8 +11,13 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'catalog:list_iptss' %}">{{instrument}}</a></li>
+        <li><a href="{% url 'catalog:list_iptss' %}">{{user.profile.instrument}}</a></li>
+        {%if exp %}
+        <li><a href="{% url 'catalog:list_runs' ipts exp %}">{{ipts}} :: {{exp}} </a></li>        
+        {%else%}
         <li><a href="{% url 'catalog:list_runs' ipts %}">{{ipts}}</a></li>        
+        {%endif%}
+        
 		<li class="active">{{run.location}}</li>
     </ol>
 </div>
@@ -34,8 +40,11 @@
 <script src='{% static "thirdparty/jquery.json-viewer/json-viewer/jquery.json-viewer.js" %}'></script>
 <!-- page script -->
 <script>
-var data = {{run|safe}};
-delete data.metadata.instrument.instrument_xml;
+var data = {{run|remove_none|safe}};
+if (Object.prototype.hasOwnProperty.call(data.metadata, "instrument")){
+    delete data.metadata.instrument.instrument_xml;
+}
+
 $('#json-renderer').jsonViewer(data, {collapsed: false, withQuotes: false});
 </script>
 {% endblock %}
