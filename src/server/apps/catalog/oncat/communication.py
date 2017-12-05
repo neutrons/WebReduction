@@ -84,6 +84,7 @@ class HFIR(ONCat):
         'DEFAULT': [],  # all fields
         'CG2': [
             'location',
+            'modified',
             'metadata.spicerack.@filename',
             'metadata.spicerack.@end_time',
             'metadata.spicerack.header',
@@ -93,6 +94,7 @@ class HFIR(ONCat):
         ],
         'CG3': [
             'location',
+            'modified',
             'metadata.spicerack.@filename',
             'metadata.spicerack.@end_time',
             'metadata.spicerack.header',
@@ -136,6 +138,7 @@ class SNS(ONCat):
     RUNS_PROJECTIONS = {
         'DEFAULT': [
             'location',
+            'modified',
             'metadata.entry.run_number',
             'metadata.entry.title',
             'metadata.entry.start_time',
@@ -145,6 +148,7 @@ class SNS(ONCat):
         ],
         'EQSANS': [
             'location',
+            'modified',
             'metadata.entry.run_number',
             'metadata.entry.title',
             'metadata.entry.start_time',
@@ -158,6 +162,7 @@ class SNS(ONCat):
         ],
         'REF_M': [
             'location',
+            'modified',
             'metadata.entry-off_off.run_number',
             'metadata.entry-off_off.title',
             'metadata.entry-off_off.start_time',

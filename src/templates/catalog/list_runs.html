@@ -29,16 +29,36 @@
 	<thead>
 		<tr>
 			{% block table_header %}
+			<th>Run</th>
+			<th>Title</th>
+			<th>Last modified</th>
 			{% endblock table_header %}
 		</tr>
 	</thead>
 	<tbody>
+		{% for run in runs %}
+		<tr>
 			{% block table_content %}
+			{# Make sure that either the run number or the file name are available#}
+			<td>
+				{%if exp %} 
+				<a href="{% url 'catalog:run_detail' ipts exp run.location %}">{{run.filename}} </a>
+				{% else %}
+				<a href="{% url 'catalog:run_detail' ipts run.location %}">{{run.metadata.run_number}}</a>
+				{% endif %}
+			</td>
+			<td>{{run.title}}</td>
+			<td>{{run.modified | date:"DATETIME_FORMAT"}}</td>
 			{% endblock table_content %}
+		</tr>
+		{% endfor %}
 	</tbody>
 	<tfoot>
 		<tr>
 			{% block table_footer %}
+			<th>Run</th>
+			<th>Title</th>
+			<th>Last modified</th>
 			{% endblock table_footer %}
 		</tr>
 	</tfoot>
@@ -54,7 +74,7 @@
 <script src='{% static "thirdparty/DataTables/Buttons/js/buttons.colVis.min.js" %}'></script>
 <!-- page script -->
 <script>
-	{% block footer_js_data_table_config%}
+	{% block footer_js_data_table_config %}
 	var data_table_config = {
 		dom: 'Bflrtip',
 		lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
@@ -74,6 +94,10 @@
 				text: 'Copy to clipboard'
 			},'csv'
 		],
+		columnDefs: [
+			{ type: "date", targets: 2 }
+		],
+		order: [[ 2, "desc" ]],
 		stateSave: true, // saves
 	}
 	{% endblock footer_js_data_table_config %}
@@ -81,6 +105,5 @@
 	$(function () {
 		$("#tableruns").DataTable(data_table_config);
 	});
-
     </script>
 {% endblock %}

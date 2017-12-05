@@ -1,6 +1,8 @@
+import os
 import logging
 import re
 import json
+
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from pprint import pformat, pprint
@@ -211,9 +213,10 @@ class HFIR(Catalog):
         elem = {}
         try:
             elem['location'] = entry['location']
+            elem['modified'] = dateparse.parse_datetime(entry['modified'])
             elem['thumbnails'] = entry['thumbnails']
             elem['filename'] = entry['metadata']['spicerack']['@filename']
-            elem['end_time'] = entry['metadata']['spicerack']['@end_time']
+            # elem['end_time'] = entry['metadata']['spicerack']['@end_time']
             elem['title'] = entry['metadata']['spicerack']['header']['scan_title']
             elem['sample_info'] = entry['metadata']['spicerack']['sample_info']['sample']['field'] if entry['metadata']['spicerack']['sample_info']['sample'] else ""
             elem['sample_background'] = entry['metadata']['spicerack']['sample_info']['background']['field'] if entry['metadata']['spicerack']['sample_info']['background'] else ""
@@ -231,8 +234,11 @@ class HFIR(Catalog):
     def _runs_elem_tas(entry):
         elem = {}
         try:
+            elem['title'] = entry['metadata']['scan_title']
             elem['location'] = entry['location']
-            elem['metadata'] = entry['metadata']
+            elem['modified'] = dateparse.parse_datetime(entry['modified'])
+            elem['filename'] = os.path.basename(entry['location'])
+            #elem['metadata'] = entry['metadata']
         except KeyError as this_exception:
             logger.exception(this_exception)
         except IndexError as this_exception:

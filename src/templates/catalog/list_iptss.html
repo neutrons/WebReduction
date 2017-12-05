@@ -36,6 +36,7 @@
         </thead>
         <tbody>
             {% for ipts in iptss %}
+                {# HFIR Case (They have IPTS + Exp) #}
                 {% for exp in ipts.exp %}                    
                     {% if exp|slice:":3" == "exp" %}
                     <tr>
@@ -57,6 +58,7 @@
                     </tr>
                     {% endif %}
                 {% empty %}
+                    {# SNS Case #}
                     <tr>
                         <td><a href="{% url 'catalog:list_runs' ipts.ipts %}" data-toggle="tooltip"
                             data-placement="right" title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>

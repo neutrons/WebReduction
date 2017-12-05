@@ -1,0 +1,65 @@
+{% extends "catalog/list_runs.html" %}
+
+{% block table_header %}
+    <th></th>
+    {{ block.super }}
+    <th>Scan Type</th>
+    <th>Sample</th>
+    <th>Background</th>
+    <th>Parameters</th>
+    <th>Thickness</th>
+{% endblock table_header %}
+
+
+
+{% block table_content %}
+    <td>
+        <a href="{% url 'catalog:run_detail' ipts exp run.location %}">
+            <table>
+                <tr>
+                {% for thumb_name, thumb_base64  in run.thumbnails.items %}
+                    <td><img alt="{{thumb_name}}" title="{{thumb_name}}. Click for full size" src="data:image/png;base64,{{thumb_base64}}" /></td>
+                {% endfor %}
+                </tr>
+            </table>
+        </a>
+    </td>
+    
+    {{ block.super }}
+
+    <td>{{run.metadata.scan_type}}</td>
+    <td>
+    {% for key, value in run.sample_info.items %}
+        <p><strong>{{key|capfirst}}</strong>: {{value}}</p>
+    {% endfor %}
+    </td>
+    <td>
+    {% for key, value in run.sample_background.items %}
+        <p><strong>{{key|capfirst}}</strong>: {{value}}</p>
+    {% endfor %}
+    </td>
+    <td>
+    {% for key, value in run.sample_parameters.items %}
+        <p><strong>{{key|capfirst}}</strong>: {{value}}</p>
+    {% endfor %}				
+    </td>
+    <td>{{run.metadata.sample_thickness}}</td>
+{% endblock table_content %}
+
+
+{% block table_footer %}
+    <th></th>
+    {{ block.super }}
+    <th>Scan Type</th>
+    <th>Sample</th>
+    <th>Background</th>
+    <th>Parameters</th>
+    <th>Thickness</th>
+{% endblock table_footer %}
+
+
+{% block footer_js_data_table_config%}
+{{ block.super }}
+data_table_config.columnDefs = { type: "date", targets: 3 };
+data_table_config.order = [[ 3, "desc" ]];
+{%endblock%}

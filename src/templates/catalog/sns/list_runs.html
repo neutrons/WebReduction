@@ -42,7 +42,7 @@
 				<td>{{run.metadata.run_number}}</td>
 				<!-- <td>{{run.metadata.title}}</td> -->
 				<td>
-					<a href="{% url 'catalog:run_detail' instrument  ipts run.location %}">{{run.metadata.title}}</a>
+					<a href="{% url 'catalog:run_detail' ipts run.location %}">{{run.metadata.title}}</a>
 					<div class="pull-right">
 						<a href="https://monitor.sns.gov/report/{{instrument|lower}}/{{run.metadata.run_number}}/"  target="_blank"
 							class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="Click to see this run in the monitor.">

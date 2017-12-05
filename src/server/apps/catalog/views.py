@@ -89,9 +89,7 @@ class Runs(LoginRequiredMixin, CatalogMixin, TemplateView):
     List of runs for a given instrument
     '''
 
-    template_name = 'list_runs.html'
-
-    
+    template_name = 'list_runs.html'    
 
     def get_context_data(self, **kwargs):
         
@@ -151,17 +149,15 @@ class RunDetail(LoginRequiredMixin, CatalogMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
 
-        facility = self.request.user.profile.instrument.facility.name
-        self.template_name = 'catalog/' + facility.lower() + '/' \
-            + self.template_name
+        facility = self.facility
+        instrument = self.instrument
 
-        instrument = kwargs['instrument']
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
         filename = kwargs['filename']
         logger.debug('Getting run detail from catalog: %s %s %s %s %s',
                      facility, instrument, ipts, exp, filename)
-        run = Catalog(facility, self.request).run(instrument, ipts, filename)
+        run = Catalog(facility.name, self.request).run(instrument.catalog_name, ipts, filename)
         context = super(RunDetail, self).get_context_data(**kwargs)
         context['run'] = run
         return context
@@ -186,8 +182,9 @@ class RunFile(LoginRequiredMixin, CatalogMixin, TemplateView):
                 and settings.LDAP_ADMIN_GROUP not in all_groups_for_this_user:
             logger.error("User {} belongs to groups: {}."
                          " It has no permission to see {}.".format(
-                request.user, all_groups_for_this_user, ipts
-            ))
+                    request.user, all_groups_for_this_user, ipts
+                )
+            )
             return HttpResponseForbidden()
 
         response = FileResponse(open(filename, 'rb'))
