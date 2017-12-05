@@ -120,15 +120,14 @@ class SNS(Catalog):
             for entry in response:
                 elem = {}
                 elem['location'] = entry['location']
+                elem['modified'] = dateparse.parse_datetime(entry['modified'])
                 elem['metadata'] = {
                     (key): (value if value is not None else "") for key, value in entry['metadata'][entry_name].items()
                 }
-                elem['start_time'] = dateparse.parse_datetime(entry['metadata'][entry_name]['start_time'])
-                elem['end_time'] = dateparse.parse_datetime(entry['metadata'][entry_name]['end_time'])
-
-                specific_func = self.RUNS_PARSE_FUNCS.get(instrument).__func__
+                elem['title'] = elem['metadata']['title']
+                specific_func = self.RUNS_PARSE_FUNCS.get(instrument)
                 if specific_func:
-                    elem.update(specific_func(entry_name, entry))
+                    elem.update(specific_func.__func__(entry_name, entry))
                 result.append(elem)
 
 

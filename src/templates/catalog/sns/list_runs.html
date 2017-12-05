@@ -1,119 +1,33 @@
- {% extends "base.html" %}
- 
- {% load staticfiles %}
- 
- {% block header %}
- {{ block.super }}
-<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
-{% endblock %}
+{% extends "catalog/list_runs.html" %}
 
-{% block breadcrumbs %}
-<div class="container">
-    <ol class="breadcrumb">
-        <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'catalog:list_instruments'%}">Catalog</a></li>
-        <li><a href="{% url 'catalog:list_iptss' instrument %}">{{instrument}}</a></li>
-		<li class="active">{{ipts}}</li>
-    </ol>
-</div>
-{% endblock %}
+{% block table_header %}
+	{{ block.super }}
+	<th>Monitor</th>
+	<th>Duration (s)</th>
+	<th>Total Counts</th>
+{% endblock table_header %}
 
-{% block content %}
-<div class="container">
-    <div class="page-header">
-        <h1>Catalog {{instrument}} <small> Runs for {{ipts}}</small></h1>
-    </div>
 
-	<table id="tableruns" class="table table-bordered table-striped">
-		<thead>
-			<tr>
-				<th>Run</th>
-				<th>Title</th>
-				<th>Start Time</th>
-				<th>End Time</th>
-				<th>Duration (s)</th>
-				<th>Total Counts</th>
-				{% block table_header %}{%endblock%}
-			</tr>
-		</thead>
-		<tbody>
-			{% for run in runs %}
-			<tr>
-				<td>{{run.metadata.run_number}}</td>
-				<!-- <td>{{run.metadata.title}}</td> -->
-				<td>
-					<a href="{% url 'catalog:run_detail' ipts run.location %}">{{run.metadata.title}}</a>
-					<div class="pull-right">
-						<a href="https://monitor.sns.gov/report/{{instrument|lower}}/{{run.metadata.run_number}}/"  target="_blank"
-							class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="Click to see this run in the monitor.">
-							<span class="glyphicon glyphicon-new-window"></span>
-						</a>
-					</div>
-				</td>
-				<td>{{run.start_time | date:"DATETIME_FORMAT"}}</td>
-				<td>{{run.end_time | date:"DATETIME_FORMAT"}}</td>
-				<td>{{run.metadata.duration|floatformat:2}}</td>
-				<td>{{run.metadata.total_counts|stringformat:".2e"}}</td>
-				{% block table_content %}{%endblock%}
-			</tr>
-			{% endfor %}
-		</tbody>
-		<tfoot>
-			<tr>
-				<th>Run</th>
-				<th>Title</th>
-				<th>Start Time</th>
-				<th>End Time</th>
-				<th>Duration (s)</th>
-				<th>Total Counts</th>
-				{% block table_footer %}{%endblock%}
-			</tr>
-		</tfoot>
-	</table>
-</div>
-{% endblock %}
+{% block table_content %}
+    
+	{{ block.super }}
+	<td>
+		<div class="text-center">
+			<a href="https://monitor.sns.gov/report/{{instrument|lower}}/{{run.metadata.run_number}}/"  target="_blank"
+				class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="Click to see this run in the monitor.">
+				<span class="glyphicon glyphicon-new-window"></span>
+			</a>
+		</div>
+	</td>
+	<td>{{run.metadata.duration|floatformat:2}}</td>
+	<td>{{run.metadata.total_counts|stringformat:".2e"}}</td>
+    
+{% endblock table_content %}
 
-{% block footer_js%}
-{{ block.super }}
-<script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
-<script src='{% static "thirdparty/DataTables/Buttons/js/dataTables.buttons.min.js" %}'></script>
-<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.bootstrap.js" %}'></script>
-<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.colVis.min.js" %}'></script>
-<!-- page script -->
-<script>
-	{% block footer_js_data_table_config%}
-	var data_table_config = {
-		dom: 'Bflrtip',
-		lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
-		order: [[ 0, 'desc' ]],
-		// Default config only has 6 collumns
-		columnDefs: [
-			{ type: "scientific", targets: 4 },
-			{ type: "date", targets: [2,3] }
-		  ],
-		paging: true,
-		lengthChange: true,
-		searching: true,
-		ordering: true,
-		info: true,
-		autoWidth: true,
-		buttons: [
-			{
-				extend: 'colvis',
-				postfixButtons: [ 'colvisRestore' ]
-			},
-			{
-				extend: 'copy',
-				text: 'Copy to clipboard'
-			},
-			'csv'
-		],
-		stateSave: true // saves
-	};
-	{% endblock footer_js_data_table_config %}
 
-	$(function () {
-		$("#tableruns").DataTable(data_table_config);
-	});
-    </script>
-{% endblock footer_js %}
+{% block table_footer %}
+	{{ block.super }}
+	<th>Monitor</th>
+	<th>Duration (s)</th>
+	<th>Total Counts</th>
+{% endblock table_footer %}

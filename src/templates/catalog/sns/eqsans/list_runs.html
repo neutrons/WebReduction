@@ -1,18 +1,21 @@
-{% extends "catalog/list_runs.html" %}
+{% extends "catalog/sns/list_runs.html" %}
  
 {% block table_header %}
+	{{ block.super }}
 	<th>SDD</th>
 	<th>Lambda Req.</th>
 	<th>Frame Skip.</th>
 {%endblock%}
 
 {% block table_content %}
+	{{ block.super }}
 	<td>{{run.metadata.daslogs.detectorz.average_value|floatformat:2}}</td>
 	<td>{{run.metadata.daslogs.lambdarequest.average_value|floatformat:2}}</td>
 	<td>{{run.is_frame_skipping}}</td>
 {%endblock%}
 
 {% block table_footer %}
+	{{ block.super }}
 	<th>SDD</th>
 	<th>Lambda Req.</th>
 	<th>Frame Skip.</th>
