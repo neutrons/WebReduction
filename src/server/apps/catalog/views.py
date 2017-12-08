@@ -35,12 +35,18 @@ class CatalogMixin(object):
         First method being called
         Usefull for debug and set member variables
         '''
-        logger.debug('Token in session (starting the request):\n%s',
-                     pformat(request.session.get('token')))
+        # logger.debug('Token in session (starting the request):\n%s',
+        #              pformat(request.session.get('token')))
 
-        # Set member variables
         self.facility = self.request.user.profile.instrument.facility
         self.instrument = self.request.user.profile.instrument
+
+        self.catalog = Catalog(
+            facility=self.facility.name,
+            technique=self.instrument.technique,
+            instrument=self.instrument.catalog_name,
+            request=self.request
+        )
 
         return super(CatalogMixin, self).dispatch(request, *args, **kwargs)
 
@@ -71,13 +77,8 @@ class IPTSs(LoginRequiredMixin, CatalogMixin, TemplateView):
     template_name = 'list_iptss.html'
 
     def get_context_data(self, **kwargs):
-        
-        logger.debug("Listing IPTSs for: %s %s", self.facility, self.instrument)
-        
-        iptss = Catalog(self.facility.name, self.request).experiments(
-            self.instrument.catalog_name
-        )
-
+        logger.debug("Listing IPTSs for: {}".format(self.catalog))
+        iptss = self.catalog.experiments()
         context = super(IPTSs, self).get_context_data(**kwargs)
         context['iptss'] = iptss
         # logger.debug("Catalog returned:\n%s", pformat(iptss))
@@ -92,15 +93,10 @@ class Runs(LoginRequiredMixin, CatalogMixin, TemplateView):
     template_name = 'list_runs.html'    
 
     def get_context_data(self, **kwargs):
-        
-        facility = self.facility
-        instrument = self.instrument
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
-        logger.debug('Getting runs from catalog: %s %s %s %s',
-                     facility, instrument, ipts, exp)
-        runs = Catalog(facility.name, self.request).runs(
-            instrument.catalog_name, ipts, exp)
+        logger.debug('Getting runs from catalog: %s', self.catalog)
+        runs = self.catalog.runs(ipts, exp)
         context = super(Runs, self).get_context_data(**kwargs)
         # logger.debug("Sent to template:\n%s", pformat(runs))
         context['runs'] = runs
@@ -113,22 +109,16 @@ class RunsAjax(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
 
     def get(self, request, *args, **kwargs):
-
-        facility = self.facility
-        instrument = self.instrument
-        
-        logger.debug("Listing RunsAjax for: %s", instrument)
         
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
-        logger.debug('Getting runs from catalog: %s %s %s %s',
-                     facility, instrument, ipts, exp)
-        runs = Catalog(facility.name, self.request).runs(instrument.catalog_name, ipts, exp)
-        # Let's filter the catalog results and just provide sime miminal results
+        logger.debug("Listing RunsAjax for: %s -> %s %s",
+                     self.catalog, ipts, exp)
+        runs = self.catalog.runs(ipts, exp)
+        # Let's filter the catalog results and just provide a subset of data"
         runs_out = [
             {
                 'url': reverse('catalog:run_file', kwargs={
-                    # 'instrument': instrument.name,
                     'ipts': ipts,
                     'exp': exp,
                     'filename': r['location'],
@@ -140,6 +130,7 @@ class RunsAjax(LoginRequiredMixin, CatalogMixin, TemplateView):
         # logger.debug(pformat(iptss))
         return JsonResponse(runs_out, status=200, safe=False)
 
+
 class RunDetail(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
     Detail of run
@@ -149,16 +140,12 @@ class RunDetail(LoginRequiredMixin, CatalogMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
 
-        facility = self.facility
-        instrument = self.instrument
-
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
         filename = kwargs['filename']
-        logger.debug('Getting run detail from catalog: %s %s %s %s %s',
-                     facility, instrument, ipts, exp, filename)
-        run = Catalog(facility.name, self.request).run(
-            instrument.catalog_name, ipts, filename)
+        logger.debug('Getting run detail from catalog: %s %s %s %s',
+                     self.catalog, ipts, exp, filename)
+        run = self.catalog.run(ipts, filename)
         context = super(RunDetail, self).get_context_data(**kwargs)
         context['run'] = run
         return context
@@ -179,7 +166,7 @@ class RunFile(LoginRequiredMixin, CatalogMixin, TemplateView):
         all_groups_for_this_user = list(
             request.user.groups.values_list('name', flat=True))
 
-        if ipts not in  all_groups_for_this_user \
+        if ipts not in all_groups_for_this_user \
                 and settings.LDAP_ADMIN_GROUP not in all_groups_for_this_user:
             logger.error("User {} belongs to groups: {}."
                          " It has no permission to see {}.".format(

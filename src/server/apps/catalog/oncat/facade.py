@@ -18,23 +18,74 @@ logger = logging.getLogger(__name__)
 
 class Catalog(ABC):
     '''
-    Abstract class for both HFIR and SNS catalog.
     The main methods to be defined in the subclasses are here.
     '''
 
-    def __new__(cls, facility, *args, **kwargs):
+    # __metaclass__ = CatalogMeta
+
+    def __new__(cls, facility, technique, instrument, *args, **kwargs):
         '''
         This allows to great subclasses from this base class,
-        given a facility name
+        given:
+        - facility name
+        - technique name
+        - instrument name
+        See in the database for every instrument the valid
+        - instrument.facility.name
+        - instrument.name
+        - instrument.technique
 
-        The Catalog should be constructed like this:
-        cat = Catalog(Facility)
-        Where facility is the name of the classes below
+        The Catalog should be constructed like these examples:
+        sns = Catalog("SNS")
+        hfir = Catalog("HFIR")
+        hfir_sans = Catalog("HFIR", "SANS")
+        hfir_sans = Catalog(facility="HFIR", technique="SANS")
+        
         '''
-        for subclass in Catalog.__subclasses__():
-            if str(subclass.__name__) == facility:
+
+        # Get the subclasses of Catalog
+        subclasses = Catalog.subclasses(Catalog)
+        # To get first the very subclasses (more specific)
+        subclasses.reverse()
+
+        for subclass in subclasses:
+            if str(subclass.__name__) == facility+technique+instrument:
                 return super(cls, subclass).__new__(subclass)
-        raise Exception('Facility not supported!')
+            elif str(subclass.__name__) == facility+technique:
+                return super(cls, subclass).__new__(subclass)
+            elif str(subclass.__name__) == facility:
+                return super(cls, subclass).__new__(subclass)
+        raise Exception('Facility not supported: {}!'.format(facility+technique+instrument))
+    
+    def __init__(self, facility, technique, instrument, request):
+        self.facility = facility
+        self.technique = technique
+        self.instrument = instrument
+        self.request = request
+    
+    def __str__(self):
+        return "Catalog for {} :: {} :: {}".format(
+            self.facility, self.technique, self.instrument
+        )
+    
+    @staticmethod
+    def subclasses(root):
+        '''
+        This function performs a:
+        level_order_tree_traversal
+        (Google to know what this is)
+        on the hierarchy tree of classes.
+        @return a list with all the classes types 
+        '''
+        out = []
+        q = []
+        q.append(root)
+        while q:
+            v = q.pop(0)
+            out.append(v)
+            for child in v.__subclasses__():
+                q.append(child)
+        return out
 
     @abstractmethod
     def experiments(self, instrument):
@@ -75,12 +126,13 @@ class SNS(Catalog):
         'EQSANS': _runs_eqsans,
     }
 
-    def __init__(self, facility, request):
+    def __init__(self, *args, **kwargs):
         '''
         '''
-        self.catalog = SNSCom(request)
+        super().__init__(*args, **kwargs) 
+        self.catalog = SNSCom(self.request)
 
-    def experiments(self, instrument):
+    def experiments(self):
         '''
         @return: [...
             {'ipts': 'IPTS-19574'},
@@ -88,7 +140,7 @@ class SNS(Catalog):
             {'ipts': 'IPTS-19717'}]
 
         '''
-        response = self.catalog.experiments(instrument)
+        response = self.catalog.experiments(self.instrument)
         result = []
         if response is not None:
             try:
@@ -106,16 +158,16 @@ class SNS(Catalog):
 
 
 
-    def runs(self, instrument, ipts, *args, **kwargs):
+    def runs(self, ipts, *args, **kwargs):
         '''
 
 
         '''
-        response = self.catalog.runs(instrument, ipts)
+        response = self.catalog.runs(self.instrument, ipts)
         # logger.debug("Raw Response from Communication: %s:\n%s", instrument, pformat(response))
         result = []
         entry_name = self.RUNS_ENTRY_KEYWORD.get(
-            instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
+            self.instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
         if response is not None:
             for entry in response:
                 elem = {}
@@ -125,7 +177,7 @@ class SNS(Catalog):
                     (key): (value if value is not None else "") for key, value in entry['metadata'][entry_name].items()
                 }
                 elem['title'] = elem['metadata']['title']
-                specific_func = self.RUNS_PARSE_FUNCS.get(instrument)
+                specific_func = self.RUNS_PARSE_FUNCS.get(self.instrument)
                 if specific_func:
                     elem.update(specific_func.__func__(entry_name, entry))
                 result.append(elem)
@@ -134,17 +186,17 @@ class SNS(Catalog):
         # logger.debug("Response sent to view for Get Run %s:\n%s", instrument, pformat(result))
         return result
 
-    def run(self, instrument, ipts, file_location):
+    def run(self, ipts, file_location):
         '''
 
         '''
-        response = self.catalog.run(instrument, ipts, file_location)
+        response = self.catalog.run(self.instrument, ipts, file_location)
 
         entry_name = self.RUNS_ENTRY_KEYWORD.get(
-            instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
+            self.instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
         result = None
 
-        logger.debug("Getting run details for %s %s -> %s", instrument, ipts, file_location)
+        logger.debug("Getting run details for %s %s -> %s", self.instrument, ipts, file_location)
         logger.debug(entry_name)
         if response is not None:
             try:
@@ -169,12 +221,14 @@ class HFIR(Catalog):
     '''
     '''
 
-    def __init__(self, facility, request, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         '''
         '''
-        self.catalog = HFIRCom(request)
+        super().__init__(*args, **kwargs) 
+        self.catalog = HFIRCom(self.request)
 
-    def experiments(self, instrument):
+
+    def experiments(self,):
         '''
         [{'exp': ['exp305',
                 'exp320',
@@ -188,7 +242,7 @@ class HFIR(Catalog):
         'ipts': 'IPTS-0000'},
 
         '''
-        response = self.catalog.experiments(instrument)
+        response = self.catalog.experiments(self.instrument)
         result = []
         if response is not None:
             try:
@@ -254,18 +308,18 @@ class HFIR(Catalog):
         'HB3': _runs_elem_tas,
     }
 
-    def runs(self, instrument, ipts, exp):
+    def runs(self, ipts, exp):
         '''
 
         '''
-        response = self.catalog.runs(instrument, ipts, exp)
+        response = self.catalog.runs(self.instrument, ipts, exp)
         result = []
         if response is not None:
             # logger.debug("Response from comunication Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
             for entry in response:
                 # This is the only way to call static methods in a dict
                 elem = self.RUNS_ELEM_FUNC.get(
-                    instrument, self.RUNS_ELEM_FUNC['DEFAULT']).__func__(entry)
+                    self.instrument, self.RUNS_ELEM_FUNC['DEFAULT']).__func__(entry)
                 result.append(elem)
 
         # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
@@ -273,7 +327,7 @@ class HFIR(Catalog):
 
 
 
-    def runs_as_table(self, instrument, ipts, exp):
+    def runs_as_table(self, ipts, exp):
         '''
         Same as runs but split sample_* in tables
         Returns 2 lists:
@@ -283,7 +337,7 @@ class HFIR(Catalog):
         '''
 
         # Let's make a rubset first
-        data = self.runs(instrument, ipts, exp)
+        data = self.runs(self.instrument, ipts, exp)
         subset = []
         for d in data:
             entry = OrderedDict()
@@ -366,12 +420,12 @@ class HFIR(Catalog):
                 res['DetectorWing'] = data_wing_detector.tolist()
         return res
 
-    def run_info(self, instrument, ipts, file_location):
+    def run_info(self, ipts, file_location):
         '''
         Called by function run
         Only deals with the metadata
         '''
-        response = self.catalog.run(instrument, ipts, file_location)
+        response = self.catalog.run(self.instrument, ipts, file_location)
         result = None
         if response is not None:
             try:
@@ -392,11 +446,11 @@ class HFIR(Catalog):
                 logger.exception(this_exception)
         return result
 
-    def run(self, instrument, ipts, file_location):
+    def run(self, ipts, file_location):
         '''
         Gets run_info (metadata) and adds the data for plotting
         '''
-        run_info = self.run_info(instrument, ipts, file_location)
+        run_info = self.run_info(ipts, file_location)
         if run_info.get('thumbnails'):
             run_info.pop('thumbnails', None) # remove the thumbnails
             run_info['data'] = self._data(file_location)
