@@ -45,7 +45,7 @@
                             title="Click to see the runs for this experiment...">{{exp}}</a></td>
                         <td>{{ipts.title}}</td>
                         <td>{{ipts.size}}</td>
-                        <td>{{ipts.date | date:"DATETIME_FORMAT"}}</td>
+                        <td>{{ipts.modified | date:"DATETIME_FORMAT"}}</td>
                         <td>
                             {% for user in ipts.users %}
                                 <span data-toggle="tooltip" title="{{user.name}}">{{ user.id }}</span>
@@ -64,7 +64,7 @@
                             data-placement="right" title="Click to see the runs for this experiment...">{{ipts.ipts}}</a></td>
                         <td>{{ipts.title}}</td>
                         <td>{{ipts.size}}</td>
-                        <td>{{ipts.date | date:"DATETIME_FORMAT"}}</td>
+                        <td>{{ipts.modified | date:"DATETIME_FORMAT"}}</td>
                         <td>
                             {% for user in ipts.users %}
                                 <span data-toggle="tooltip" title="{{user.name}}">{{ user.id }}</span>

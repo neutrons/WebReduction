@@ -55,7 +55,8 @@ class Catalog(ABC):
                 return super(cls, subclass).__new__(subclass)
             elif str(subclass.__name__) == facility:
                 return super(cls, subclass).__new__(subclass)
-        raise Exception('Facility not supported: {}!'.format(facility+technique+instrument))
+        raise Exception('Facility not supported: {}!'.format(
+            facility+technique+instrument))
     
     def __init__(self, facility, technique, instrument, request):
         self.facility = facility
@@ -87,58 +88,19 @@ class Catalog(ABC):
                 q.append(child)
         return out
 
-    @abstractmethod
-    def experiments(self, instrument):
-        pass
-
-    @abstractmethod
-    def runs(self, instrument, ipts, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def run(self, instrument, ipts, *args, **kwargs):
-        pass
-
-
-class SNS(Catalog):
-    '''
-    '''
-    # Some of the NeXus files don't have an entry as first group
-
-    RUNS_ENTRY_KEYWORD = {
-        'DEFAULT': 'entry',
-        'REF_M': 'entry-off_off',
-    }
-
-    @staticmethod
-    def _runs_eqsans(entry_name, entry):
-        elem = {}
-        try:
-            # frame_skipping=speed1 - frequency / 2.0) < 1.0
-            elem['is_frame_skipping'] = entry['metadata'][entry_name]['daslogs']['speed1']['average_value'] \
-                - entry['metadata'][entry_name]['daslogs']['frequency']['average_value'] / 2.0 < 1.0
-        except KeyError:
-            elem['is_frame_skipping'] = ""
-        return elem
-
-    RUNS_PARSE_FUNCS = {
-        'DEFAULT': 'entry',
-        'EQSANS': _runs_eqsans,
-    }
-
-    def __init__(self, *args, **kwargs):
+    
+    def experiments_specific(self, entry):
         '''
+        This will update the experiments return list of dictionaries
+        This is to specialised in any subclass when needed
         '''
-        super().__init__(*args, **kwargs) 
-        self.catalog = SNSCom(self.request)
+        return {}
 
     def experiments(self):
         '''
-        @return: [...
-            {'ipts': 'IPTS-19574'},
-            {'ipts': 'IPTS-19658'},
-            {'ipts': 'IPTS-19717'}]
-
+        Common to HFIR and SNS
+        For HFIR: See if in there tags that start with spice, e.g.:
+        'tags': ['spice/exp579', 'spice/exp581', 'type/raw'],
         '''
         response = self.catalog.experiments(self.instrument)
         result = []
@@ -146,7 +108,8 @@ class SNS(Catalog):
             try:
                 for entry in response:
                     entry['ipts'] = entry.pop('name')
-                    entry['date'] = dateparse.parse_datetime(entry['latest']['created'])
+                    entry['modified'] = dateparse.parse_datetime(entry['latest']['modified'])
+                    entry.update(self.experiments_specific(entry))
                     result.append(entry)
             except KeyError as this_exception:
                 logger.exception(this_exception)
@@ -156,7 +119,55 @@ class SNS(Catalog):
         # logger.debug(pformat(result))
         return result
 
+    def runs_specific(self, entry):
+        '''
+        '''
+        return {}
+    
+    def runs(self, ipts, exp=None, projection=[]):
+        '''
 
+
+        '''
+        if exp is None:
+            response = self.catalog.runs(self.instrument, ipts, projection=projection)    
+        else:
+            response = self.catalog.runs(self.instrument, ipts, exp, projection=projection)
+
+        # logger.debug("Raw Response from Communication: %s:\n%s", instrument, pformat(response))
+        result = []
+        
+        if response is not None:
+            for entry in response:
+                elem = {}
+                elem['location'] = entry['location']
+                elem['modified'] = dateparse.parse_datetime(entry['modified'])
+                elem.update(self.runs_specific(entry))
+                result.append(elem)
+        return result
+    
+    @abstractmethod
+    def runs(self, ipts, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def run(self, ipts, *args, **kwargs):
+        pass
+
+
+class SNS(Catalog):
+    '''
+    '''
+    # Some of the NeXus files don't have an entry as first group
+
+    RUNS_ENTRY = 'entry'
+    
+
+    def __init__(self, *args, **kwargs):
+        '''
+        '''
+        super().__init__(*args, **kwargs) 
+        self.catalog = SNSCom(self.request)
 
     def runs(self, ipts, *args, **kwargs):
         '''
@@ -166,8 +177,8 @@ class SNS(Catalog):
         response = self.catalog.runs(self.instrument, ipts)
         # logger.debug("Raw Response from Communication: %s:\n%s", instrument, pformat(response))
         result = []
-        entry_name = self.RUNS_ENTRY_KEYWORD.get(
-            self.instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
+        entry_name = self.RUNS_ENTRY
+
         if response is not None:
             for entry in response:
                 elem = {}
@@ -217,6 +228,29 @@ class SNS(Catalog):
         return result
 
 
+class SNSReflectometry(SNS):
+    RUNS_ENTRY = 'entry-off_off',
+
+
+class SNSSANS(SNS):
+    pass
+
+
+class SNSSANSEQSANS(SNS):
+    
+    @staticmethod
+    def _runs(entry_name, entry):
+        elem = {}
+        try:
+            # frame_skipping=speed1 - frequency / 2.0) < 1.0
+            elem['is_frame_skipping'] = entry['metadata'][entry_name]['daslogs']['speed1']['average_value'] \
+                - entry['metadata'][entry_name]['daslogs']['frequency']['average_value'] / 2.0 < 1.0
+        except KeyError:
+            elem['is_frame_skipping'] = ""
+        return elem
+
+
+
 class HFIR(Catalog):
     '''
     '''
@@ -227,39 +261,16 @@ class HFIR(Catalog):
         super().__init__(*args, **kwargs) 
         self.catalog = HFIRCom(self.request)
 
-
-    def experiments(self,):
+    def experiments_specific(self, entry):
         '''
-        [{'exp': ['exp305',
-                'exp320',
-                'exp327',
-                'exp338',
-                'exp357',
-                'exp367',
-                'exp368',
-                'exp369',
-                'exp380'],
-        'ipts': 'IPTS-0000'},
-
+        For HFIR specific stuff happening for every entry in the
+        experiments list
         '''
-        response = self.catalog.experiments(self.instrument)
-        result = []
-        if response is not None:
-            try:
-                for entry in response:
-                    entry['ipts'] = entry.pop('name')
-                    entry['date'] = dateparse.parse_datetime(entry['latest']['created'])
-                    entry['exp'] = sorted([
-                            tag.split('/')[1] for tag in entry['tags']])
-                    result.append(entry)
-                    
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
-
-        # logger.debug(pformat(result))
-        return result
+        d = {}
+        if any(tag.startswith("spice") for tag in entry['tags']):
+            d['exp'] = sorted([
+                tag.split('/')[1] for tag in entry['tags']])
+        return d
 
     @staticmethod
     def _runs_elem_sans(entry):
