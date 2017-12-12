@@ -157,9 +157,26 @@ class Catalog(ABC):
                 result.append(elem)
         return result
 
-    @abstractmethod
-    def run(self, ipts, *args, **kwargs):
-        pass
+    #
+    # RUN
+    #
+     
+    def run_specific(self, entry):
+        '''
+        '''
+        return {}
+
+
+    def run(self, ipts, file_location):
+        '''
+
+        '''
+        response = self.catalog.run(self.instrument, ipts, file_location)
+        elem = {}
+        if response:
+            elem['location'] = response['location']
+            elem.update(self.run_specific(response))
+        return elem
 
 
 ################################################################################
@@ -207,31 +224,13 @@ class SNS(Catalog):
         return elem
 
 
-    def run(self, ipts, file_location):
+    def run_specific(self, entry):
         '''
-
         '''
-        response = self.catalog.run(self.instrument, ipts, file_location)
+        elem = {}
+        elem['metadata'] = entry['metadata'][self.RUNS_ENTRY]
+        return elem
 
-        logger.debug("Getting run details for %s %s -> %s", self.instrument, ipts, file_location)
-
-        if response is not None:
-            try:
-                entry = response
-                result = dict(
-                    {
-                        # subset
-                        k: entry[k] for k in ('location',)
-
-                    }, **{
-                        'metadata': entry['metadata'][self.RUNS_ENTRY],
-                    })
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
-        # This solves de None / NaN conversion
-        return result
 
 
 class SNSReflectometry(SNS):
@@ -324,59 +323,14 @@ class HFIR(Catalog):
             logger.exception(this_exception)
         except IndexError as this_exception:
             logger.exception(this_exception)
-        return elem    
+        return elem
 
-
-    def _data(self, filename):
+    def run_specific(self, entry):
         '''
-        Parses the HFIR SANS XML file and extracts the detector data
         '''
-        res = {}
-        logger.debug("Parsing: {}.".format(filename))
-        p = Parser(filename)
-        if p.is_valid():
-            data_main_detector = p.getData("Data/Detector")
-            data_wing_detector = p.getData("Data/DetectorWing")
-            res['Detector'] = data_main_detector.tolist()
-            if data_wing_detector is not None:
-                res['DetectorWing'] = data_wing_detector.tolist()
-        return res
-
-    def run_info(self, ipts, file_location):
-        '''
-        Called by function run
-        Only deals with the metadata
-        '''
-        response = self.catalog.run(self.instrument, ipts, file_location)
-        result = None
-        if response is not None:
-            try:
-                entry = response
-                result = dict(
-                    {
-                        # subset
-                        k: entry[k] for k in ('location', 'thumbnails')
-                    }, **{
-                        # Metadata here:
-                        'filename': entry['metadata']['spicerack']['@filename'] if entry['metadata'].get('spicerack') else None,
-                        'metadata': entry['metadata']['spicerack']['header'] if entry['metadata'].get('spicerack') else  entry['metadata'],
-                        'sample_info': entry['metadata']['spicerack']['sample_info'] if entry['metadata'].get('spicerack') else None,
-                    })
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
-        return result
-
-    def run(self, ipts, file_location):
-        '''
-        Gets run_info (metadata) and adds the data for plotting
-        '''
-        run_info = self.run_info(ipts, file_location)
-        if run_info.get('thumbnails'):
-            run_info.pop('thumbnails', None) # remove the thumbnails
-            run_info['data'] = self._data(file_location)
-        return run_info
+        elem = {}
+        elem['metadata'] = entry['metadata']
+        return elem
 
 
 class HFIRSANS(HFIR):
@@ -493,6 +447,57 @@ class HFIRSANS(HFIR):
 
         # logger.debug(pformat(subset3))
         return list(empty.keys()), [list(d.values()) for d in subset3]
+
+    def _data(self, filename):
+        '''
+        Parses the HFIR SANS XML file and extracts the detector data
+        '''
+        res = {}
+        logger.debug("Parsing: {}.".format(filename))
+        p = Parser(filename)
+        if p.is_valid():
+            data_main_detector = p.getData("Data/Detector")
+            data_wing_detector = p.getData("Data/DetectorWing")
+            res['Detector'] = data_main_detector.tolist()
+            if data_wing_detector is not None:
+                res['DetectorWing'] = data_wing_detector.tolist()
+        return res
+
+    def run_info(self, ipts, file_location):
+        '''
+        Called by function run
+        Only deals with the metadata
+        '''
+        response = self.catalog.run(self.instrument, ipts, file_location)
+        result = None
+        if response is not None:
+            try:
+                entry = response
+                result = dict(
+                    {
+                        # subset
+                        k: entry[k] for k in ('location', 'thumbnails')
+                    }, **{
+                        # Metadata here:
+                        'filename': entry['metadata']['spicerack']['@filename'] if entry['metadata'].get('spicerack') else None,
+                        'metadata': entry['metadata']['spicerack']['header'] if entry['metadata'].get('spicerack') else  entry['metadata'],
+                        'sample_info': entry['metadata']['spicerack']['sample_info'] if entry['metadata'].get('spicerack') else None,
+                    })
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
+        return result
+
+    def run(self, ipts, file_location):
+        '''
+        Gets run_info (metadata) and adds the data for plotting
+        '''
+        run_info = self.run_info(ipts, file_location)
+        if run_info.get('thumbnails'):
+            run_info.pop('thumbnails', None) # remove the thumbnails
+            run_info['data'] = self._data(file_location)
+        return run_info
 
 
 class HFIRTAS(HFIR):
