@@ -16,8 +16,7 @@
         <li><a href="{% url 'catalog:list_runs' ipts exp %}">{{ipts}} :: {{exp}} </a></li>        
         {%else%}
         <li><a href="{% url 'catalog:list_runs' ipts %}">{{ipts}}</a></li>        
-        {%endif%}
-        
+        {%endif%}        
 		<li class="active">{{run.location}}</li>
     </ol>
 </div>

@@ -1,6 +1,0 @@
-{"access_token": "EvTTj4MToRnfpgTjkfe5HILQJCktTQ",
-"expires_in": 3600,
-"scope": "api:read",
-"token_type": "Bearer",
-"refresh_token": "ND1j5DxkOdK314dmJA08rKm87By313"}
-

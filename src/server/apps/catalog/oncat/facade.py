@@ -88,7 +88,9 @@ class Catalog(ABC):
                 q.append(child)
         return out
 
-    
+    #
+    # Experiments
+    #
     def experiments_specific(self, entry):
         '''
         This will update the experiments return list of dictionaries
@@ -119,20 +121,29 @@ class Catalog(ABC):
         # logger.debug(pformat(result))
         return result
 
+    #
+    # RUNS
+    #
+    RUNS_PROJECTION = []
+
     def runs_specific(self, entry):
         '''
         '''
         return {}
     
-    def runs(self, ipts, exp=None, projection=[]):
+    def runs(self, ipts, exp=None):
         '''
 
 
         '''
         if exp is None:
-            response = self.catalog.runs(self.instrument, ipts, projection=projection)    
+            response = self.catalog.runs(self.instrument, ipts,
+                                         projection=self.RUNS_PROJECTION,
+                                         extensions=self.RUNS_EXTENSIONS)
         else:
-            response = self.catalog.runs(self.instrument, ipts, exp, projection=projection)
+            response = self.catalog.runs(self.instrument, ipts, exp,
+                                         projection=self.RUNS_PROJECTION,
+                                         extensions=self.RUNS_EXTENSIONS)
 
         # logger.debug("Raw Response from Communication: %s:\n%s", instrument, pformat(response))
         result = []
@@ -145,15 +156,17 @@ class Catalog(ABC):
                 elem.update(self.runs_specific(entry))
                 result.append(elem)
         return result
-    
-    @abstractmethod
-    def runs(self, ipts, *args, **kwargs):
-        pass
 
     @abstractmethod
     def run(self, ipts, *args, **kwargs):
         pass
 
+
+################################################################################
+#
+# SNS
+#
+################################################################################
 
 class SNS(Catalog):
     '''
@@ -161,7 +174,19 @@ class SNS(Catalog):
     # Some of the NeXus files don't have an entry as first group
 
     RUNS_ENTRY = 'entry'
+
+    RUNS_PROJECTION = [
+        'location',
+        'modified',
+        'metadata.entry.run_number',
+        'metadata.entry.title',
+        'metadata.entry.start_time',
+        'metadata.entry.end_time',
+        'metadata.entry.duration',
+        'metadata.entry.total_counts',
+    ]
     
+    RUNS_EXTENSIONS = ['.nxs', '.nxs.h5']
 
     def __init__(self, *args, **kwargs):
         '''
@@ -169,33 +194,18 @@ class SNS(Catalog):
         super().__init__(*args, **kwargs) 
         self.catalog = SNSCom(self.request)
 
-    def runs(self, ipts, *args, **kwargs):
+
+    def runs_specific(self, entry):
         '''
-
-
         '''
-        response = self.catalog.runs(self.instrument, ipts)
-        # logger.debug("Raw Response from Communication: %s:\n%s", instrument, pformat(response))
-        result = []
-        entry_name = self.RUNS_ENTRY
+        elem = {}
+        elem['metadata'] = {
+            (key): (value if value is not None else "") for key, value \
+                in entry['metadata'][self.RUNS_ENTRY].items()
+        }
+        elem['title'] = elem['metadata']['title']
+        return elem
 
-        if response is not None:
-            for entry in response:
-                elem = {}
-                elem['location'] = entry['location']
-                elem['modified'] = dateparse.parse_datetime(entry['modified'])
-                elem['metadata'] = {
-                    (key): (value if value is not None else "") for key, value in entry['metadata'][entry_name].items()
-                }
-                elem['title'] = elem['metadata']['title']
-                specific_func = self.RUNS_PARSE_FUNCS.get(self.instrument)
-                if specific_func:
-                    elem.update(specific_func.__func__(entry_name, entry))
-                result.append(elem)
-
-
-        # logger.debug("Response sent to view for Get Run %s:\n%s", instrument, pformat(result))
-        return result
 
     def run(self, ipts, file_location):
         '''
@@ -203,12 +213,8 @@ class SNS(Catalog):
         '''
         response = self.catalog.run(self.instrument, ipts, file_location)
 
-        entry_name = self.RUNS_ENTRY_KEYWORD.get(
-            self.instrument,  self.RUNS_ENTRY_KEYWORD['DEFAULT'])
-        result = None
-
         logger.debug("Getting run details for %s %s -> %s", self.instrument, ipts, file_location)
-        logger.debug(entry_name)
+
         if response is not None:
             try:
                 entry = response
@@ -218,7 +224,7 @@ class SNS(Catalog):
                         k: entry[k] for k in ('location',)
 
                     }, **{
-                        'metadata': entry['metadata'][entry_name],
+                        'metadata': entry['metadata'][self.RUNS_ENTRY],
                     })
             except KeyError as this_exception:
                 logger.exception(this_exception)
@@ -229,8 +235,19 @@ class SNS(Catalog):
 
 
 class SNSReflectometry(SNS):
-    RUNS_ENTRY = 'entry-off_off',
-
+    
+    # RUNS_ENTRY = 'entry'
+    
+    RUNS_PROJECTION = [
+        'location',
+        'modified',
+        'metadata.entry.run_number',
+        'metadata.entry.title',
+        'metadata.entry.start_time',
+        'metadata.entry.end_time',
+        'metadata.entry.duration',
+        'metadata.entry.total_counts',
+    ]
 
 class SNSSANS(SNS):
     pass
@@ -238,22 +255,44 @@ class SNSSANS(SNS):
 
 class SNSSANSEQSANS(SNS):
     
-    @staticmethod
-    def _runs(entry_name, entry):
-        elem = {}
+    RUNS_PROJECTION = [
+        'location',
+        'modified',
+        'metadata.entry.run_number',
+        'metadata.entry.title',
+        'metadata.entry.start_time',
+        'metadata.entry.end_time',
+        'metadata.entry.duration',
+        'metadata.entry.total_counts',
+        'metadata.entry.daslogs.detectorz.average_value',
+        'metadata.entry.daslogs.lambdarequest.average_value',
+        'metadata.entry.daslogs.frequency.average_value',
+        'metadata.entry.daslogs.speed1.average_value',
+    ]
+
+    def runs_specific(self, entry):
+        elem = super().runs_specific(entry)
         try:
             # frame_skipping=speed1 - frequency / 2.0) < 1.0
-            elem['is_frame_skipping'] = entry['metadata'][entry_name]['daslogs']['speed1']['average_value'] \
-                - entry['metadata'][entry_name]['daslogs']['frequency']['average_value'] / 2.0 < 1.0
+            elem['is_frame_skipping'] = entry['metadata'][self.RUNS_ENTRY]['daslogs']['speed1']['average_value'] \
+                - entry['metadata'][self.RUNS_ENTRY]['daslogs']['frequency']['average_value'] / 2.0 < 1.0
         except KeyError:
             elem['is_frame_skipping'] = ""
         return elem
 
 
+################################################################################
+#
+# HFIR
+#
+################################################################################
+
 
 class HFIR(Catalog):
     '''
     '''
+
+    RUNS_EXTENSIONS = ['.xml', '.dat']
 
     def __init__(self, *args, **kwargs):
         '''
@@ -272,8 +311,90 @@ class HFIR(Catalog):
                 tag.split('/')[1] for tag in entry['tags']])
         return d
 
-    @staticmethod
-    def _runs_elem_sans(entry):
+    
+    def runs_specific(self, entry):
+        elem = {}
+        try:
+            elem['title'] = entry['metadata']['scan_title']
+            elem['location'] = entry['location']
+            elem['modified'] = dateparse.parse_datetime(entry['modified'])
+            elem['filename'] = os.path.basename(entry['location'])
+            #elem['metadata'] = entry['metadata']
+        except KeyError as this_exception:
+            logger.exception(this_exception)
+        except IndexError as this_exception:
+            logger.exception(this_exception)
+        return elem    
+
+
+    def _data(self, filename):
+        '''
+        Parses the HFIR SANS XML file and extracts the detector data
+        '''
+        res = {}
+        logger.debug("Parsing: {}.".format(filename))
+        p = Parser(filename)
+        if p.is_valid():
+            data_main_detector = p.getData("Data/Detector")
+            data_wing_detector = p.getData("Data/DetectorWing")
+            res['Detector'] = data_main_detector.tolist()
+            if data_wing_detector is not None:
+                res['DetectorWing'] = data_wing_detector.tolist()
+        return res
+
+    def run_info(self, ipts, file_location):
+        '''
+        Called by function run
+        Only deals with the metadata
+        '''
+        response = self.catalog.run(self.instrument, ipts, file_location)
+        result = None
+        if response is not None:
+            try:
+                entry = response
+                result = dict(
+                    {
+                        # subset
+                        k: entry[k] for k in ('location', 'thumbnails')
+                    }, **{
+                        # Metadata here:
+                        'filename': entry['metadata']['spicerack']['@filename'] if entry['metadata'].get('spicerack') else None,
+                        'metadata': entry['metadata']['spicerack']['header'] if entry['metadata'].get('spicerack') else  entry['metadata'],
+                        'sample_info': entry['metadata']['spicerack']['sample_info'] if entry['metadata'].get('spicerack') else None,
+                    })
+            except KeyError as this_exception:
+                logger.exception(this_exception)
+            except IndexError as this_exception:
+                logger.exception(this_exception)
+        return result
+
+    def run(self, ipts, file_location):
+        '''
+        Gets run_info (metadata) and adds the data for plotting
+        '''
+        run_info = self.run_info(ipts, file_location)
+        if run_info.get('thumbnails'):
+            run_info.pop('thumbnails', None) # remove the thumbnails
+            run_info['data'] = self._data(file_location)
+        return run_info
+
+
+class HFIRSANS(HFIR):
+
+    RUNS_EXTENSIONS = ['.xml']
+
+    RUNS_PROJECTION = [
+        'location',
+        'modified',
+        'metadata.spicerack.@filename',
+        'metadata.spicerack.@end_time',
+        'metadata.spicerack.header',
+        'metadata.spicerack.sample_info',
+        'thumbnails',
+        'metadata.spicerack.motor_positions',
+    ]
+    
+    def runs_specific(self, entry):
         elem = {}
         try:
             elem['location'] = entry['location']
@@ -294,49 +415,20 @@ class HFIR(Catalog):
             logger.exception(this_exception)
         return elem
 
-    @staticmethod
-    def _runs_elem_tas(entry):
-        elem = {}
-        try:
-            elem['title'] = entry['metadata']['scan_title']
-            elem['location'] = entry['location']
-            elem['modified'] = dateparse.parse_datetime(entry['modified'])
-            elem['filename'] = os.path.basename(entry['location'])
-            #elem['metadata'] = entry['metadata']
-        except KeyError as this_exception:
-            logger.exception(this_exception)
-        except IndexError as this_exception:
-            logger.exception(this_exception)
-        return elem    
-
-    RUNS_ELEM_FUNC = {
-        'DEFAULT': _runs_elem_sans,
-        'CG2': _runs_elem_sans,
-        'CG3': _runs_elem_sans,
-        'CG4C': _runs_elem_tas,
-        'HB1': _runs_elem_tas,
-        'HB1A': _runs_elem_tas,
-        'HB3': _runs_elem_tas,
-    }
-
-    def runs(self, ipts, exp):
+    
+    def _parse_filename(self, filename):
         '''
-
+        filename of the form
+        BioSANS_exp379_scan0500_0001.xml'
+        return: instrument, exp number, scan number, frame number
         '''
-        response = self.catalog.runs(self.instrument, ipts, exp)
-        result = []
-        if response is not None:
-            # logger.debug("Response from comunication Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
-            for entry in response:
-                # This is the only way to call static methods in a dict
-                elem = self.RUNS_ELEM_FUNC.get(
-                    self.instrument, self.RUNS_ELEM_FUNC['DEFAULT']).__func__(entry)
-                result.append(elem)
-
-        # logger.debug("Response sent to view for Get Run %s %s %s:\n%s", instrument, ipts, exp, pformat(response))
-        return result
-
-
+        regex = r"(\w+)_exp(\d+)_scan(\d+)_(\d+)\.xml"
+        match = re.search(regex, filename)
+        if match:
+            return match.group(1), int(match.group(2)), int(match.group(3)), \
+                int(match.group(4))
+        else:
+            return None
 
     def runs_as_table(self, ipts, exp):
         '''
@@ -402,67 +494,10 @@ class HFIR(Catalog):
         # logger.debug(pformat(subset3))
         return list(empty.keys()), [list(d.values()) for d in subset3]
 
-    def _parse_filename(self, filename):
-        '''
-        filename of the form
-        BioSANS_exp379_scan0500_0001.xml'
-        return: instrument, exp number, scan number, frame number
-        '''
-        regex = r"(\w+)_exp(\d+)_scan(\d+)_(\d+)\.xml"
-        match = re.search(regex, filename)
-        if match:
-            return match.group(1), int(match.group(2)), int(match.group(3)), \
-                int(match.group(4))
-        else:
-            return None
 
-    def _data(self, filename):
-        '''
-        Parses the HFIR SANS XML file and extracts the detector data
-        '''
-        res = {}
-        logger.debug("Parsing: {}.".format(filename))
-        p = Parser(filename)
-        if p.is_valid():
-            data_main_detector = p.getData("Data/Detector")
-            data_wing_detector = p.getData("Data/DetectorWing")
-            res['Detector'] = data_main_detector.tolist()
-            if data_wing_detector is not None:
-                res['DetectorWing'] = data_wing_detector.tolist()
-        return res
+class HFIRTAS(HFIR):
 
-    def run_info(self, ipts, file_location):
-        '''
-        Called by function run
-        Only deals with the metadata
-        '''
-        response = self.catalog.run(self.instrument, ipts, file_location)
-        result = None
-        if response is not None:
-            try:
-                entry = response
-                result = dict(
-                    {
-                        # subset
-                        k: entry[k] for k in ('location', 'thumbnails')
-                    }, **{
-                        # Metadata here:
-                        'filename': entry['metadata']['spicerack']['@filename'] if entry['metadata'].get('spicerack') else None,
-                        'metadata': entry['metadata']['spicerack']['header'] if entry['metadata'].get('spicerack') else  entry['metadata'],
-                        'sample_info': entry['metadata']['spicerack']['sample_info'] if entry['metadata'].get('spicerack') else None,
-                    })
-            except KeyError as this_exception:
-                logger.exception(this_exception)
-            except IndexError as this_exception:
-                logger.exception(this_exception)
-        return result
+    RUNS_EXTENSIONS = ['.dat']
 
-    def run(self, ipts, file_location):
-        '''
-        Gets run_info (metadata) and adds the data for plotting
-        '''
-        run_info = self.run_info(ipts, file_location)
-        if run_info.get('thumbnails'):
-            run_info.pop('thumbnails', None) # remove the thumbnails
-            run_info['data'] = self._data(file_location)
-        return run_info
+    
+            

@@ -80,30 +80,6 @@ class HFIR(ONCat):
         'HB3': ['.dat'],
     }
 
-    RUNS_PROJECTIONS = {
-        'DEFAULT': [],  # all fields
-        'CG2': [
-            'location',
-            'modified',
-            'metadata.spicerack.@filename',
-            'metadata.spicerack.@end_time',
-            'metadata.spicerack.header',
-            'metadata.spicerack.sample_info',
-            'thumbnails',
-            'metadata.spicerack.motor_positions',
-        ],
-        'CG3': [
-            'location',
-            'modified',
-            'metadata.spicerack.@filename',
-            'metadata.spicerack.@end_time',
-            'metadata.spicerack.header',
-            'metadata.spicerack.sample_info',
-            'thumbnails',
-            'metadata.spicerack.motor_positions',
-        ]
-    }
-
     def __init__(self, request):
         super().__init__(request)
         self.facility = 'HFIR'
@@ -111,19 +87,15 @@ class HFIR(ONCat):
     def experiments(self, instrument):
         return super().experiments(self.facility, instrument)
 
-    def runs(self, instrument, ipts, exp):
+    def runs(self, instrument, ipts, exp, projection, extensions):
         
-        extensions = self.RUNS_EXTENSIONS.get(
-            instrument, self.RUNS_EXTENSIONS['DEFAULT'])
-
         params_json = {
             'facility': self.facility,
             'instrument': instrument,
             'experiment': ipts,
             'tags': ['spice/{}'.format(exp)],
             'exts': extensions,
-            'projection': self.RUNS_PROJECTIONS.get(
-                instrument, self.RUNS_PROJECTIONS['DEFAULT'])
+            'projection': projection,
         }
         return super().runs(params_json)
 
@@ -133,45 +105,7 @@ class HFIR(ONCat):
 
 class SNS(ONCat):
 
-    # Projection for RUNS. Define here the projection for SNS instruments.
-    # Otherwise default is used
-    RUNS_PROJECTIONS = {
-        'DEFAULT': [
-            'location',
-            'modified',
-            'metadata.entry.run_number',
-            'metadata.entry.title',
-            'metadata.entry.start_time',
-            'metadata.entry.end_time',
-            'metadata.entry.duration',
-            'metadata.entry.total_counts',
-        ],
-        'EQSANS': [
-            'location',
-            'modified',
-            'metadata.entry.run_number',
-            'metadata.entry.title',
-            'metadata.entry.start_time',
-            'metadata.entry.end_time',
-            'metadata.entry.duration',
-            'metadata.entry.total_counts',
-            'metadata.entry.daslogs.detectorz.average_value',
-            'metadata.entry.daslogs.lambdarequest.average_value',
-            'metadata.entry.daslogs.frequency.average_value',
-            'metadata.entry.daslogs.speed1.average_value',
-        ],
-        'REF_M': [
-            'location',
-            'modified',
-            'metadata.entry-off_off.run_number',
-            'metadata.entry-off_off.title',
-            'metadata.entry-off_off.start_time',
-            'metadata.entry-off_off.end_time',
-            'metadata.entry-off_off.duration',
-            'metadata.entry-off_off.total_counts',
-        ]
-    }
-
+    
 
     def __init__(self, request):
         super().__init__(request)
@@ -187,7 +121,7 @@ class SNS(ONCat):
         '''
         return super().experiments(self.facility, instrument)
 
-    def runs(self, instrument, ipts, extensions=['.nxs', '.nxs.h5']):
+    def runs(self, instrument, ipts, projection, extensions):
         '''
 
         '''
@@ -196,8 +130,7 @@ class SNS(ONCat):
             'instrument': instrument,
             'experiment': ipts,
             'exts': extensions,
-            'projection': self.RUNS_PROJECTIONS.get(
-                instrument, self.RUNS_PROJECTIONS['DEFAULT'])
+            'projection': projection,
         }
         return super().runs(params_json)
     
