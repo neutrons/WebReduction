@@ -59,7 +59,7 @@ class CatalogMixin(object):
         self.template
         Note that the method caling this must have self.template_name defined!!
         """
-        
+
         facility_name = self.facility.name.lower()
         instrument_name = self.instrument.name.lower()
 
@@ -90,7 +90,7 @@ class Runs(LoginRequiredMixin, CatalogMixin, TemplateView):
     List of runs for a given instrument
     '''
 
-    template_name = 'list_runs.html'    
+    template_name = 'list_runs.html'
 
     def get_context_data(self, **kwargs):
         ipts = kwargs['ipts']
@@ -109,7 +109,7 @@ class RunsAjax(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
 
     def get(self, request, *args, **kwargs):
-        
+
         ipts = kwargs['ipts']
         exp = kwargs.get('exp')
         logger.debug("Listing RunsAjax for: %s -> %s %s",
@@ -125,8 +125,24 @@ class RunsAjax(LoginRequiredMixin, CatalogMixin, TemplateView):
                 }),
                 'scan': r['metadata']['scan'],
                 'scan_title': r['metadata']['scan_title'],
-            } for r in runs
+            } for r in runs if 'metadata' in r
         ]
+
+        # runs_out = []
+        # for r in runs:
+        #     print(80*"*", r)
+        #     runs_out.append(
+        #         {
+        #             'url': reverse('catalog:run_file', kwargs={
+        #                 'ipts': ipts,
+        #                 'exp': exp,
+        #                 'filename': r['location'],
+        #             }),
+        #             'scan': r['metadata']['scan'],
+        #             'scan_title': r['metadata']['scan_title'],
+        #         }
+        #     )
+
         # logger.debug(pformat(iptss))
         return JsonResponse(runs_out, status=200, safe=False)
 
@@ -162,7 +178,7 @@ class RunFile(LoginRequiredMixin, CatalogMixin, TemplateView):
         ipts = kwargs['ipts']
         filename = kwargs['filename']
         logger.debug("RunFile: Fetching file: %s", filename)
-        
+
         all_groups_for_this_user = list(
             request.user.groups.values_list('name', flat=True))
 

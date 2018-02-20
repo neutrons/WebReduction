@@ -40,7 +40,7 @@ class Catalog(ABC):
         hfir = Catalog("HFIR")
         hfir_sans = Catalog("HFIR", "SANS")
         hfir_sans = Catalog(facility="HFIR", technique="SANS")
-        
+
         '''
 
         # Get the subclasses of Catalog
@@ -57,18 +57,18 @@ class Catalog(ABC):
                 return super(cls, subclass).__new__(subclass)
         raise Exception('Facility not supported: {}!'.format(
             facility+technique+instrument))
-    
+
     def __init__(self, facility, technique, instrument, request):
         self.facility = facility
         self.technique = technique
         self.instrument = instrument
         self.request = request
-    
+
     def __str__(self):
         return "Catalog for {} :: {} :: {}".format(
             self.facility, self.technique, self.instrument
         )
-    
+
     @staticmethod
     def subclasses(root):
         '''
@@ -76,7 +76,7 @@ class Catalog(ABC):
         level_order_tree_traversal
         (Google to know what this is)
         on the hierarchy tree of classes.
-        @return a list with all the classes types 
+        @return a list with all the classes types
         '''
         out = []
         q = []
@@ -130,7 +130,7 @@ class Catalog(ABC):
         '''
         '''
         return {}
-    
+
     def runs(self, ipts, exp=None):
         '''
 
@@ -147,7 +147,7 @@ class Catalog(ABC):
 
         # logger.debug("Raw Response from Communication: %s:\n%s", instrument, pformat(response))
         result = []
-        
+
         if response is not None:
             for entry in response:
                 elem = {}
@@ -160,7 +160,7 @@ class Catalog(ABC):
     #
     # RUN
     #
-     
+
     def run_specific(self, entry):
         '''
         '''
@@ -202,13 +202,13 @@ class SNS(Catalog):
         'metadata.entry.duration',
         'metadata.entry.total_counts',
     ]
-    
+
     RUNS_EXTENSIONS = ['.nxs', '.nxs.h5']
 
     def __init__(self, *args, **kwargs):
         '''
         '''
-        super().__init__(*args, **kwargs) 
+        super().__init__(*args, **kwargs)
         self.catalog = SNSCom(self.request)
 
 
@@ -234,9 +234,9 @@ class SNS(Catalog):
 
 
 class SNSReflectometry(SNS):
-    
+
     # RUNS_ENTRY = 'entry'
-    
+
     RUNS_PROJECTION = [
         'location',
         'modified',
@@ -253,7 +253,7 @@ class SNSSANS(SNS):
 
 
 class SNSSANSEQSANS(SNS):
-    
+
     RUNS_PROJECTION = [
         'location',
         'modified',
@@ -296,7 +296,7 @@ class HFIR(Catalog):
     def __init__(self, *args, **kwargs):
         '''
         '''
-        super().__init__(*args, **kwargs) 
+        super().__init__(*args, **kwargs)
         self.catalog = HFIRCom(self.request)
 
     def experiments_specific(self, entry):
@@ -310,7 +310,7 @@ class HFIR(Catalog):
                 tag.split('/')[1] for tag in entry['tags']])
         return d
 
-    
+
     def runs_specific(self, entry):
         elem = {}
         try:
@@ -318,7 +318,7 @@ class HFIR(Catalog):
             elem['location'] = entry['location']
             elem['modified'] = dateparse.parse_datetime(entry['modified'])
             elem['filename'] = os.path.basename(entry['location'])
-            #elem['metadata'] = entry['metadata']
+            elem['metadata'] = entry['metadata']
         except KeyError as this_exception:
             logger.exception(this_exception)
         except IndexError as this_exception:
@@ -347,7 +347,7 @@ class HFIRSANS(HFIR):
         'thumbnails',
         'metadata.spicerack.motor_positions',
     ]
-    
+
     def runs_specific(self, entry):
         elem = {}
         try:
@@ -369,7 +369,7 @@ class HFIRSANS(HFIR):
             logger.exception(this_exception)
         return elem
 
-    
+
     def _parse_filename(self, filename):
         '''
         filename of the form
@@ -504,5 +504,4 @@ class HFIRTAS(HFIR):
 
     RUNS_EXTENSIONS = ['.dat']
 
-    
-            
+

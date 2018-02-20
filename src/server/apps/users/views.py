@@ -203,24 +203,27 @@ class ProfileReductionUpdate(LoginRequiredMixin, SuccessMessageMixin,
     success_message = "Your Profile for the Reduction was updated successfully."
 
     def _fetch_iptss_from_the_catalog(self):
-        
-        facility = self.request.user.profile.facility
-        instrument = self.request.user.profile.instrument
-        iptss = Catalog(facility.name, self.request).experiments(
-                instrument.catalog_name)
+
+        iptss = Catalog(
+            facility=self.request.user.profile.instrument.facility.name,
+            technique=self.request.user.profile.instrument.technique,
+            instrument=self.request.user.profile.instrument.catalog_name,
+            request=self.request,
+        ).experiments()
+
         return iptss
 
     def _get_iptss_info(self):
         '''
         '''
         iptss = self._fetch_iptss_from_the_catalog()
-        
-        filtered_iptss = [{k: v for k, v in d.items()
-            if k in ['ipts', 'title', 'exp']} for d in iptss]
-       
-        iptss = [{'ipts': d['ipts'], 
-                  'exp' : [exp for exp in d.get('exp', []) if exp.startswith('exp')],
-                  'title' : "{} :: {}".format(d['ipts'], d['title']) }
+
+        filtered_iptss = [
+            {k: v for k, v in d.items() if k in ['ipts', 'title', 'exp']} for d in iptss]
+
+        iptss = [{'ipts': d['ipts'],
+                  'exp': [exp for exp in d.get('exp', []) if exp.startswith('exp')],
+                  'title': "{} :: {}".format(d['ipts'], d['title'])}
             for d in filtered_iptss ]
         return iptss
 
@@ -232,4 +235,4 @@ class ProfileReductionUpdate(LoginRequiredMixin, SuccessMessageMixin,
         context['iptss'] = self._get_iptss_info()
         logger.debug(pformat(context['iptss']))
         return context
-        
+

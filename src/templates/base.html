@@ -59,7 +59,7 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                
+
                 <ul class="nav navbar-nav">
 
                     <!-- This only shows if the user has selected an IPTS -->
@@ -79,7 +79,7 @@
                             <li><a href="{%if request.user.profile.instrument %}{% url 'sans:configuration_create' %}{% endif %}">New</a></li>
                         </ul>
                     </li>
-                    
+
                     <!-- Reduction -->
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th"></span> &nbsp;Reduction <span class="caret"></span></a>
@@ -89,7 +89,7 @@
                             <li><a href="{%if request.user.profile.instrument %}{% url 'sans:reduction_create' %}{% endif %}">New</a></li>
                         </ul>
                     </li>
-                    
+
                     <!-- Results -->
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-play"></span> &nbsp;Results <span class="caret"></span></a>
@@ -109,10 +109,10 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-wrench"></span> &nbsp;Tools <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a target="_blank" href='{% static "analysis/index.html" %}'>SANS Data Analysis</a></li>
+                            <li><a target="_blank" href='{% static "analysis/index.html" %}'>SANS/TAS Data Analysis</a></li>
                         </ul>
                     </li>
-                    
+
 
                 </ul>
 
@@ -137,7 +137,7 @@
                         </ul>
                     </li>
                 </ul>
-                
+
             </div>
             <!-- /.navbar-collapse -->
         </div>
@@ -155,7 +155,7 @@
     {% block messages %}
     <br/>
     <div class="container">
-        <!-- Messages usually comming from the form validation 
+        <!-- Messages usually comming from the form validation
              This will show up at the bottom of the page -->
         {% if messages %}
           {% for message in messages %} {% if message.tags %}
