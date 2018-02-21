@@ -141,7 +141,7 @@ find . -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" | xargs rm
 
 Clean up the database:
 ```
-psql -U reduction -d reduction -c "drop owned by reduction;" 
+psql -U reduction -d reduction -c "drop owned by reduction;"
 ```
 or:
 ```
@@ -156,7 +156,7 @@ Make migration and launch the Django server:
 ```sh
 ./manage.py makemigrations && \
 ./manage.py migrate && \
-./manage.py loaddata catalog && \
+./manage.py loaddata catalog jobs && \
 ./manage.py runserver 0.0.0.0:8000
 ```
 
