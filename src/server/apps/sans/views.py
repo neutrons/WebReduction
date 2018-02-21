@@ -7,7 +7,7 @@ from pprint import pformat
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
@@ -204,7 +204,7 @@ class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
 
     def get_object(self, queryset=None):
         '''
-        Overrires DetailView.get_object and 
+        Overrires DetailView.get_object and
         '''
         obj = self.model.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
@@ -308,10 +308,10 @@ class ConfigurationAssignUid(LoginRequiredMixin, ConfigurationMixin, DetailView)
 class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin,
                               DetailView):
     '''
-    
+
     '''
     template_name = 'sans/configuration_detail.html'
-    
+
     def get(self, request, *args, **kwargs):
         cloned_objs = self.model.objects.clone_and_assign_new_uids_based_on_ipts(
             kwargs['pk'], kwargs['ipts'])
