@@ -505,3 +505,9 @@ class HFIRTAS(HFIR):
     RUNS_EXTENSIONS = ['.dat']
 
 
+    def run_specific(self, entry):
+        '''
+        '''
+        elem = super().run_specific(entry)
+        elem['statistics'] = entry['statistics']
+        return elem
