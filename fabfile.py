@@ -167,7 +167,7 @@ def start(branch='master'):
 
     login = run('id -u -n')
     # gid = run('id -g')
-    
+
     # creates a group reduction for all the users running this and web
     # related users
     with settings(warn_only=True):
@@ -199,7 +199,7 @@ def start(branch='master'):
     # Activate the environment and install requirements
     with prefix('. ' + env.project_venv + '/bin/activate'):
         run("pip install -r {}".format(env.requirements_file))
-    
+
     # run('chmod -R u+rwX,g+rwX,o-rwX {}'.format(env.project_root))
 
 @task
@@ -208,8 +208,8 @@ def migrate():
     '''
     Make the Django migrations and load fixtures
     ATTENTION: Don't forget to put the .env in the project root!!!
-    and do: sudo chmod u=rw,g=rw,o= .env 
-    ''' 
+    and do: sudo chmod u=rw,g=rw,o= .env
+    '''
     with  prefix('. ' + env.project_venv + '/bin/activate'),\
             cd(env.project_src):
         # Collect all the static files
@@ -246,7 +246,7 @@ def start_daphne():
         sudo('systemctl daemon-reload')
         # This is to enable on boot
         sudo('systemctl enable daphne.service')
-        sudo('systemctl start daphne.service')
+        sudo('systemctl restart daphne.service')
 
 @task
 @apply_role
@@ -274,7 +274,7 @@ def start_runworker():
 
         sudo('systemctl daemon-reload')
         sudo('systemctl enable runworker.service')
-        sudo('systemctl start runworker.service')
+        sudo('systemctl restart runworker.service')
 
 @task
 @apply_role
@@ -288,7 +288,7 @@ def start_nginx():
     # To delete manualy this service:
     sudo systemctl stop nginx
     sudo systemctl disable nginx
-    sudo rm /lib/systemd/system/nginx.service 
+    sudo rm /lib/systemd/system/nginx.service
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
 
@@ -301,8 +301,8 @@ def start_nginx():
             env['nginx_conf_file'], context=env, backup=False, use_sudo=True)
         files.upload_template(env['nginx_service_template'],
             env['nginx_service_file'], context=env, backup=False, use_sudo=True)
-        
-        
+
+
         sudo('systemctl daemon-reload')
         # This is to enable on boot
         sudo('systemctl enable nginx.service')
@@ -313,11 +313,11 @@ def start_nginx():
 def start_redis():
     '''
     Start Redis Server
-    
+
     # To delete manualy this service:
     sudo systemctl stop redis
     sudo systemctl disable redis
-    sudo rm /lib/systemd/system/redis.service 
+    sudo rm /lib/systemd/system/redis.service
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
     '''
@@ -342,7 +342,7 @@ def start_celery():
     # To delete manualy this service:
     sudo systemctl stop celery
     sudo systemctl disable celery
-    sudo rm /lib/systemd/system/celery.service 
+    sudo rm /lib/systemd/system/celery.service
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
     '''
@@ -371,3 +371,17 @@ def full_deploy(branch='master'):
     start_redis()
     start_celery()
     start_nginx()
+
+@task
+@apply_role
+def update_python(branch='master'):
+    '''
+    Pulls from master and restart python workers
+
+    from a my pc do:
+    fab -f fabfile.py -R production update_python
+    '''
+    with cd(env.project_root):
+        run("git pull origin {}".format(branch))
+
+    sudo('systemctl restart runworker.service')
