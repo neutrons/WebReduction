@@ -63,7 +63,7 @@ class LoginView(FormView):
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
         user = authenticate(self.request, username=username, password=password)
-        if user is not None and not user.is_anonymous():
+        if user is not None and not user.is_anonymous:
             logger.debug("Authenticating user %s...", username)
             auth_login(self.request, user)
             logger.debug("User %s authenticated.", username)
@@ -85,7 +85,7 @@ class LoginView(FormView):
         If the user is logged in anf hits: /users/login
         Rather than show the login form, redirect it to index
         """
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             # Redirect to profile
             return redirect(reverse_lazy('index'))
         else:
