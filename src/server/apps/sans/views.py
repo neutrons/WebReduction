@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from pprint import pformat
 
-from django.shortcuts import render_to_response
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -12,6 +12,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
+from django.core import signing
 from django_remote_submission.models import Job, Server
 from django_remote_submission.tasks import LogPolicy, submit_job_to_server
 from django.urls import reverse
@@ -658,9 +659,12 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
                     interpreter=form.instance.script_interpreter,
                 )
                 form.instance.job = job
+
+                password_encrypted = self.request.session["password"]
+                password = signing.loads(password_encrypted)
                 submit_job_to_server.delay(
                     job.pk,
-                    password=self.request.session["password"],
+                    password=password,
                     log_policy=LogPolicy.LOG_LIVE,
                     store_results=["*.txt"],
                     remote=True,

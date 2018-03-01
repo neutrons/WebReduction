@@ -384,4 +384,8 @@ def update_python(branch='master'):
     with cd(env.project_root):
         run("git pull origin {}".format(branch))
 
+    with  prefix('. ' + env.project_venv + '/bin/activate'),\
+            cd(env.project_src):
+        run('python manage.py collectstatic --noinput')
+
     sudo('systemctl restart runworker.service')

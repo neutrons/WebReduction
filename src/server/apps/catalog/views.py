@@ -167,6 +167,23 @@ class RunDetail(LoginRequiredMixin, CatalogMixin, TemplateView):
         return context
 
 
+class RunDetailAjax(LoginRequiredMixin, CatalogMixin, TemplateView):
+    '''
+    Get the run detail but in ajax format
+    '''
+
+    def get(self, request, *args, **kwargs):
+
+        ipts = kwargs['ipts']
+        exp = kwargs.get('exp')
+        filename = kwargs['filename']
+        logger.debug('Getting run detail from catalog: %s %s %s %s',
+                     self.catalog, ipts, exp, filename)
+        run = self.catalog.run(ipts, filename)
+        run.pop('data', None)
+        return JsonResponse(run, status=200, safe=False)
+
+
 class RunFile(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
     Raw File for a run
@@ -183,6 +200,7 @@ class RunFile(LoginRequiredMixin, CatalogMixin, TemplateView):
             request.user.groups.values_list('name', flat=True))
 
         if ipts not in all_groups_for_this_user \
+                and self.instrument.ldap_group_name not in all_groups_for_this_user \
                 and settings.LDAP_ADMIN_GROUP not in all_groups_for_this_user:
             logger.error("User {} belongs to groups: {}."
                          " It has no permission to see {}.".format(
