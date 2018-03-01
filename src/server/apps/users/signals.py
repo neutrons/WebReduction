@@ -17,6 +17,7 @@ def build_avatar_link(sender, user, request, **kwargs):
         gravatar_url = GRAVATAR_URL+hashlib.md5(request.user.email.encode('utf-8')).hexdigest()+'?d=identicon'
         request.session['gravatar_url'] = gravatar_url
 
+# Signal sent when a user logs in successfully.
 user_logged_in.connect(build_avatar_link)
 
 # @receiver(post_save, sender=settings.AUTH_USER_MODEL)
