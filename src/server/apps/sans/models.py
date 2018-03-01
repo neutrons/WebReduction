@@ -171,7 +171,7 @@ class ReductionManager(models.Manager):
         obj.title += " (cloned)"
         obj.save()
         return obj
-    
+
     def to_json(self, pk):
         '''
         Gets this reduction object in json format

@@ -57,7 +57,6 @@ class UserProfileManager(models.Manager):
     use_for_related_fields = True
 
     def get_queryset(self):
-        logger.debug("QuerySet")
         return super(UserProfileManager, self).get_queryset()
 
 

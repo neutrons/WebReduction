@@ -394,7 +394,7 @@ class HFIRSANS(HFIR):
         '''
 
         # Let's make a rubset first
-        data = self.runs(self.instrument, ipts, exp)
+        data = self.runs(ipts, exp)
         subset = []
         for d in data:
             entry = OrderedDict()
@@ -408,7 +408,9 @@ class HFIRSANS(HFIR):
             entry["Sample Apert."] = d["metadata"]["sample_aperture_size"]
             entry["SDD"] = d["motor_positions"]["sdd"]
             entry["SSD"] = d["metadata"]["source_distance"]
-            entry["End"] = d["end_time"]
+            # We need this because the dict is going to be converted to JSON later
+            # And the dates have to in string format
+            entry["End"] = d['modified'].strftime('%Y-%m-%dT%H:%M:%S')
             entry["Thickness"] = d["metadata"]["sample_thickness"]
             entry["Sample"] = d["sample_info"] if d["sample_info"] != "" else None
             entry["Background"] = d["sample_background"] if d["sample_background"] != "" else None
@@ -445,7 +447,7 @@ class HFIRSANS(HFIR):
             empty2.update(d)
             subset3.append(empty2)
 
-        # logger.debug(pformat(subset3))
+
         return list(empty.keys()), [list(d.values()) for d in subset3]
 
     def _data(self, filename):

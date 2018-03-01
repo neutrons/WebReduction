@@ -71,7 +71,7 @@ class ReductionScriptForm(object):
     class Meta:
         fields = ['script_interpreter', 'script_execution_path', 'script']
         #exclude = ['user', 'instrument']
-        
+
 class RegionForm(object):
     def __init__(self, *args, **kwargs):
         super(RegionForm, self).__init__(*args, **kwargs)

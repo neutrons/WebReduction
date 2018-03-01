@@ -72,7 +72,7 @@
 
 
     <form method="post" action="" class="form-horizontal" onsubmit="return populateFormWithHotContents();">
-        
+
         <!-- The form part -->
         {{ formset.management_form }}
         <div class="well">
@@ -97,7 +97,7 @@
                     <div id="tab{{forloop.counter}}" class="tab-pane fade{{ forloop.first|yesno:' in active,'}}">
                         {% crispy f f.helper %}
                         <div class="help-block"></div><!-- vertical spaces -->
-                        <a href="#" class="btn btn-default pull-right" role="button" data-toggle="tooltip" 
+                        <a href="#" class="btn btn-default pull-right" role="button" data-toggle="tooltip"
                             title="Click to auto-populate the spreadsheet with info from ICat"><span class="glyphicon glyphicon-search"></span> Populate from Data Catalog</a>
                     </div>
                 {% endfor %}
@@ -161,7 +161,7 @@
                 </table>
             </div>
         </div>
-    </div>            
+    </div>
 </div>
 
 
@@ -208,7 +208,7 @@ function validateCellValue(hotInstance, TD, row, col, prop, value, cellPropertie
             value = null;
             Handsontable.renderers.TextRenderer.apply(this, arguments);
             return; // none of the valid choices: ignore the value!
-        }   
+        }
     }
 }
 
@@ -249,7 +249,7 @@ $.each(entriesSelectors, function (i, selector) {
     if (data == null) {
         // Note the key here and the name in the collumns below
         data = [{ name: null,
-                  thickness: null, 
+                  thickness: null,
                   sample_scattering: null,
                   sample_transmission: null,
                   backgroung_scattering: null,
@@ -337,7 +337,7 @@ function populateFormWithHotContents() {
             }
             // if all empties, delete this row
             else if (nAttrNull == Object.keys(thisRow).length){
-                // Splice(start, deleteCount) 
+                // Splice(start, deleteCount)
                 hotContents.splice(rowIdx, hotContents.length - rowIdx);
             }
         }
@@ -366,6 +366,7 @@ $('.nav-tabs a').on('shown.bs.tab', function (event) {
 
 // Sets the value from djnago into a js array
 var dataSet = JSON.parse("{{runs|escapejs}}");
+var header = "{{header|escapejs}}";
 // console.log(JSON.stringify(dataSet));
 // Make a datatable with icat contents
 $(document).ready(function () {
@@ -386,10 +387,10 @@ $(document).ready(function () {
         scrollCollapse: true,
         paging:         false,
         // For the headers to scroll in X
-        bPaginate: false, 
-        bFilter: false, 
-        sScrollX: "100%", 
-        sScrollXInner: "100%", 
+        bPaginate: false,
+        bFilter: false,
+        sScrollX: "100%",
+        sScrollXInner: "100%",
         bScrollCollapse: true,
         searching: true,
         //autoWidth: false,

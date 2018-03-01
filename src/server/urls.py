@@ -23,11 +23,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^users/', include('server.apps.users.urls', namespace='users')),
-    url(r'^catalog/', include('server.apps.catalog.urls', namespace='catalog')),
-    url(r'^sans/', include('server.apps.sans.urls', namespace='sans')),
-    url(r'^results/', include('server.apps.results.urls', namespace='results')),
-    url(r'^util/', include('server.util.urls', namespace='util')),
+    url(r'^users/', include(('server.apps.users.urls', 'users'), namespace='users', )),
+    url(r'^catalog/', include(('server.apps.catalog.urls', 'catalog'), namespace='catalog')),
+    url(r'^sans/', include(('server.apps.sans.urls', 'sans'), namespace='sans')),
+    url(r'^results/', include(('server.apps.results.urls', 'results'), namespace='results')),
+    url(r'^util/', include(('server.util.urls', 'util'), namespace='util')),
     # For smart_selects
     url(r'^chaining/', include('smart_selects.urls')),
     # Redirects all to Homepage

@@ -4,14 +4,15 @@ import os
 from datetime import datetime
 from pprint import pformat
 
-from django.shortcuts import render_to_response
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
+from django.core import signing
 from django_remote_submission.models import Job, Server
 from django_remote_submission.tasks import LogPolicy, submit_job_to_server
 from django.urls import reverse
@@ -204,7 +205,7 @@ class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
 
     def get_object(self, queryset=None):
         '''
-        Overrires DetailView.get_object and 
+        Overrires DetailView.get_object and
         '''
         obj = self.model.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
@@ -236,8 +237,10 @@ class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin,
         # This only gets users that have IPTS for this beamline
         this_instrument_ipts = Catalog(
             facility=self.request.user.profile.instrument.facility.name,
-            request=self.request).experiments(
-            self.request.user.profile.instrument.icat_name)
+            technique=self.request.user.profile.instrument.technique,
+            instrument=self.request.user.profile.instrument.catalog_name,
+            request=self.request
+        ).experiments()
         this_instrument_ipts = [d['ipts'] for d in this_instrument_ipts]
         # logger.debug(this_instrument_ipts)
         users_and_uids = []
@@ -279,9 +282,10 @@ class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin,
         # For now, I'm getting the IPTSs from ICAT
         this_instrument_ipts = Catalog(
             facility=self.request.user.profile.instrument.facility.name,
-            request=self.request).experiments(
-            instrument=self.request.user.profile.instrument.icat_name
-        )
+            technique=self.request.user.profile.instrument.technique,
+            instrument=self.request.user.profile.instrument.catalog_name,
+            request=self.request
+        ).experiments()
         logger.debug(this_instrument_ipts)
         context['object_list'] = [d['ipts'] for d in this_instrument_ipts]
         obj = self.model.objects.get(pk=kwargs['pk'])
@@ -308,10 +312,10 @@ class ConfigurationAssignUid(LoginRequiredMixin, ConfigurationMixin, DetailView)
 class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin,
                               DetailView):
     '''
-    
+
     '''
     template_name = 'sans/configuration_detail.html'
-    
+
     def get(self, request, *args, **kwargs):
         cloned_objs = self.model.objects.clone_and_assign_new_uids_based_on_ipts(
             kwargs['pk'], kwargs['ipts'])
@@ -416,15 +420,20 @@ class ReductionFormMixin(ReductionMixin):
         '''
         context = super(ReductionFormMixin, self).get_context_data(**kwargs)
         facility_name = self.request.user.profile.instrument.facility.name
-        instrument_icat_name = self.request.user.profile.instrument.icat_name
+        instrument_catalog_name = self.request.user.profile.instrument.catalog_name
         ipts = self.request.user.profile.ipts
         exp = self.request.user.profile.experiment
+
         logger.debug('ReductionFormMixin :: Populating the context with the \
                       catalog: %s %s %s %s',
-                     facility_name, instrument_icat_name, ipts, exp)
+                     facility_name, instrument_catalog_name, ipts, exp)
         try:
-            header, runs = Catalog(facility_name, self.request).runs_as_table(
-                instrument_icat_name, ipts, exp)
+            header, runs = Catalog(
+                facility=facility_name,
+                technique=self.request.user.profile.instrument.technique,
+                instrument=instrument_catalog_name,
+                request=self.request
+            ).runs_as_table(ipts, exp)
         except Exception as e:
             logger.warning("Catalog function get_runs_as_table failed %s", e)
             messages.error(self.request, "An exception occurred while getting \
@@ -650,9 +659,12 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
                     interpreter=form.instance.script_interpreter,
                 )
                 form.instance.job = job
+
+                password_encrypted = self.request.session["password"]
+                password = signing.loads(password_encrypted)
                 submit_job_to_server.delay(
                     job.pk,
-                    password=self.request.session["password"],
+                    password=password,
                     log_policy=LogPolicy.LOG_LIVE,
                     store_results=["*.txt"],
                     remote=True,

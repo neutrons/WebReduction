@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from natsort import natsorted
+from natsort import natsorted, natsort_key
+from django.db.models import F
 
 class Facility(models.Model):
     name = models.CharField(
@@ -113,7 +114,7 @@ class Instrument(models.Model):
         blank=True,
     )
 
-    visible_reduction= models.BooleanField(
+    visible_reduction = models.BooleanField(
         'instrument can do reductions',
         help_text='Whether the instrument can do reductions',
         default=False,
@@ -139,7 +140,10 @@ class Instrument(models.Model):
     objects = InstrumentManager()
 
     class Meta:
+        #
         ordering = ('beamline',)
+        # ordering = sorted([F('beamline')], key=natsort_key)
+
 
     def __str__(self):
         return "{} : {}".format(self.beamline, self.name)

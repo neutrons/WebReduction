@@ -28,10 +28,16 @@
     <p>Your Experiment is: <strong>{{ user.profile.experiment }}</strong>. </p>
     <p>Your groups are: </p>
     <ul>
-    	{% for group in user.groups.all %}
-    		<li>{{group}}</li>
+      {% for group in user.groups.all|dictsort:"name" %}
+        {% if 'team' in group.name %}
+          <li><strong>{{group}}</strong></li>
+        {% else %}
+          <li>{{group}}</li>
+        {% endif %}
+
+
     	{% endfor %}
-    	
+
     </ul>
   </div>
 

@@ -37,8 +37,8 @@ class ScriptBuilder(object):
         # Because the following is not part of the data
         data.update({
             "instrument_name": instrument.name,
-            "ipts_number": ipts.number,
-            "experiment_number": experiment.number,
+            "ipts_number": ipts,
+            "experiment_number": experiment,
             "data_file_path_template": instrument.data_file_path_template,
         })
         self.data = data

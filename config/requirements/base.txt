@@ -1,5 +1,5 @@
 # Django
-Django>=1.11.4
+Django>=2.0.2
 django-crispy-forms
 django-auth-ldap>=1.2.12
 
@@ -15,6 +15,7 @@ requests_oauthlib>=0.8.0
 
 # PostGres
 psycopg2>=2.6.1
+psycopg2-binary>=2.7.4
 
 # Remote job submission
 django-remote-submission>=1.2.1

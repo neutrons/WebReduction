@@ -28,8 +28,8 @@
 			"catalog_name": "CG3",
 			"ldap_group_name": "hfir_cg3_team",
 			"drive_path": "/HFIR/CG3",
-			"data_file_path_template": "/HFIR/CG3/IPTS-%(ipts_number)s/exp%(experiment_number)s/Datafiles/BioSANS_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml",
-			"reduction_path_template": "/HFIR/CG3/IPTS-%(ipts_number)s/exp%(experiment_number)s/Shared/Reduction",
+			"data_file_path_template": "/HFIR/CG3/%(ipts_number)s/%(experiment_number)s/Datafiles/BioSANS_%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml",
+			"reduction_path_template": "/HFIR/CG3/%(ipts_number)s/%(experiment_number)s/Shared/Reduction",
 			"visible_reduction": true,
 			"visible_catalog": true,
 			"facility": 1
@@ -46,8 +46,8 @@
 			"catalog_name": "CG2",
 			"ldap_group_name": "hfir_cg2_team",
 			"drive_path": "/HFIR/CG2",
-			"data_file_path_template": "/HFIR/CG2/IPTS-%(ipts_number)s/exp%(experiment_number)s/Datafiles/CG2_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml",
-			"reduction_path_template": "/HFIR/CG2/IPTS-%(ipts_number)s/exp%(experiment_number)s/Shared/Reduction",
+			"data_file_path_template": "/HFIR/CG2/%(ipts_number)s/%(experiment_number)s/Datafiles/CG2_%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml",
+			"reduction_path_template": "/HFIR/CG2/%(ipts_number)s/%(experiment_number)s/Shared/Reduction",
 			"visible_reduction": true,
 			"visible_catalog": true,
 			"facility": 1
