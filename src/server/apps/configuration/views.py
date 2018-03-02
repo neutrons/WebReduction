@@ -52,8 +52,8 @@ class ConfigurationMixin(LoginRequiredMixin):
 
     def dispatch(self, request, *args, **kwargs):
         '''
-        Overload dispacth in all subclasses.
-        Fisr method to be called in a View
+        ** Overload **
+        First method to be called in a View
         '''
 
         self.instrument_obj = self.request.user.profile.instrument
@@ -63,10 +63,11 @@ class ConfigurationMixin(LoginRequiredMixin):
 
     def get_template_names(self):
         """
-        Overload
+        ** Overload **
         Returns a list of priority templates to render. From specific to general.
-        facility/instrument/self.template
-        facility/self.template
+        technique/facility/instrument/self.template
+        technique/facility/self.template
+        technique/self.template
         self.template
         Note that the method caling this must have self.template_name defined!!
         """

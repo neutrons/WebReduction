@@ -16,10 +16,11 @@ logger = logging.getLogger(__name__)
 @login_required
 def dirlist(request):
     '''
+    Used by jqueryFileTree to list remote directories
     This wil be called by the server side file browser
     '''
     default_dir = request.user.profile.instrument.drive_path
-    
+
     r = ['<ul class="jqueryFileTree" style="display: none;">']
     try:
         r = ['<ul class="jqueryFileTree" style="display: none;">']
