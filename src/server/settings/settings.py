@@ -24,9 +24,8 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS',
-                         default=['localhost',
-                                  '127.0.0.1'])
+ALLOWED_HOSTS = env.list(
+    'ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 # Application definition
 
@@ -52,6 +51,8 @@ INSTALLED_APPS = [
     'server.apps.users',
     'server.apps.catalog',
     'server.apps.results',
+    'server.apps.configuration',
+    'server.apps.reduction',
 ]
 
 MIDDLEWARE = [

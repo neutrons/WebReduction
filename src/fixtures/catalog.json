@@ -330,7 +330,7 @@
 			"name": "HYSPEC",
 			"description": "Hybrid Spectrometer",
 			"beamline": "BL-14B",
-			"technique": "",
+			"technique": "Spectrometry",
 			"catalog_name": "HYS",
 			"ldap_group_name": "sns_hys_team",
 			"drive_path": "/SNS/HYS",
