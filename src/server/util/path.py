@@ -130,9 +130,13 @@ def import_class_from_module(module_root, facility_obj, instrument_obj, suffix):
         camel_case=True, separator="")
 
     for c in classes:
-        imp_class = _import_from(module_root, c)
-        if imp_class is not None:
+        logger.debug("import_class_from_module :: trying path: {}".format(c))
+        try:
+            imp_class = _import_from(module_root, c)
             return imp_class
+        except AttributeError:
+            pass
+
     return None
 
 

@@ -51,10 +51,9 @@ class ConfigurationMixin(object):
         self.instrument_obj = self.request.user.profile.instrument
         self.facility_obj = self.instrument_obj.facility
 
-        self.form_class = import_class(
-            self.facility_obj, self.instrument_obj, "ConfigurationForm",
-            prefix=["server", "apps", "configuration"], suffix="forms.py")
-
+        self.form_class = import_class_from_module(
+            "server.apps.configuration.forms", self.facility_obj,
+            self.instrument_obj, "Configuration")
         self.model = import_class_from_module(
             "server.apps.configuration.models", self.facility_obj,
             self.instrument_obj, "Configuration")
@@ -88,10 +87,6 @@ class ConfigurationMixin(object):
         '''
         Make sure the user only accesses its configurations
         '''
-
-        #TODO: Put the code to get the self.model here
-
-
         return self.model.objects.filter(user=self.request.user)
 
 #
@@ -123,7 +118,7 @@ class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, CreateView):
     '''
     Detail of a configuration
     '''
-    template_name = 'sans/configuration_form.html'
+    template_name = 'configuration_form.html'
 
     success_url = reverse_lazy('sans:configuration_list')
 
