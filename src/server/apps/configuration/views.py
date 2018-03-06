@@ -107,7 +107,7 @@ class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixin, DetailView):
     '''
     Detail of a configuration
     '''
-    template_name = 'sans/configuration_detail.html'
+    template_name = 'configuration_detail.html'
 
     def get_queryset(self):
         queryset = super(ConfigurationDetail, self).get_queryset()
@@ -120,7 +120,7 @@ class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, CreateView):
     '''
     template_name = 'configuration_form.html'
 
-    success_url = reverse_lazy('sans:configuration_list')
+    success_url = reverse_lazy('configuration:configuration_list')
 
     def form_valid(self, form):
         """
@@ -128,8 +128,7 @@ class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, CreateView):
         """
         form.instance.user = self.request.user
         form.instance.instrument = get_object_or_404(
-            Instrument,
-            name=self.instrument_name)
+            Instrument, name=self.instrument_obj.name)
         return CreateView.form_valid(self, form)
 
 
@@ -137,14 +136,14 @@ class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, UpdateView):
     '''
     Detail of a configuration
     '''
-    template_name = 'sans/configuration_form.html'
-    success_url = reverse_lazy('sans:configuration_list')
+    template_name = 'configuration_form.html'
+    success_url = reverse_lazy('configuration:configuration_list')
 
 
 class ConfigurationDelete(LoginRequiredMixin, ConfigurationMixin, DeleteView):
 
-    template_name = 'sans/configuration_confirm_delete.html'
-    success_url = reverse_lazy('sans:configuration_list')
+    template_name = 'configuration_confirm_delete.html'
+    success_url = reverse_lazy('configuration:configuration_list')
 
     def get_object(self, queryset=None):
         """
@@ -168,7 +167,7 @@ class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
     Clones the Object Configuration. Keeps the same user
     '''
 
-    template_name = 'sans/configuration_detail.html'
+    template_name = 'configuration_detail.html'
 
     def get_object(self, queryset=None):
         '''
@@ -188,7 +187,7 @@ class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin,
     to a user.
     Context has 2 objects: the conf to assign and a list of uids + names
     '''
-    template_name = 'sans/configuration_list_uid.html'
+    template_name = 'configuration_list_uid.html'
 
     def get_context_data(self, **kwargs):
         '''
@@ -237,7 +236,7 @@ class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin,
     to all users to that IPTS.
     Context has 2 objects: the conf to assign and a list of ipts
     '''
-    template_name = 'sans/configuration_list_ipts.html'
+    template_name = 'configuration_list_ipts.html'
 
     def get_context_data(self, **kwargs):
         context = super(ConfigurationAssignListIpts,
@@ -266,7 +265,7 @@ class ConfigurationAssignUid(LoginRequiredMixin, ConfigurationMixin, DetailView)
     and assigns it to the user
     It will display the original Configuration
     '''
-    template_name = 'sans/configuration_detail.html'
+    template_name = 'configuration_detail.html'
 
     def get(self, request, *args, **kwargs):
         obj = self.model.objects.clone_and_assign_new_uid(
@@ -281,7 +280,7 @@ class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin,
     '''
 
     '''
-    template_name = 'sans/configuration_detail.html'
+    template_name = 'configuration_detail.html'
 
     def get(self, request, *args, **kwargs):
         cloned_objs = self.model.objects.clone_and_assign_new_uids_based_on_ipts(

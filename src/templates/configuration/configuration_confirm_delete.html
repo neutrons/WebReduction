@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'configuration:configuration_list' %}">Configuration</a></li>
+        <li class="active">{{ object }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+      <p>Are you sure you want to delete "{{ object }}"?</p>
+        <form action="" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Yes</button>
+            <a href="{% url 'configuration:configuration_detail' object.id %}"
+                id="cancel" name="cancel" class="btn btn-default">Cancel</a>
+        </form>
+
+  </div>
+</div>
+{% endblock %}

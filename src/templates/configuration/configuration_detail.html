@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block header %}
+{{ block.super }}
+<style>
+.list-group-item:hover{
+    background-color: #007833 !important;
+    border-color: #aed248;
+    color: white;
+}
+.list-group > li:nth-child(even) {
+  background: #f5f5f5;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'configuration:configuration_list' %}">Configuration</a></li>
+        <li class="active">{{ object }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+	<div class="page-header">
+        <h1>Configuration<small> {{ object }}</small></h1>
+    </div>
+
+    <div class="container-fluid">
+            <ul class="list-group">
+                {% for f in object.get_all_fields %}
+                	{% comment %}{% if value %}{% endcomment %}
+	                <li class="list-group-item">
+	                    <strong>{{f.label|capfirst}}</strong>
+	                    <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+	                </li>
+	                {% comment %}{% endif %}{% endcomment %}
+	            {% endfor %}
+            </ul>
+    </div>
+    <hr/>
+
+    <p>
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'configuration:configuration_update' object.pk %}"
+            title="Click to edit the details of this configuration.">Edit</a>
+
+        <a id="button_delete" class="btn btn-danger" data-toggle="tooltip" data-placement="top" href="{% url 'configuration:configuration_delete' object.pk %}"
+            title="Delete...">Delete...</a>
+
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'configuration:configuration_clone' object.pk %}"
+            title="Creates a copy of this configuration as you might need a few different parameters.">Duplicate</a>
+
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'configuration:configuration_assign_list_uid' object.pk %}"
+            title="If you would like to send this configuration to another user."><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Assign to a User</a>
+
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'configuration:configuration_assign_list_ipts' object.pk %}"
+            title="If you would like to send this configuration to another user."><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Assign to an IPTS</a>
+
+        <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top" onclick="window.history.back()"
+            href="#" title="Go back.">Cancel</a>
+    </p>
+</div>
+{% endblock %}
