@@ -1,9 +1,9 @@
 from django.db import models
 
-from server.apps.configuration.models import Configuration
+from .abstract import Configuration
 
 
-class HYSPECConfiguration(Configuration):
+class SpectrometrySnsHyspecConfiguration(Configuration):
 
     wavelength = models.DecimalField(
         u'Wavelength (\u212B)',
@@ -22,7 +22,6 @@ class HYSPECConfiguration(Configuration):
         null=True,
         help_text="If empty uses the value set in the data file."
     )
-
 
     @models.permalink
     def get_absolute_url(self):

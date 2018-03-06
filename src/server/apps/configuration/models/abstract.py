@@ -145,5 +145,3 @@ class Configuration(models.Model, ModelMixin):
     def __str__(self):
         return self.title
 
-
-from .spectrometry.sns.hyspec.models import HYSPECConfiguration

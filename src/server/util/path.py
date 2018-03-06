@@ -1,10 +1,15 @@
 import os.path
 from django.conf import settings
 import logging
-
+import importlib
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
+
+import doctest
+__test__ = {
+    'Doctest': doctest
+}
 
 def _build_lists(fields, prefix=[], suffix=None):
     '''
@@ -42,7 +47,8 @@ def _build_fields(facility_obj, instrument_obj):
 
 
 def _build_fields_with_separator(facility_obj, instrument_obj, prefix=[],
-                                 suffix=None, separator=os.path.sep):
+                                 suffix=None, separator=os.path.sep,
+                                 camel_case=False):
     '''
     >>> from server.apps.catalog.models import Facility, Instrument
     >>> facility = Facility.objects.get(name="HFIR")
@@ -58,6 +64,8 @@ def _build_fields_with_separator(facility_obj, instrument_obj, prefix=[],
     options = _build_lists(fields, prefix, suffix)
     # Remove the None
     options = [list(filter(None, l)) for l in options]
+    if camel_case:
+        options = [[i.title() for i in l] for l in options]
     return [separator.join(x) for x in options]
 
 
@@ -107,6 +115,25 @@ def import_class(facility_obj, instrument_obj, class_name, prefix=[],
     return None
 
 
+def import_class_from_module(module_root, facility_obj, instrument_obj, suffix):
+    '''
+    import modules
+    >>> from server.apps.catalog.models import Facility, Instrument
+    >>> facility = Facility.objects.get(name="SNS")
+    >>> instrument = Instrument.objects.get(name="HYSPEC")
+    >>> import_class_from_module("server.apps.configuration.models", facility, instrument, "Configuration")
+    server.apps.configuration.models.spectrometry_sns_hyspec.SpectrometrySnsHyspecConfiguration
+
+    '''
+    classes = _build_fields_with_separator(
+        facility_obj, instrument_obj, prefix=[], suffix=suffix,
+        camel_case=True, separator="")
+
+    for c in classes:
+        imp_class = _import_from(module_root, c)
+        if imp_class is not None:
+            return imp_class
+    return None
 
 
 

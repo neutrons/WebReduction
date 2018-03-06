@@ -23,7 +23,7 @@ from server.settings.env import env
 from server.scripts.builder import ScriptBuilder
 from server.util.formsets import FormsetMixin
 
-from server.util.path import import_class
+from server.util.path import import_class, import_class_from_module
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -54,10 +54,10 @@ class ConfigurationMixin(object):
         self.form_class = import_class(
             self.facility_obj, self.instrument_obj, "ConfigurationForm",
             prefix=["server", "apps", "configuration"], suffix="forms.py")
-        self.model = import_class(
-            self.facility_obj, self.instrument_obj,
-            self.instrument_obj.name+"Configuration",
-            prefix=["server", "apps", "configuration"], suffix="models.py")
+
+        self.model = import_class_from_module(
+            "server.apps.configuration.models", self.facility_obj,
+            self.instrument_obj, "Configuration")
 
         return super(ConfigurationMixin, self).dispatch(request, *args, **kwargs)
 

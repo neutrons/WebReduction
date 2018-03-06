@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from server.apps.catalog.models import Facility, Instrument
-from .path import build_fields
+from .path import _build_fields
 
 class TestPath(TestCase):
 
@@ -11,7 +11,7 @@ class TestPath(TestCase):
         facility = Facility.objects.get(name="HFIR")
         instrument = Instrument.objects.get(name="GPSANS")
         self.assertEqual(
-            build_fields(facility, instrument),
+            _build_fields(facility, instrument),
             ['sans', 'hfir', 'gpsans']
         )
 
