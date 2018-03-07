@@ -4,11 +4,6 @@
 {% block header %}
 {{ block.super }}
 <style>
-.list-group-item:hover{
-    background-color: #007833 !important;
-    border-color: #aed248;
-    color: white;
-}
 .list-group > li:nth-child(even) {
   background: #f5f5f5;
 }
@@ -37,7 +32,7 @@
                 {% for f in object.get_all_fields %}
                 	{% comment %}{% if value %}{% endcomment %}
 	                <li class="list-group-item">
-	                    <strong>{{f.label|capfirst}}</strong>
+	                    <strong>{{f.label|capfirst}}</strong>:
 	                    <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
 	                </li>
 	                {% comment %}{% endif %}{% endcomment %}

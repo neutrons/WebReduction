@@ -20,6 +20,10 @@ class SubmitWithCss(Submit):
 
 
 class Configuration(object):
+    '''
+    This is an abstract form configuration
+    Note that the `model` is missing thus this cannot be used
+    '''
 
     def __init__(self, *args, **kwargs):
         super(Configuration, self).__init__(*args, **kwargs)

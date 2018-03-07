@@ -1,8 +1,11 @@
-
-__all__ = []
-
 from .abstract import Configuration
-__all__.append('Configuration')
-
 from .spectrometry_sns_hyspec import SpectrometrySnsHyspecConfiguration
-__all__.append('SpectrometrySnsHyspecConfiguration')
+from .sans_hfir_biosans import SansHfirBiosansConfiguration
+from .sans_hfir_gpsans import SansHfirGpsansConfiguration
+
+__all__ = [
+    'Configuration',
+    'SpectrometrySnsHyspecConfiguration',
+    'SansHfirBiosansConfiguration',
+    'SansHfirGpsansConfiguration',
+]

@@ -1,29 +1,18 @@
-import json
 import logging
 import os
-from datetime import datetime
-from pprint import pformat
 
 
 from django.contrib import messages
+from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  TemplateView, UpdateView)
-from django.core import signing
-from django_remote_submission.models import Job, Server
-from django_remote_submission.tasks import LogPolicy, submit_job_to_server
-from django.urls import reverse
-from server.apps.catalog.oncat.facade import Catalog
+from django.views.generic import (
+    CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView)
 from server.apps.catalog.models import Instrument
 from server.apps.users.ldap_util import LdapSns
-from server.settings.env import env
-from server.scripts.builder import ScriptBuilder
-from server.util.formsets import FormsetMixin
-
-from server.util.path import import_class, import_class_from_module
+from server.apps.catalog.oncat.facade import Catalog
+from server.util.path import import_class_from_module
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -46,6 +35,7 @@ class ConfigurationMixin(object):
         '''
         ** Overload **
         First method to be called in a View
+        It sets the member variables
         '''
 
         self.instrument_obj = self.request.user.profile.instrument
@@ -166,17 +156,20 @@ class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
     '''
     Clones the Object Configuration. Keeps the same user
     '''
-
     template_name = 'configuration_detail.html'
 
     def get_object(self, queryset=None):
         '''
-        Overrires DetailView.get_object and
+        Overrides DetailView.get_object and
         '''
         obj = self.model.objects.clone(self.kwargs['pk'])
         self.kwargs['pk'] = obj.pk
-        messages.success(self.request, "Configuration '%s' cloned. New id is \
-            '%s'. Click Edit below to change it." % (obj, obj.pk))
+        messages.success(
+            self.request,
+            "Configuration {} cloned. The new id is  {}. "
+            "Click <a href='{}'> HERE </a> to change it.".format(
+                obj, obj.pk, reverse_lazy("configuration:configuration_update",
+                                          args=[obj.pk])))
         return obj
 
 
@@ -291,4 +284,3 @@ class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin,
                 "Configuration %s assigned to the user "
                 "%s. New configuration id = %s." % (obj, obj.user, obj.pk))
         return super(ConfigurationAssignIpts, self).get(request, *args, **kwargs)
-

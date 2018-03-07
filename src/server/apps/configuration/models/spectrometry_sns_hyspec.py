@@ -23,6 +23,12 @@ class SpectrometrySnsHyspecConfiguration(Configuration):
         help_text="If empty uses the value set in the data file."
     )
 
+    configuration_file = models.CharField(
+        max_length=256,
+        blank=True,
+        help_text="Server side file path"
+    )
+
     @models.permalink
     def get_absolute_url(self):
         return ('configuration:configuration_detail', [self.pk])
