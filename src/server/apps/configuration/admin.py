@@ -9,4 +9,4 @@ from .models import (
 # Register your models here.
 admin.site.register(SpectrometrySnsHyspecConfiguration)
 admin.site.register(SansHfirBiosansConfiguration)
-admin.site.register(SansHfirBiosansConfiguration)
+admin.site.register(SansHfirGpsansConfiguration)
