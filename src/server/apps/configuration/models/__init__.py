@@ -1,5 +1,3 @@
-
-
 from .abstract import Configuration
 from .spectrometry_sns_hyspec import SpectrometrySnsHyspecConfiguration
 from .sans_hfir_biosans import SansHfirBiosansConfiguration
