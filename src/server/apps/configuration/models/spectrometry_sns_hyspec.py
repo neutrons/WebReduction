@@ -31,4 +31,4 @@ class SpectrometrySnsHyspecConfiguration(Configuration):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('configuration:configuration_detail', [self.pk])
+        return ('configuration:detail', [self.pk])

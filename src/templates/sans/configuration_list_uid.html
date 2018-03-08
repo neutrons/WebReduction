@@ -1,7 +1,7 @@
  {% extends "base.html" %}
- 
+
  {% load staticfiles %}
- 
+
  {% block header %}
  {{ block.super }}
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
@@ -11,7 +11,7 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'sans:configuration_detail' object.id %}">{{object}}</a></li>
+        <li><a href="{% url 'sans:detail' object.id %}">{{object}}</a></li>
         <li class="active">User Assignement</li>
     </ol>
 </div>
@@ -19,7 +19,7 @@
 
 {% block content %}
 <div class="container">
-	
+
 	<div class="loading"><img style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" src="{% static 'imgs/spinner.gif' %}"></div>
     <div class="page-header">
         <h1>Configuration Assignement to User<small> {{object}}</small></h1>
@@ -39,7 +39,7 @@
                 <td>{{user.uid}}</td>
                 <td>{{user.name}}</td>
                 <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
-                    href="{% url 'sans:configuration_assign_uid' object.id user.uid %}"
+                    href="{% url 'sans:assign_uid' object.id user.uid %}"
                     title="Assign to this user.">Assign to this user</a></td>
             </tr>
             {% endfor %}
@@ -74,7 +74,7 @@
    					 $('div.loading').remove();
  				}
             });
-            
+
         });
     </script>
 {% endblock %}

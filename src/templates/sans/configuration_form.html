@@ -1,5 +1,5 @@
 {% extends "base.html" %}
- 
+
 {% load staticfiles %}
 
 {% load crispy_forms_tags %}
@@ -28,7 +28,7 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'sans:configuration_list' %}">Configuration</a></li>
+        <li><a href="{% url 'sans:list' %}">Configuration</a></li>
         <li class="active">{%if object %}{{object}}{% else %} new {% endif%}</li>
     </ol>
 </div>
@@ -106,8 +106,8 @@
 				dialog_server_side_browser.close();
 			})
 	 });
-	
-	// Add a button to fields ending with file 	
+
+	// Add a button to fields ending with file
 	$("input[name$='file']").wrap( "<div class='input-group'></div>" );
 	$("input[name$='file']").after("<span class='input-group-btn'> \
 		<button class='btn btn-primary server_side_browse_btn' \

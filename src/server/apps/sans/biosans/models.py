@@ -194,10 +194,10 @@ class BioSANSConfiguration(Configuration):
         null=True,
         help_text="Value only used for stiching. Only use for Low Q Region."
     )
-    
+
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:configuration_detail', [self.pk])
+        return ('sans:detail', [self.pk])
 
 
 class BioSANSReduction(Reduction):

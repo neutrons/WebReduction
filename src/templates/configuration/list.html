@@ -11,40 +11,47 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'configuration:configuration_detail' object.id %}">{{object}}</a></li>
-        <li class="active">IPTS Assignement</li>
+        <li><a href="">Configuration</a></li>
+        <li class="active">List</li>
     </ol>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-	<div class="loading"><img style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" src="{% static 'imgs/spinner.gif' %}"></div>
     <div class="page-header">
-        <h1>Configuration Assignement to IPTS<small> {{object}}</small></h1>
+        <h1>Configuration<small> list</small></h1>
     </div>
 
     <table id="table_configuration" class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>Integrated Proposal Tracking System (IPTS)</th>
-                <th></th>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Date created</th>
+                <th>Date modified</th>
             </tr>
         </thead>
         <tbody>
-            {% for ipts in object_list %}
+            {% for object in object_list %}
             <tr>
-                <td>{{ipts}}</td>
-                <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
-                    href="{% url 'configuration:configuration_assign_ipts' object.id ipts %}"
-                    title="Assign to the users of this IPTS.">Assign to the users of this IPTS</a></td>
+                <td>{{object.id}}</td>
+                <td>
+                <a href="{% url 'configuration:detail' object.id %}"
+                   title="Click to see the details of this configuration."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a>
+                </td>
+                <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>
+                <td>{{object.modified_date | date:"DATETIME_FORMAT" }}</td>
+
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr>
-                <th>Integrated Proposal Tracking System (IPTS)</th>
-                <th></th>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Date created</th>
+                <th>Date modified</th>
             </tr>
         </tfoot>
     </table>
@@ -59,16 +66,13 @@
         $(function () {
             $("#table_configuration").DataTable({
                 "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 0, 'asc' ]],
+                //"order": [[ 3, 'desc' ]],
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,
                 "ordering": true,
                 "info": true,
-                "autoWidth": true,
-    			"initComplete": function( settings, json ) {
-   					 $('div.loading').remove();
- 				}
+                "autoWidth": true
             });
         });
     </script>

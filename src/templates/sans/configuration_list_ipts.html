@@ -1,7 +1,7 @@
  {% extends "base.html" %}
- 
+
  {% load staticfiles %}
- 
+
  {% block header %}
  {{ block.super }}
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
@@ -11,7 +11,7 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'sans:configuration_detail' object.id %}">{{object}}</a></li>
+        <li><a href="{% url 'sans:detail' object.id %}">{{object}}</a></li>
         <li class="active">IPTS Assignement</li>
     </ol>
 </div>
@@ -36,7 +36,7 @@
             <tr>
                 <td>{{ipts}}</td>
                 <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
-                    href="{% url 'sans:configuration_assign_ipts' object.id ipts %}"
+                    href="{% url 'sans:assign_ipts' object.id ipts %}"
                     title="Assign to the users of this IPTS.">Assign to the users of this IPTS</a></td>
             </tr>
             {% endfor %}

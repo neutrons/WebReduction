@@ -11,43 +11,39 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'configuration:configuration_detail' object.id %}">{{object}}</a></li>
-        <li class="active">User Assignement</li>
+        <li><a href="{% url 'configuration:detail' object.id %}">{{object}}</a></li>
+        <li class="active">IPTS Assignement</li>
     </ol>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-
 	<div class="loading"><img style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" src="{% static 'imgs/spinner.gif' %}"></div>
     <div class="page-header">
-        <h1>Configuration Assignement to User<small> {{object}}</small></h1>
+        <h1>Configuration Assignement to IPTS<small> {{object}}</small></h1>
     </div>
 
-    <table id="table_uid" class="table table-bordered table-striped">
+    <table id="table_configuration" class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>Username</th>
-                <th>Name</th>
+                <th>Integrated Proposal Tracking System (IPTS)</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            {% for user in object_list %}
+            {% for ipts in object_list %}
             <tr>
-                <td>{{user.uid}}</td>
-                <td>{{user.name}}</td>
+                <td>{{ipts}}</td>
                 <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
-                    href="{% url 'configuration:configuration_assign_uid' object.id user.uid %}"
-                    title="Assign to this user.">Assign to this user</a></td>
+                    href="{% url 'configuration:assign_ipts' object.id ipts %}"
+                    title="Assign to the users of this IPTS.">Assign to the users of this IPTS</a></td>
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr>
-                <th>Username</th>
-                <th>Name</th>
+                <th>Integrated Proposal Tracking System (IPTS)</th>
                 <th></th>
             </tr>
         </tfoot>
@@ -61,9 +57,9 @@
 <!-- page script -->
 <script>
         $(function () {
-            $("#table_uid").DataTable({
+            $("#table_configuration").DataTable({
                 "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 1, 'asc' ]],
+                "order": [[ 0, 'asc' ]],
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,
@@ -74,7 +70,6 @@
    					 $('div.loading').remove();
  				}
             });
-
         });
     </script>
 {% endblock %}

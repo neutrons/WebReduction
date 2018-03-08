@@ -24,7 +24,7 @@ class GPSANSConfiguration(Configuration):
         null=True,
         help_text="If empty uses the value set in the data file."
     )
-    
+
     sample_detector_distance = models.DecimalField(
         'Sample Detector Distance (m)',
         max_digits=5,
@@ -33,32 +33,32 @@ class GPSANSConfiguration(Configuration):
         null=True,
         help_text="(in meters) If empty uses the value set in the data file."
     )
-    
+
     SOLID_ANGLE_CHOICES = (
         ("", "None"),
         ("detector_tubes=False, detector_wing=False", "Regular"),
         ("detector_tubes=Tubes, detector_wing=False", "Tubes"),
     )
-    
+
     solid_angle_correction = models.CharField(
         max_length=50,
         blank=True,
         choices=SOLID_ANGLE_CHOICES,
         default=SOLID_ANGLE_CHOICES[0][0],
     )
-    
+
     absolute_scale_factor = models.DecimalField(
         max_digits=3,
         decimal_places=2,
         default=1.0
     )
-    
+
     NORMALIZATION_CHOICES = (
         ("NoNormalization()", "None"),
         ("TimeNormalization()", "Time"),
         ("MonitorNormalization()", "Monitor"),
     )
-    
+
     normalization = models.CharField(
         max_length=50,
         choices=NORMALIZATION_CHOICES,
@@ -78,7 +78,7 @@ class GPSANSConfiguration(Configuration):
         max_length=256, blank=True, help_text="File path")
     mask_file = models.CharField(
         max_length=256, blank=True, help_text="File path")
-    
+
     sensitivity_file = models.CharField(
         max_length=256, blank=True, help_text="File path")
 
@@ -86,7 +86,7 @@ class GPSANSConfiguration(Configuration):
         max_digits=10, decimal_places=2, default=0.4)
     sensitivity_max = models.DecimalField(
         max_digits=10, decimal_places=2, default=2.0)
-    
+
     empty_beam_file = models.CharField(
         "Empty Beam Transmission file",
         max_length=256,
@@ -103,7 +103,7 @@ class GPSANSConfiguration(Configuration):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:configuration_detail', [self.pk])
+        return ('sans:detail', [self.pk])
 
 
 class GPSANSReduction(Reduction):
@@ -114,7 +114,7 @@ class GPSANSReduction(Reduction):
 
 class GPSANSRegion(Region):
     # We can not have ForeignKey for abstract models. It has to be here!!
-   
+
     reduction = models.ForeignKey(GPSANSReduction,
                                   on_delete=models.CASCADE,
                                   related_name="regions",

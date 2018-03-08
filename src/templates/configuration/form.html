@@ -28,7 +28,7 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'configuration:configuration_list' %}">Configuration</a></li>
+        <li><a href="{% url 'configuration:list' %}">Configuration</a></li>
         <li class="active">{%if object %}{{object}}{% else %} new {% endif%}</li>
     </ol>
 </div>

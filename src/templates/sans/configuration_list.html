@@ -1,7 +1,7 @@
  {% extends "base.html" %}
- 
+
  {% load staticfiles %}
- 
+
  {% block header %}
  {{ block.super }}
 <link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
@@ -37,12 +37,12 @@
             <tr>
                 <td>{{object.id}}</td>
                 <td>
-                <a href="{% url 'sans:configuration_detail' object.id %}"
+                <a href="{% url 'sans:detail' object.id %}"
                    title="Click to see the details of this configuration."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a>
                 </td>
                 <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>
                 <td>{{object.modified_date | date:"DATETIME_FORMAT" }}</td>
-                
+
             </tr>
             {% endfor %}
         </tbody>

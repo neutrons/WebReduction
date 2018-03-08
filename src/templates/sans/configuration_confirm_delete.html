@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
 {% load staticfiles %}
- 
+
 {% block breadcrumbs %}
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'sans:configuration_list' %}">Configuration</a></li>
+        <li><a href="{% url 'sans:list' %}">Configuration</a></li>
         <li class="active">{{ object }}</li>
     </ol>
 </div>
@@ -19,7 +19,7 @@
         <form action="" method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Yes</button>
-            <a href="{% url 'sans:configuration_detail' object.id %}"
+            <a href="{% url 'sans:detail' object.id %}"
                 id="cancel" name="cancel" class="btn btn-default">Cancel</a>
         </form>
 

@@ -197,5 +197,5 @@ class SansHfirBiosansConfiguration(Configuration):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('sans:configuration_detail', [self.pk])
+        return ('sans:detail', [self.pk])
 
