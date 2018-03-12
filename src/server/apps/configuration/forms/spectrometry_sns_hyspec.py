@@ -1,9 +1,9 @@
 from django.forms import ModelForm
 
-from ..models import SpectrometrySnsHyspecConfiguration as m
-from .abstract import Configuration
+from ..models import SpectrometrySnsHyspecConfiguration
+from .abstract import ConfigurationForm
 
 
-class SpectrometrySnsHyspecConfiguration(Configuration, ModelForm):
-    class Meta(Configuration.Meta):
-        model = m
+class SpectrometrySnsHyspecConfigurationForm(ConfigurationForm, ModelForm):
+    class Meta(ConfigurationForm.Meta):
+        model = SpectrometrySnsHyspecConfiguration

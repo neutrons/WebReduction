@@ -19,14 +19,14 @@ class SubmitWithCss(Submit):
         super(Submit, self).__init__(*args, **kwargs)
 
 
-class Configuration(object):
+class ConfigurationForm(object):
     '''
     This is an abstract form configuration
     Note that the `model` is missing thus this cannot be used
     '''
 
     def __init__(self, *args, **kwargs):
-        super(Configuration, self).__init__(*args, **kwargs)
+        super(ConfigurationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         # self.helper.form_class = 'form-inline'
         self.helper.form_class = 'form-horizontal'

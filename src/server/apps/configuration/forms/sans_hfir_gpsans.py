@@ -1,8 +1,8 @@
 from django.forms import ModelForm
 
-from ..models import SansHfirGpsansConfiguration as m
-from .abstract import Configuration
+from ..models import SansHfirGpsansConfiguration
+from .abstract import ConfigurationForm
 
-class SansHfirGpsansConfiguration(Configuration, ModelForm):
-    class Meta(Configuration.Meta):
-        model = m
+class SansHfirGpsansConfigurationForm(ConfigurationForm, ModelForm):
+    class Meta(ConfigurationForm.Meta):
+        model = SansHfirGpsansConfiguration

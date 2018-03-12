@@ -22,12 +22,16 @@ def _build_lists(fields, prefix=[], suffix=None):
     ['server', 'apps', 'configuration', None]]
 
     '''
+    if suffix is None:
+        suffix = []
+    elif type(suffix) == str:
+        suffix = [suffix]
 
     while len(fields) > 0:
-        l = [*prefix, *fields, suffix]
+        l = [*prefix, *fields, *suffix]
         fields.pop()
         return [l] + _build_lists(fields, prefix, suffix)
-    return [[*prefix, suffix]]
+    return [[*prefix, *suffix]]
 
 
 def _build_fields(facility_obj, instrument_obj):
@@ -130,13 +134,13 @@ def import_class_from_module(module_root, facility_obj, instrument_obj, suffix):
         camel_case=True, separator="")
 
     for c in classes:
-        logger.debug("import_class_from_module :: trying path: {}".format(c))
         try:
             imp_class = _import_from(module_root, c)
+            logger.debug("import_class_from_module :: GOT: {} {}".format(module_root, c))
             return imp_class
         except AttributeError:
             pass
-
+    logger.error("import_class_from_module :: Couldn't get any class. Last tried: {} {}".format(module_root, c))
     return None
 
 

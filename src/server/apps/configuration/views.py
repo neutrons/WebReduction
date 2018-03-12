@@ -43,7 +43,7 @@ class ConfigurationMixin(object):
 
         self.form_class = import_class_from_module(
             "server.apps.configuration.forms", self.facility_obj,
-            self.instrument_obj, "Configuration")
+            self.instrument_obj, ["Configuration", "Form"])
         self.model = import_class_from_module(
             "server.apps.configuration.models", self.facility_obj,
             self.instrument_obj, "Configuration")

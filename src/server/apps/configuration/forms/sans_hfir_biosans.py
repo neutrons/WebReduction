@@ -5,15 +5,15 @@ from pprint import pformat
 from crispy_forms.layout import HTML, Div
 from django.forms import ModelForm
 
-from ..models import SansHfirBiosansConfiguration as m
-from .abstract import Configuration
+from ..models import SansHfirBiosansConfiguration
+from .abstract import ConfigurationForm
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class SansHfirBiosansConfiguration(Configuration, ModelForm):
+class SansHfirBiosansConfigurationForm(ConfigurationForm, ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SansHfirBiosansConfiguration, self).__init__(*args, **kwargs)
+        super(SansHfirBiosansConfigurationForm, self).__init__(*args, **kwargs)
         self.helper.layout.insert(
             0,
             HTML("""<div class="alert alert-info">
@@ -36,7 +36,7 @@ class SansHfirBiosansConfiguration(Configuration, ModelForm):
         This is called when the form is submitted
         Any form validation must be done here!
         '''
-        cleaned_data = super(SansHfirBiosansConfiguration, self).clean()
+        cleaned_data = super(SansHfirBiosansConfigurationForm, self).clean()
         logger.debug(pformat(cleaned_data))
 
         # Validate Qs for stiching data sets
@@ -49,5 +49,5 @@ class SansHfirBiosansConfiguration(Configuration, ModelForm):
 
         return cleaned_data
 
-    class Meta(Configuration.Meta):
-        model = m
+    class Meta(ConfigurationForm.Meta):
+        model = SansHfirBiosansConfiguration
