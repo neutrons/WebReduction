@@ -1,11 +1,31 @@
-from .abstract import ReductionForm
-from .sans_hfir_biosans import SansHfirBiosansReductionForm
-from .sans_hfir_gpsans import SansHfirGpsansReductionForm
+from .abstract import (
+    ReductionForm, RegionForm, ReductionScriptForm,
+)
+from .sans_hfir_biosans import (SansHfirBiosansReductionForm,
+                                SansHfirBiosansReductionScriptForm,
+                                SansHfirBiosansRegionInlineFormSetCreate,
+                                SansHfirBiosansRegionInlineFormSetUpdate,
+                                )
+
+from .sans_hfir_gpsans import (SansHfirGpsansReductionForm,
+                               SansHfirGpsansReductionScriptForm,
+                               SansHfirGpsansRegionInlineFormSetCreate,
+                               SansHfirGpsansRegionInlineFormSetUpdate,
+                               )
 
 
 __all__ = [
     'ReductionForm',
-    'SpectrometrySnsHyspecReductionForm',
+    'RegionForm',
+    'ReductionScriptForm',
+    #
     'SansHfirBiosansReductionForm',
+    'SansHfirBiosansReductionScriptForm',
+    'SansHfirBiosansRegionInlineFormSetCreate',
+    'SansHfirBiosansRegionInlineFormSetUpdate',
+    #
     'SansHfirGpsansReductionForm',
+    'SansHfirGpsansReductionScriptForm',
+    'SansHfirGpsansRegionInlineFormSetCreate',
+    'SansHfirGpsansRegionInlineFormSetUpdate',
 ]

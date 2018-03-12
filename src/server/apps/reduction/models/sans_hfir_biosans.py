@@ -7,9 +7,10 @@ import re
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from server.apps.configuration.models import Configuration, SansHfirBiosansConfiguration
-from .abstract import Reduction, Region
+from server.apps.configuration.models import (Configuration,
+                                              SansHfirBiosansConfiguration)
 
+from .abstract import Reduction, Region
 
 
 class SansHfirBiosansReduction(Reduction):
@@ -27,7 +28,7 @@ class SansHfirBiosansRegion(Region):
                                   related_name="regions",
                                   related_query_name="region",)
 
-    configuration = models.ForeignKey(SansHfirBiosansConfiguration, 
+    configuration = models.ForeignKey(SansHfirBiosansConfiguration,
                                       on_delete=models.CASCADE,
                                       related_name="regions",
                                       related_query_name="region")

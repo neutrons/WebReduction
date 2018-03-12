@@ -77,7 +77,8 @@ class ReductionManager(models.Manager):
 
         obj.pk = None # setting to None, clones the object!
         obj.save()
-        obj.regions = new_regions
+        #obj.regions = new_regions
+        obj.regions.set(new_regions)
         obj.title += " (cloned)"
         obj.save()
         return obj

@@ -18,47 +18,29 @@ from django_remote_submission.tasks import LogPolicy, submit_job_to_server
 from django.urls import reverse
 from server.apps.catalog.oncat.facade import Catalog
 from server.util.formsets import FormsetMixin
-
+from server.util.path import import_class_from_module
+from server.scripts.builder import ScriptBuilder
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class SANSMixin(object):
+class ReductionMixin(object):
     '''
-    Base for all the Instruments
-    Because the code is the same, just the models or the form change based
-    on the instrument name, I decided to have all set has a ditionary...
-    Looking for better ideas...
     '''
 
-
-    instrument_name = None
-
-    def _set_instrument_name(self, request):
-        '''
-        Get instrument name from the session
-        '''
-        instrument = self.request.user.profile.instrument
-        self.instrument_name = instrument.name
-
-
-#
-# Mixins for Reduction
-#
-
-class ReductionMixin(SANSMixin):
-    '''
-    Sets everything for configuration
-    When the form_class is defined the model is only used if needed!
-    '''
+    # Django stuff
     model = None
     model_configuration = None
     form_class = None
     formset_class = None
 
+    # usefull
+    facility_obj = None
+    instrument_obj = None
+
     def dispatch(self, request,
-                 form_to_use = "reduction", # or  "reduction_script"
-                 formset_to_use = "region_formset_create", # or "region_formset_update"
+                 form_to_use=["Reduction", "Form"],
+                 formset_to_use=["Region", "Inline", "Form", "Set", "Create"],
                  *args, **kwargs):
         '''
         Overload
@@ -66,11 +48,31 @@ class ReductionMixin(SANSMixin):
         # if request.method == 'POST':
         #     logger.debug("ReductionMixin dispatch POST content:\n%s", pformat(request.POST.dict()))
 
-        self._set_instrument_name(request)
-        self.model = self.params[self.instrument_name]["models"]["reduction"]
-        self.model_configuration = self.params[self.instrument_name]["models"]["configuration"]
-        self.form_class = self.params[self.instrument_name]["forms"][form_to_use]
-        self.formset_class = self.params[self.instrument_name]["forms"][formset_to_use]
+        self.instrument_obj = self.request.user.profile.instrument
+        self.facility_obj = self.instrument_obj.facility
+
+        #  Models
+        self.model = import_class_from_module(
+            "server.apps.reduction.models", self.facility_obj,
+            self.instrument_obj, "Reduction")
+        logger.debug("Model = {}".format(self.model))
+
+        self.model_configuration = import_class_from_module(
+            "server.apps.configuration.models", self.facility_obj,
+            self.instrument_obj, "Configuration")
+        logger.debug("Model Configuration = {}".format(self.model_configuration))
+        
+        #  Forms
+        self.form_class = import_class_from_module(
+            "server.apps.reduction.forms", self.facility_obj,
+            self.instrument_obj, form_to_use)
+        logger.debug("Form = {}".format(self.form_class))
+
+        self.formset_class = import_class_from_module(
+            "server.apps.reduction.forms", self.facility_obj,
+            self.instrument_obj, formset_to_use)
+        logger.debug("FormSet = {}".format(self.formset_class))
+
         return super(ReductionMixin, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -86,9 +88,10 @@ class ReductionMixin(SANSMixin):
         configurations
         '''
         logger.debug("ReductionMixin get_formset")
-        formset = super(ReductionMixin,self).get_formset(form_class) #instantiate using parent
+        formset = super(ReductionMixin, self).get_formset(form_class)  # instantiate using parent
         for form in formset:
-            form.fields['configuration'].queryset = self.model_configuration.objects.filter(user = self.request.user)
+            form.fields['configuration'].queryset = self.model_configuration.objects.filter(
+                user=self.request.user)
         return formset
 
     def get_formset_kwargs(self):
@@ -109,7 +112,7 @@ class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
     List all Reduction.
     '''
-    template_name = 'sans/reduction_list.html'
+    template_name = 'reduction/list.html'
 
 
 class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
@@ -119,7 +122,7 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
     The entries are an hidden field : id="entries_hidden"
     Which are an Handsontable
     '''
-    template_name = 'sans/reduction_detail.html'
+    template_name = 'reduction/detail.html'
 
 
 class ReductionFormMixin(ReductionMixin):
@@ -176,8 +179,8 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
     '''
     Create a new entry!
     '''
-    template_name = 'sans/reduction_form.html'
-    success_url = reverse_lazy('sans:reduction_list')
+    template_name = 'reduction/form.html'
+    success_url = reverse_lazy('reduction:list')
 
     def form_valid(self, form, formset):
         """
@@ -190,8 +193,8 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
 
 class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
 
-    template_name = 'sans/reduction_confirm_delete.html'
-    success_url = reverse_lazy('sans:reduction_list')
+    template_name = 'reduction/confirm_delete.html'
+    success_url = reverse_lazy('reduction:list')
 
     def get_object(self, queryset=None):
         """
@@ -213,7 +216,7 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, UpdateView):
     Clones the Object Configuration. Keeps the same user
     '''
 
-    template_name = 'sans/reduction_detail.html'
+    template_name = 'reduction/detail.html'
 
     def get_object(self, queryset=None):
         obj = self.model.objects.clone(self.kwargs['pk'])
@@ -230,14 +233,14 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, UpdateView):
         '''
         super(ReductionClone, self).get(request, *args, **kwargs)
         return HttpResponseRedirect(
-            reverse('sans:reduction_update', kwargs={'pk': self.object.pk}))
+            reverse('reduction:update', kwargs={'pk': self.object.pk}))
 
 class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, UpdateView):
     '''
     Edit a Reduction (The spreadsheet)
     '''
-    template_name = 'sans/reduction_form.html'
-    success_url = reverse_lazy('sans:reduction_list')
+    template_name = 'reduction/form.html'
+    success_url = reverse_lazy('reduction:list')
 
     def dispatch(self, request, *args, **kwargs):
         return super(
@@ -245,7 +248,7 @@ class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Upda
             self
         ).dispatch(
             request,
-            formset_to_use="region_formset_update",
+            formset_to_use=["Region", "Inline", "Form", "Set", "Update"],
             *args,
             **kwargs
         )
@@ -266,7 +269,7 @@ class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Upda
             try:
                 request.POST['script'] = script_builder.build_script()
                 self.success_url = reverse_lazy(
-                    'sans:reduction_script',
+                    'reduction:script',
                     kwargs={'pk': kwargs['pk']},)
                 logger.debug("Generated script. Going to: %s", self.success_url)
             except Exception as e:
@@ -287,8 +290,8 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
     - Save it
     - Save it and submit the job to the cluster
     '''
-    template_name = 'sans/reduction_script_form.html'
-    success_url = reverse_lazy('sans:reduction_list')
+    template_name = 'reduction/script_form.html'
+    success_url = reverse_lazy('reduction:list')
 
     def dispatch(self, request, *args, **kwargs):
         '''
@@ -297,7 +300,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
         return super(
             ReductionScriptUpdate, self).dispatch(
                 request,
-                form_to_use="reduction_script",
+                form_to_use=["Reduction", "Script", "Form"],
                 *args, **kwargs)
 
     def get_object(self, queryset=None):
@@ -309,7 +312,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
         and add it to object shown on the form
         It does the same for sript path. It should work HFIR and SNS
         '''
-        logger.debug("From ReductionScriptUpdate *******************************")
+        logger.debug("ReductionScriptUpdate :: get_object")
         obj = super(ReductionScriptUpdate, self).get_object()
 
         # If we are generating the form fill in empty bits
@@ -354,11 +357,11 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
 
         if 'save' in self.request.POST:
             messages.success(self.request, "Reduction script saved.")
-            self.success_url = reverse_lazy('sans:reduction_detail',
+            self.success_url = reverse_lazy('reduction:detail',
                                             args=[self.kwargs['pk']])
         elif 'generate' in self.request.POST:
             messages.success(self.request, "Reduction script re-generated from scratch.")
-            self.success_url = reverse_lazy('sans:reduction_script',
+            self.success_url = reverse_lazy('reduction:script',
                                             args=[self.kwargs['pk']])
         else:
             try:

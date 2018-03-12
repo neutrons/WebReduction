@@ -1,20 +1,20 @@
-##########################################################################
-# BIOSANS
-##########################################################################
-
 import re
 
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from server.apps.configuration.models import Configuration, SansHfirGpsansConfiguration
+from server.apps.configuration.models import (Configuration,
+                                              SansHfirGpsansConfiguration)
+
 from .abstract import Reduction, Region
+
 
 class SansHfirGpsansReduction(Reduction):
 
     @models.permalink
     def get_absolute_url(self):
         return ('reduction:reduction_detail', [self.pk])
+
 
 class SansHfirGpsansRegion(Region):
     # We can not have ForeignKey for abstract models. It has to be here!!

@@ -135,10 +135,12 @@ def import_class_from_module(module_root, facility_obj, instrument_obj, suffix):
 
     for c in classes:
         try:
+            logger.debug("import_class_from_module :: Trying {} {}".format(module_root, c))
             imp_class = _import_from(module_root, c)
             logger.debug("import_class_from_module :: GOT: {} {}".format(module_root, c))
             return imp_class
         except AttributeError:
+            logger.debug("import_class_from_module :: Trying another...")
             pass
     logger.error("import_class_from_module :: Couldn't get any class. Last tried: {} {}".format(module_root, c))
     return None
