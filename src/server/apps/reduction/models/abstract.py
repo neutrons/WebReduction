@@ -168,31 +168,8 @@ class Region(models.Model, ModelMixin):
     This will be a formset from Reduction
     '''
 
-    empty_beam_run = models.CharField(
-        "Empty Beam Transmission",
-        max_length=128,
-        blank=True,
-        help_text="Use run number or file path. If empty, uses that of the Configuration."
-    )
-
-    beam_center_run = models.CharField(
-        "Beam Center",
-        max_length=128,
-        blank=True,
-        help_text="Use run number or file path. If empty, uses that of the Configuration."
-    )
-
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
-
-    comments = models.CharField(
-        max_length=256,
-        blank=True,
-        help_text="Any necessary comments..."
-    )
-
-    # This will be the json for sample / backgroun sample/transmission
-    entries = JSONField()
 
     # Manager
     objects = RegionManager()

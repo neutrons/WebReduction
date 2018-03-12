@@ -6,7 +6,8 @@ from django.db import models
 from server.apps.configuration.models import (Configuration,
                                               SansHfirGpsansConfiguration)
 
-from .abstract import Reduction, Region
+from .abstract import Reduction
+from .sans import SansRegion
 
 
 class SansHfirGpsansReduction(Reduction):
@@ -16,7 +17,7 @@ class SansHfirGpsansReduction(Reduction):
         return ('reduction:reduction_detail', [self.pk])
 
 
-class SansHfirGpsansRegion(Region):
+class SansHfirGpsansRegion(SansRegion):
     # We can not have ForeignKey for abstract models. It has to be here!!
 
     reduction = models.ForeignKey(SansHfirGpsansReduction,

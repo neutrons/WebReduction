@@ -5,8 +5,9 @@ from django.forms import ModelForm, inlineformset_factory
 
 from server.apps.configuration.models import SansHfirGpsansConfiguration
 
-from ..forms import ReductionForm, ReductionScriptForm, RegionForm
+from ..forms import ReductionForm, ReductionScriptForm
 from ..models import SansHfirGpsansReduction, SansHfirGpsansRegion
+from .sans import SansRegionForm
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -21,8 +22,8 @@ class SansHfirGpsansReductionScriptForm(ReductionScriptForm, ModelForm):
         model = SansHfirGpsansReduction
 
 
-class SansHfirGpsansRegionForm(RegionForm, ModelForm):
-    class Meta(RegionForm.Meta):
+class SansHfirGpsansRegionForm(SansRegionForm, ModelForm):
+    class Meta(SansRegionForm.Meta):
         model = SansHfirGpsansRegion
 
 

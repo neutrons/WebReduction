@@ -243,15 +243,11 @@ class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Upda
     success_url = reverse_lazy('reduction:list')
 
     def dispatch(self, request, *args, **kwargs):
-        return super(
-            ReductionUpdate,
-            self
-        ).dispatch(
-            request,
-            formset_to_use=["Region", "Inline", "Form", "Set", "Update"],
-            *args,
-            **kwargs
-        )
+        return super(ReductionUpdate, self).dispatch(
+                request,
+                formset_to_use=["Region", "Inline", "Form", "Set", "Update"],
+                *args, **kwargs
+            )
 
     def post(self, request, **kwargs):
         '''

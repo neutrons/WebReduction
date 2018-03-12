@@ -5,8 +5,9 @@ from django.forms import ModelForm, inlineformset_factory
 
 from server.apps.configuration.models import SansHfirBiosansConfiguration
 
-from ..forms import ReductionForm, ReductionScriptForm, RegionForm
+from ..forms import ReductionForm, ReductionScriptForm
 from ..models import SansHfirBiosansReduction, SansHfirBiosansRegion
+from .sans import SansRegionForm
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -21,8 +22,8 @@ class SansHfirBiosansReductionScriptForm(ReductionScriptForm, ModelForm):
         model = SansHfirBiosansReduction
 
 
-class SansHfirBiosansRegionForm(RegionForm, ModelForm):
-    class Meta(RegionForm.Meta):
+class SansHfirBiosansRegionForm(SansRegionForm, ModelForm):
+    class Meta(SansRegionForm.Meta):
         model = SansHfirBiosansRegion
 
 

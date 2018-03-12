@@ -10,7 +10,8 @@ from django.db import models
 from server.apps.configuration.models import (Configuration,
                                               SansHfirBiosansConfiguration)
 
-from .abstract import Reduction, Region
+from .abstract import Reduction
+from .sans import SansRegion
 
 
 class SansHfirBiosansReduction(Reduction):
@@ -20,7 +21,7 @@ class SansHfirBiosansReduction(Reduction):
         return ('reduction:reduction_detail', [self.pk])
 
 
-class SansHfirBiosansRegion(Region):
+class SansHfirBiosansRegion(SansRegion):
     # We can not have ForeignKey for abstract models. It has to be here!!
 
     reduction = models.ForeignKey(SansHfirBiosansReduction,
