@@ -13,6 +13,12 @@ from .sans_hfir_gpsans import (SansHfirGpsansReductionForm,
                                SansHfirGpsansRegionInlineFormSetUpdate,
                                )
 
+from .spectrometry_sns_hyspec import (
+    SpectrometrySnsHyspecReductionForm,
+    SpectrometrySnsHyspecReductionScriptForm,
+    SpectrometrySnsHyspecRegionInlineFormSetCreate,
+    SpectrometrySnsHyspecRegionInlineFormSetUpdate,
+)
 
 __all__ = [
     'ReductionForm',
@@ -28,4 +34,9 @@ __all__ = [
     'SansHfirGpsansReductionScriptForm',
     'SansHfirGpsansRegionInlineFormSetCreate',
     'SansHfirGpsansRegionInlineFormSetUpdate',
+    #
+    'SpectrometrySnsHyspecReductionForm',
+    'SpectrometrySnsHyspecReductionScriptForm',
+    'SpectrometrySnsHyspecRegionInlineFormSetCreate',
+    'SpectrometrySnsHyspecRegionInlineFormSetUpdate',
 ]

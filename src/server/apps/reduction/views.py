@@ -90,8 +90,10 @@ class ReductionMixin(object):
         logger.debug("ReductionMixin get_formset")
         formset = super(ReductionMixin, self).get_formset(form_class)  # instantiate using parent
         for form in formset:
-            form.fields['configuration'].queryset = self.model_configuration.objects.filter(
-                user=self.request.user)
+            # If the configuration is in the formsets (SANS Instruments)
+            if 'configuration' in form.fields:
+                form.fields['configuration'].queryset = self.model_configuration.objects.filter(
+                    user=self.request.user)
         return formset
 
     def get_formset_kwargs(self):
@@ -102,6 +104,29 @@ class ReductionMixin(object):
         kwargs = super(ReductionMixin, self).get_formset_kwargs()
 #         kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
         return kwargs
+    
+    def get_template_names(self):
+        """
+        ** Overload **
+        Returns a list of priority templates to render. From specific to general.
+        technique/facility/instrument/self.template
+        technique/facility/self.template
+        technique/self.template
+        self.template
+        Note that the method calling this must have self.template_name defined!!
+        """
+
+        facility_name = self.facility_obj.name.lower()
+        instrument_name = self.instrument_obj.name.lower()
+        technique_name = self.instrument_obj.technique.lower()
+        return [
+            os.path.join('reduction', technique_name, facility_name,
+                         instrument_name, self.template_name),
+            os.path.join('reduction', technique_name, facility_name,
+                         self.template_name),
+            os.path.join('reduction', technique_name, self.template_name),
+            os.path.join('reduction', self.template_name),
+        ]
 
 #
 # Reductions
@@ -112,7 +137,7 @@ class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
     List all Reduction.
     '''
-    template_name = 'reduction/list.html'
+    template_name = 'list.html'
 
 
 class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
@@ -122,7 +147,7 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
     The entries are an hidden field : id="entries_hidden"
     Which are an Handsontable
     '''
-    template_name = 'reduction/detail.html'
+    template_name = 'detail.html'
 
 
 class ReductionFormMixin(ReductionMixin):
@@ -179,7 +204,7 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
     '''
     Create a new entry!
     '''
-    template_name = 'reduction/form.html'
+    template_name = 'form.html'
     success_url = reverse_lazy('reduction:list')
 
     def form_valid(self, form, formset):
@@ -193,7 +218,7 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
 
 class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
 
-    template_name = 'reduction/confirm_delete.html'
+    template_name = 'confirm_delete.html'
     success_url = reverse_lazy('reduction:list')
 
     def get_object(self, queryset=None):
@@ -216,7 +241,7 @@ class ReductionClone(LoginRequiredMixin, ReductionMixin, UpdateView):
     Clones the Object Configuration. Keeps the same user
     '''
 
-    template_name = 'reduction/detail.html'
+    template_name = 'detail.html'
 
     def get_object(self, queryset=None):
         obj = self.model.objects.clone(self.kwargs['pk'])
@@ -239,7 +264,7 @@ class ReductionUpdate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Upda
     '''
     Edit a Reduction (The spreadsheet)
     '''
-    template_name = 'reduction/form.html'
+    template_name = 'form.html'
     success_url = reverse_lazy('reduction:list')
 
     def dispatch(self, request, *args, **kwargs):
@@ -286,7 +311,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionFormMixin, UpdateView):
     - Save it
     - Save it and submit the job to the cluster
     '''
-    template_name = 'reduction/script_form.html'
+    template_name = 'script_form.html'
     success_url = reverse_lazy('reduction:list')
 
     def dispatch(self, request, *args, **kwargs):

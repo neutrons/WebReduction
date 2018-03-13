@@ -124,14 +124,6 @@ class Reduction(models.Model, ModelMixin):
         If the script was generated already just shows it!"
     )
 
-    # ipts = models.ForeignKey(Ipts, on_delete=models.CASCADE,
-    #                          related_name="%(class)s_iptss",
-    #                          related_query_name="%(class)s_ipts",)
-
-    # experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE,
-    #                                related_name="%(class)s_experiments",
-    #                                related_query_name="%(class)s_experiment",)
-
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
                                    related_name="%(class)s_instruments",
                                    related_query_name="%(class)s_instrument",)
