@@ -38,7 +38,9 @@
             {% for f in formset %}
             <div class="panel-body">
                 {% crispy f f.helper %}
+                <li>{{ f.DELETE }}</li>
             </div>
+            <hr />
             {% endfor %}
         </div>
 

@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 from datetime import datetime
 from pprint import pformat
 
@@ -61,7 +62,7 @@ class ReductionMixin(object):
             "server.apps.configuration.models", self.facility_obj,
             self.instrument_obj, "Configuration")
         logger.debug("Model Configuration = {}".format(self.model_configuration))
-        
+
         #  Forms
         self.form_class = import_class_from_module(
             "server.apps.reduction.forms", self.facility_obj,
@@ -104,7 +105,7 @@ class ReductionMixin(object):
         kwargs = super(ReductionMixin, self).get_formset_kwargs()
 #         kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
         return kwargs
-    
+
     def get_template_names(self):
         """
         ** Overload **
@@ -150,11 +151,43 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
     template_name = 'detail.html'
 
 
+
+def call_subclass(some_function):
+
+    def wrapper(*args, **kwargs):
+        logger.debug("****** Wrapper *******")
+        logger.debug(args)
+        logger.debug(kwargs)
+        v = args[0]  # self
+        logger.debug(v.instrument_obj)
+
+        subclass_found = import_class_from_module(
+            "server.apps.reduction.views", v.facility_obj,
+            v.instrument_obj,
+            # Split by uppercase
+            re.findall('[A-Z][a-z]*',type(v).__name__))
+
+        if subclass_found:
+            logger.debug("Found class: {}".format(subclass_found))
+
+            # this_class = globals()[type(v).__name__]
+            # for subclass in this_class.__subclasses__():
+            v.__class__ = subclass_found
+
+            method_to_call = getattr(v, some_function.__name__, None)
+            if method_to_call is not None:
+                return method_to_call(*tuple(args[1:]), **kwargs)
+        return some_function(*args, **kwargs)
+
+    return wrapper
+
+
 class ReductionFormMixin(ReductionMixin):
     '''
     Mixin only used for the Reduction Form views
     '''
 
+    @call_subclass
     def get_context_data(self, **kwargs):
         '''
         This will get from the catalog the data for this IPTS
@@ -179,7 +212,7 @@ class ReductionFormMixin(ReductionMixin):
             ).runs_as_table(ipts, exp)
         except Exception as e:
             logger.warning("Catalog function get_runs_as_table failed %s", e)
-            messages.error(self.request, "An exception occurred while getting \
+            messages.warning(self.request, "An exception occurred while getting \
                 data from the catalog: {0} :: {1}".format(type(e).__name__, str(e)))
             header = []
             runs = []
@@ -214,6 +247,16 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
         form.instance.user = self.request.user
         form.instance.instrument = self.request.user.profile.instrument
         return FormsetMixin.form_valid(self, form, formset)
+
+
+class SpectrometrySnsHyspecReductionCreate(ReductionCreate):
+    '''
+    TEST
+    '''
+    def get_context_data(self, **kwargs):
+        logger.debug("****** Wrapper :: get_context_data *******")
+        context = super(CreateView, self).get_context_data(**kwargs)
+        return context
 
 
 class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):

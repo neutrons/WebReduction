@@ -21,6 +21,12 @@ class SpectrometrySnsHyspecReductionScriptForm(ReductionScriptForm, ModelForm):
 
 
 class SpectrometrySnsHyspecRegionForm(RegionForm, ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SpectrometrySnsHyspecRegionForm, self).__init__(*args, **kwargs)
+        # self.helper.add_layout(
+        #     Field('DELETE', css_class='input-small'),
+        # )
+
     class Meta(RegionForm.Meta):
         model = SpectrometrySnsHyspecRegion
 
@@ -31,7 +37,7 @@ SpectrometrySnsHyspecRegionInlineFormSetCreate = inlineformset_factory(
     SpectrometrySnsHyspecRegion,
     form=SpectrometrySnsHyspecRegionForm,
     extra=3,
-    can_delete=False
+    can_delete=True
 )
 # Edit
 SpectrometrySnsHyspecRegionInlineFormSetUpdate = inlineformset_factory(
@@ -39,4 +45,4 @@ SpectrometrySnsHyspecRegionInlineFormSetUpdate = inlineformset_factory(
     SpectrometrySnsHyspecRegion,
     form=SpectrometrySnsHyspecRegionForm,
     extra=0,
-    can_delete=False)
+    can_delete=True)
