@@ -249,16 +249,6 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
         return FormsetMixin.form_valid(self, form, formset)
 
 
-class SpectrometrySnsHyspecReductionCreate(ReductionCreate):
-    '''
-    TEST
-    '''
-    def get_context_data(self, **kwargs):
-        logger.debug("****** Wrapper :: get_context_data *******")
-        context = super(CreateView, self).get_context_data(**kwargs)
-        return context
-
-
 class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):
 
     template_name = 'confirm_delete.html'
