@@ -26,6 +26,7 @@ class SpectrometrySnsHyspecRegionForm(RegionForm, ModelForm):
         # self.helper.add_layout(
         #     Field('DELETE', css_class='input-small'),
         # )
+        # self.helper.template = 'bootstrap/table_inline_formset.html'
 
     class Meta(RegionForm.Meta):
         model = SpectrometrySnsHyspecRegion
