@@ -22,7 +22,10 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    # Admin
     url(r'^admin/', admin.site.urls),
+    url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS
+    # My apps
     url(r'^users/', include(('server.apps.users.urls', 'users'), namespace='users', )),
     url(r'^catalog/', include(('server.apps.catalog.urls', 'catalog'), namespace='catalog')),
     url(r'^sans/', include(('server.apps.sans.urls', 'sans'), namespace='sans')),

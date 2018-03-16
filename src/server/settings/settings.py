@@ -30,7 +30,6 @@ ALLOWED_HOSTS = env.list(
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -46,6 +45,9 @@ INSTALLED_APPS = [
     # For VueJS
     'rest_framework',
     'django_filters',
+    # Admin Skin
+    'grappelli', # this must be before contrib.admin
+    'django.contrib.admin',
     # My apps
     'server.apps.sans',
     'server.apps.users',

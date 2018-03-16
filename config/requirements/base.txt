@@ -34,3 +34,6 @@ plotly>=2.0.2
 
 # Natutal sorting:
 natsort>=5.1.0
+
+# Admin Skin
+django-grappelli>=2.11.1
