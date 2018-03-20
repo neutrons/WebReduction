@@ -1,6 +1,7 @@
 import logging
 
 from django.forms import ModelForm, inlineformset_factory
+from crispy_forms.layout import Submit, Button, Layout, Fieldset, HTML, Field
 
 from server.apps.configuration.models import SpectrometrySnsHyspecConfiguration
 
@@ -23,10 +24,7 @@ class SpectrometrySnsHyspecReductionScriptForm(ReductionScriptForm, ModelForm):
 class SpectrometrySnsHyspecRegionForm(RegionForm, ModelForm):
     def __init__(self, *args, **kwargs):
         super(SpectrometrySnsHyspecRegionForm, self).__init__(*args, **kwargs)
-        # self.helper.add_layout(
-        #     Field('DELETE', css_class='input-small'),
-        # )
-        # self.helper.template = 'bootstrap/table_inline_formset.html'
+        self.helper.template = 'bootstrap/table_inline_formset.html'
 
     class Meta(RegionForm.Meta):
         model = SpectrometrySnsHyspecRegion
@@ -37,7 +35,7 @@ SpectrometrySnsHyspecRegionInlineFormSetCreate = inlineformset_factory(
     SpectrometrySnsHyspecReduction,
     SpectrometrySnsHyspecRegion,
     form=SpectrometrySnsHyspecRegionForm,
-    extra=3,
+    extra=1,
     can_delete=True
 )
 # Edit
