@@ -82,11 +82,21 @@ class ReductionMixin(object):
         '''
         return self.model.objects.filter(user=self.request.user)
 
+    def get_form(self, form_class=None):
+        '''
+        When the configuration is in the main form (reduction) it makes sure
+        that the user only see its configurations.
+        '''
+        form = super(ReductionMixin, self).get_form(form_class)
+        if 'configuration' in form.fields:
+            form.fields['configuration'].queryset = self.model_configuration.objects.filter(
+                    user=self.request.user)
+        return form
 
     def get_formset(self, form_class=None):
         '''
-        When creating/editing a formset, this will make sure the user only sees it's own
-        configurations
+        When creating/editing a formset, this will make sure the user only sees
+        itss own configurations
         '''
         logger.debug("ReductionMixin get_formset")
         formset = super(ReductionMixin, self).get_formset(form_class)  # instantiate using parent
@@ -155,11 +165,11 @@ class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
 def call_subclass(some_function):
 
     def wrapper(*args, **kwargs):
-        logger.debug("****** Wrapper *******")
-        logger.debug(args)
-        logger.debug(kwargs)
+        logger.debug("Looking for a subclass to call the funtion {}.".format(some_function))
+        logger.debug("With args:   {}".format(args))
+        logger.debug("With kwargs: {}".format(kwargs))
         v = args[0]  # self
-        logger.debug(v.instrument_obj)
+        logger.debug("For instrument: {}".format(v.instrument_obj))
 
         subclass_found = import_class_from_module(
             "server.apps.reduction.views", v.facility_obj,
@@ -167,8 +177,8 @@ def call_subclass(some_function):
             # Split by uppercase
             re.findall('[A-Z][a-z]*',type(v).__name__))
 
-        if subclass_found:
-            logger.debug("Found class: {}".format(subclass_found))
+        if subclass_found and subclass_found != v.__class__:
+            logger.debug("Found class: {}. Calling the method in this class.".format(subclass_found))
 
             # this_class = globals()[type(v).__name__]
             # for subclass in this_class.__subclasses__():
@@ -247,6 +257,11 @@ class ReductionCreate(LoginRequiredMixin, ReductionFormMixin, FormsetMixin, Crea
         form.instance.user = self.request.user
         form.instance.instrument = self.request.user.profile.instrument
         return FormsetMixin.form_valid(self, form, formset)
+
+
+        for obj in formset.deleted_objects:
+            logger.debug("Deleting object: {}".format(obj))
+            #obj.delete()
 
 
 class ReductionDelete(LoginRequiredMixin, ReductionMixin, DeleteView):

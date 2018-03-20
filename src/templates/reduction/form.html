@@ -68,8 +68,9 @@
 {{ block.super }}
 
 <script>
+    /*
 
-
+    */
     $('#add_more').click(function() {
         var form_idx = $('#id_regions-TOTAL_FORMS').val();
         var empty_form = "<tr>" + $('.empty-form:first').html().replace(/__prefix__/g, form_idx) + "</tr>";

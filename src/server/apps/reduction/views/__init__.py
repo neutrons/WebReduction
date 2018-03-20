@@ -10,7 +10,10 @@ from .generic import (
     ReductionScriptUpdate,
 )
 
-from .spectrometry_sns_hyspec import SpectrometrySnsHyspecReductionCreate
+from .spectrometry_sns_hyspec import (
+    SpectrometrySnsHyspecReductionCreate,
+    SpectrometrySnsHyspecReductionUpdate,
+)
 
 __all__ = [
     # ReductionMixin,
@@ -24,4 +27,5 @@ __all__ = [
     'ReductionScriptUpdate',
     #
     'SpectrometrySnsHyspecReductionCreate',
+    'SpectrometrySnsHyspecReductionUpdate',
 ]
