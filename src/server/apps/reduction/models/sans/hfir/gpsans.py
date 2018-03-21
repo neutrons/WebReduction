@@ -6,18 +6,19 @@ from django.db import models
 from server.apps.configuration.models import (Configuration,
                                               SansHfirGpsansConfiguration)
 
-from .abstract import Reduction
+from server.apps.configuration.models import abstract
+
 from .sans import SansRegion
 
 
-class SansHfirGpsansReduction(Reduction):
+class Reduction(abstract.Reduction):
 
     @models.permalink
     def get_absolute_url(self):
         return ('reduction:reduction_detail', [self.pk])
 
 
-class SansHfirGpsansRegion(SansRegion):
+class (SansRegion):
     # We can not have ForeignKey for abstract models. It has to be here!!
 
     reduction = models.ForeignKey(SansHfirGpsansReduction,
