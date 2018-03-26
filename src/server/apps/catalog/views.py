@@ -233,7 +233,11 @@ class IptsZip(LoginRequiredMixin, CatalogMixin, TemplateView):
         '''
         for root, dirs, files in os.walk(path):
             for file in files:
-                zip_handler.write(os.path.join(root, file))
+                abs_path_to_zip = os.path.join(root, file)
+                zip_handler.write(
+                    abs_path_to_zip,
+                    os.path.relpath(abs_path_to_zip, path)
+                )
 
     def get(self, request, *args, **kwargs):
 
@@ -248,7 +252,6 @@ class IptsZip(LoginRequiredMixin, CatalogMixin, TemplateView):
 
         logger.debug("Zipping the path: {}".format(path))
         zip_filename = ipts + "_{}.zip".format(exp) if exp else ".zip"
-
 
         # Open BytesIO to grab in-memory ZIP contents
         s = BytesIO()

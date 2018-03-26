@@ -21,7 +21,7 @@ urlpatterns = [
     # HFIR has exp field
     url(r'^(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/$',
         views.Runs.as_view(), name='list_runs'),
-
+    # To Zip the contents of the ipts folder (Only HFIR)
     url(r'^(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/zip/$',
         views.IptsZip.as_view(), name='zip_ipts'),
 
