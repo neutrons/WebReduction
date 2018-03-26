@@ -21,6 +21,10 @@ urlpatterns = [
     # HFIR has exp field
     url(r'^(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/$',
         views.Runs.as_view(), name='list_runs'),
+
+    url(r'^(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/zip/$',
+        views.IptsZip.as_view(), name='zip_ipts'),
+
     url(r'^(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/ajax/$',
         views.RunsAjax.as_view(), name='list_runs_ajax'),
     url(r'^(?P<ipts>[\w\-\.]+)/(?P<exp>exp[\d]+)/(?P<filename>/HFIR/[^\.]+\.[A-Za-z]{3})/$',

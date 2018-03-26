@@ -47,7 +47,7 @@ class LoginView(FormView):
     form_class = LoginForm
     template_name = 'users/login.html'
     redirect_field_name = REDIRECT_FIELD_NAME
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('catalog:list_iptss')
     create_profile_url = reverse_lazy('users:profile_catalog_create')
 
     @method_decorator(sensitive_post_parameters('password'))
@@ -87,7 +87,7 @@ class LoginView(FormView):
         """
         if request.user.is_authenticated:
             # Redirect to profile
-            return redirect(reverse_lazy('index'))
+            return redirect(reverse_lazy('catalog:list_iptss'))
         else:
             return super(LoginView, self).get(request, *args, **kwargs)
 
@@ -155,7 +155,7 @@ class ProfileCatalogUpdate(LoginRequiredMixin, SuccessMessageMixin,
     form_class = UserProfileCatalogForm
     template_name = 'users/profile_catalog_form.html'
     # fields = '__all__'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('catalog:list_iptss')
     success_message = "Your Profile for the Catalog was updated successfully."
 
     # def get_context_data(self, **kwargs):
@@ -176,7 +176,7 @@ class ProfileCatalogCreate(LoginRequiredMixin, SuccessMessageMixin,
     form_class = UserProfileCatalogForm
     template_name = 'users/profile_catalog_form.html'
     # fields = ['home_institution', 'email_address']
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('catalog:list_iptss')
     success_message = "Your Profile for the Catalog was created successfully."
 
     def form_valid(self, form):
