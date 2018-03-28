@@ -7,13 +7,13 @@ from django.db import models
 
 from server.apps.configuration.models import SpectrometrySnsHyspecConfiguration
 
-from server.apps.configuration.models import abstract
+from .abstract import Reduction, Region
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class Reduction(abstract.Reduction):
+class SpectrometrySnsHyspecReduction(Reduction):
 
     field3 = models.CharField(
         "Human description 3",
@@ -32,13 +32,13 @@ class Reduction(abstract.Reduction):
         return ('reduction:reduction_detail', [self.pk])
 
 
-class Region(abstract.Region):
+class SpectrometrySnsHyspecRegion(Region):
     '''
     Region can be low, medium or high Q
     This will be a formset from Reduction
     '''
 
-    reduction = models.ForeignKey(Reduction,
+    reduction = models.ForeignKey(SpectrometrySnsHyspecReduction,
                                   on_delete=models.CASCADE,
                                   related_name="regions",
                                   related_query_name="region",)

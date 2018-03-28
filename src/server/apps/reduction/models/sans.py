@@ -20,7 +20,7 @@ from server.apps.users.ldap_util import LdapSns
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
-from ..abstract import Region
+from .abstract import Region
 
 
 class SansRegion(Region):
