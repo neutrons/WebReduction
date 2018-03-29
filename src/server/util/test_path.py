@@ -4,6 +4,9 @@ from server.apps.catalog.models import Facility, Instrument
 from .path import _build_fields
 
 class TestPath(TestCase):
+    '''
+    Run as: ./manage.py test server.util.test_path
+    '''
 
     fixtures = ['catalog.json', ]
 
