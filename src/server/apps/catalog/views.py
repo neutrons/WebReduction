@@ -1,5 +1,8 @@
 import logging
 import os
+import zipfile
+from io import BytesIO
+
 from pprint import pformat
 
 from django.contrib import messages
@@ -19,6 +22,7 @@ from django.http import HttpResponse
 from django.http import FileResponse
 from django.urls import reverse
 
+from django.http import HttpResponse
 from .models import Facility, Instrument
 from .oncat.facade import Catalog
 
@@ -214,4 +218,49 @@ class RunFile(LoginRequiredMixin, CatalogMixin, TemplateView):
         # wrapper = FileWrapper(open(filename))
         # response = HttpResponse(wrapper, content_type='text/plain')
         # response['Content-Length'] = os.path.getsize(filename)
+        return response
+
+
+
+class IptsZip(LoginRequiredMixin, CatalogMixin, TemplateView):
+    '''
+    Zip the IPTS folder and return it as
+    '''
+
+    def _zipdir(self, path, zip_handler):
+        '''
+        ziph is zipfile handle
+        '''
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                abs_path_to_zip = os.path.join(root, file)
+                zip_handler.write(
+                    abs_path_to_zip,
+                    os.path.relpath(abs_path_to_zip, path)
+                )
+
+    def get(self, request, *args, **kwargs):
+
+        ipts = kwargs['ipts']
+        exp = kwargs.get('exp')
+
+        path = os.path.join(
+            self.instrument.drive_path,
+            ipts,
+            exp if exp is not None else "",
+        )
+
+        logger.debug("Zipping the path: {}".format(path))
+        zip_filename = ipts + "_{}.zip".format(exp) if exp else ".zip"
+
+        # Open BytesIO to grab in-memory ZIP contents
+        s = BytesIO()
+        zip_file = zipfile.ZipFile(s, 'w')
+        self._zipdir(path, zip_file)
+        zip_file.close()
+
+        # Grab ZIP file from in-memory, make response with correct MIME-type
+        response = HttpResponse(s.getvalue(), content_type='application/zip')
+        # ..and correct content-disposition
+        response['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
         return response
