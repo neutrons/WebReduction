@@ -5,13 +5,14 @@ from pprint import pformat
 from crispy_forms.layout import HTML, Div
 from django.forms import ModelForm
 
-from ..models import SansHfirBiosansConfiguration
-from .abstract import ConfigurationForm
+from server.apps.configuration.models.sans.hfir.biosans import Configuration
+from server.apps.configuration.forms import abstract
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class SansHfirBiosansConfigurationForm(ConfigurationForm, ModelForm):
+class ConfigurationForm(abstract.ConfigurationForm, ModelForm):
     def __init__(self, *args, **kwargs):
         super(SansHfirBiosansConfigurationForm, self).__init__(*args, **kwargs)
         self.helper.layout.insert(
@@ -50,4 +51,4 @@ class SansHfirBiosansConfigurationForm(ConfigurationForm, ModelForm):
         return cleaned_data
 
     class Meta(ConfigurationForm.Meta):
-        model = SansHfirBiosansConfiguration
+        model = Configuration

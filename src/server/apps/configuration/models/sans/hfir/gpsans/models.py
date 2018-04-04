@@ -5,10 +5,10 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from .abstract import Configuration
+from server.apps.configuration.models import abstract
 
 
-class SansHfirGpsansConfiguration(Configuration):
+class ConfigurationGPSANS(abstract.Configuration):
 
     wavelength = models.DecimalField(
         u'Wavelength (\u212B)',

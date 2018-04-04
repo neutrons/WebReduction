@@ -7,7 +7,7 @@ import re
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from .abstract import Configuration
+from server.apps.configuration.models import abstract
 
 
 def validate_q_range(value):
@@ -21,7 +21,7 @@ def validate_q_range(value):
         raise ValidationError("Q range must be of the form: min,step,max")
 
 
-class SansHfirBiosansConfiguration(Configuration):
+class ConfigurationBioSANS(abstract.Configuration):
 
     # SetAbsoluteScale(5.6e-5)
     absolute_scale_factor = models.DecimalField(

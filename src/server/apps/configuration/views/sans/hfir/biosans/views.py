@@ -1,0 +1,209 @@
+import logging
+import os
+
+from server.apps.configuration.models.sans.hfir.biosans import Configuration
+from server.apps.configuration.views.mixins import ConfigurationMixin
+
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
+
+
+
+
+class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
+    '''
+    '''
+    template_name = 'configuration/list.html'
+    model = Configuration
+
+
+class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixin, DetailView):
+    '''
+    Detail of a configuration
+    '''
+    template_name = 'detail.html'
+
+    def get_queryset(self):
+        queryset = super(ConfigurationDetail, self).get_queryset()
+        return queryset.filter(id=self.kwargs['pk'])
+
+
+class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, CreateView):
+    '''
+    Detail of a configuration
+    '''
+    template_name = 'form.html'
+
+    success_url = reverse_lazy('configuration:list')
+
+    def form_valid(self, form):
+        """
+        Sets initial values which are hidden in the form
+        """
+        form.instance.user = self.request.user
+        form.instance.instrument = get_object_or_404(
+            Instrument, name=self.instrument_obj.name)
+        return CreateView.form_valid(self, form)
+
+
+class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, UpdateView):
+    '''
+    Detail of a configuration
+    '''
+    template_name = 'form.html'
+    success_url = reverse_lazy('configuration:list')
+
+
+class ConfigurationDelete(LoginRequiredMixin, ConfigurationMixin, DeleteView):
+
+    template_name = 'confirm_delete.html'
+    success_url = reverse_lazy('configuration:list')
+
+    def get_object(self, queryset=None):
+        """
+        Hook to ensure object is owned by request.user.
+        """
+        obj = super(ConfigurationDelete, self).get_object()
+        if not obj.user == self.request.user:
+            raise Http404("The user {} is not the owner of {}.".format(
+                self.request.user, obj))
+        return obj
+
+    def delete(self, request, *args, **kwargs):
+        logger.debug("Deleting Configuration %s ", self.get_object())
+        messages.success(request,
+                         'Configuration %s deleted.' % self.get_object())
+        return super(ConfigurationDelete, self).delete(request, *args, **kwargs)
+
+
+class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, DetailView):
+    '''
+    Clones the Object Configuration. Keeps the same user
+    '''
+    template_name = 'detail.html'
+
+    def get_object(self, queryset=None):
+        '''
+        Overrides DetailView.get_object and
+        '''
+        obj = self.model.objects.clone(self.kwargs['pk'])
+        self.kwargs['pk'] = obj.pk
+        messages.success(
+            self.request,
+            "Configuration {} cloned. The new id is  {}. "
+            "Click <a href='{}'> HERE </a> to change it.".format(
+                obj, obj.pk, reverse_lazy("configuration:update",
+                                          args=[obj.pk])))
+        return obj
+
+
+class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin,
+                                 TemplateView):
+    '''
+    List all UIDS + names and provides a link to assign a Configuration
+    to a user.
+    Context has 2 objects: the conf to assign and a list of uids + names
+    '''
+    template_name = 'list_uid.html'
+
+    def get_context_data(self, **kwargs):
+        '''
+        Fromat of the object_list:
+        ..., {'name': 'Durniak, Celine', 'uid': 'celine_durniak'},
+            {'name': 'Legg, Max', 'uid': 'mlegg'}]
+        '''
+        context = super(ConfigurationAssignListUid,
+                        self).get_context_data(**kwargs)
+        ldap_server = LdapSns()
+        # This get's all users from LDAP
+        # users_and_uids = ldap_server.get_all_users_name_and_uid()
+        # This only gets users that have IPTS for this beamline
+        this_instrument_ipts = Catalog(
+            facility=self.request.user.profile.instrument.facility.name,
+            technique=self.request.user.profile.instrument.technique,
+            instrument=self.request.user.profile.instrument.catalog_name,
+            request=self.request
+        ).experiments()
+        this_instrument_ipts = [d['ipts'] for d in this_instrument_ipts]
+        # logger.debug(this_instrument_ipts)
+        users_and_uids = []
+        uids = ldap_server.get_all_uids_for_a_list_of_iptss(
+            this_instrument_ipts)
+        # logger.debug(uids)
+        for uid in uids:
+            try:
+                if not any(uid == d['uid'] for d in users_and_uids):
+                    name = ldap_server.get_user_name(uid)
+                    users_and_uids.append({'name': name, 'uid': uid})
+            except IndexError:
+                # Don't ask me why but some uids don't exist in the LDAP
+                pass
+
+        logger.debug(users_and_uids)
+        context['object_list'] = list(users_and_uids)
+        obj = self.model.objects.get(pk=kwargs['pk'])
+        context['object'] = obj
+        return context
+
+
+class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin,
+                                  TemplateView):
+    '''
+    List all IPTSs and provides a link to assign a Configuration
+    to all users to that IPTS.
+    Context has 2 objects: the conf to assign and a list of ipts
+    '''
+    template_name = 'list_ipts.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ConfigurationAssignListIpts,
+                        self).get_context_data(**kwargs)
+        # Get IPTSs from LDAP
+        # ldap_server = LdapSns()
+        # all_ipts = ldap_server.get_all_ipts()
+        # logger.debug(all_ipts)
+        # For now, I'm getting the IPTSs from ICAT
+        this_instrument_ipts = Catalog(
+            facility=self.request.user.profile.instrument.facility.name,
+            technique=self.request.user.profile.instrument.technique,
+            instrument=self.request.user.profile.instrument.catalog_name,
+            request=self.request
+        ).experiments()
+        logger.debug(this_instrument_ipts)
+        context['object_list'] = [d['ipts'] for d in this_instrument_ipts]
+        obj = self.model.objects.get(pk=kwargs['pk'])
+        context['object'] = obj
+        return context
+
+
+class ConfigurationAssignUid(LoginRequiredMixin, ConfigurationMixin, DetailView):
+    '''
+    This gets a configuration pk and uid from url, clones the Configuration
+    and assigns it to the user
+    It will display the original Configuration
+    '''
+    template_name = 'detail.html'
+
+    def get(self, request, *args, **kwargs):
+        obj = self.model.objects.clone_and_assign_new_uid(
+            kwargs['pk'], kwargs['uid'])
+        messages.success(request, "Configuration %s assigned to the user %s. \
+            New configuration id = %s." % (obj, obj.user, obj.pk))
+        return super(ConfigurationAssignUid, self).get(request, *args, **kwargs)
+
+
+class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin,
+                              DetailView):
+    '''
+
+    '''
+    template_name = 'detail.html'
+
+    def get(self, request, *args, **kwargs):
+        cloned_objs = self.model.objects.clone_and_assign_new_uids_based_on_ipts(
+            kwargs['pk'], kwargs['ipts'])
+        for obj in cloned_objs:
+            messages.success(
+                request,
+                "Configuration %s assigned to the user "
+                "%s. New configuration id = %s." % (obj, obj.user, obj.pk))
+        return super(ConfigurationAssignIpts, self).get(request, *args, **kwargs)

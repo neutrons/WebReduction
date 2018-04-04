@@ -1,9 +1,9 @@
 from django.db import models
 
-from .abstract import Configuration
+from server.apps.configuration.models import abstract
 
 
-class SpectrometrySnsHyspecConfiguration(Configuration):
+class ConfigurationHYSPEC(abstract.Configuration):
 
     wavelength = models.DecimalField(
         u'Wavelength (\u212B)',

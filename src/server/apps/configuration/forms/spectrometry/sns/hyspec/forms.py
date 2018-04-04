@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 
-from server.apps.configuration.models.sans.hfir.biosans import Configuration
+from server.apps.configuration.models.spectrometry.sns.hyspec import Configuration
 from server.apps.configuration.forms import abstract
 
 
