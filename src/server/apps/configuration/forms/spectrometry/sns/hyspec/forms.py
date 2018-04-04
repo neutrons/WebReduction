@@ -5,5 +5,5 @@ from server.apps.configuration.forms import abstract
 
 
 class ConfigurationForm(abstract.ConfigurationForm, ModelForm):
-    class Meta(ConfigurationForm.Meta):
+    class Meta(abstract.ConfigurationForm.Meta):
         model = Configuration

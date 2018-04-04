@@ -6,8 +6,8 @@ from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView)
 
-from server.apps.configuration.models.sans.hfir.biosans import Configuration
-from server.apps.configuration.forms.sans.hfir.biosans import ConfigurationForm
+from server.apps.configuration.models.spectrometry.sns.hyspec import Configuration
+from server.apps.configuration.forms.spectrometry.sns.hyspec import ConfigurationForm
 
 from server.apps.configuration.views.mixins import (
     ConfigurationMixin,
