@@ -107,3 +107,7 @@ class ConfigurationGPSANS(abstract.Configuration):
     @models.permalink
     def get_absolute_url(self):
         return ('sans:detail', [self.pk])
+
+    class Meta:
+        verbose_name = "Configuration GPSANS"
+        verbose_name_plural = "Configuration GPSANSs"
