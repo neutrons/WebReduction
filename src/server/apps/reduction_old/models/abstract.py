@@ -1,13 +1,22 @@
 from __future__ import unicode_literals
 
 import logging
+import os
+from pprint import pformat
 
+import ldap
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.forms.models import model_to_dict
+from django.utils.translation import ugettext_lazy as _
+from django_auth_ldap.backend import LDAPBackend
 from django_remote_submission.models import Interpreter, Job
 
 from server.apps.catalog.models import Instrument
+from server.apps.users.ldap_util import LdapSns
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -43,7 +52,7 @@ class ModelMixin(object):
                     'label': f.verbose_name,
                     'name': f.name,
                     'value': value,
-                })
+                    })
         return fields
 
 
@@ -66,7 +75,7 @@ class ReductionManager(models.Manager):
             region.save()
             new_regions.append(region)
 
-        obj.pk = None  # setting to None, clones the object!
+        obj.pk = None # setting to None, clones the object!
         obj.save()
         #obj.regions = new_regions
         obj.regions.set(new_regions)
@@ -79,7 +88,7 @@ class ReductionManager(models.Manager):
         Gets this reduction object in json format
         serializes: reduction and related regions and associated configuration
         '''
-        obj = self.select_related().get(pk=pk)
+        obj = self.select_related().get(pk = pk)
         obj_json = model_to_dict(obj)
         obj_json["user"] = obj.user.username
         obj_json["regions"] = []
@@ -89,7 +98,7 @@ class ReductionManager(models.Manager):
             obj_json["regions"].append(d)
         return obj_json
 
-
+        
 class Reduction(models.Model, ModelMixin):
     '''
     '''
@@ -115,21 +124,18 @@ class Reduction(models.Model, ModelMixin):
         If the script was generated already just shows it!"
     )
 
-    instrument = models.ForeignKey(
-        Instrument, on_delete=models.CASCADE,
-        related_name="%(class)s_instruments",
-        related_query_name="%(class)s_instrument",)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-        related_name="%(class)s_users",
-        related_query_name="%(class)s_user",)
+    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE,
+                                   related_name="%(class)s_instruments",
+                                   related_query_name="%(class)s_instrument",)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name="%(class)s_users",
+                             related_query_name="%(class)s_user",)
 
-    job = models.ForeignKey(
-        Job,
-        null=True,
-        on_delete=models.CASCADE,
-        related_name="%(class)s_job",
-        related_query_name="%(class)s_job",)
+    job = models.ForeignKey(Job,
+                            null=True,
+                            on_delete=models.CASCADE,
+                            related_name="%(class)s_job",
+                            related_query_name="%(class)s_job",)
 
     # Manager
     objects = ReductionManager()
@@ -140,7 +146,6 @@ class Reduction(models.Model, ModelMixin):
 
     def __str__(self):
         return self.title
-
 
 class RegionManager(models.Manager):
     '''

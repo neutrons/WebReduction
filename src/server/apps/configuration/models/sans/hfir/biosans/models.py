@@ -21,6 +21,8 @@ def validate_q_range(value):
         raise ValidationError("Q range must be of the form: min,step,max")
 
 
+# I'm naming this as this prefix because I cannot have 2 tables with the same name
+# See __init__.py . They are called Configuration in the end.
 class ConfigurationBioSANS(abstract.Configuration):
 
     # SetAbsoluteScale(5.6e-5)
@@ -198,7 +200,7 @@ class ConfigurationBioSANS(abstract.Configuration):
     @models.permalink
     def get_absolute_url(self):
         return ('sans:detail', [self.pk])
-    
+
     class Meta:
         verbose_name = "Configuration BioSANS"
         verbose_name_plural = "Configuration BioSANSs"

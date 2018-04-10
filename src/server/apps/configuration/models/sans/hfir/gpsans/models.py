@@ -7,7 +7,8 @@ from django.db import models
 
 from server.apps.configuration.models import abstract
 
-
+# I'm naming this as this prefix because I cannot have 2 tables with the same name
+# See __init__.py . They are called Configuration in the end.
 class ConfigurationGPSANS(abstract.Configuration):
 
     wavelength = models.DecimalField(
