@@ -10,17 +10,17 @@ from server.apps.reduction.models import abstract
 from server.apps.reduction.models.sans import abstract as sans_abstract
 
 
-class Reduction(abstract.Reduction):
+class ReductionGPSANS(abstract.Reduction):
 
     @models.permalink
     def get_absolute_url(self):
         return ('reduction:reduction_detail', [self.pk])
 
 
-class Region(sans_abstract.Region):
+class RegionGPSANS(sans_abstract.Region):
 
     reduction = models.ForeignKey(
-        Reduction,
+        ReductionGPSANS,
         on_delete=models.CASCADE,
         related_name="regions",
         related_query_name="region",)

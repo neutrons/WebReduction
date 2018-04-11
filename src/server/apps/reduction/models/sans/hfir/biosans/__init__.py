@@ -1,5 +1,8 @@
-from .models import Configuration
+from .models import ReductionBioSANS as Reduction
+from .models import RegionBioSANS as Region
+
 
 __all__ = [
-    'Configuration',
+    'Reduction',
+    'Region',
 ]

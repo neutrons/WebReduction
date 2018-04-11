@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import logging
-from pprint import pformat
 
 from django.db import models
 
@@ -13,7 +12,7 @@ from server.apps.reduction.models import abstract
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class Reduction(abstract.Reduction):
+class ReductionHYSPEC(abstract.Reduction):
 
     field3 = models.CharField(
         "Human description 3",
@@ -33,14 +32,14 @@ class Reduction(abstract.Reduction):
         return ('reduction:reduction_detail', [self.pk])
 
 
-class Region(abstract.Region):
+class RegionHYSPEC(abstract.Region):
     '''
     Region can be low, medium or high Q
     This will be a formset from Reduction
     '''
 
     reduction = models.ForeignKey(
-        Reduction,
+        ReductionHYSPEC,
         on_delete=models.CASCADE,
         related_name="regions",
         related_query_name="region",)

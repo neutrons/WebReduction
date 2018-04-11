@@ -1,5 +1,8 @@
-from .models import Configuration
+from .models import ReductionGPSANS as Reduction
+from .models import RegionGPSANS as Region
+
 
 __all__ = [
-    'Configuration',
+    'Reduction',
+    'Region',
 ]

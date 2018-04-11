@@ -1,17 +1,13 @@
 from django.contrib import admin
 
-from .models import (
-    SansHfirBiosansReduction, SansHfirBiosansRegion,
-    SansHfirGpsansReduction, SansHfirGpsansRegion,
-    SpectrometrySnsHyspecReduction, SpectrometrySnsHyspecRegion,
-)
+from .models.sans.hfir import biosans, gpsans
+from .models.spectrometry.sns import hyspec
 
 # Register your models here.
-admin.site.register(SansHfirBiosansReduction)
-admin.site.register(SansHfirBiosansRegion)
-admin.site.register(SansHfirGpsansReduction)
-admin.site.register(SansHfirGpsansRegion)
-admin.site.register(SpectrometrySnsHyspecReduction)
-admin.site.register(SpectrometrySnsHyspecRegion)
-
+admin.site.register(biosans.Reduction)
+admin.site.register(gpsans.Reduction)
+admin.site.register(hyspec.Reduction)
+admin.site.register(biosans.Region)
+admin.site.register(gpsans.Region)
+admin.site.register(hyspec.Region)
 
