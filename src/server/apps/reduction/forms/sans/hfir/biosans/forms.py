@@ -1,46 +1,47 @@
 import logging
-from pprint import pformat
 
 from django.forms import ModelForm, inlineformset_factory
 
-from server.apps.configuration.models import SansHfirBiosansConfiguration
+from server.apps.reduction.models.sans.hfir.biosans import Reduction, Region
 
-from ..forms import ReductionForm, ReductionScriptForm
-from ..models import SansHfirBiosansReduction, SansHfirBiosansRegion
-from .sans import SansRegionForm
+from server.apps.reduction.forms import abstract
+from server.apps.reduction.forms.sans import abstract as sans_abstract
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class SansHfirBiosansReductionForm(ReductionForm, ModelForm):
-    class Meta(ReductionForm.Meta):
-        model = SansHfirBiosansReduction
+class ReductionForm(abstract.ReductionForm, ModelForm):
+    class Meta(abstract.ReductionForm.Meta):
+        model = Reduction
 
 
-class SansHfirBiosansReductionScriptForm(ReductionScriptForm, ModelForm):
-    class Meta(ReductionScriptForm.Meta):
-        model = SansHfirBiosansReduction
+class ReductionScriptForm(abstract.ReductionScriptForm, ModelForm):
+    class Meta(abstract.ReductionScriptForm.Meta):
+        model = Reduction
 
 
-class SansHfirBiosansRegionForm(SansRegionForm, ModelForm):
-    class Meta(SansRegionForm.Meta):
-        model = SansHfirBiosansRegion
+class RegionForm(sans_abstract.RegionForm, ModelForm):
+    class Meta(sans_abstract.RegionForm.Meta):
+        model = Region
 
 
 # New
-SansHfirBiosansRegionInlineFormSetCreate = inlineformset_factory(
-    SansHfirBiosansReduction,
-    SansHfirBiosansRegion,
-    form=SansHfirBiosansRegionForm,
+# pylint: disable=C0103
+RegionInlineFormSetCreate = inlineformset_factory(
+    Reduction,
+    Region,
+    form=RegionForm,
     extra=2,
     can_delete=False
 )
 
 # Edit
-SansHfirBiosansRegionInlineFormSetUpdate = inlineformset_factory(
-    SansHfirBiosansReduction,
-    SansHfirBiosansRegion,
-    form=SansHfirBiosansRegionForm,
+# pylint: disable=C0103
+RegionInlineFormSetUpdate = inlineformset_factory(
+    Reduction,
+    Region,
+    form=RegionForm,
     extra=0,
     can_delete=False
 )

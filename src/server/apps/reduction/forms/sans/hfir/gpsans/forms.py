@@ -1,44 +1,47 @@
 import logging
-from pprint import pformat
 
 from django.forms import ModelForm, inlineformset_factory
 
-from server.apps.configuration.models import SansHfirGpsansConfiguration
+from server.apps.reduction.models.sans.hfir.gpsans import Reduction, Region
 
-from ..forms import ReductionForm, ReductionScriptForm
-from ..models import SansHfirGpsansReduction, SansHfirGpsansRegion
-from .sans import SansRegionForm
+from server.apps.reduction.forms import abstract
+from server.apps.reduction.forms.sans import abstract as sans_abstract
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class SansHfirGpsansReductionForm(ReductionForm, ModelForm):
-    class Meta(ReductionForm.Meta):
-        model = SansHfirGpsansReduction
+class ReductionForm(abstract.ReductionForm, ModelForm):
+    class Meta(abstract.ReductionForm.Meta):
+        model = Reduction
 
 
-class SansHfirGpsansReductionScriptForm(ReductionScriptForm, ModelForm):
-    class Meta(ReductionScriptForm.Meta):
-        model = SansHfirGpsansReduction
+class ReductionScriptForm(abstract.ReductionScriptForm, ModelForm):
+    class Meta(abstract.ReductionScriptForm.Meta):
+        model = Reduction
 
 
-class SansHfirGpsansRegionForm(SansRegionForm, ModelForm):
-    class Meta(SansRegionForm.Meta):
-        model = SansHfirGpsansRegion
+class RegionForm(sans_abstract.RegionForm, ModelForm):
+    class Meta(sans_abstract.RegionForm.Meta):
+        model = Region
 
 
 # New
-SansHfirGpsansRegionInlineFormSetCreate = inlineformset_factory(
-    SansHfirGpsansReduction,
-    SansHfirGpsansRegion,
-    form=SansHfirGpsansRegionForm,
+# pylint: disable=C0103
+RegionInlineFormSetCreate = inlineformset_factory(
+    Reduction,
+    Region,
+    form=RegionForm,
     extra=3,
     can_delete=False
 )
+
 # Edit
-SansHfirGpsansRegionInlineFormSetUpdate = inlineformset_factory(
-    SansHfirGpsansReduction,
-    SansHfirGpsansRegion,
-    form=SansHfirGpsansRegionForm,
+# pylint: disable=C0103
+RegionInlineFormSetUpdate = inlineformset_factory(
+    Reduction,
+    Region,
+    form=RegionForm,
     extra=0,
-    can_delete=False)
+    can_delete=False
+)

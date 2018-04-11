@@ -1,5 +1,15 @@
-from .forms import ConfigurationForm
+from .forms import (
+    ReductionForm,
+    ReductionScriptForm,
+    RegionForm,
+    RegionInlineFormSetCreate,
+    RegionInlineFormSetUpdate,
+)
 
 __all__ = [
-    'ConfigurationForm'
+    'ReductionForm',
+    'ReductionScriptForm',
+    'RegionForm',
+    'RegionInlineFormSetCreate',
+    'RegionInlineFormSetUpdate',
 ]

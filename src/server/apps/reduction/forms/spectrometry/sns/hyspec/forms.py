@@ -1,47 +1,50 @@
 import logging
 
 from django.forms import ModelForm, inlineformset_factory
-from crispy_forms.layout import Submit, Button, Layout, Fieldset, HTML, Field
 
-from server.apps.configuration.models import SpectrometrySnsHyspecConfiguration
+from server.apps.reduction.models.spectrometry.sns.hyspec import Reduction, Region
 
-from ..forms import ReductionForm, ReductionScriptForm, RegionForm
-from ..models import SpectrometrySnsHyspecReduction, SpectrometrySnsHyspecRegion
+from server.apps.reduction.forms import abstract
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class SpectrometrySnsHyspecReductionForm(ReductionForm, ModelForm):
-    class Meta(ReductionForm.Meta):
-        model = SpectrometrySnsHyspecReduction
+class ReductionForm(abstract.ReductionForm, ModelForm):
+    class Meta(abstract.ReductionForm.Meta):
+        model = Reduction
 
 
-class SpectrometrySnsHyspecReductionScriptForm(ReductionScriptForm, ModelForm):
-    class Meta(ReductionScriptForm.Meta):
-        model = SpectrometrySnsHyspecReduction
+class ReductionScriptForm(abstract.ReductionScriptForm, ModelForm):
+    class Meta(abstract.ReductionScriptForm.Meta):
+        model = Reduction
 
 
-class SpectrometrySnsHyspecRegionForm(RegionForm, ModelForm):
+class RegionForm(abstract.RegionForm, ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SpectrometrySnsHyspecRegionForm, self).__init__(*args, **kwargs)
+        super(RegionForm, self).__init__(*args, **kwargs)
         self.helper.template = 'bootstrap/table_inline_formset.html'
 
-    class Meta(RegionForm.Meta):
-        model = SpectrometrySnsHyspecRegion
+    class Meta(abstract.RegionForm.Meta):
+        model = Region
 
 
 # New
-SpectrometrySnsHyspecRegionInlineFormSetCreate = inlineformset_factory(
-    SpectrometrySnsHyspecReduction,
-    SpectrometrySnsHyspecRegion,
-    form=SpectrometrySnsHyspecRegionForm,
+# pylint: disable=C0103
+RegionInlineFormSetCreate = inlineformset_factory(
+    Reduction,
+    Region,
+    form=RegionForm,
     extra=1,
     can_delete=True
 )
+
 # Edit
-SpectrometrySnsHyspecRegionInlineFormSetUpdate = inlineformset_factory(
-    SpectrometrySnsHyspecReduction,
-    SpectrometrySnsHyspecRegion,
-    form=SpectrometrySnsHyspecRegionForm,
+# pylint: disable=C0103
+RegionInlineFormSetUpdate = inlineformset_factory(
+    Reduction,
+    Region,
+    form=RegionForm,
     extra=0,
-    can_delete=True)
+    can_delete=True
+)
