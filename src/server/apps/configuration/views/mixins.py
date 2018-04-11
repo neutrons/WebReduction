@@ -22,10 +22,6 @@ class ConfigurationMixin(object):
     When the form_class is defined the model is only used if needed!
     '''
 
-    # Django stuff
-    model = None
-    form_class = None
-
     # usefull
     facility_obj = None
     instrument_obj = None
@@ -81,7 +77,7 @@ class ConfigurationDeleteMixin(object):
 
 
 class ConfigurationCloneMixin(object):
-    
+
     def get_object(self, queryset=None):
         '''
         Overrides DetailView.get_object and
@@ -157,7 +153,7 @@ class ConfigurationAssignListIptsMixin(object):
         obj = self.model.objects.get(pk=kwargs['pk'])
         context['object'] = obj
         return context
-    
+
 class ConfigurationAssignUidMixin(object):
 
     def get(self, request, *args, **kwargs):

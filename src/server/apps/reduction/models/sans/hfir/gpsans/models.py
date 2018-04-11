@@ -32,4 +32,5 @@ class RegionGPSANS(sans_abstract.Region):
         related_query_name="region")
 
     def __str__(self):
-        return "Reduction {}".format(self.reduction.title)
+        return "Region {} for Reduction {}".format(
+            self.pk, self.reduction.title)

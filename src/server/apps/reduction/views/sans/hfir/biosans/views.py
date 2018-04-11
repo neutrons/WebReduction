@@ -1,111 +1,79 @@
-import logging
-import os
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import (
-    CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView)
-
-from server.apps.configuration.models.sans.hfir.biosans import Configuration
-from server.apps.configuration.forms.sans.hfir.biosans import ConfigurationForm
-
-from server.apps.configuration.views.mixins import (
-    ConfigurationMixin,
-    ConfigurationCreateMixin,
-    ConfigurationDeleteMixin,
-    ConfigurationCloneMixin,
-    ConfigurationAssignListUidMixin,
-    ConfigurationAssignListIptsMixin,
-    ConfigurationAssignUidMixin,
-    ConfigurationAssignIptsMixin,
+    CreateView, DeleteView, DetailView, ListView,
+    TemplateView, UpdateView,
 )
 
+from server.apps.configuration.models.sans.hfir.biosans import Configuration
+from server.apps.reduction.forms.sans.hfir.biosans import (
+    ReductionForm,
+    RegionInlineFormSetCreate,
+    RegionInlineFormSetUpdate,
+)
+from server.apps.reduction.models.sans.hfir.biosans import Reduction
+from server.apps.reduction.views.mixins import (
+    ReductionCreateMixin,
+    ReductionDeleteMixin,
+    ReductionFormMixin,
+    ReductionMixin,
+    ReductionCloneMixin,
+    ReductionUpdateMixin,
+)
 
-class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
+from ...mixins import SANSMixin
+
+
+class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
+    '''
+    List all Reduction.
+    '''
+    template_name = 'reduction/list.html'
+    model = Reduction
+
+
+class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
     '''
     '''
-    template_name = 'configuration/list.html'
-    model = Configuration
+    template_name = 'reduction/detail.html'
+    model = Reduction
 
 
-class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixin, DetailView):
+class ReductionCreate(LoginRequiredMixin, ReductionCreateMixin, SANSMixin, CreateView):
     '''
-    Detail of a configuration
+    Create a new entry!
     '''
-    template_name = 'configuration/detail.html'
-    model = Configuration
+    template_name = 'reduction/sans/form.html'
+    model = Reduction
+    model_configuration = Configuration
+    form_class = ReductionForm
+    formset_class = RegionInlineFormSetCreate
+    success_url = reverse_lazy('reduction:list')
 
 
-class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, ConfigurationCreateMixin, CreateView):
+class ReductionDelete(LoginRequiredMixin, ReductionDeleteMixin, DeleteView):
+
+    template_name = 'reduction/confirm_delete.html'
+    model = Reduction
+    success_url = reverse_lazy('reduction:list')
+
+class ReductionClone(LoginRequiredMixin, ReductionCloneMixin, UpdateView):
+
+    template_name = 'reduction/detail.html'
+    model = Reduction
+    model_configuration = Configuration
+    form_class = ReductionForm
+    formset_class = RegionInlineFormSetCreate
+
+
+class ReductionUpdate(LoginRequiredMixin, ReductionUpdateMixin, UpdateView):
     '''
-    Detail of a configuration
+    Edit a Reduction (The spreadsheet)
     '''
-    template_name = 'configuration/form.html'
-    model = Configuration
-    form_class = ConfigurationForm
-    success_url = reverse_lazy('configuration:list')
+    template_name = 'reduction/sans/form.html'
+    model = Reduction
+    model_configuration = Configuration
+    form_class = ReductionForm
+    formset_class = RegionInlineFormSetUpdate
+    success_url = reverse_lazy('reduction:list')
 
-
-class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, UpdateView):
-    '''
-    Detail of a configuration
-    '''
-    template_name = 'configuration/form.html'
-    model = Configuration
-    form_class = ConfigurationForm
-    success_url = reverse_lazy('configuration:list')
-
-
-class ConfigurationDelete(LoginRequiredMixin, ConfigurationMixin, ConfigurationDeleteMixin, DeleteView):
-
-    template_name = 'configuration/confirm_delete.html'
-    model = Configuration
-    success_url = reverse_lazy('configuration:list')
-
-class ConfigurationClone(LoginRequiredMixin, ConfigurationMixin, ConfigurationCloneMixin, DetailView):
-    '''
-    Clones the Object Configuration. Keeps the same user
-    '''
-    template_name = 'configuration/detail.html'
-    model = Configuration
-
-
-class ConfigurationAssignListUid(LoginRequiredMixin, ConfigurationMixin,
-                                 ConfigurationAssignListUidMixin, TemplateView):
-    '''
-    List all UIDS + names and provides a link to assign a Configuration
-    to a user.
-    Context has 2 objects: the conf to assign and a list of uids + names
-    '''
-    template_name = 'configuration/list_uid.html'
-    model = Configuration
-
-
-class ConfigurationAssignListIpts(LoginRequiredMixin, ConfigurationMixin,
-                                  ConfigurationAssignListIptsMixin, TemplateView):
-    '''
-    List all IPTSs and provides a link to assign a Configuration
-    to all users to that IPTS.
-    Context has 2 objects: the conf to assign and a list of ipts
-    '''
-    template_name = 'configuration/list_ipts.html'
-    model = Configuration
-
-class ConfigurationAssignUid(LoginRequiredMixin, ConfigurationMixin,
-    ConfigurationAssignUidMixin, DetailView):
-    '''
-    This gets a configuration pk and uid from url, clones the Configuration
-    and assigns it to the user
-    It will display the original Configuration
-    '''
-    template_name = 'configuration/detail.html'
-    model = Configuration
-
-
-class ConfigurationAssignIpts(LoginRequiredMixin, ConfigurationMixin,
-                              ConfigurationAssignIptsMixin, DetailView):
-    '''
-
-    '''
-    template_name = 'configuration/detail.html'
-    model = Configuration

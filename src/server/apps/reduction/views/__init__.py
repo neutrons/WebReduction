@@ -6,57 +6,41 @@ def _get_class_view(request, name):
     '''
     instrument = request.user.profile.instrument
     facility = instrument.facility
-    class_imported = import_class_from_module("server.apps.configuration.views", facility, instrument, name)
+    class_imported = import_class_from_module("server.apps.reduction.views", facility, instrument, name)
     return class_imported
 
 
-def configuration_list(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationList")
+def reduction_list(request, *args, **kwargs):
+    class_imported = _get_class_view(request, "ReductionList")
     view = class_imported.as_view()(request, *args, **kwargs)
     return view
 
-def configuration_detail(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationDetail")
+def reduction_create(request, *args, **kwargs):
+    class_imported = _get_class_view(request, "ReductionCreate")
     view = class_imported.as_view()(request, *args, **kwargs)
     return view
 
-def configuration_create(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationCreate")
+def reduction_detail(request, *args, **kwargs):
+    class_imported = _get_class_view(request, "ReductionDetail")
     view = class_imported.as_view()(request, *args, **kwargs)
     return view
 
-def configuration_update(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationUpdate")
+def reduction_update(request, *args, **kwargs):
+    class_imported = _get_class_view(request, "ReductionUpdate")
     view = class_imported.as_view()(request, *args, **kwargs)
     return view
 
-def configuration_delete(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationDelete")
+def reduction_delete(request, *args, **kwargs):
+    class_imported = _get_class_view(request, "ReductionDelete")
     view = class_imported.as_view()(request, *args, **kwargs)
     return view
-    
-def configuration_clone(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationClone")
+
+def reduction_clone(request, *args, **kwargs):
+    class_imported = _get_class_view(request, "ReductionClone")
     view = class_imported.as_view()(request, *args, **kwargs)
     return view
-    
-def configuration_assign_list_uid(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationAssignListUid")
+
+def reduction_script_update(request, *args, **kwargs):
+    class_imported = _get_class_view(request, "ReductionScriptUpdate")
     view = class_imported.as_view()(request, *args, **kwargs)
     return view
-    
-def configuration_assign_list_ipts(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationAssignListIpts")
-    view = class_imported.as_view()(request, *args, **kwargs)
-    return view
-    
-def configuration_assign_uid(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationAssignUid")
-    view = class_imported.as_view()(request, *args, **kwargs)
-    return view
-    
-def configuration_assign_ipts(request, *args, **kwargs):
-    class_imported = _get_class_view(request, "ConfigurationAssignIpts")
-    view = class_imported.as_view()(request, *args, **kwargs)
-    return view
-    
