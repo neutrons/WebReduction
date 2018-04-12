@@ -4,6 +4,7 @@ import logging
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.forms.models import model_to_dict
 
 from .. import abstract
 
@@ -41,3 +42,23 @@ class Region(abstract.Region):
 
     class Meta:
         abstract = True
+
+
+class ReductionManager(abstract.ReductionManager):
+    '''
+    '''
+
+    def to_json(self, pk):
+        '''
+        Gets this reduction object in json format
+        serializes: reduction and related regions and associated configuration
+        '''
+        obj = self.select_related().get(pk=pk)
+        obj_json = model_to_dict(obj)
+        obj_json["user"] = obj.user.username
+        obj_json["regions"] = []
+        for region in obj.regions.select_related('configuration'):
+            d = model_to_dict(region)
+            d['configuration'] = model_to_dict(region.configuration)
+            obj_json["regions"].append(d)
+        return obj_json

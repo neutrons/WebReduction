@@ -16,6 +16,8 @@ class ReductionGPSANS(abstract.Reduction):
     def get_absolute_url(self):
         return ('reduction:reduction_detail', [self.pk])
 
+    # Manager
+    objects = sans_abstract.ReductionManager()
 
 class RegionGPSANS(sans_abstract.Region):
 

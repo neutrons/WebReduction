@@ -146,5 +146,5 @@ class Instrument(models.Model):
 
 
     def __str__(self):
-        return "{} : {}".format(self.beamline, self.name)
+        return "{} :: {} : {}".format(self.facility, self.beamline, self.name)
         # return self.name

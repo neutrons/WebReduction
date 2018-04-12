@@ -186,3 +186,109 @@ class ReductionUpdateMixin(ReductionFormMixin):
                     "An exception occurred: {0} :: {1}".format(
                         type(e).__name__, str(e)))
         return super().post(request, **kwargs)
+
+
+class ReductionScriptUpdateMixin(ReductionFormMixin):
+    '''
+    Edit a Reduction Script
+    on GET:
+    Generate the script and show it to the user
+    on POST:
+    - Save it
+    - Save it and submit the job to the cluster
+    '''
+
+    def get_object(self, queryset=None):
+        '''
+        We get the object already in the DB. This is called by get and post.
+        on GET: Generate the script (if the script field in the DB is empty!)
+        and add it to object shown on the form
+        It does the same for sript path. It should work HFIR and SNS
+        '''
+        obj = super().get_object()
+        logger.debug("ReductionScriptUpdateMixin :: get_object = {}".format(obj))
+        # If we are generating the form fill in empty bits
+        if self.request.method == 'GET':
+            script_builder = self._get_script_builder()
+            if obj.script is None or obj.script == "":
+                # if the script does not exist, let's generate it!
+                logger.debug("Generate the script for %s.", obj)
+                try:
+                    obj.script = script_builder.build_script()
+                except Exception as e:
+                    logger.exception(e)
+                    messages.error(self.request, "An exception occurred: {0} ::\
+                        {1}".format(type(e).__name__, str(e)))
+            if obj.script_execution_path is None or obj.script_execution_path == "":
+                obj.script_execution_path = script_builder.get_reduction_path()
+        return obj
+
+    def post(self, request, **kwargs):
+        '''
+        When the form is posted if we clicked in generate, it will
+        regenerate the form and fill it in the respective field
+        Note: We need to modify the previously posted form (POST)!
+        '''
+        if 'generate' in self.request.POST:
+            request.POST = request.POST.copy()
+            script_builder = self._get_script_builder()
+            try:
+                request.POST['script'] = script_builder.build_script()
+            except Exception as e:
+                logger.exception(e)
+                messages.error(self.request, "An exception occurred: {0} :: \
+                    {1}".format(type(e).__name__, str(e)))
+                return super().get(request, **kwargs)
+        return super().post(request, **kwargs)
+
+    def form_valid(self, form):
+        """
+        If the form is valid this is called!
+        Checks what kind of button was pressed
+        """
+
+        if 'save' in self.request.POST:
+            messages.success(self.request, "Reduction script saved.")
+            self.success_url = reverse_lazy('reduction:detail',
+                                            args=[self.kwargs['pk']])
+        elif 'generate' in self.request.POST:
+            messages.success(self.request, "Reduction script re-generated from scratch.")
+            self.success_url = reverse_lazy('reduction:script',
+                                            args=[self.kwargs['pk']])
+        else:
+            try:
+                server_name = env("JOB_SERVER_NAME")
+                server = get_object_or_404(Server, title=server_name)
+                job = Job.objects.create(
+                    title=form.instance.title,
+                    program=form.instance.script,
+                    remote_directory=form.instance.script_execution_path,
+                    remote_filename="reduction_" + datetime.now().strftime("%Y%m%d-%H%M%S.%f") + ".py",
+                    server=server,
+                    owner=self.request.user,
+                    interpreter=form.instance.script_interpreter,
+                )
+                form.instance.job = job
+
+                password_encrypted = self.request.session["password"]
+                password = signing.loads(password_encrypted)
+                submit_job_to_server.delay(
+                    job.pk,
+                    password=password,
+                    log_policy=LogPolicy.LOG_LIVE,
+                    store_results=["*.txt"],
+                    remote=True,
+                )
+                messages.success(
+                    self.request,
+                    "Reduction submitted to the cluster. See status: \
+                    <a href='%s'> here </a>" % reverse_lazy(
+                        "results:job_log_live",
+                        args=[job.pk])
+                )
+            except Exception as e:
+                logger.exception(e)
+                messages.error(self.request, "Reduction not submitted to the cluster. \
+                    An exception occurred: {0} :: \
+                    {1}".format(type(e).__name__, str(e)))
+        return super().form_valid(form)

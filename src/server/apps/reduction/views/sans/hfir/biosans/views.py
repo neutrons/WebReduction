@@ -1,13 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import (
-    CreateView, DeleteView, DetailView, ListView,
-    TemplateView, UpdateView,
+    CreateView, DeleteView, DetailView, ListView, UpdateView,
 )
 
 from server.apps.configuration.models.sans.hfir.biosans import Configuration
 from server.apps.reduction.forms.sans.hfir.biosans import (
     ReductionForm,
+    ReductionScriptForm,
     RegionInlineFormSetCreate,
     RegionInlineFormSetUpdate,
 )
@@ -15,10 +15,10 @@ from server.apps.reduction.models.sans.hfir.biosans import Reduction
 from server.apps.reduction.views.mixins import (
     ReductionCreateMixin,
     ReductionDeleteMixin,
-    ReductionFormMixin,
     ReductionMixin,
     ReductionCloneMixin,
     ReductionUpdateMixin,
+    ReductionScriptUpdateMixin,
 )
 
 from ...mixins import SANSMixin
@@ -74,6 +74,16 @@ class ReductionUpdate(LoginRequiredMixin, ReductionUpdateMixin, SANSMixin, Updat
     model = Reduction
     model_configuration = Configuration
     form_class = ReductionForm
+    formset_class = RegionInlineFormSetUpdate
+    success_url = reverse_lazy('reduction:list')
+
+
+class ReductionScriptUpdate(LoginRequiredMixin, ReductionScriptUpdateMixin, UpdateView):
+
+    template_name = 'reduction/script_form.html'
+    model = Reduction
+    model_configuration = Configuration
+    form_class = ReductionScriptForm
     formset_class = RegionInlineFormSetUpdate
     success_url = reverse_lazy('reduction:list')
 

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.forms.models import model_to_dict
 from django_remote_submission.models import Interpreter, Job
+from pprint import pformat
 
 from server.apps.catalog.models import Instrument
 
@@ -49,6 +50,7 @@ class ModelMixin(object):
 
 class ReductionManager(models.Manager):
     '''
+    This is a general reduction manager.
     '''
 
     use_for_related_fields = True
@@ -78,15 +80,19 @@ class ReductionManager(models.Manager):
         '''
         Gets this reduction object in json format
         serializes: reduction and related regions and associated configuration
+        Not for use in SANS:
+        1 Reduction has 1 Configuration
+        1 Reduction has multiple Regions
         '''
         obj = self.select_related().get(pk=pk)
         obj_json = model_to_dict(obj)
         obj_json["user"] = obj.user.username
         obj_json["regions"] = []
-        for region in obj.regions.select_related('configuration'):
+        for region in obj.regions.select_related():
             d = model_to_dict(region)
-            d['configuration'] = model_to_dict(region.configuration)
             obj_json["regions"].append(d)
+        obj_json['configuration'] = model_to_dict(obj.configuration)
+        # logger.debug(pformat(obj_json))
         return obj_json
 
 

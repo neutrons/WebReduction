@@ -8,6 +8,7 @@ from server.apps.configuration.models.sans.hfir.biosans import Configuration
 
 from server.apps.reduction.models import abstract
 from server.apps.reduction.models.sans import abstract as sans_abstract
+
 ##########################################################################
 # BIOSANS
 ##########################################################################
@@ -26,6 +27,8 @@ class ReductionBioSANS(abstract.Reduction):
     def get_absolute_url(self):
         return ('reduction:reduction_detail', [self.pk])
 
+    # Manager
+    objects = sans_abstract.ReductionManager()
 
 class RegionBioSANS(sans_abstract.Region):
 

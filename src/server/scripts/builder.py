@@ -23,6 +23,9 @@ class ScriptBuilder(object):
         "GPSANS": os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
             "templates", "gpsans.tpl"),
+        "HYSPEC": os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "templates", "hyspec.tpl"),
     }
 
     def __init__(self, data, instrument, ipts, experiment=None):
