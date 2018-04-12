@@ -1,10 +1,11 @@
-from ..abstract import ReductionForm
+from ..abstract import RegionForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Button, Layout, Fieldset, HTML, Field
 
-class RegionForm(ReductionForm):
+
+class RegionForm(RegionForm):
     def __init__(self, *args, **kwargs):
-        super(RegionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
             Fieldset(
                 '', # TITLE

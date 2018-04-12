@@ -47,6 +47,12 @@ class ReductionMixin(object):
         '''
         return self.model.objects.filter(user=self.request.user)
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     logger.debug("Context:\n{}".format(pformat(context)))
+    #     return context
+
+
 
 class ReductionFormMixin(ReductionMixin, FormsetMixin):
     '''
@@ -85,20 +91,19 @@ class ReductionFormMixin(ReductionMixin, FormsetMixin):
         formset = super().get_formset(form_class)  # instantiate using parent
         for form in formset:
             # If the configuration is in the formsets (SANS Instruments)
-            print("*"*80 + '\n', form)
             if 'configuration' in form.fields:
                 form.fields['configuration'].queryset = self.model_configuration.objects.filter(
                     user=self.request.user)
         return formset
 
-    def get_formset_kwargs(self):
-        '''
-        Sets the initial values for the regions formsets
-        '''
-        logger.debug("ReductionMixin get_formset_kwargs")
-        kwargs = super().get_formset_kwargs()
-#         kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
-        return kwargs
+#     def get_formset_kwargs(self):
+#         '''
+#         Sets the initial values for the regions formsets
+#         '''
+#         logger.debug("ReductionMixin get_formset_kwargs")
+#         kwargs = super().get_formset_kwargs()
+# #         kwargs.update({'initial' : [{'region': r[0]} for r in Region.REGION_CHOICES]})
+#         return kwargs
 
 
 class ReductionCreateMixin(ReductionFormMixin):

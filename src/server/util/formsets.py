@@ -38,6 +38,7 @@ class FormsetMixin(object):
         if 'pk' in kwargs:
             # For the UpdateView
             self.object = self.get_object()
+            logger.debug("Updating object: {}".format(self.object))
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         formset_class = self.get_formset_class()
@@ -66,11 +67,10 @@ class FormsetMixin(object):
         return self.formset_class
 
     def get_formset(self, formset_class):
-        logger.debug("FormsetMixin: get_formset")
+        logger.debug("FormsetMixin: get_formset :: class = {}".format(formset_class))
         return formset_class(**self.get_formset_kwargs())
 
     def get_formset_kwargs(self):
-        logger.debug("FormsetMixin: get_formset_kwargs")
         kwargs = {
             'instance': self.object
         }
@@ -79,11 +79,11 @@ class FormsetMixin(object):
                 'data': self.request.POST,
                 'files': self.request.FILES,
             })
-        logger.debug("kwargs: %s", pformat(kwargs))
+        logger.debug("FormsetMixin: get_formset_kwargs: {}".format(pformat(kwargs)))
         return kwargs
 
     def form_valid(self, form, formset):
-        logger.debug("FormsetMixin: form_valid :: form = {} :: formset = {}".format(form, formset))
+        # logger.debug("FormsetMixin: form_valid :: form = {} :: formset = {}".format(form, formset))
         self.object = form.save()
         formset.instance = self.object
         formset.save()

@@ -66,7 +66,7 @@ class ReductionClone(LoginRequiredMixin, ReductionCloneMixin, UpdateView):
     formset_class = RegionInlineFormSetCreate
 
 
-class ReductionUpdate(LoginRequiredMixin, ReductionUpdateMixin, UpdateView):
+class ReductionUpdate(LoginRequiredMixin, ReductionUpdateMixin, SANSMixin, UpdateView):
     '''
     Edit a Reduction (The spreadsheet)
     '''
