@@ -21,6 +21,7 @@ from server.apps.catalog.oncat.facade import Catalog
 from server.util.formsets import FormsetMixin
 from server.util.path import import_class_from_module
 from server.scripts.builder import ScriptBuilder
+from server.settings.env import env
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -54,7 +55,7 @@ class ReductionMixin(object):
 
 
 
-class ReductionFormMixin(ReductionMixin, FormsetMixin):
+class ReductionFormMixin(ReductionMixin):
     '''
     Mixin only used for the Reduction Form views
     '''
@@ -82,6 +83,13 @@ class ReductionFormMixin(ReductionMixin, FormsetMixin):
                     user=self.request.user)
         return form
 
+
+
+class ReductionFormsetMixin(ReductionMixin, FormsetMixin):
+    '''
+    Mixin only used for the Reduction Form views
+    '''
+
     def get_formset(self, form_class=None):
         '''
         When creating/editing a formset, this will make sure the user only sees
@@ -106,7 +114,8 @@ class ReductionFormMixin(ReductionMixin, FormsetMixin):
 #         return kwargs
 
 
-class ReductionCreateMixin(ReductionFormMixin):
+
+class ReductionCreateMixin(ReductionFormMixin, ReductionFormsetMixin):
 
     def form_valid(self, form, formset):
         """
@@ -156,7 +165,7 @@ class ReductionCloneMixin(ReductionFormMixin):
         return HttpResponseRedirect(
             reverse('reduction:update', kwargs={'pk': self.object.pk}))
 
-class ReductionUpdateMixin(ReductionFormMixin):
+class ReductionUpdateMixin(ReductionFormMixin, ReductionFormsetMixin):
     '''
     Edit a Reduction (The spreadsheet)
     '''
@@ -276,7 +285,7 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
                     job.pk,
                     password=password,
                     log_policy=LogPolicy.LOG_LIVE,
-                    store_results=["*.txt"],
+                    store_results=["*.txt", "*.log"],
                     remote=True,
                 )
                 messages.success(

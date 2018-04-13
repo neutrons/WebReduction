@@ -45,7 +45,29 @@ class JobLiveLog(LoginRequiredMixin, JobMixin, DetailView):
 
 class JobDetail(LoginRequiredMixin, JobMixin, DetailView):
 
-    template_name = 'results/job_detail.html'
+    def get_template_names(self):
+        """
+        ** Overload **
+        Returns a list of priority templates to render. From specific to general.
+        technique/facility/instrument/self.template
+        technique/facility/self.template
+        technique/self.template
+        self.template
+        Note that the method calling this must have self.template_name defined!!
+        """
+
+        facility_name = self.request.user.profile.instrument.facility.name.lower()
+        instrument_name = self.request.user.profile.instrument.name.lower()
+        technique_name = self.request.user.profile.instrument.technique.lower()
+        return [
+            os.path.join('results', technique_name, facility_name,
+                         instrument_name, 'job_detail.html'),
+            os.path.join('results', technique_name, facility_name,
+                         'job_detail.html'),
+            os.path.join('results', technique_name, 'job_detail.html'),
+            os.path.join('results', 'job_detail.html'),
+        ]
+
 
     def get_queryset(self):
         queryset = super(JobDetail, self).get_queryset()
@@ -78,12 +100,17 @@ class JobDetail(LoginRequiredMixin, JobMixin, DetailView):
             with open(filepath, 'rb') as f:
                 # Only way to read CVV and TSV
                 clean_lines = (line.replace(b',', b'\t') for line in f)
-                data = np.genfromtxt(clean_lines)
+                data = np.genfromtxt(
+                    clean_lines,
+                    delimiter="\t",
+                    skip_header=2,
+                    names=['X', 'Y', 'E', 'DX'],
+                )
                 # logger.debug(data)
 
-                x_data = data[:, [0]].flatten()
-                y_data = data[:, [1]].flatten()
-                e_data = data[:, [2]].flatten()
+                x_data = data['X']
+                y_data = data['Y']
+                e_data = data['E']
                 trace = go.Scatter(
                     name=filepath.split('/')[-1],
                     x=x_data,

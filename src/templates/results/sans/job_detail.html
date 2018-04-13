@@ -4,6 +4,8 @@
 
 {% block header %}
 {{ block.super }}
+<!-- Plotly.js only works in the header, not in the footer! -->
+<script src='{% static "thirdparty/plotly/plotly.min.js" %}'></script>
 {% endblock header %}
 
 {% block breadcrumbs %}
@@ -20,7 +22,7 @@
 <div class="container">
 
 	<div class="page-header">
-        <h1>Generic Job detail<small> {{ object }}</small></h1>
+        <h1>Job<small> {{ object }}</small></h1>
     </div>
 
 	<!-- This is the reduction info -->
@@ -41,6 +43,22 @@
             {% endfor %}
         </ul>
     </div>
+    <hr/>
+
+    <!--Plot-->
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">Plot</div>
+            <div class="panel-body">
+                <div id="plot_files" class="center-block"> {{plot|safe}} </div>
+            </div>
+            <div class="panel-footer">
+                <label class="checkbox-inline"><input type="checkbox" onclick='handleClickLogX(this);' value="">Log X</label>
+                <label class="checkbox-inline"><input type="checkbox" onclick='handleClickLogY(this);' value="">Log Y</label>
+            </div>
+        </div>
+    </div>
+    
     <hr/>
 
     <!--File list-->
@@ -77,7 +95,7 @@
                             </tr>
                         </tfoot>
                     </table>
-
+                
                     <button name="download" type="submit" class="btn btn-primary" data-toggle="tooltip" data-placement="top"
                         title="Download selected files in Zip format">Download selected files...</button>
 
@@ -168,15 +186,15 @@
                     console.log("checked:", this.id, this.value);
                     ids_to_download.push(this.value);
                 }
-
+        
             });
             this.ids_selected.value = ids_to_download;
 
             // FOR TESTING ONLY
-
+            
             // Output form data to a console
-
-            console.log("Form submission:", $(form).serialize());
+            
+            console.log("Form submission:", $(form).serialize()); 
             //console.log("Form submission", $(form));
             // Prevent actual form submission
             //e.preventDefault();
@@ -184,6 +202,41 @@
 
 
         });
+        
 
+        /**
+        * Functions for the plot
+        */
+        function handleClickLogX(cb) {
+            // Convert jquery element to html element
+            var plotDiv = $('.plotly-graph-div')[0];
+            if (cb.checked == true) {
+                var update = {
+                    'xaxis.type': "log"
+                };
+            }
+            else {
+                var update = {
+                    'xaxis.type': "linear"
+                };
+            }
+            Plotly.relayout(plotDiv, update)
+        }
+
+        function handleClickLogY(cb) {
+            // Convert jquery element to html element
+            var plotDiv = $('.plotly-graph-div')[0];
+            if (cb.checked == true) {
+                var update = {
+                    'yaxis.type': "log"
+                };
+            }
+            else {
+                var update = {
+                    'yaxis.type': "linear"
+                };
+            }
+            Plotly.relayout(plotDiv, update)
+        }
     </script>
 {% endblock %}
