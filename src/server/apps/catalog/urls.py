@@ -1,4 +1,6 @@
 from django.conf.urls import url
+from django.urls import path
+
 from django.views.decorators.cache import cache_page
 
 from . import views
@@ -9,6 +11,8 @@ urlpatterns = [
     url(r'^$',
         # cache_page(60*60)(views.IPTSs.as_view()), name='list_iptss'),
         (views.IPTSs.as_view()), name='list_iptss'),
+
+    path('<int:intrument_id>/ajax/', views.IPTSsAjax.as_view(), name='list_iptss_ajax'),
 
     # Just for SNS
     # View all Runs for an instrument

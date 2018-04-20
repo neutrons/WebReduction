@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+
+{% block header %}
+{{ block.super }}
+<style>
+/*jQuery UI autocomplete for bootstrap*/
+.ui-autocomplete {
+    position: absolute;
+    height: 200px;
+    overflow-y: scroll;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    cursor: default;
+    background-color: #fff;
+    padding:3px;
+    border: 1px solid #ccc;
+    font-size: 12px
+}
+.ui-autocomplete > li.ui-state-focus {
+  background-color: #FF6C00;
+}
+
+</style>
+{% endblock header %}
+
+{% block breadcrumbs %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{%if user.profile %}{% url 'users:profile_update' user.profile.pk %}{% endif %}">User Profile</a></li>
+        <li class="active">{{ user }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="page-header">
+        <h1>User Profile <small> {{ user }}</small></h1>
+    </div>
+
+    <div class="well">
+        <div class="panel-body">
+            {% crispy form  %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+
+<script>
+
+    // Setting up jQuery to pass csrf tokens to Django when using ajax.
+	$.ajaxSetup({
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        }
+    });
+
+    // set Instruments field
+    function addOptionsToSelectInstrument(selector, jsonurl) {
+        $.ajax({
+            url : jsonurl,
+            type : 'get',
+            dataType : 'json',
+            success : function(data) {
+                $(selector).empty();
+                $(selector).append('<option selected">----------</option>');
+                // [ {'value' : 123, 'label' : 'bof' }, ... ]
+                data.map(element => {
+                    $(selector).append($('<option>', {value: element.id, text: element.beamline + " :: " + element.name}));
+                });
+            },
+        });
+    }
+
+    // IPTS
+    function addOptionsToSelectIPTS(selector, jsonurl, sucessCallback) {
+        $.ajax({
+            url : jsonurl,
+            type : 'get',
+            dataType : 'json',
+            //async : true,
+            success : function(data) {
+                // <input type="text" name="ipts" class="textinput textInput form-control" maxlength="20" id="id_ipts">
+                //$(selector).replaceWith('<select name="ipts" class="textinput textInput form-control" maxlength="20" id="id_ipts"></select>');
+                // $(selector).append('<option selected">----------</option>');
+                // [ {'value' : 123, 'label' : 'bof' }, ... ]
+                data.map(element => {
+                    $(selector).append($('<option>', {value: element.ipts, text: element.ipts + " :: " + element.title}));
+                });
+                sucessCallback(data);
+            },
+        });
+    }
+
+
+    // hide fields if there are no errors and if they are not empty
+    if (!$("#div_id_instrument").hasClass( "has-error" ) && !$("#id_instrument").val())
+       $("#div_id_instrument").hide();
+
+    if (!$("#div_id_ipts").hasClass( "has-error" ) && !$("#id_ipts").val())
+        $("#div_id_ipts").hide();
+
+    if (!$("#div_id_experiment").hasClass( "has-error" ) && !$("id_experiment").val())
+        $("#div_id_experiment").hide();
+
+    // fill in fields
+    var iptss = [];
+    $('#id_facility').change(function(){
+        $("#div_id_instrument").hide();
+        $("#div_id_ipts").hide();
+        $("#div_id_experiment").hide();
+        var facilityId = $(this).val();
+        $("#div_id_instrument").show();
+        addOptionsToSelectInstrument("#id_instrument", "{% url 'users:list_instruments_ajax' facility_id=999 %}".replace(999, facilityId));
+    });
+
+    // ajax is an async function needs a call back to set ipts value
+    function setIpts(data){
+        iptss = data;
+    }
+    $('#id_instrument').change(function(){
+        $("#div_id_ipts").hide();
+        $("#div_id_experiment").hide();
+        var instrumentId = $(this).val();
+        $("#div_id_ipts").show();
+        addOptionsToSelectIPTS("#id_ipts", "{% url 'catalog:list_iptss_ajax' intrument_id=999 %}".replace(999, instrumentId), setIpts);
+
+    });
+
+    $('#id_ipts').change(function(){
+        $("#div_id_experiment").hide();
+        var ipts = $(this).val();
+        const iptsObj = iptss.find( element => element.ipts === ipts );
+        console.log("This ipts:", iptsObj);
+        if ('exp' in iptsObj){
+            $("#id_experiment").empty();
+            $("#div_id_experiment").show();
+            iptsObj.exp.map(element => {
+                if (element.startsWith("exp")){
+                    console.log("This exp:", $(this), element);
+                    $("#id_experiment").append($('<option>', {value: element, text: element}));
+                }
+            });
+        }
+    });
+
+
+</script>
+
+{% endblock %}

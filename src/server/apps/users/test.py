@@ -81,7 +81,7 @@ class TestLogin(TestCase):
         self.assertEqual(user.username, env("TEST_USERNAME"))
 
         response = self.client.post(
-            reverse('users:profile_catalog_create'),
+            reverse('users:profile_create'),
             {
                 'user': user,
                 'home_institution': 'Test',
@@ -97,7 +97,7 @@ class TestLogin(TestCase):
             user__username=env("TEST_USERNAME"))
 
         self.assertEqual(user_profile.user.username, env("TEST_USERNAME"))
-        
+
         # response.redirect_chain = [('/', 302), ('/users/profile', 302)]
         self.assertTrue(
             reverse('users:profile_view') in [

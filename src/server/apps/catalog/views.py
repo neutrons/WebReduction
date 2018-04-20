@@ -88,6 +88,33 @@ class IPTSs(LoginRequiredMixin, CatalogMixin, TemplateView):
         # logger.debug("Catalog returned:\n%s", pformat(iptss))
         return context
 
+class IPTSsAjax(LoginRequiredMixin, TemplateView):
+    '''
+    List of RUNS for a given ipts as ajax
+    '''
+
+    def get(self, request, *args, **kwargs):
+
+        instrument_id = kwargs['intrument_id']
+        instrument_obj = Instrument.objects.get(id=instrument_id)
+        facility_obj = instrument_obj.facility
+
+
+        facility = facility_obj
+        instrument = instrument_obj
+
+        catalog = Catalog(
+            facility=facility.name,
+            technique=instrument.technique,
+            instrument=instrument.catalog_name,
+            request=self.request
+        )
+
+        iptss = catalog.experiments()
+        iptss_filtered = [ {k: v for k, v in ipts.items() if k in [
+            "exp", "ipts", "title"
+        ]} for ipts in iptss]
+        return JsonResponse(iptss_filtered, status=200, safe=False)
 
 class Runs(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''

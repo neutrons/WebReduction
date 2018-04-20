@@ -1,5 +1,5 @@
 '''
-Created on 
+Created on
 @author: rhf
 '''
 
@@ -18,7 +18,7 @@ class LoginForm(AuthenticationForm):
     because of the error rendering this class has
     '''
     def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'username',
@@ -29,13 +29,19 @@ class LoginForm(AuthenticationForm):
         )
 
 
-class UserProfileCatalogForm(forms.ModelForm):
+class UserProfileForm(forms.ModelForm):
     '''
     '''
+
     def __init__(self, *args, **kwargs):
-        super(UserProfileCatalogForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = 'form-horizontal'
+
+        # Change fields from text to dropdowns
+        # This just changes the appearance
+        self.fields['ipts'].widget = forms.Select()
+        self.fields['experiment'].widget = forms.Select()
 
         self.helper.layout.append(Submit('submit', 'Save'))
         self.helper.layout.append(Button('cancel', 'Cancel',
@@ -45,30 +51,7 @@ class UserProfileCatalogForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         # exclude = ['user']
-        fields = ['facility', 'instrument']
+        fields = ['facility', 'instrument', 'ipts', 'experiment']
 
 
-class UserProfileReductionForm(forms.ModelForm):
-    '''
-    '''
-    def __init__(self, *args, **kwargs):
-        super(UserProfileReductionForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.form_class = 'form-horizontal'
 
-        self.helper.layout.append(Submit('submit', 'Save'))
-        self.helper.layout.append(Button('cancel', 'Cancel',
-                                         css_class='btn-default',
-                                         onclick="window.history.back()"))
-    class Meta:
-        model = UserProfile
-        # exclude = ['user']
-        fields = ['ipts', 'experiment']
-
-        # I have to remove this because otherwise the for update doesn't work
-        # somehow this deletes the values fetched from the database
-        # widgets = {
-        #     'ipts': forms.Select(),
-        #     'experiment': forms.Select(),
-        # }
-    

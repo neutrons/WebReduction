@@ -121,15 +121,10 @@
                           <img src="{{ request.session.gravatar_url|safe }}&s=16"  class="user-image" alt="{{ user.username }}"/> &nbsp; <strong>{{user}}</strong>  <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             {% if user.profile %}
-                            <li><a href="{% url 'users:profile_catalog_update' user.profile.pk %}">Catalog Profile</a></li>
+                            <li><a href="{% url 'users:profile_update' user.profile.pk %}">Profile</a></li>
                             {% else %}
-                            <li><a href="{% url 'users:profile_catalog_create' %}">Catalog Profile</a></li>
+                            <li><a href="{% url 'users:profile_create' %}">Profile</a></li>
                             {% endif %}
-
-                            {% if user.profile.instrument.visible_reduction %}
-                            <li><a href="{% url 'users:profile_reduction_update' user.profile.pk %}">Reduction Profile</a></li>
-                            {% endif %}
-
                             <li><a href="{% url 'users:logout' %}">Logout</a></li>
                         </ul>
                     </li>

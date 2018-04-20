@@ -5,6 +5,7 @@ import json
 import logging
 import os
 
+from natsort import natsorted
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
@@ -32,7 +33,7 @@ from django.core import signing
 from pprint import pformat
 from server.settings.env import env
 
-from .forms import UserProfileCatalogForm, UserProfileReductionForm, LoginForm
+from .forms import UserProfileForm, LoginForm
 from .models import UserProfile
 from server.apps.catalog.models import Instrument
 from server.apps.catalog.oncat.facade import Catalog
@@ -48,7 +49,7 @@ class LoginView(FormView):
     template_name = 'users/login.html'
     redirect_field_name = REDIRECT_FIELD_NAME
     success_url = reverse_lazy('catalog:list_iptss')
-    create_profile_url = reverse_lazy('users:profile_catalog_create')
+    create_profile_url = reverse_lazy('users:profile_create')
 
     @method_decorator(sensitive_post_parameters('password'))
     @method_decorator(csrf_protect)
@@ -143,41 +144,28 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         if UserProfile.objects.filter(user=request.user).count() > 0:
             return super(ProfileView, self).get(request, *args, **kwargs)
         else:
-            return redirect(reverse_lazy('users:profile_catalog_create'))
+            return redirect(reverse_lazy('users:profile_create'))
 
 
-class ProfileCatalogUpdate(LoginRequiredMixin, SuccessMessageMixin,
-                           UpdateView):
+class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     '''
     I'm using form_class to test crispy forms
     '''
     model = UserProfile
-    form_class = UserProfileCatalogForm
-    template_name = 'users/profile_catalog_form.html'
+    form_class = UserProfileForm
+    template_name = 'users/profile_form.html'
     # fields = '__all__'
     success_url = reverse_lazy('catalog:list_iptss')
-    success_message = "Your Profile for the Catalog was updated successfully."
-
-    # def get_context_data(self, **kwargs):
-    #     """
-    #     I was trying to get all the instruments where reduction is available
-    #     but at this point we don't know the facility yet. Let's postpone it.
-    #     """
-    #     context = super(ProfileCatalogUpdate, self).get_context_data(**kwargs)
-    #     context['instruments_with_reduction'] = list(
-    #         Instrument.objects.filter(reduction_available=True).values_list("name", flat=True)
-    #     )
-    #     return context
+    success_message = "Your Profile was updated successfully."
 
 
-class ProfileCatalogCreate(LoginRequiredMixin, SuccessMessageMixin,
-                           CreateView):
+class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = UserProfile
-    form_class = UserProfileCatalogForm
-    template_name = 'users/profile_catalog_form.html'
+    form_class = UserProfileForm
+    template_name = 'users/profile_form.html'
     # fields = ['home_institution', 'email_address']
     success_url = reverse_lazy('catalog:list_iptss')
-    success_message = "Your Profile for the Catalog was created successfully."
+    success_message = "Your Profile was created successfully."
 
     def form_valid(self, form):
         '''
@@ -185,54 +173,76 @@ class ProfileCatalogCreate(LoginRequiredMixin, SuccessMessageMixin,
         '''
         user = self.request.user
         form.instance.user = user
-        return super(ProfileCatalogCreate, self).form_valid(form)
+        return super().form_valid(form)
 
-#
-#
-#
 
-class ProfileReductionUpdate(LoginRequiredMixin, SuccessMessageMixin,
-                             UpdateView):
+
+# class ProfileReductionUpdate(LoginRequiredMixin, SuccessMessageMixin,
+#                              UpdateView):
+#     '''
+#     This will populate the form with the Catalog options
+#     '''
+#     model = UserProfile
+#     form_class = UserProfileReductionForm
+#     template_name = 'users/profile_reduction_form.html'
+#     success_url = reverse_lazy('index')
+#     success_message = "Your Profile for the Reduction was updated successfully."
+
+#     def _fetch_iptss_from_the_catalog(self):
+
+#         iptss = Catalog(
+#             facility=self.request.user.profile.instrument.facility.name,
+#             technique=self.request.user.profile.instrument.technique,
+#             instrument=self.request.user.profile.instrument.catalog_name,
+#             request=self.request,
+#         ).experiments()
+
+#         return iptss
+
+#     def _get_iptss_info(self):
+#         '''
+#         '''
+#         iptss = self._fetch_iptss_from_the_catalog()
+
+#         filtered_iptss = [
+#             {k: v for k, v in d.items() if k in ['ipts', 'title', 'exp']} for d in iptss]
+
+#         iptss = [{'ipts': d['ipts'],
+#                   'exp': [exp for exp in d.get('exp', []) if exp.startswith('exp')],
+#                   'title': "{} :: {}".format(d['ipts'], d['title'])}
+#             for d in filtered_iptss ]
+#         return iptss
+
+#     def get_context_data(self, **kwargs):
+#         '''
+#         Populates the context with the list of IPTSs and experiments
+#         '''
+#         context = super(ProfileReductionUpdate, self).get_context_data(**kwargs)
+#         context['iptss'] = self._get_iptss_info()
+#         logger.debug(pformat(context['iptss']))
+#         return context
+
+
+class InstrumentAjax(LoginRequiredMixin, TemplateView):
     '''
-    This will populate the form with the Catalog options
+    Get the run detail but in ajax format
     '''
-    model = UserProfile
-    form_class = UserProfileReductionForm
-    template_name = 'users/profile_reduction_form.html'
-    success_url = reverse_lazy('index')
-    success_message = "Your Profile for the Reduction was updated successfully."
 
-    def _fetch_iptss_from_the_catalog(self):
+    def get(self, request, *args, **kwargs):
 
-        iptss = Catalog(
-            facility=self.request.user.profile.instrument.facility.name,
-            technique=self.request.user.profile.instrument.technique,
-            instrument=self.request.user.profile.instrument.catalog_name,
-            request=self.request,
-        ).experiments()
+        facility_id = kwargs['facility_id']
 
-        return iptss
+        instruments_objs = Instrument.objects.filter(
+            facility__id=facility_id,
+            visible_catalog=True,
+        ) #.order_by('beamline')
 
-    def _get_iptss_info(self):
-        '''
-        '''
-        iptss = self._fetch_iptss_from_the_catalog()
+        # instruments_data = list(instruments_objs.values())
+        instruments_data = list(instruments_objs.values(
+            'id', 'beamline', 'name', 'visible_reduction',
+        ))
 
-        filtered_iptss = [
-            {k: v for k, v in d.items() if k in ['ipts', 'title', 'exp']} for d in iptss]
+        natsorted_instruments_data = natsorted(
+            instruments_data, key=lambda i: i['beamline'])
 
-        iptss = [{'ipts': d['ipts'],
-                  'exp': [exp for exp in d.get('exp', []) if exp.startswith('exp')],
-                  'title': "{} :: {}".format(d['ipts'], d['title'])}
-            for d in filtered_iptss ]
-        return iptss
-
-    def get_context_data(self, **kwargs):
-        '''
-        Populates the context with the list of IPTSs and experiments
-        '''
-        context = super(ProfileReductionUpdate, self).get_context_data(**kwargs)
-        context['iptss'] = self._get_iptss_info()
-        logger.debug(pformat(context['iptss']))
-        return context
-
+        return JsonResponse(natsorted_instruments_data, status=200, safe=False)

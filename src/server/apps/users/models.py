@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import IntegrityError
 from django.db.models import Q
 from django.core.validators import RegexValidator
+# from django.db.models.fields import BLANK_CHOICE_DASH
 
 from server.apps.catalog.oncat.facade import Catalog
 from server.apps.catalog.models import Facility, Instrument
@@ -80,6 +81,7 @@ class UserProfile(models.Model):
         "Integrated Proposal Tracking System (IPTS)",
         max_length=20,
         blank=True,
+        # choices=BLANK_CHOICE_DASH,
         # validators=[
         #     RegexValidator(
         #         regex='^IPTS-\d+$',
@@ -93,6 +95,7 @@ class UserProfile(models.Model):
         "Experiment (Only used at HFIR!)",
         max_length=20,
         blank=True,
+        # choices=BLANK_CHOICE_DASH,
         # validators=[
         #     RegexValidator(
         #         regex='^exp\d+$',
