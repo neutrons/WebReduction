@@ -1,8 +1,15 @@
-from channels.routing import include
-'''
-Django channels routing
-'''
+from django.conf.urls import url
 
-channel_routing = [
-    include('django_remote_submission.routing.channel_routing', path=r'^'),
-]
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+
+import django_remote_submission.routing
+
+
+application = ProtocolTypeRouter({
+    "websocket": AuthMiddlewareStack(
+        URLRouter([
+            url("", django_remote_submission.routing.application),
+        ])
+    ),
+})

@@ -10,7 +10,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.db import IntegrityError
 from django.db.models import Q
-from smart_selects.db_fields import ChainedForeignKey
 from django.core.validators import RegexValidator
 
 from server.apps.catalog.oncat.facade import Catalog
@@ -75,16 +74,7 @@ class UserProfile(models.Model):
 
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
 
-    instrument = ChainedForeignKey(
-        Instrument,
-        chained_field="facility",
-        chained_model_field="facility",
-        # show_all=False,
-        # auto_choose=False,
-        # sort=True,
-        # This will show only instruments with the field:
-        # limit_choices_to={'visible': True},
-    )
+    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
 
     ipts = models.CharField(
         "Integrated Proposal Tracking System (IPTS)",

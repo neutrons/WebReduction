@@ -35,8 +35,6 @@ urlpatterns = [
                                      'configuration'), namespace='configuration')),
     url(r'^results/', include(('server.apps.results.urls', 'results'), namespace='results')),
     url(r'^util/', include(('server.util.urls', 'util'), namespace='util')),
-    # For smart_selects
-    url(r'^chaining/', include('smart_selects.urls')),
     # Redirects all to Homepage
     url(r'^$', RedirectView.as_view(
         url=reverse_lazy('users:profile_view'), permanent=False),

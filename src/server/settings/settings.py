@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Django addons
     'crispy_forms',
-    'smart_selects',
     # job sumbission
     'django_remote_submission',
     'django_celery_results',
@@ -188,10 +187,6 @@ FIXTURE_DIRS = (
     ROOT_DIR("fixtures"),
 )
 
-# smart_selects
-USE_DJANGO_JQUERY = False
-#JQUERY_URL = False
-
 # To store objects in the session
 # The default is JSON and doesn't work for all objects
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
@@ -213,13 +208,13 @@ CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://127.0.0.1:6379')
 
 # Django Channels
 # For live results
+ASGI_APPLICATION = "server.routing.application"
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'asgi_redis.RedisChannelLayer',
+        'BACKEND': "channels_redis.core.RedisChannelLayer",
         'CONFIG': {
             'hosts': [('127.0.0.1', 6379)],
         },
-        'ROUTING': 'server.routing.channel_routing',
     },
 }
 
