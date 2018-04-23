@@ -32,6 +32,7 @@ from django.core import signing
 
 from pprint import pformat
 from server.settings.env import env
+from django import forms
 
 from .forms import UserProfileForm, LoginForm
 from .models import UserProfile
@@ -157,6 +158,26 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     # fields = '__all__'
     success_url = reverse_lazy('catalog:list_iptss')
     success_message = "Your Profile was updated successfully."
+
+    def get_context_data(self, **kwargs):
+        """
+        """
+        context = super().get_context_data(**kwargs)
+        # Change the form population so we only show instruments for this facility
+        context['form'].fields["instrument"].queryset = Instrument.objects.filter(
+            facility_id=self.object.facility.id)
+
+        # This is the only way I found to have IPTS + EXP in the form when updated
+        if self.object.ipts:
+            context['form'].fields["ipts"].widget=forms.Select(
+                choices=[(self.object.ipts, self.object.ipts)],
+                attrs={"visible_reduction": "{}".format(self.object.instrument.visible_reduction) })
+            if self.object.experiment:
+                context['form'].fields["experiment"].widget=forms.Select(
+                    choices=[(self.object.experiment, self.object.experiment)])
+
+        return context
+
 
 
 class ProfileCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):

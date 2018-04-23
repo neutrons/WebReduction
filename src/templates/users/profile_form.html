@@ -67,7 +67,7 @@
     });
 
     // set Instruments field
-    function addOptionsToSelectInstrument(selector, jsonurl) {
+    function setInstrumentField(selector, jsonurl, sucessCallback) {
         $.ajax({
             url : jsonurl,
             type : 'get',
@@ -79,12 +79,13 @@
                 data.map(element => {
                     $(selector).append($('<option>', {value: element.id, text: element.beamline + " :: " + element.name}));
                 });
+                sucessCallback(data);
             },
         });
     }
 
     // IPTS
-    function addOptionsToSelectIPTS(selector, jsonurl, sucessCallback) {
+    function setIPTSField(selector, jsonurl, sucessCallback) {
         $.ajax({
             url : jsonurl,
             type : 'get',
@@ -105,50 +106,85 @@
 
 
     // hide fields if there are no errors and if they are not empty
-    if (!$("#div_id_instrument").hasClass( "has-error" ) && !$("#id_instrument").val())
+    if (!$("#div_id_instrument").hasClass( "has-error" ) && $("#id_instrument").val()==null)
        $("#div_id_instrument").hide();
 
-    if (!$("#div_id_ipts").hasClass( "has-error" ) && !$("#id_ipts").val())
+    if (!$("#div_id_ipts").hasClass( "has-error" ) && $("#id_ipts").val()==null){
         $("#div_id_ipts").hide();
+    }
 
-    if (!$("#div_id_experiment").hasClass( "has-error" ) && !$("id_experiment").val())
+    if (!$("#div_id_experiment").hasClass( "has-error" ) && $("#id_experiment").val()==null)
         $("#div_id_experiment").hide();
 
-    // fill in fields
+    // global Variable
+    var instruments = [];
     var iptss = [];
+
+    // ajax is an async function needs a call back to set a global variable
+    function setIptss(data){
+        iptss = data;
+        $(".loader").hide();
+    }
+    function setInstruments(data){
+        instruments = data;
+        $(".loader").hide();
+    }
+
+    // When the facility changes, update options the instrument field
     $('#id_facility').change(function(){
-        $("#div_id_instrument").hide();
+
+        console.log("Facility changed",  $(this));
+
+        // $("#div_id_instrument").hide();
+        $(".loader").show();
+
         $("#div_id_ipts").hide();
         $("#div_id_experiment").hide();
         var facilityId = $(this).val();
         $("#div_id_instrument").show();
-        addOptionsToSelectInstrument("#id_instrument", "{% url 'users:list_instruments_ajax' facility_id=999 %}".replace(999, facilityId));
+        setInstrumentField("#id_instrument", "{% url 'users:list_instruments_ajax' facility_id=999 %}".replace(999, facilityId), setInstruments);
+
     });
 
-    // ajax is an async function needs a call back to set ipts value
-    function setIpts(data){
-        iptss = data;
-    }
+    // When the instrument changes:
+    // - update options the IPTS field if instrument.visible_reduction == true
     $('#id_instrument').change(function(){
-        $("#div_id_ipts").hide();
-        $("#div_id_experiment").hide();
-        var instrumentId = $(this).val();
-        $("#div_id_ipts").show();
-        addOptionsToSelectIPTS("#id_ipts", "{% url 'catalog:list_iptss_ajax' intrument_id=999 %}".replace(999, instrumentId), setIpts);
 
+        console.log("Instrument changed",  $(this));
+
+        var instrumentId = $(this).val();
+        var found = false;
+        instruments.forEach(function(element){
+            if (element.id == instrumentId && element.visible_reduction == true){
+                console.log("Instrument available for reduction",  $(this));
+                $(".loader").show();
+                $("#div_id_experiment").hide();
+                $("#div_id_ipts").show();
+                setIPTSField("#id_ipts", "{% url 'catalog:list_iptss_ajax' intrument_id=999 %}".replace(999, instrumentId), setIptss);
+                found = true;
+            }
+        });
+        if (!found){
+            $("#id_ipts").empty();
+            $("#id_ipts").hide();
+
+            $("#id_experiment").empty();
+            $("#id_experiment").hide();
+
+        }
     });
 
+    // if IPTS changed
     $('#id_ipts').change(function(){
+
         $("#div_id_experiment").hide();
         var ipts = $(this).val();
         const iptsObj = iptss.find( element => element.ipts === ipts );
-        console.log("This ipts:", iptsObj);
         if ('exp' in iptsObj){
             $("#id_experiment").empty();
             $("#div_id_experiment").show();
             iptsObj.exp.map(element => {
                 if (element.startsWith("exp")){
-                    console.log("This exp:", $(this), element);
                     $("#id_experiment").append($('<option>', {value: element, text: element}));
                 }
             });
