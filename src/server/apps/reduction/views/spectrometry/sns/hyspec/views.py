@@ -42,7 +42,7 @@ class ReductionCreate(LoginRequiredMixin, ReductionCreateMixin, CreateView):
     '''
     Create a new entry!
     '''
-    template_name = 'reduction/sans/form.html'
+    template_name = 'reduction/form.html'
     model = Reduction
     model_configuration = Configuration
     form_class = ReductionForm
@@ -69,7 +69,7 @@ class ReductionUpdate(LoginRequiredMixin, ReductionUpdateMixin, UpdateView):
     '''
     Edit a Reduction (The spreadsheet)
     '''
-    template_name = 'reduction/sans/form.html'
+    template_name = 'reduction/form.html'
     model = Reduction
     model_configuration = Configuration
     form_class = ReductionForm

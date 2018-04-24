@@ -17,7 +17,7 @@
 
 {% block content %}
 <div class="container">
-	
+
     <div class="page-header">
         <h1>Live results for <small>{{user.profile.instrument}}</small></h1>
     </div>
@@ -38,7 +38,7 @@
 <script src='{% static "thirdparty/reconnecting-websocket/reconnecting-websocket.min.js" %}'></script>
 <script>
 
-socket = new ReconnectingWebSocket("ws://" + window.location.host + "/job-user/");
+socket = new ReconnectingWebSocket("ws://" + window.location.host + "/ws/job-user/");
 
 
 socket.onmessage = function(e) {

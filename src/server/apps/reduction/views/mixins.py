@@ -22,6 +22,7 @@ from server.util.formsets import FormsetMixin
 from server.util.path import import_class_from_module
 from server.scripts.builder import ScriptBuilder
 from server.settings.env import env
+from django.db import transaction
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -281,12 +282,13 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
 
                 password_encrypted = self.request.session["password"]
                 password = signing.loads(password_encrypted)
-                submit_job_to_server.delay(
-                    job.pk,
-                    password=password,
-                    log_policy=LogPolicy.LOG_LIVE,
-                    store_results=["*.txt", "*.log"],
-                    remote=True,
+                transaction.on_commit(lambda:submit_job_to_server.delay(
+                        job.pk,
+                        password=password,
+                        log_policy=LogPolicy.LOG_LIVE,
+                        store_results=["*.txt", "*.log"],
+                        remote=True,
+                    )
                 )
                 messages.success(
                     self.request,
