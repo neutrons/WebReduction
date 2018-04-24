@@ -14,7 +14,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 from tempfile import NamedTemporaryFile
-from server.apps.sans.models import ModelMixin
+from server.apps.reduction.models.abstract import ModelMixin
 import logging
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103

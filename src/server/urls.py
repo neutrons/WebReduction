@@ -28,7 +28,6 @@ urlpatterns = [
     # My apps
     url(r'^users/', include(('server.apps.users.urls', 'users'), namespace='users', )),
     url(r'^catalog/', include(('server.apps.catalog.urls', 'catalog'), namespace='catalog')),
-    url(r'^sans/', include(('server.apps.sans.urls', 'sans'), namespace='sans')),
     url(r'^reduction/', include(('server.apps.reduction.urls',
                                  'reduction'), namespace='reduction')),
     url(r'^configuration/', include(('server.apps.configuration.urls',

@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'grappelli', # this must be before contrib.admin
     'django.contrib.admin',
     # My apps
-    'server.apps.sans',
     'server.apps.users',
     'server.apps.catalog',
     'server.apps.results',
