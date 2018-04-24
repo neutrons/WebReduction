@@ -67,9 +67,9 @@
     });
 
     // set Instruments field
-    function setInstrumentField(selector, jsonurl, sucessCallback) {
+    function setInstrumentField(selector, jsonUrl, successCallback) {
         $.ajax({
-            url : jsonurl,
+            url : jsonUrl,
             type : 'get',
             dataType : 'json',
             success : function(data) {
@@ -79,15 +79,15 @@
                 data.map(element => {
                     $(selector).append($('<option>', {value: element.id, text: element.beamline + " :: " + element.name}));
                 });
-                sucessCallback(data);
+                successCallback(data);
             },
         });
     }
 
     // IPTS
-    function setIPTSField(selector, jsonurl, sucessCallback) {
+    function setIPTSField(selector, jsonUrl, successCallback) {
         $.ajax({
-            url : jsonurl,
+            url : jsonUrl,
             type : 'get',
             dataType : 'json',
             //async : true,
@@ -99,10 +99,15 @@
                 data.map(element => {
                     $(selector).append($('<option>', {value: element.ipts, text: element.ipts + " :: " + element.title}));
                 });
-                sucessCallback(data);
+                successCallback(data);
             },
         });
     }
+
+    // global Variables
+    // When editing the form, django pre-populates this variable.
+    var instruments = {% if instruments %}{{instruments|safe}}{%else%}[]{%endif%};
+    var iptss = [];
 
 
     // hide fields if there are no errors and if they are not empty
@@ -112,13 +117,23 @@
     if (!$("#div_id_ipts").hasClass( "has-error" ) && $("#id_ipts").val()==null){
         $("#div_id_ipts").hide();
     }
+    else if ($("#id_ipts").val() != null) {
+        // On load
+        var instrumentId = $("#id_instrument").val();
+        instruments.forEach(function(element){
+            if (element.id == instrumentId && element.visible_reduction == true){
+                console.log("onload populating iptss");
+                $(".loader").show();
+                setIPTSField("#id_ipts", "{% url 'catalog:list_iptss_ajax' intrument_id=999 %}".replace(999, instrumentId), setIptss);
+            }
+        });
+
+    }
 
     if (!$("#div_id_experiment").hasClass( "has-error" ) && $("#id_experiment").val()==null)
         $("#div_id_experiment").hide();
 
-    // global Variable
-    var instruments = [];
-    var iptss = [];
+
 
     // ajax is an async function needs a call back to set a global variable
     function setIptss(data){
@@ -154,6 +169,9 @@
 
         var instrumentId = $(this).val();
         var found = false;
+
+        $("#id_ipts").empty();
+
         instruments.forEach(function(element){
             if (element.id == instrumentId && element.visible_reduction == true){
                 console.log("Instrument available for reduction",  $(this));
@@ -165,11 +183,12 @@
             }
         });
         if (!found){
+            console.log("Not found");
             $("#id_ipts").empty();
-            $("#id_ipts").hide();
+            $("#div_id_ipts").hide();
 
             $("#id_experiment").empty();
-            $("#id_experiment").hide();
+            $("#div_id_experiment").hide();
 
         }
     });

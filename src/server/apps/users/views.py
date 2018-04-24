@@ -163,10 +163,12 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         """
         """
         context = super().get_context_data(**kwargs)
+
         # Change the form population so we only show instruments for this facility
         context['form'].fields["instrument"].queryset = Instrument.objects.filter(
             facility_id=self.object.facility.id)
-
+        # We change the form from text field to select box in the Form class
+        # We need to popukate it with choices
         # This is the only way I found to have IPTS + EXP in the form when updated
         if self.object.ipts:
             context['form'].fields["ipts"].widget=forms.Select(
@@ -175,7 +177,10 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             if self.object.experiment:
                 context['form'].fields["experiment"].widget=forms.Select(
                     choices=[(self.object.experiment, self.object.experiment)])
-
+        # Put in the context all instruments for this facility
+        context['instruments'] = json.dumps(list(Instrument.objects.filter(
+            facility_id=self.object.facility.id).values(
+                "id", "beamline", "name", "visible_reduction")))
         return context
 
 
