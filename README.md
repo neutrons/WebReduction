@@ -171,3 +171,35 @@ psql -U reduction -d reduction -c "drop owned by reduction;" && \
 ./manage.py loaddata catalog jobs && \
 ./manage.py runserver
 ```
+
+# Production
+
+
+```
+cd /usr/local/reduction
+git pull origin master
+
+source venv/bin/activate
+pip install -r config/requirements/dev.txt -U
+
+
+rm -rf /usr/local/reduction/dist/static/*
+cd src/
+python manage.py collectstatic
+
+cd ..
+find . -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" | xargs rm
+
+psql -U reduction -d reduction -c "drop owned by reduction;"
+
+cd src
+./manage.py makemigrations && ./manage.py migrate && ./manage.py loaddata catalog jobs
+
+
+sudo systemctl restart celery.service
+sudo systemctl status celery.service
+
+sudo systemctl restart runworker.service
+sudo systemctl status runworker.service
+
+```
