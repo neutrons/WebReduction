@@ -510,7 +510,7 @@
 			"name": "POWDER",
 			"description": "Neutron Powder Diffractometer",
 			"beamline": "HB-2A",
-			"technique": "Powder Diffraction",
+			"technique": "Powder",
 			"catalog_name": "HB2A",
 			"ldap_group_name": "hfir_hb2a_team",
 			"drive_path": "/HFIR/HB2A",
