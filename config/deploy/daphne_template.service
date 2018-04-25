@@ -13,7 +13,7 @@ PIDFile=/run/daphne.pid
 WorkingDirectory=%(project_root)s/src
 
 ExecStart=%(project_venv)s/bin/daphne -u %(project_root)s/dist/daphne.sock \
-    server.asgi:channel_layer
+    server.asgi:application
 ExecStop=/bin/kill -s TERM $MAINPID
 
 
