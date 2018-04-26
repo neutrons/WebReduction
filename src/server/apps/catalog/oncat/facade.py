@@ -1,4 +1,5 @@
 import os
+import os.path
 import logging
 import re
 import json
@@ -48,12 +49,17 @@ class Catalog(ABC):
         # To get first the very subclasses (more specific)
         subclasses.reverse()
 
+        logger.debug("Creating a Catalog for: {} {} {}".format(facility, technique, instrument))
+
         for subclass in subclasses:
             if str(subclass.__name__) == facility+technique+instrument:
+                logger.debug("Using catalog subclass: {}".format(subclass.__name__))
                 return super(cls, subclass).__new__(subclass)
             elif str(subclass.__name__) == facility+technique:
+                logger.debug("Using catalog subclass: {}".format(subclass.__name__))
                 return super(cls, subclass).__new__(subclass)
             elif str(subclass.__name__) == facility:
+                logger.debug("Using catalog subclass: {}".format(subclass.__name__))
                 return super(cls, subclass).__new__(subclass)
         raise Exception('Facility not supported: {}!'.format(
             facility+technique+instrument))
@@ -506,10 +512,39 @@ class HFIRTAS(HFIR):
 
     RUNS_EXTENSIONS = ['.dat']
 
-
     def run_specific(self, entry):
         '''
         '''
         elem = super().run_specific(entry)
         elem['statistics'] = entry['statistics']
         return elem
+
+
+class HFIRPowder(HFIR):
+
+    RUNS_EXTENSIONS = ['.dat', '.txt']
+
+    def runs_specific(self, entry):
+        '''
+        Powder has txt files inside the folder
+        We need them for the analysis
+        '''
+
+        elem = {}
+        elem['location'] = entry['location']
+        elem['filename'] = os.path.basename(entry['location'])
+        try:
+            elem['title'] = entry['metadata']['scan_title']
+            elem['modified'] = dateparse.parse_datetime(entry['modified'])
+            elem['metadata'] = entry['metadata']
+        except KeyError:
+            # TXT case
+            file_path = entry['location']
+            elem['metadata'] = {}
+            elem['metadata']['scan'] = "txt"
+            elem['metadata']['scan_title'] = os.path.basename(file_path)
+            elem['title']  = os.path.basename(file_path)
+        return elem
+
+
+
