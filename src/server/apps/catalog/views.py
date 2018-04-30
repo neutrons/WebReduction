@@ -1,5 +1,6 @@
 import logging
 import os
+import os.path
 import zipfile
 from io import BytesIO
 
@@ -22,7 +23,7 @@ from django.http import HttpResponse
 from django.http import FileResponse
 from django.urls import reverse
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from .models import Facility, Instrument
 from .oncat.facade import Catalog
 
@@ -239,6 +240,11 @@ class RunFile(LoginRequiredMixin, CatalogMixin, TemplateView):
                 )
             )
             return HttpResponseForbidden()
+
+        # Check if the file exists
+        if not os.path.exists(filename):
+            logger.debug('File {} not found.'.format(filename))
+            return HttpResponseNotFound('File {} not found.'.format(filename))
 
         response = FileResponse(open(filename, 'rb'))
         response['Content-Disposition'] = "attachment; filename={}".format(filename)
