@@ -19,6 +19,8 @@ pip3 install Fabric3  --user
 
 # using file name and rules
 fab -f fabfile.py -R staging deploy
+# Passing the parameter 'branch' in function start 'start'
+fab -f fabfile.py -R staging start:branch='dev_deploy'
 # or just the task and the default fabfile.py:
 fab -R staging deploy
 '''
@@ -30,8 +32,8 @@ env.shell = "/bin/bash -c"
 
 # This is the definitions for ever
 env.roledefs = {
-    'staging': {
-        'hosts': ['vagrant@127.0.0.1:2222'],
+    'dev': {
+        'hosts': ['reductiondev.sns.gov'],
         'project_root': '/usr/local/reduction',
     },
     'production': {
@@ -44,8 +46,8 @@ def get_active_role_name():
     '''
     Get active role name. For example:
     If in the command line:
-    $ fab -R staging start_celery
-    The active role is staging
+    $ fab -R dev start_celery
+    The active role is dev
     If the in the function heder there's a decorator:
     @roles('webserver', 'dbserver')
     The active roles is an array: ['webserver', 'dbserver']
@@ -93,10 +95,14 @@ def append_to_active_role(role_name):
         'daphne_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'daphne_template.service'),
         'daphne_service_file': '/usr/lib/systemd/system/daphne.service',
-        'runworker_service_template': os.path.join(
-            local_project_root, 'config', 'deploy', 'runworker_template.service'),
-        'runworker_service_file': '/usr/lib/systemd/system/runworker.service',
-        #
+        # uWSGI
+        'uwsgi_ini_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'uwsgi_template.ini'),
+        'uwsgi_ini_file': '/etc/uwsgi.ini',
+        'uwsgi_service_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'uwsgi_template.service'),
+        'uwsgi_service_file': '/etc/systemd/system/uwsgi.service',
+        # Requirements
         'requirements_file': os.path.join(
             remote_project_root, 'config', 'requirements', 'production.txt'),
         # Certificates:
@@ -202,6 +208,28 @@ def start(branch='master'):
 
     # run('chmod -R u+rwX,g+rwX,o-rwX {}'.format(env.project_root))
 
+
+@task
+@apply_role
+def clean_db(db_username='reduction'):
+    '''
+    deletes migrations and cleans the db.
+    It asks for the
+    Run for example as:
+    fab -R dev clean_db:db_username='reduction'
+    '''
+    with  cd(env.project_root):
+        run('find . -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" | xargs --no-run-if-empty rm')
+        run('psql -U {} -d reduction -c "drop owned by reduction;"'.format(db_username))
+
+@task
+@apply_role
+def pull_from_branch(branch='master'):
+    with cd(env.project_root):
+        run("git fetch -p")
+        run("git pull origin {}".format(branch))
+
+
 @task
 @apply_role
 def migrate():
@@ -209,6 +237,10 @@ def migrate():
     Make the Django migrations and load fixtures
     ATTENTION: Don't forget to put the .env in the project root!!!
     and do: sudo chmod u=rw,g=rw,o= .env
+
+    Run for example as clean_db followed by migration:
+    fab -R dev clean_db pull_from_branch:branch='master' migrate
+
     '''
     with  prefix('. ' + env.project_venv + '/bin/activate'),\
             cd(env.project_src):
@@ -247,34 +279,6 @@ def start_daphne():
         # This is to enable on boot
         sudo('systemctl enable daphne.service')
         sudo('systemctl restart daphne.service')
-
-@task
-@apply_role
-def start_runworker():
-    '''
-    Start runworker
-
-    # Run as:
-    fab -f fabfile.py -R staging start_runworker
-
-    # To delete manualy this service:
-    sudo systemctl stop runworker
-    sudo systemctl disable runworker
-    sudo rm /lib/systemd/system/runworker.service
-    sudo systemctl daemon-reload
-    sudo systemctl reset-failed
-
-    # To list this service
-    systemctl list-unit-files --all | grep runworker
-
-    '''
-    with settings(warn_only=True):
-        files.upload_template(env['runworker_service_template'],
-            env['runworker_service_file'], context=env, backup=False, use_sudo=True)
-
-        sudo('systemctl daemon-reload')
-        sudo('systemctl enable runworker.service')
-        sudo('systemctl restart runworker.service')
 
 @task
 @apply_role
@@ -358,34 +362,38 @@ def start_celery():
         sudo('systemctl restart celery.service')
 
 
-@task
-@apply_role
-def full_deploy(branch='master'):
-    '''
-    Updates the project, make migrations and start all the services.
-    '''
-    start(branch)
-    migrate()
-    start_daphne()
-    start_runworker()
-    start_redis()
-    start_celery()
-    start_nginx()
 
 @task
 @apply_role
-def update_python(branch='master'):
+def start_uwsgi():
     '''
-    Pulls from master and restart python workers
+    Start uWSGI
 
-    from a my pc do:
-    fab -f fabfile.py -R production update_python
+    # Run as:
+    fab -f fabfile.py -R staging start_uwsgi
+
+    # Usually this is run as:
+    fab -R dev clean_db pull_from_branch:branch='master' migrate
+
+    # To delete manualy this service:
+    sudo systemctl stop uwsgi
+    sudo systemctl disable uwsgi
+    sudo rm /lib/systemd/system/uwsgi.service
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
+
+    # To list this service
+    systemctl list-unit-files --all | grep uwsgi
+
     '''
-    with cd(env.project_root):
-        run("git pull origin {}".format(branch))
+    with settings(warn_only=True):
+        files.upload_template(env['uwsgi_ini_template'],
+            env['uwsgi_ini_file'], context=env, backup=False, use_sudo=True)
+        files.upload_template(env['uwsgi_service_template'],
+            env['uwsgi_service_file'], context=env, backup=False, use_sudo=True)
 
-    with  prefix('. ' + env.project_venv + '/bin/activate'),\
-            cd(env.project_src):
-        run('python manage.py collectstatic --noinput')
 
-    sudo('systemctl restart runworker.service')
+        sudo('systemctl daemon-reload')
+        # This is to enable on boot
+        sudo('systemctl enable uwsgi.service')
+        sudo('systemctl restart uwsgi.service')

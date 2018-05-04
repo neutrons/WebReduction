@@ -12,10 +12,15 @@ RuntimeDirectory=daphne
 PIDFile=/run/daphne.pid
 WorkingDirectory=%(project_root)s/src
 
+# %(project_root)s/dist/daphne.sock is the socket to receive nginx requests
 ExecStart=%(project_venv)s/bin/daphne -u %(project_root)s/dist/daphne.sock \
     server.asgi:application
 ExecStop=/bin/kill -s TERM $MAINPID
 
+# temp to access /HFIR and /SNS
+# SNS Linux should provide a new user soon
+User=rhf
+Group=reduction
 
 [Install]
 WantedBy=multi-user.target
