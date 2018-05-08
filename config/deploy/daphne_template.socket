@@ -1,0 +1,13 @@
+[Unit]
+Description = Daphne Socket for worker %%i
+
+[Socket]
+ListenStream = 8888
+Service = daphne@%%i.service
+
+NoDelay=true
+ReusePort=true
+Backlog=1024
+
+[Install]
+WantedBy = sockets.target

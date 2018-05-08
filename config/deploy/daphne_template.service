@@ -1,10 +1,12 @@
-
 [Unit]
-Description=Daphne Service For Django
+Description=Daphne Worker %%i
+
 After=syslog.target
 After=network.target
 After=postgresql-9.5.service
 After=nginx.service
+
+Requires=daphne@%%i.socket
 
 [Service]
 Type=simple
@@ -13,9 +15,11 @@ PIDFile=/run/daphne.pid
 WorkingDirectory=%(project_root)s/src
 
 # %(project_root)s/dist/daphne.sock is the socket to receive nginx requests
-ExecStart=%(project_venv)s/bin/daphne -u %(project_root)s/dist/daphne.sock \
+ExecStart=%(project_venv)s/bin/daphne \
+    -e systemd:domain=INET:index=0 \
     server.asgi:application
-ExecStop=/bin/kill -s TERM $MAINPID
+
+NonBlocking=true
 
 # temp to access /HFIR and /SNS
 # SNS Linux should provide a new user soon
@@ -24,3 +28,4 @@ Group=reduction
 
 [Install]
 WantedBy=multi-user.target
+

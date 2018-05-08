@@ -18,11 +18,11 @@ If running this for the first time or without vietualenv:
 pip3 install Fabric3  --user
 
 # using file name and rules
-fab -f fabfile.py -R staging deploy
+fab -f fabfile.py -R dev deploy
 # Passing the parameter 'branch' in function start 'start'
-fab -f fabfile.py -R staging start:branch='dev_deploy'
+fab -f fabfile.py -R dev start:branch='dev_deploy'
 # or just the task and the default fabfile.py:
-fab -R staging deploy
+fab -R dev deploy
 '''
 
 git_repo = "https://github.com/ricleal/sns-reduction.git"
@@ -94,7 +94,10 @@ def append_to_active_role(role_name):
         # Daphne
         'daphne_service_template': os.path.join(
             local_project_root, 'config', 'deploy', 'daphne_template.service'),
-        'daphne_service_file': '/usr/lib/systemd/system/daphne.service',
+        'daphne_service_file': '/usr/lib/systemd/system/daphne@.service',
+        'daphne_socket_template': os.path.join(
+            local_project_root, 'config', 'deploy', 'daphne_template.socket'),
+        'daphne_socket_file': '/usr/lib/systemd/system/daphne@.socket',
         # uWSGI
         'uwsgi_ini_template': os.path.join(
             local_project_root, 'config', 'deploy', 'uwsgi_template.ini'),
@@ -126,10 +129,10 @@ def set_active_role_as_env(role_name):
     This sets the env.roledefs[<active role>] as env variable
     E.g.:
     The entry:
-    env.roledefs['staging']['project_root']
+    env.roledefs['dev']['project_root']
     Will be
     env.project_root
-    When the 'staging' role is active
+    When the 'dev' role is active
     '''
     for k, v in env.roledefs[role_name].items():
         if k in env and isinstance(env[k], list) and isinstance(v, list):
@@ -167,7 +170,7 @@ def start(branch='master'):
     Sets the virtual env
 
     # Run as:
-    fab -R staging start:branch='dev_deploy'
+    fab -R dev start:branch='dev_deploy'
 
     '''
 
@@ -258,7 +261,9 @@ def start_daphne():
     Start daphne
 
     # Run as:
-    fab -f fabfile.py -R staging start_daphne
+    fab -f fabfile.py -R dev start_nginx start_daphne
+    # or
+    fab -f fabfile.py -R dev start_daphne
 
     # To delete manualy this service:
     sudo systemctl stop daphne
@@ -270,15 +275,23 @@ def start_daphne():
     # To list this service
     systemctl list-unit-files --all | grep daphne
 
+    Note:
+    This was done for multiprocessing. Unfortunetly it only works for ubuntu
+    systemd v 229. RHEL 7.5 has v 219 and it does not allow to launch multiple
+    sockets in the same port.. Looks like ReusePort is ignored.
     '''
     with settings(warn_only=True):
         files.upload_template(env['daphne_service_template'],
             env['daphne_service_file'], context=env, backup=False, use_sudo=True)
+        files.upload_template(env['daphne_socket_template'],
+            env['daphne_socket_file'], context=env, backup=False, use_sudo=True)
 
         sudo('systemctl daemon-reload')
-        # This is to enable on boot
-        sudo('systemctl enable daphne.service')
-        sudo('systemctl restart daphne.service')
+        # Note the number of processes beeig launched
+        # sudo('systemctl enable daphne@{1..2}.socket')
+        # sudo('systemctl restart daphne@{1..2}.socket')
+        sudo('systemctl enable daphne@1.socket')
+        sudo('systemctl restart daphne@1.socket')
 
 @task
 @apply_role
@@ -287,7 +300,7 @@ def start_nginx():
     Start NGINX
 
     # Run as:
-    fab -f fabfile.py -R staging start_nginx
+    fab -f fabfile.py -R dev start_nginx
 
     # To delete manualy this service:
     sudo systemctl stop nginx
@@ -367,10 +380,13 @@ def start_celery():
 @apply_role
 def start_uwsgi():
     '''
+
+    THIS IS NOT USED!!!
+
     Start uWSGI
 
     # Run as:
-    fab -f fabfile.py -R staging start_uwsgi
+    fab -f fabfile.py -R dev start_uwsgi
 
     # Usually this is run as:
     fab -R dev clean_db pull_from_branch:branch='master' migrate
