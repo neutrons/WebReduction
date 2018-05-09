@@ -481,7 +481,7 @@
 			"data_file_path_template": "",
 			"reduction_path_template": "",
 			"visible_reduction": false,
-			"visible_catalog": false,
+			"visible_catalog": true,
 			"facility": 1
 		}
 	},

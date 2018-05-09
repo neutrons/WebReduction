@@ -15,6 +15,11 @@
     <h1>Welcome <small>This is your profile...</small></h1>
   </div>
 
+  <p>
+  <a class="btn btn-primary" href="{% url 'catalog:list_iptss' %}" data-toggle="tooltip" title="Shows the catalog for all instruments in your selected profile facility!" >
+    <span class="glyphicon glyphicon-book"></span> &nbsp;Got to the Catalog</a>
+  </p>
+
   <div class="well">
     <p>Hello <strong>{{ user.fullname }}</strong>!</p>
     <p> From the LDAP server we have the following information:</p>
