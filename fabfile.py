@@ -117,8 +117,8 @@ def append_to_active_role(role_name):
 
     if role_name == 'production':
         roles.update({
-            'ssl_certificate_file': '/etc/pki/tls/certs/star.sns.gov.cert.pem',
-            'ssl_certificate_key_file': '/etc/pki/tls/private/star.sns.gov.key.pem',
+            'ssl_certificate_file': '/etc/pki/tls/certs/wildcard.sns.gov.cert.pem',
+            'ssl_certificate_key_file': '/etc/pki/tls/private/wildcard.sns.gov.key.pem',
         })
 
     env.roledefs[role_name].update(roles)
