@@ -109,16 +109,14 @@ def append_to_active_role(role_name):
         'requirements_file': os.path.join(
             remote_project_root, 'config', 'requirements', 'production.txt'),
         # Certificates:
-        'ssl_certificate_file': os.path.join(
-            remote_project_root, 'config', 'certificates', 'domain.crt'),
-        'ssl_certificate_key_file': os.path.join(
-            remote_project_root, 'config', 'certificates', 'domain.key'),
+        'ssl_certificate_file': '/etc/pki/tls/certs/wildcard.sns.gov.crt',
+        'ssl_certificate_key_file': '/etc/pki/tls/private/wildcard.sns.gov.key',
     }
-
+    # In this case they are the same, but most of the times they are not!
     if role_name == 'production':
         roles.update({
-            'ssl_certificate_file': '/etc/pki/tls/certs/wildcard.sns.gov.cert.pem',
-            'ssl_certificate_key_file': '/etc/pki/tls/private/wildcard.sns.gov.key.pem',
+            'ssl_certificate_file': '/etc/pki/tls/certs/wildcard.sns.gov.crt',
+            'ssl_certificate_key_file': ' /etc/pki/tls/private/wildcard.sns.gov.key',
         })
 
     env.roledefs[role_name].update(roles)
