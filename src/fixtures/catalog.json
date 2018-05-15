@@ -336,7 +336,7 @@
 			"drive_path": "/SNS/HYS",
 			"data_file_path_template": "",
 			"reduction_path_template": "",
-			"visible_reduction": false,
+			"visible_reduction": true,
 			"visible_catalog": true,
 			"facility": 2
 		}

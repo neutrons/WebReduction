@@ -1,5 +1,7 @@
-from .forms import ConfigurationForm
+from .forms import ConfigurationForm, MaskInlineFormSetCreate, MaskInlineFormSetUpdate
 
 __all__ = [
-    'ConfigurationForm'
+    'ConfigurationForm',
+    'MaskInlineFormSetCreate',
+    'MaskInlineFormSetUpdate',
 ]

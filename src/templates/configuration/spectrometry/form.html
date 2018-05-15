@@ -1,0 +1,73 @@
+{% extends "configuration/form.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="page-header">
+        <h1>Configuration<small> {%if object %}{{object}}{% else %} new {% endif%}</small></h1>
+    </div>
+
+    <form method="post" action="" class="form-horizontal">
+
+        <!-- The form part -->
+        {{ formset.management_form }}
+        <div class="well">
+            <div class="panel-body">
+                {% crispy form %}
+            </div>
+        </div>
+
+
+
+        <!-- The formsets part -->
+        <div class="well">
+            {% crispy formset formset.form.helper %}
+            <p></p>
+            <a href="#" id="add_more" class="btn btn-info add-profile_kvp">Add another item...</a>
+        </div>
+        <p></p>
+
+        {# % crispy formset.empty_form % #}
+        <!-- <a href="#" id="add" class="btn btn-info add-profile_kvp">Add another item</a> -->
+
+        <hr />
+
+        <button name="save" type="submit" class="btn btn-primary" data-toggle="tooltip"
+            data-placement="top" title="Saves the configuration.">Save</button>
+        <button type="cancel" class="btn btn-default" onclick="window.history.back()">Cancel</button>
+
+    </form>
+
+
+
+</div>
+
+
+<!-- The tree modal form will be here (invisble) -->
+<div id="dirlist_container" style="display: none;">
+  <div id="dirlist_wrapper" class="dirlist"></div>
+</div>
+
+
+
+{% endblock %}
+
+{% block footer_js%}
+{{ block.super }}
+
+<script>
+    /*
+    For adding lines to the formset
+    */
+    $('#add_more').click(function() {
+        var form_idx = $('#id_configurations-TOTAL_FORMS').val();
+        var empty_form = "<tr>" + $('.empty-form:first').html().replace(/__prefix__/g, form_idx) + "</tr>";
+        $('.empty-form:last').parent().append(empty_form);
+        $('#id_configurations-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    });
+</script>
+{% endblock %}
