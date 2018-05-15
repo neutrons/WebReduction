@@ -36,7 +36,7 @@ env.roledefs = {
         'hosts': ['reductiondev.sns.gov'],
         'project_root': '/usr/local/reduction',
     },
-    'production': {
+    'prod': {
         'hosts': ['rhf@reduction.sns.gov'],
         'project_root': '/usr/local/reduction',
     }
@@ -113,7 +113,7 @@ def append_to_active_role(role_name):
         'ssl_certificate_key_file': '/etc/pki/tls/private/wildcard.sns.gov.key',
     }
     # In this case they are the same, but most of the times they are not!
-    if role_name == 'production':
+    if role_name == 'prod':
         roles.update({
             'ssl_certificate_file': '/etc/pki/tls/certs/wildcard.sns.gov.crt',
             'ssl_certificate_key_file': ' /etc/pki/tls/private/wildcard.sns.gov.key',
@@ -313,7 +313,7 @@ def start_nginx():
     '''
     with settings(warn_only=True):
         files.upload_template(env['nginx_conf_template'],
-            env['nginx_conf_file'], context=env, backup=False, use_sudo=True)
+            env['nginx_conf_file'], context=env, backup=True, use_sudo=True)
         files.upload_template(env['nginx_service_template'],
             env['nginx_service_file'], context=env, backup=False, use_sudo=True)
 
