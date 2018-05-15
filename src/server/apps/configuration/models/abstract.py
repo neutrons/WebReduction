@@ -144,4 +144,3 @@ class Configuration(models.Model, ModelMixin):
 
     def __str__(self):
         return self.title
-

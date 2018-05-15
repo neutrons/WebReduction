@@ -7,11 +7,11 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView)
 
 from server.apps.configuration.models.spectrometry.sns.hyspec import Configuration
-from server.apps.configuration.forms.spectrometry.sns.hyspec import ConfigurationForm
+from server.apps.configuration.forms.spectrometry.sns.hyspec import (
+    ConfigurationForm, MaskInlineFormSetCreate, MaskInlineFormSetUpdate)
 
 from server.apps.configuration.views.mixins import (
     ConfigurationMixin,
-    ConfigurationCreateMixin,
     ConfigurationDeleteMixin,
     ConfigurationCloneMixin,
     ConfigurationAssignListUidMixin,
@@ -20,6 +20,9 @@ from server.apps.configuration.views.mixins import (
     ConfigurationAssignIptsMixin,
 )
 
+from server.apps.configuration.views.spectrometry.mixins import (
+    ConfigurationCreateMixin,
+)
 
 class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
     '''
@@ -36,13 +39,14 @@ class ConfigurationDetail(LoginRequiredMixin, ConfigurationMixin, DetailView):
     model = Configuration
 
 
-class ConfigurationCreate(LoginRequiredMixin, ConfigurationMixin, ConfigurationCreateMixin, CreateView):
+class ConfigurationCreate(LoginRequiredMixin, ConfigurationCreateMixin, ConfigurationMixin, CreateView):
     '''
     Detail of a configuration
     '''
-    template_name = 'configuration/form.html'
+    template_name = 'configuration/spectrometry/form.html'
     model = Configuration
     form_class = ConfigurationForm
+    formset_class = MaskInlineFormSetCreate
     success_url = reverse_lazy('configuration:list')
 
 
@@ -50,9 +54,10 @@ class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, UpdateView):
     '''
     Detail of a configuration
     '''
-    template_name = 'configuration/form.html'
+    template_name = 'configuration/spectrometry/form.html'
     model = Configuration
     form_class = ConfigurationForm
+    formset_class = MaskInlineFormSetUpdate
     success_url = reverse_lazy('configuration:list')
 
 
