@@ -62,11 +62,13 @@ class ConfigurationHYSPEC(abstract.Configuration):
         help_text='Whether to save data as Mantid multi dimensional events.',
     )
 
-
-
     @models.permalink
     def get_absolute_url(self):
         return ('configuration:detail', [self.pk])
+
+    class Meta:
+        verbose_name = "Configuration HYSPEC"
+        verbose_name_plural = "Configurations HYSPEC"
 
 
 class MaskHYSPEC(Mask):
@@ -78,9 +80,13 @@ class MaskHYSPEC(Mask):
     configuration = models.ForeignKey(
         ConfigurationHYSPEC,
         on_delete=models.CASCADE,
-        related_name="configurations",
-        related_query_name="configuration",
+        related_name="masks",
+        related_query_name="mask",
     )
 
     def __str__(self):
-        return "Reduction {}".format(self.reduction.title)
+        return "Mask for configuration {}".format(self.configuration.title)
+
+    class Meta:
+        verbose_name = "Mask HYSPEC"
+        verbose_name_plural = "Masks HYSPEC"

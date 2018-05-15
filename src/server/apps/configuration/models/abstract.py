@@ -52,7 +52,7 @@ class ModelMixin(object):
                     'label': f.verbose_name,
                     'name': f.name,
                     'value': value,
-                    })
+                })
         return fields
 
 
