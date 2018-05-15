@@ -28,18 +28,23 @@
     </div>
 
     <div class="container-fluid">
-            <ul class="list-group">
-                {% for f in object.get_all_fields %}
-                	{% comment %}{% if value %}{% endcomment %}
-	                <li class="list-group-item">
-	                    <strong>{{f.label|capfirst}}</strong>:
-	                    <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
-	                </li>
-	                {% comment %}{% endif %}{% endcomment %}
-	            {% endfor %}
-            </ul>
+        <ul class="list-group">
+            {% for f in object.get_all_fields %}
+                {% comment %}{% if value %}{% endcomment %}
+                <li class="list-group-item">
+                    <strong>{{f.label|capfirst}}</strong>:
+                    <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+                </li>
+                {% comment %}{% endif %}{% endcomment %}
+            {% endfor %}
+        </ul>
     </div>
     <hr/>
+    <!-- <p>
+            {% for entry in object.masks.all %}
+            <h3>{{entry}}</h3>
+            {% endfor %}
+    </p> -->
 
     <p>
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'configuration:update' object.pk %}"

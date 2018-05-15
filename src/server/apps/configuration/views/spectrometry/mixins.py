@@ -21,3 +21,11 @@ class ConfigurationCreateMixin(FormsetMixin):
             Instrument, name=self.instrument_obj.name)
 
         return FormsetMixin.form_valid(self, form, formset)
+
+class ConfigurationUpdateMixin(FormsetMixin):
+    '''
+    Edit a Reduction (The spreadsheet)
+    '''
+    def post(self, request, **kwargs):
+
+        return super().post(request, **kwargs)

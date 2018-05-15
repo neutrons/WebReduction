@@ -22,6 +22,7 @@ from server.apps.configuration.views.mixins import (
 
 from server.apps.configuration.views.spectrometry.mixins import (
     ConfigurationCreateMixin,
+    ConfigurationUpdateMixin,
 )
 
 class ConfigurationList(LoginRequiredMixin, ConfigurationMixin, ListView):
@@ -50,7 +51,7 @@ class ConfigurationCreate(LoginRequiredMixin, ConfigurationCreateMixin, Configur
     success_url = reverse_lazy('configuration:list')
 
 
-class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, UpdateView):
+class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, ConfigurationUpdateMixin, UpdateView):
     '''
     Detail of a configuration
     '''

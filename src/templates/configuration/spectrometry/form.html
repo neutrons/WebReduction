@@ -14,25 +14,21 @@
     <form method="post" action="" class="form-horizontal">
 
         <!-- The form part -->
-        {{ formset.management_form }}
         <div class="well">
             <div class="panel-body">
                 {% crispy form %}
             </div>
         </div>
 
-
-
         <!-- The formsets part -->
         <div class="well">
+            <h3> Mask </h3>
             {% crispy formset formset.form.helper %}
-            <p></p>
-            <a href="#" id="add_more" class="btn btn-info add-profile_kvp">Add another item...</a>
+            <p class="text-right">
+                <a href="#" id="add_more" class="btn btn-info">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add another item...</a>
+            </p>
         </div>
-        <p></p>
-
-        {# % crispy formset.empty_form % #}
-        <!-- <a href="#" id="add" class="btn btn-info add-profile_kvp">Add another item</a> -->
 
         <hr />
 
@@ -64,10 +60,15 @@
     For adding lines to the formset
     */
     $('#add_more').click(function() {
-        var form_idx = $('#id_configurations-TOTAL_FORMS').val();
+        var form_idx = $('#id_masks-TOTAL_FORMS').val();
         var empty_form = "<tr>" + $('.empty-form:first').html().replace(/__prefix__/g, form_idx) + "</tr>";
         $('.empty-form:last').parent().append(empty_form);
-        $('#id_configurations-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+        $('#id_masks-TOTAL_FORMS').val(parseInt(form_idx) + 1);
     });
+
+    $("#add_more").click(function(event){
+        event.preventDefault();
+    });
+
 </script>
 {% endblock %}
