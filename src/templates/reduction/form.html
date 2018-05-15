@@ -33,8 +33,6 @@
 
     <form method="post" action="" class="form-horizontal">
 
-        <!-- The form part -->
-        {{ formset.management_form }}
         <div class="well">
             <div class="panel-body">
                 {% crispy form %}
@@ -44,8 +42,10 @@
         <!-- The formsets part -->
         <div class="well">
             {% crispy formset formset.form.helper %}
-            <p></p>
-            <a href="#" id="add_more" class="btn btn-info add-profile_kvp">Add another item...</a>
+            <p class="text-right">
+                <a href="#" id="add_more" class="btn btn-info">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add another item...</a>
+            </p>
         </div>
         <p></p>
 
@@ -77,5 +77,10 @@
         $('.empty-form:last').parent().append(empty_form);
         $('#id_regions-TOTAL_FORMS').val(parseInt(form_idx) + 1);
     });
+
+    $("#add_more").click(function(event){
+        event.preventDefault();
+    });
+
 </script>
 {% endblock %}
