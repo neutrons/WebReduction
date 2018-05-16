@@ -22,9 +22,10 @@ class ReductionHYSPEC(abstract.Reduction):
         related_query_name="region"
     )
 
+    scientific_notation_regex = "([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)+"
     q_3d_validator = [
         RegexValidator(
-            regex='^-?\d+,-?\d+,-?\d+$',
+            regex='^{0},{0},{0}$'.format(scientific_notation_regex),
             message='Use: Qx,Qy,Qz',
             code='invalid_projection'
         ),
@@ -34,34 +35,46 @@ class ReductionHYSPEC(abstract.Reduction):
 
     ub_a = models.DecimalField(
         "a",
-        max_digits=5,
-        decimal_places=2
+        max_digits=8,
+        decimal_places=4,
+        blank=True,
     )
     ub_b = models.DecimalField(
         "b",
-        max_digits=5,
-        decimal_places=2
+        max_digits=8,
+        decimal_places=4,
+        blank=True,
     )
     ub_c = models.DecimalField(
         "c",
-        max_digits=5,
-        decimal_places=2
+        max_digits=8,
+        decimal_places=4,
+        blank=True,
     )
-    ub_alpha = models.IntegerField(
+    ub_alpha = models.DecimalField(
         "\(	\\alpha \)",
+        max_digits=8,
+        decimal_places=4,
+        blank=True,
     )
-    ub_beta = models.IntegerField(
+    ub_beta = models.DecimalField(
         "\(	\\beta \)",
+        max_digits=8,
+        decimal_places=4,
+        blank=True,
     )
-    ub_gamma = models.IntegerField(
+    ub_gamma = models.DecimalField(
         "\(	\\gamma \)",
+        max_digits=8,
+        decimal_places=4,
+        blank=True,
     )
 
     ub_u_vector = models.CharField(
         u"\( \\vec{u} \)",
         max_length=12,
         blank=True,
-        help_text="UB u vector.",
+        help_text="UB \( \\it{u} \) vector: x,y,z. Default: 1,0,0",
         validators=q_3d_validator,
     )
 
@@ -69,7 +82,7 @@ class ReductionHYSPEC(abstract.Reduction):
         u"\( \\vec{v} \)",
         max_length=12,
         blank=True,
-        help_text="UB v vector.",
+        help_text="UB \( \\it{v} \) vector: x,y,z. Default: 0,1,0",
         validators=q_3d_validator,
     )
 
@@ -78,6 +91,7 @@ class ReductionHYSPEC(abstract.Reduction):
         max_length=12,
         blank=True,
         validators=q_3d_validator,
+        help_text="Use the notation: x,y,z"
     )
 
     q2_projection = models.CharField(
@@ -85,12 +99,14 @@ class ReductionHYSPEC(abstract.Reduction):
         max_length=12,
         blank=True,
         validators=q_3d_validator,
+        help_text="Use the notation: x,y,z"
     )
     q3_projection = models.CharField(
         "Q3 projection",
         max_length=12,
         blank=True,
         validators=q_3d_validator,
+        help_text="Use the notation: x,y,z"
     )
 
     @models.permalink
@@ -131,8 +147,7 @@ plotParameters.append({'Name':'HHL',
 
     name = models.CharField(
         "Name",
-        max_length=128,
-        blank=True,
+        max_length=256,
         help_text="Name of this plot."
     )
 
@@ -143,25 +158,23 @@ plotParameters.append({'Name':'HHL',
         ('DE', 'DeltaE'),
     )
 
-    axis_0 = models.CharField("Axis",max_length=2, choices=AXIS_CHOICES)
+    axis_0 = models.CharField("X-Axis",max_length=2, choices=AXIS_CHOICES)
     min_0 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_0 = models.DecimalField("Max", max_digits=10, decimal_places=2)
     nsteps_0 = models.IntegerField("#Steps", default=200,)
 
-    axis_1 = models.CharField("Axis",max_length=2, choices=AXIS_CHOICES)
+    axis_1 = models.CharField("Y-Axis",max_length=2, choices=AXIS_CHOICES)
     min_1 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_1 = models.DecimalField("Max", max_digits=10, decimal_places=2)
     nsteps_1 = models.IntegerField("#Steps", default=200,)
 
-    axis_2 = models.CharField("Axis",max_length=2, choices=AXIS_CHOICES)
+    axis_2 = models.CharField("Integrated Axis",max_length=2, choices=AXIS_CHOICES)
     min_2 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_2 = models.DecimalField("Max", max_digits=10, decimal_places=2)
-    nsteps_2 = models.IntegerField("#Steps", default=200,)
 
-    axis_3 = models.CharField("Axis",max_length=2, choices=AXIS_CHOICES)
+    axis_3 = models.CharField("Integrated Axis",max_length=2, choices=AXIS_CHOICES)
     min_3 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_3 = models.DecimalField("Max", max_digits=10, decimal_places=2)
-    nsteps_3 = models.IntegerField("#Steps", default=200,)
 
 
     def __str__(self):

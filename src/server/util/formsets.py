@@ -68,6 +68,8 @@ class FormsetMixin(object):
 
     def get_formset(self, formset_class):
         logger.debug("FormsetMixin: get_formset :: class = {}".format(formset_class))
+        for base in self.__class__.__bases__:
+            logger.debug("FormsetMixin: Bases = {}".format(base.__name__))
         return formset_class(**self.get_formset_kwargs())
 
     def get_formset_kwargs(self):

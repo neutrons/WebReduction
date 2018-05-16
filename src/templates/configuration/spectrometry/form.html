@@ -62,16 +62,14 @@
     /*
     For adding lines to the formset
     */
-    $('#add_more').click(function() {
+    $('#add_more').click(function(event) {
         var form_idx = $('#id_masks-TOTAL_FORMS').val();
         var empty_form = "<tr>" + $('.empty-form:first').html().replace(/__prefix__/g, form_idx) + "</tr>";
         $('.empty-form:last').parent().append(empty_form);
         $('#id_masks-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-    });
-
-    $("#add_more").click(function(event){
         event.preventDefault();
     });
+
 
 </script>
 {% endblock %}

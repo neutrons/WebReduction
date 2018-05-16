@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 class ReductionForm(abstract.ReductionForm, ModelForm):
     def __init__(self, *args, **kwargs):
-        # super(abstract.ReductionForm, self).__init__(*args, **kwargs)
-        super().__init__(*args, **kwargs)
+        super(ReductionForm, self).__init__(*args, **kwargs)
+        # super().__init__(*args, **kwargs)
 
         # Cell
         self.helper[2:8].wrap(Div, css_class="col-md-2")
@@ -25,7 +25,6 @@ class ReductionForm(abstract.ReductionForm, ModelForm):
         # # # Projections
         self.helper[4:7].wrap(Div, css_class="col-md-4")
         self.helper[4:7].wrap_together(Div, css_class="row")
-        #logger.debug("Helper size = {}".format(len(self.helper)))
 
     class Meta(abstract.ReductionForm.Meta):
         model = Reduction
@@ -38,23 +37,24 @@ class ReductionScriptForm(abstract.ReductionScriptForm, ModelForm):
 
 class RegionForm(abstract.RegionForm, ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        print("test")
+        super(RegionForm, self).__init__(*args, **kwargs)
+        # super().__init__(*args, **kwargs)
         # self.helper.template = 'bootstrap/table_inline_formset.html'
-        logger.debug("Helper size = {}".format(len(self.helper)))
+
         self.helper[2:6].wrap(Div, css_class="col-md-3")
         self.helper[2:6].wrap_together(Div, css_class="row")
 
         self.helper[3:7].wrap(Div, css_class="col-md-3")
         self.helper[3:7].wrap_together(Div, css_class="row")
 
-        self.helper[4:8].wrap(Div, css_class="col-md-3")
-        self.helper[4:8].wrap_together(Div, css_class="row")
+        self.helper[4:7].wrap(Div, css_class="col-md-3")
+        self.helper[4:7].wrap_together(Div, css_class="row")
 
-        self.helper[5:9].wrap(Div, css_class="col-md-3")
-        self.helper[5:9].wrap_together(Div, css_class="row")
+        self.helper[5:8].wrap(Div, css_class="col-md-3")
+        self.helper[5:8].wrap_together(Div, css_class="row")
 
-        self.helper.render_required_fields = False
-        self.helper.render_hidden_fields = True
+        # self.helper.render_hidden_fields = True
 
     class Meta(abstract.RegionForm.Meta):
         model = Region
