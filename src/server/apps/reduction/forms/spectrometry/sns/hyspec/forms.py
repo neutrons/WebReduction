@@ -64,6 +64,7 @@ RegionInlineFormSetCreate = inlineformset_factory(
     Region,
     form=RegionForm,
     extra=1,
+    min_num=1,
     can_delete=True
 )
 
@@ -74,5 +75,6 @@ RegionInlineFormSetUpdate = inlineformset_factory(
     Region,
     form=RegionForm,
     extra=0,
+    min_num=1,
     can_delete=True
 )
