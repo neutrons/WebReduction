@@ -33,6 +33,7 @@
 
     <form method="post" action="" class="form-horizontal">
 
+        <!-- The form part -->
         <div class="well">
             <div class="panel-body">
                 {% crispy form %}
@@ -41,13 +42,13 @@
 
         <!-- The formsets part -->
         <div class="well">
+            <h3> Plotting details </h3>
             {% crispy formset formset.form.helper %}
             <p class="text-right">
                 <a href="#" id="add_more" class="btn btn-info">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add another item...</a>
             </p>
         </div>
-        <p></p>
 
         {# % crispy formset.empty_form % #}
         <!-- <a href="#" id="add" class="btn btn-info add-profile_kvp">Add another item</a> -->
@@ -71,18 +72,14 @@
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async>
 </script>
 <script>
-    
     /*
-
+    For adding lines to the formset
     */
-    $('#add_more').click(function() {
+    $('#add_more').click(function(event) {
         var form_idx = $('#id_regions-TOTAL_FORMS').val();
         var empty_form = "<tr>" + $('.empty-form:first').html().replace(/__prefix__/g, form_idx) + "</tr>";
         $('.empty-form:last').parent().append(empty_form);
         $('#id_regions-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-    });
-
-    $("#add_more").click(function(event){
         event.preventDefault();
     });
 
