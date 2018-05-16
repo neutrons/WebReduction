@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 class ReductionHYSPEC(abstract.Reduction):
 
-
     configuration = models.ForeignKey(
         Configuration,
         on_delete=models.CASCADE,
@@ -38,36 +37,42 @@ class ReductionHYSPEC(abstract.Reduction):
         max_digits=8,
         decimal_places=4,
         blank=True,
+        null=True,
     )
     ub_b = models.DecimalField(
         "b",
         max_digits=8,
         decimal_places=4,
         blank=True,
+        null=True,
     )
     ub_c = models.DecimalField(
         "c",
         max_digits=8,
         decimal_places=4,
         blank=True,
+        null=True,
     )
     ub_alpha = models.DecimalField(
         "\(	\\alpha \)",
         max_digits=8,
         decimal_places=4,
         blank=True,
+        null=True,
     )
     ub_beta = models.DecimalField(
         "\(	\\beta \)",
         max_digits=8,
         decimal_places=4,
         blank=True,
+        null=True,
     )
     ub_gamma = models.DecimalField(
         "\(	\\gamma \)",
         max_digits=8,
         decimal_places=4,
         blank=True,
+        null=True,
     )
 
     ub_u_vector = models.CharField(
@@ -158,24 +163,25 @@ plotParameters.append({'Name':'HHL',
         ('DE', 'DeltaE'),
     )
 
-    axis_0 = models.CharField("X-Axis",max_length=2, choices=AXIS_CHOICES)
+    axis_0 = models.CharField("X-Axis", max_length=2, choices=AXIS_CHOICES)
     min_0 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_0 = models.DecimalField("Max", max_digits=10, decimal_places=2)
     nsteps_0 = models.IntegerField("#Steps", default=200,)
 
-    axis_1 = models.CharField("Y-Axis",max_length=2, choices=AXIS_CHOICES)
+    axis_1 = models.CharField("Y-Axis", max_length=2, choices=AXIS_CHOICES)
     min_1 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_1 = models.DecimalField("Max", max_digits=10, decimal_places=2)
     nsteps_1 = models.IntegerField("#Steps", default=200,)
 
-    axis_2 = models.CharField("Integrated Axis",max_length=2, choices=AXIS_CHOICES)
+    axis_2 = models.CharField(
+        "Integrated Axis", max_length=2, choices=AXIS_CHOICES)
     min_2 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_2 = models.DecimalField("Max", max_digits=10, decimal_places=2)
 
-    axis_3 = models.CharField("Integrated Axis",max_length=2, choices=AXIS_CHOICES)
+    axis_3 = models.CharField(
+        "Integrated Axis", max_length=2, choices=AXIS_CHOICES)
     min_3 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_3 = models.DecimalField("Max", max_digits=10, decimal_places=2)
-
 
     def __str__(self):
         return "Plot {}".format(self.name)
