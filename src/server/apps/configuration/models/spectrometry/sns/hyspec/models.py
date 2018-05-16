@@ -33,7 +33,7 @@ class ConfigurationHYSPEC(abstract.Configuration):
     )
 
     e_min_fraction = models.DecimalField(
-        u'E\u2098\u1d62\u2099 fraction',
+        u'\( E_{min} \) fraction',
         max_digits=4,
         decimal_places=2,
         blank=False,
@@ -41,7 +41,7 @@ class ConfigurationHYSPEC(abstract.Configuration):
     )
 
     e_max_fraction = models.DecimalField(
-        u'E\u2098\u2090\u2093 fraction',
+        u'\( E_{max} \) fraction',
         max_digits=4,
         decimal_places=2,
         blank=False,
@@ -49,7 +49,7 @@ class ConfigurationHYSPEC(abstract.Configuration):
     )
 
     e_step = models.DecimalField(
-        u'E step (meV)',
+        u'\( E_{step} \) (meV)',
         max_digits=4,
         decimal_places=2,
         blank=False,
