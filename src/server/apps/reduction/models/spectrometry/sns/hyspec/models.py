@@ -48,17 +48,17 @@ class ReductionHYSPEC(abstract.Reduction):
         decimal_places=2
     )
     ub_alpha = models.IntegerField(
-        "alpha",
+        "\(	\\alpha \)",
     )
     ub_beta = models.IntegerField(
-        "beta",
+        "\(	\\beta \)",
     )
     ub_gamma = models.IntegerField(
-        "gamma",
+        "\(	\\gamma \)",
     )
 
     ub_u_vector = models.CharField(
-        u"u\u20D7",
+        u"\( \\vec{u} \)",
         max_length=12,
         blank=True,
         help_text="UB u vector.",
@@ -66,7 +66,7 @@ class ReductionHYSPEC(abstract.Reduction):
     )
 
     ub_v_vector = models.CharField(
-        u"v\u20D7",
+        u"\( \\vec{v} \)",
         max_length=12,
         blank=True,
         help_text="UB v vector.",
