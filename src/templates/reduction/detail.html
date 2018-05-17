@@ -90,6 +90,11 @@
 
 {% block footer_js%}
 {{ block.super }}
+<!-- For the form symbols -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async>
+</script>
+
 <script src='{% static "thirdparty/handsontable/handsontable.full.min.js" %}'></script>
 <!-- page script -->
 <script>
@@ -128,7 +133,7 @@ $.each( entriesSelectors, function( i, selector ) {
         ],
         colHeaders: ["Name", "Thickness", "Sample Scattering", "Sample Transmission", "Backgroung Scattering",
                      "Backgroung Transmission"],
-        
+
     };
     $(selector).handsontable(options);
     //remove it from the <ul>
