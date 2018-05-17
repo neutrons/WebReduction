@@ -43,7 +43,7 @@
         <!-- The formsets part -->
         <div class="well">
             <h3> Plotting details </h3>
-            {% crispy formset formset.form.helper %}
+            <div id="formset-placeholder"> {% crispy formset formset.form.helper %} </div>
             <p class="text-right">
                 <a href="#" id="add_more" class="btn btn-info">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add another item...</a>
@@ -77,10 +77,10 @@
     */
     $('#add_more').click(function(event) {
 
-        var empty_form_template = `{{formset.empty_form|crispy}}`;
+        var empty_form_template = `{% crispy formset.empty_form formset.form.helper %}`;
         var form_idx = $('#id_regions-TOTAL_FORMS').val();
-        var empty_form = "<tr><td>" + empty_form_template.replace(/__prefix__/g, form_idx) + "</td></tr>";
-        $('.empty-form:last').parent().append(empty_form);
+        var empty_form = "" + empty_form_template.replace(/__prefix__/g, form_idx) + "";
+        $('#formset-placeholder').append(empty_form);
         $('#id_regions-TOTAL_FORMS').val(parseInt(form_idx) + 1);
         event.preventDefault();
     });
