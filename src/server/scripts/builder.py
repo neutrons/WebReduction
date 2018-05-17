@@ -12,27 +12,11 @@ logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 class ScriptBuilder(object):
 
-    # Script template locations
-    LOCATIONS = {
-        "EQSANS": None,
-        # "BioSANS": ROOT_DIR("../config/reduction/biosans.tpl"),
-        # "GPSANS": ROOT_DIR("../config/reduction/gpsans.tpl"),
-        "BioSANS": os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "templates", "biosans.tpl"),
-        "GPSANS": os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "templates", "gpsans.tpl"),
-        "HYSPEC": os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "templates", "hyspec.tpl"),
-    }
-
     def __init__(self, data, instrument, ipts, experiment=None):
         '''
         instrument, ipts, experiment :: are objects
         '''
-        self.template_file_path = self.LOCATIONS[instrument.name]
+        self.template_file_path = instrument.file_template_path
         self.engine = Engine(
             # debug=True,
             builtins=['server.scripts.filters'], # this is for tags and filters

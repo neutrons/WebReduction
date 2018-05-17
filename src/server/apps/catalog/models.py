@@ -101,6 +101,7 @@ class Instrument(models.Model):
     )
 
     # '/HFIR/CG3/IPTS-%(ipts_numbers)s/exp%(experiment_number)s/Datafiles/BioSANS_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml'
+    # This is used for hfir sans
     data_file_path_template = models.CharField(
         help_text='Python template for the full path of the data files',
         max_length=512,
@@ -108,8 +109,16 @@ class Instrument(models.Model):
     )
 
     # /HFIR/CG3/IPTS-%(ipts_numbers)s/exp%(experiment_number)s/Shared/Reduction
+    # Destination of the srcipt
     reduction_path_template = models.CharField(
         help_text='Python template for the full path of the folder where the reduced files go',
+        max_length=512,
+        blank=True,
+    )
+
+    # 
+    file_template_path  = models.CharField(
+        help_text='Path for the python job template that reduces data this instrument.',
         max_length=512,
         blank=True,
     )
