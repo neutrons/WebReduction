@@ -62,6 +62,8 @@ class RegionForm(abstract.RegionForm, ModelForm):
         self.helper[5:8].wrap(Div, css_class="col-md-3")
         self.helper[5:8].wrap_together(Div, css_class="row")
 
+        self.helper.layout.append(HTML("""<hr class="col-xs-12">"""))
+
         # self.helper.layout.extend(['ORDER', 'DELETE'])
         # self.helper.all().wrap_together(Div, css_class="row")
 
