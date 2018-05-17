@@ -39,19 +39,22 @@ class RegionForm(abstract.RegionForm, ModelForm):
     def __init__(self, *args, **kwargs):
         # super(RegionForm, self).__init__(*args, **kwargs)
         super().__init__(*args, **kwargs)
-        self.helper.template = 'bootstrap/table_inline_formset.html'
+        # self.helper.template = 'bootstrap/table_inline_formset.html'
 
-        # self.helper[2:6].wrap(Div, css_class="col-md-3")
-        # self.helper[2:6].wrap_together(Div, css_class="row")
+        self.helper[2:6].wrap(Div, css_class="col-md-3")
+        self.helper[2:6].wrap_together(Div, css_class="row")
 
-        # self.helper[3:7].wrap(Div, css_class="col-md-3")
-        # self.helper[3:7].wrap_together(Div, css_class="row")
+        self.helper[3:7].wrap(Div, css_class="col-md-3")
+        self.helper[3:7].wrap_together(Div, css_class="row")
 
-        # self.helper[4:7].wrap(Div, css_class="col-md-3")
-        # self.helper[4:7].wrap_together(Div, css_class="row")
+        self.helper[4:7].wrap(Div, css_class="col-md-3")
+        self.helper[4:7].wrap_together(Div, css_class="row")
 
-        # self.helper[5:8].wrap(Div, css_class="col-md-3")
-        # self.helper[5:8].wrap_together(Div, css_class="row")
+        self.helper[5:8].wrap(Div, css_class="col-md-3")
+        self.helper[5:8].wrap_together(Div, css_class="row")
+
+        self.helper.layout.extend(['ORDER', 'DELETE'])
+        self.helper.all().wrap_together(Div, css_class="row")
 
     class Meta(abstract.RegionForm.Meta):
         model = Region
@@ -65,7 +68,7 @@ RegionInlineFormSetCreate = inlineformset_factory(
     form=RegionForm,
     extra=1,
     min_num=1,
-    can_delete=True
+    can_delete=False
 )
 
 # Edit
@@ -76,5 +79,5 @@ RegionInlineFormSetUpdate = inlineformset_factory(
     form=RegionForm,
     extra=0,
     min_num=1,
-    can_delete=True
+    can_delete=False
 )
