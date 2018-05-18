@@ -18,7 +18,7 @@ psycopg2>=2.6.1
 psycopg2-binary>=2.7.4
 
 # Remote job submission
-django-remote-submission>=2.0.0
+django-remote-submission>=2.1.0
 #../django-remote-submission/dist/django-remote-submission-0.3.1.tar.gz
 celery[redis]>=4.1.0
 django-celery-results>=1.0.1

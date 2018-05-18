@@ -336,7 +336,7 @@
 			"drive_path": "/SNS/HYS",
 			"data_file_path_template": "",
 			"reduction_path_template": "/SNS/HYS/%(ipts_number)s/shared/autoreduction",
-			"file_template_path": "/SNS/HYS/shared/templates/hyspec.tpl";
+			"file_template_path": "/SNS/HYS/shared/templates/hyspec.tpl",
 			"visible_reduction": true,
 			"visible_catalog": true,
 			"facility": 2
