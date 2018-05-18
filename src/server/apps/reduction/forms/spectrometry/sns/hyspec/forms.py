@@ -17,12 +17,15 @@ class ReductionForm(abstract.ReductionForm, ModelForm):
         # super().__init__(*args, **kwargs)
 
         # Cell
+        self.helper[2:8].wrap(Div, css_class="col-md-12")
         self.helper[2:8].wrap(Div, css_class="col-md-2")
         self.helper[2:8].wrap_together(Div, css_class="row")
         # Vectors
+        self.helper[3:5].wrap(Div, css_class="col-md-12")
         self.helper[3:5].wrap(Div, css_class="col-md-6")
         self.helper[3:5].wrap_together(Div, css_class="row")
         # # # Projections
+        self.helper[4:7].wrap(Div, css_class="col-md-12")
         self.helper[4:7].wrap(Div, css_class="col-md-4")
         self.helper[4:7].wrap_together(Div, css_class="row")
 
@@ -41,20 +44,28 @@ class RegionForm(abstract.RegionForm, ModelForm):
         super().__init__(*args, **kwargs)
         # self.helper.template = 'bootstrap/table_inline_formset.html'
 
+        self.helper[1].wrap(Div, css_class="col-md-12")
+
+        self.helper[2:6].wrap(Div, css_class="col-md-12")
         self.helper[2:6].wrap(Div, css_class="col-md-3")
         self.helper[2:6].wrap_together(Div, css_class="row")
 
+        self.helper[3:7].wrap(Div, css_class="col-md-12")
         self.helper[3:7].wrap(Div, css_class="col-md-3")
         self.helper[3:7].wrap_together(Div, css_class="row")
 
+        self.helper[4:7].wrap(Div, css_class="col-md-12")
         self.helper[4:7].wrap(Div, css_class="col-md-3")
         self.helper[4:7].wrap_together(Div, css_class="row")
 
+        self.helper[5:8].wrap(Div, css_class="col-md-12")
         self.helper[5:8].wrap(Div, css_class="col-md-3")
         self.helper[5:8].wrap_together(Div, css_class="row")
 
-        self.helper.layout.extend(['ORDER', 'DELETE'])
-        self.helper.all().wrap_together(Div, css_class="row")
+        self.helper.layout.append(HTML("""<hr class="col-xs-12">"""))
+
+        # self.helper.layout.extend(['ORDER', 'DELETE'])
+        # self.helper.all().wrap_together(Div, css_class="row")
 
     class Meta(abstract.RegionForm.Meta):
         model = Region
@@ -66,7 +77,7 @@ RegionInlineFormSetCreate = inlineformset_factory(
     Reduction,
     Region,
     form=RegionForm,
-    extra=1,
+    extra=0,
     min_num=1,
     can_delete=False
 )
