@@ -13,7 +13,7 @@ class ConfigurationForm(spectrometry_abstract.ConfigurationForm, ModelForm):
         # Cell
         self.helper[3:6].wrap(Div, css_class="col-md-4")
         self.helper[3:6].wrap_together(Div, css_class="row")
-        
+
     class Meta(spectrometry_abstract.ConfigurationForm.Meta):
         model = Configuration
 
@@ -28,7 +28,7 @@ MaskInlineFormSetCreate = inlineformset_factory(
     Mask,
     form=MaskForm,
     extra=3,
-    can_delete=False
+    can_delete=True
 )
 
 # Edit
@@ -37,6 +37,6 @@ MaskInlineFormSetUpdate = inlineformset_factory(
     Configuration,
     Mask,
     form=MaskForm,
-    extra=0,
-    can_delete=False
+    extra=1,
+    can_delete=True
 )
