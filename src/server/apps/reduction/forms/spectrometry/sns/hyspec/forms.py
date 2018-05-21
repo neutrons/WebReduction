@@ -2,7 +2,7 @@ import logging
 
 from django.forms import ModelForm, inlineformset_factory
 
-from crispy_forms.layout import HTML, Div
+from crispy_forms.layout import HTML, Div, Field
 
 from server.apps.reduction.models.spectrometry.sns.hyspec import Reduction, Region
 from server.apps.reduction.forms import abstract
@@ -62,6 +62,9 @@ class RegionForm(abstract.RegionForm, ModelForm):
         self.helper[5:8].wrap(Div, css_class="col-md-3")
         self.helper[5:8].wrap_together(Div, css_class="row")
 
+        self.helper.layout.append(Field("DELETE"))
+        self.helper[len(self.helper.layout)-1].wrap(Div, css_class="col-md-12 text-right")
+
         self.helper.layout.append(HTML("""<hr class="col-xs-12">"""))
 
         # self.helper.layout.extend(['ORDER', 'DELETE'])
@@ -79,7 +82,7 @@ RegionInlineFormSetCreate = inlineformset_factory(
     form=RegionForm,
     extra=0,
     min_num=1,
-    can_delete=False
+    can_delete=True
 )
 
 # Edit
@@ -90,5 +93,5 @@ RegionInlineFormSetUpdate = inlineformset_factory(
     form=RegionForm,
     extra=0,
     min_num=1,
-    can_delete=False
+    can_delete=True
 )
