@@ -40,11 +40,16 @@
         </ul>
     </div>
     <hr/>
-    <!-- <p>
+    <div class="container-fluid">
+        <ul class="list-group-item">
             {% for entry in object.masks.all %}
-            <h3>{{entry}}</h3>
+            <li class="list-group-item">{{entry}}</li>
             {% endfor %}
-    </p> -->
+        </ul>
+    </div>
+    <hr/>
+
+
 
     <p>
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'configuration:update' object.pk %}"
