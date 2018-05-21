@@ -43,10 +43,10 @@
         <!-- The formsets part -->
         <div class="well">
             <h3> Plotting details </h3>
-            <div id="formset-placeholder"> {% crispy formset formset.form.helper %} </div>
+            {% crispy formset formset.form.helper %}
             <p class="text-right">
-                <a href="#" id="add_more" class="btn btn-info">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add another item...</a>
+                <a href="#" id="add-formset" class="btn btn-info">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add another plot..</a>
             </p>
         </div>
 
@@ -75,15 +75,45 @@
     /*
     For adding lines to the formset
     */
-    $('#add_more').click(function(event) {
-
+    $('#add-formset').click(function(event) {
+        event.preventDefault();
         var empty_form_template = `{% crispy formset.empty_form formset.form.helper %}`;
         var form_idx = $('#id_regions-TOTAL_FORMS').val();
         var empty_form = "" + empty_form_template.replace(/__prefix__/g, form_idx) + "";
-        $('#formset-placeholder').append(empty_form);
+        $('.a-formset').last().after(empty_form);
+        $('.a-formset').last().append(`<p class="text-right">
+                <a href="#" id="remove-formset" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+            </p>`);
         $('#id_regions-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-        event.preventDefault();
+        return false;
     });
+
+    /*
+    For removing formsets
+    */
+
+    $('.a-formset').append(`<p class="text-right">
+            <a href="#" id="remove-formset" class="btn btn-danger">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+        </p>`);
+
+
+    $(document).on('click', '#remove-formset',function(event) {
+        event.preventDefault();
+        console.log("XXXX 1");
+        var form_idx = $('#id_regions-TOTAL_FORMS').val();
+        //if ($('.a-formset').toArray() > 1) {
+            $(this).parent().parent().remove();
+            console.log("XXXX Removed");
+        //}
+        $('#id_regions-TOTAL_FORMS').val(parseInt(form_idx) - 1);
+        console.log("XXXX 2");
+
+        //return false;
+    });
+    
+
 
 </script>
 {% endblock %}
