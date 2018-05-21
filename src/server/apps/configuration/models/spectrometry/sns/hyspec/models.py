@@ -36,7 +36,8 @@ class ConfigurationHYSPEC(abstract.Configuration):
         u'\( E_{min} \) fraction',
         max_digits=4,
         decimal_places=2,
-        blank=False,
+        null=True,
+        blank=True,
         help_text="Minimum energy fraction."
     )
 
@@ -44,7 +45,8 @@ class ConfigurationHYSPEC(abstract.Configuration):
         u'\( E_{max} \) fraction',
         max_digits=4,
         decimal_places=2,
-        blank=False,
+        null=True,
+        blank=True,
         help_text="Maximum of energy fraction."
     )
 
@@ -52,7 +54,8 @@ class ConfigurationHYSPEC(abstract.Configuration):
         u'\( E_{step} \) (meV)',
         max_digits=4,
         decimal_places=2,
-        blank=False,
+        blank=True,
+        null=True,
         help_text="Energy step in meV."
     )
 
@@ -83,9 +86,6 @@ class MaskHYSPEC(Mask):
         related_name="masks",
         related_query_name="mask",
     )
-
-    def __str__(self):
-        return "Mask for configuration {}".format(self.configuration.title)
 
     class Meta:
         verbose_name = "Mask HYSPEC"

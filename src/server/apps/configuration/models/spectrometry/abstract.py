@@ -63,6 +63,11 @@ class Mask(models.Model, ModelMixin):
         ]
     )
 
+    def __str__(self):
+        return "Mask :: Bank = {}; Tube = {}; Pixel={}.".format(
+            self.bank, self.tube, self.pixel
+        )
+
     # Manager
     objects = MaskManager()
 

@@ -9,6 +9,8 @@ from django_remote_submission.models import Interpreter, Job
 from pprint import pformat
 
 from server.apps.catalog.models import Instrument
+from server.util.models import ModelMixin
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -18,35 +20,6 @@ Abstract models for SANS
 Configuration - 1 to many - Reductions
 Reduction - 1 to many - Entries
 '''
-
-
-class ModelMixin(object):
-    def get_all_fields(self, fields_to_ignore=('id', 'user')):
-        """
-        Returns a list of all field names on the instance.
-        """
-        fields = []
-        for f in self._meta.fields:
-            fname = f.name
-            # resolve picklists/choices, with get_xyz_display() function
-            get_choice = 'get_' + fname + '_display'
-            if hasattr(self, get_choice):
-                value = getattr(self, get_choice)()
-            else:
-                try:
-                    value = getattr(self, fname)
-                except AttributeError:
-                    value = None
-            # only display fields with values and skip some fields entirely
-            # if f.editable and value and f.name not in ('id', 'user') : # Hide None
-            if f.editable and f.name not in fields_to_ignore:
-                fields.append({
-                    'label': f.verbose_name,
-                    'name': f.name,
-                    'value': value,
-                })
-        return fields
-
 
 class ReductionManager(models.Manager):
     '''
@@ -111,6 +84,7 @@ class Reduction(models.Model, ModelMixin):
         on_delete=models.CASCADE,
         related_name="%(class)s_interpreters",
         related_query_name="%(class)s_interpreter",
+        default=1,
     )
 
     script_execution_path = models.CharField(max_length=256)
@@ -119,6 +93,18 @@ class Reduction(models.Model, ModelMixin):
         blank=True,
         help_text="Python script generated from the reduction entry. \
         If the script was generated already just shows it!"
+    )
+
+    RUN_CHOICES = (
+        (1, 'Copy script and execute'),
+        (2, 'Copy script'),
+        (3, 'Copy script to autoreduction'),
+    )
+    run_type = models.IntegerField(
+        choices=RUN_CHOICES,
+        default=1,
+        help_text="For auto reduction copy only the script. If you have "
+            "previledges you can copy the script to autoreduction."
     )
 
     instrument = models.ForeignKey(

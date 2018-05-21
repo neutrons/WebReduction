@@ -55,7 +55,7 @@ class ReductionScriptForm(object):
                 Button('cancel', 'Cancel', css_class='btn-default',
                        onclick="window.history.back()")))
     class Meta:
-        fields = ['script_interpreter', 'script_execution_path', 'script']
+        fields = ['script_interpreter', 'script_execution_path', 'script', 'run_type']
         #exclude = ['user', 'instrument']
 
 

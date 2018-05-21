@@ -213,7 +213,7 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
         We get the object already in the DB. This is called by get and post.
         on GET: Generate the script (if the script field in the DB is empty!)
         and add it to object shown on the form
-        It does the same for sript path. It should work HFIR and SNS
+        It does the same for script path. It should work HFIR and SNS
         '''
         obj = super().get_object()
         logger.debug("ReductionScriptUpdateMixin :: get_object = {}".format(obj))

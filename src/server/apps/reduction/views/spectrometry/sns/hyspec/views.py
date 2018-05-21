@@ -21,7 +21,8 @@ from server.apps.reduction.views.mixins import (
     ReductionScriptUpdateMixin,
 )
 
-
+from datetime import datetime
+from django_remote_submission.tasks import LogPolicy
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
@@ -86,3 +87,9 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionScriptUpdateMixin, Upda
     formset_class = RegionInlineFormSetUpdate
     success_url = reverse_lazy('reduction:list')
 
+    # Variables for jobsubmission
+    remote_filename="autoreduction_{}.py".format(
+        datetime.now().strftime(r"%Y%m%d-%H%M%S.%f")
+    )
+    log_policy=LogPolicy.LOG_TOTAL
+    store_results=[]
