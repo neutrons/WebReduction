@@ -22,7 +22,7 @@ from server.apps.reduction.views.mixins import (
 )
 
 from datetime import datetime
-from django_remote_submission.tasks import LogPolicy
+
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
     '''
@@ -91,5 +91,4 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionScriptUpdateMixin, Upda
     remote_filename="autoreduction_{}.py".format(
         datetime.now().strftime(r"%Y%m%d-%H%M%S.%f")
     )
-    log_policy=LogPolicy.LOG_TOTAL
-    store_results=[]
+

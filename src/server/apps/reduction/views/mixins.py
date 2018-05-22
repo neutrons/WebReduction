@@ -210,10 +210,11 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
 
     def get_object(self, queryset=None):
         '''
-        We get the object already in the DB. This is called by get and post.
-        on GET: Generate the script (if the script field in the DB is empty!)
+        Always called has the script form is an edit form
+        We get the object already in the DB. This is called by get and post:
+        * on GET: Generate the script (if the script field in the DB is empty!)
         and add it to object shown on the form
-        It does the same for script path. It should work HFIR and SNS
+        It does the same for script path.
         '''
         obj = super().get_object()
         logger.debug("ReductionScriptUpdateMixin :: get_object = {}".format(obj))
@@ -273,7 +274,8 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
                     title=form.instance.title,
                     program=form.instance.script,
                     remote_directory=form.instance.script_execution_path,
-                    remote_filename="reduction_" + datetime.now().strftime("%Y%m%d-%H%M%S.%f") + ".py",
+                    remote_filename=getattr(self, 'remote_filename', "reduction_{}.py".format(
+                        datetime.now().strftime("%Y%m%d-%H%M%S.%f"))),
                     server=server,
                     owner=self.request.user,
                     interpreter=form.instance.script_interpreter,
@@ -282,6 +284,9 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
 
                 password_encrypted = self.request.session["password"]
                 password = signing.loads(password_encrypted)
+
+                # TODO copy vs submit!!!
+
                 transaction.on_commit(lambda:submit_job_to_server.delay(
                         job.pk,
                         password=password,
