@@ -65,6 +65,13 @@ class ReductionManager(models.Manager):
             d = model_to_dict(region)
             obj_json["regions"].append(d)
         obj_json['configuration'] = model_to_dict(obj.configuration)
+
+        if hasattr(obj.configuration, 'masks') and  obj.configuration.masks is not None:
+            obj_json['configuration']['masks']=[]
+            for mask in obj.configuration.masks.select_related():
+                d = model_to_dict(mask)
+                obj_json['configuration']['masks'].append(d)
+            
         # logger.debug(pformat(obj_json))
         return obj_json
 

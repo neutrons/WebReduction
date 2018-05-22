@@ -34,7 +34,7 @@ class ScriptBuilder(object):
         self.experiment = experiment
 
         self.data.pop('script', None)
-        logger.debug(pformat(self.data))
+        logger.debug("JSON:\n{}".format(pformat(self.data)))
 
     def get_reduction_path(self):
         return self.instrument.reduction_path_template % self.data
