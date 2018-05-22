@@ -31,8 +31,8 @@ class ReductionForm(object):
 
     class Meta:
         exclude = [
-            'user', 'instrument',
-            'script', 'script_interpreter', 'job', 'script_execution_path'
+            'user', 'instrument', 'script', 'script_interpreter', 'job', 
+            'script_execution_path', 'run_type',
         ]
         #widgets = {'script': HiddenInput()}
 

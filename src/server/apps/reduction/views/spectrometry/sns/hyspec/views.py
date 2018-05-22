@@ -88,7 +88,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionScriptUpdateMixin, Upda
     success_url = reverse_lazy('reduction:list')
 
     # Variables for jobsubmission
-    remote_filename="autoreduction_{}.py".format(
-        datetime.now().strftime(r"%Y%m%d-%H%M%S.%f")
+    remote_filename="reduce_HYS_{}.py".format(
+        datetime.now().strftime(r"%Y%m%d-%H%M%S")
     )
 
