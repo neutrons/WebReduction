@@ -93,35 +93,41 @@ class Instrument(models.Model):
         max_length=32,
     )
 
+    # This is used to access data files from the instrument (e.g. filetree in the configuration)
     # /HFIR/CG3/
-    drive_path = models.CharField(
+    drive_directory_path = models.CharField(
         'instrument drive path',
-        help_text='Name used for loading files from shared filesystem',
+        help_text='Name of the instrument folder. E.g. /HFIR/CG3',
         max_length=256,
     )
 
     # '/HFIR/CG3/IPTS-%(ipts_numbers)s/exp%(experiment_number)s/Datafiles/BioSANS_exp%(experiment_number)s_scan%(scan_number)04d_%(frame_number)04d.xml'
-    # This is used for hfir sans
+    # This is used only for hfir sans (?)
+    # To get a file from ipts, exp, scan and frame
     data_file_path_template = models.CharField(
         help_text='Python template for the full path of the data files',
         max_length=512,
         blank=True,
     )
 
-    # /HFIR/CG3/IPTS-%(ipts_numbers)s/exp%(experiment_number)s/Shared/Reduction
-    # Destination of the srcipt
-    reduction_path_template = models.CharField(
-        help_text='Python template for the full path of the folder where the reduced files go',
+    #
+    # Now the Job submission
+    #
+    
+    job_template_path  = models.CharField(
+        help_text='Path for the python job template that reduces data this instrument. '
+            ' E.g. /SNS/HYS/share/templates/hyspec.tpl',
         max_length=512,
         blank=True,
     )
 
-    # 
-    file_template_path  = models.CharField(
-        help_text='Path for the python job template that reduces data this instrument.',
+    # /HFIR/CG3/IPTS-%(ipts_numbers)s/exp%(experiment_number)s/Shared/Reduction
+    # Destination of the srcipt
+    reduction_directory_path_template = models.CharField(
+        help_text='Python template for the full path of the folder where the reduced files go',
         max_length=512,
         blank=True,
-    )
+    )    
 
     visible_reduction = models.BooleanField(
         'instrument can do reductions',

@@ -16,7 +16,7 @@ class ScriptBuilder(object):
         '''
         instrument, ipts, experiment :: are objects
         '''
-        self.template_file_path = instrument.file_template_path
+        self.template_file_path = instrument.job_template_path
         self.engine = Engine(
             # debug=True,
             builtins=['server.scripts.filters'], # this is for tags and filters
@@ -37,7 +37,7 @@ class ScriptBuilder(object):
         logger.debug("JSON:\n{}".format(pformat(self.data)))
 
     def get_reduction_path(self):
-        return self.instrument.reduction_path_template % self.data
+        return self.instrument.reduction_directory_path_template % self.data
 
 
     def build_script(self):
