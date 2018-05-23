@@ -142,6 +142,10 @@ find . -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" | xargs rm
 Clean up the database:
 ```
 psql -U reduction -d reduction -c "drop owned by reduction;"
+
+# This for Ubuntu 18.04
+psql reduction -h 127.0.0.1 -d reduction -c "drop owned by reduction;"
+
 ```
 or:
 ```

@@ -103,15 +103,15 @@ class Reduction(models.Model, ModelMixin):
     )
 
     RUN_CHOICES = (
-        (1, 'Copy script and execute'),
-        (2, 'Copy script'),
-        (3, 'Copy script to autoreduction'),
+        (1, 'Copy and Execute the script'),
+        (2, 'Copy the script'),
     )
     run_type = models.IntegerField(
         choices=RUN_CHOICES,
         default=1,
         help_text="For auto reduction copy only the script. If you have "
-            "previledges you can copy the script to autoreduction."
+            "previledges you can copy the script to the instrument "
+            "autoreduction directory."
     )
 
     instrument = models.ForeignKey(

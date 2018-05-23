@@ -91,4 +91,5 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionScriptUpdateMixin, Upda
     remote_filename="reduce_HYS_{}.py".format(
         datetime.now().strftime(r"%Y%m%d-%H%M%S")
     )
+    store_results=[]
 

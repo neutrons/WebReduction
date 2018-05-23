@@ -278,7 +278,7 @@ class IptsZip(LoginRequiredMixin, CatalogMixin, TemplateView):
         exp = kwargs.get('exp')
 
         path = os.path.join(
-            self.instrument.drive_path,
+            self.instrument.drive_directory_path,
             ipts,
             exp if exp is not None else "",
         )

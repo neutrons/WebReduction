@@ -15,7 +15,9 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
 from django.core import signing
 from django_remote_submission.models import Job, Server
-from django_remote_submission.tasks import LogPolicy, submit_job_to_server
+from django_remote_submission.tasks import (
+    LogPolicy, submit_job_to_server, copy_job_to_server,
+)
 from django.urls import reverse
 from server.apps.catalog.oncat.facade import Catalog
 from server.util.formsets import FormsetMixin
@@ -208,6 +210,14 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
     - Save it and submit the job to the cluster
     '''
 
+    # I'm leaving this as global variables as this can be overloaded in the 
+    # Intrument specific classes that inherit from this
+    # Otherwise those are defaults
+    remote_filename = "reduction_{}.py".format(datetime.now().strftime(
+        "%Y%m%d-%H%M%S.%f"))
+    log_policy=LogPolicy.LOG_LIVE
+    store_results=["*.txt", "*.log"]
+
     def get_object(self, queryset=None):
         '''
         Always called has the script form is an edit form
@@ -232,6 +242,7 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
                         {1}".format(type(e).__name__, str(e)))
             if obj.script_execution_path is None or obj.script_execution_path == "":
                 obj.script_execution_path = script_builder.get_reduction_path()
+        
         return obj
 
     def post(self, request, **kwargs):
@@ -252,6 +263,38 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
                 return super().get(request, **kwargs)
         return super().post(request, **kwargs)
 
+
+    def _create_job(self, form, server):
+        '''
+        Auxiliary function to create a job from a form
+        '''
+        job = Job.objects.create(
+            title=form.instance.title,
+            program=form.instance.script,
+            remote_directory=form.instance.script_execution_path,
+            remote_filename=self.remote_filename,
+            server=server,
+            owner=self.request.user,
+            interpreter=form.instance.script_interpreter,
+        )
+        return job
+    
+    def _get_remote_task(self, form):
+        '''
+        Based on the dropbox run_type selection calls one of the functions
+        in the django-remote-submission
+        Form run type
+         (1, 'Copy and Execute the script'),
+         (2, 'Copy the script'),
+        '''
+        functions = {
+            1: submit_job_to_server,
+            2: copy_job_to_server
+        }
+        run_type = form.instance.run_type
+        return functions[run_type]
+
+
     def form_valid(self, form):
         """
         If the form is valid this is called!
@@ -270,28 +313,21 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
             try:
                 server_name = env("JOB_SERVER_NAME")
                 server = get_object_or_404(Server, title=server_name)
-                job = Job.objects.create(
-                    title=form.instance.title,
-                    program=form.instance.script,
-                    remote_directory=form.instance.script_execution_path,
-                    remote_filename=getattr(self, 'remote_filename', "reduction_{}.py".format(
-                        datetime.now().strftime("%Y%m%d-%H%M%S.%f"))),
-                    server=server,
-                    owner=self.request.user,
-                    interpreter=form.instance.script_interpreter,
-                )
+                
+                job = self._create_job(form, server)
                 form.instance.job = job
 
                 password_encrypted = self.request.session["password"]
                 password = signing.loads(password_encrypted)
 
-                # TODO copy vs submit!!!
-
-                transaction.on_commit(lambda:submit_job_to_server.delay(
+                task = self._get_remote_task(form)
+                logger.debug("Executing remotely: {}".format(task) )
+                transaction.on_commit(
+                    lambda:task.delay(
                         job.pk,
                         password=password,
-                        log_policy=LogPolicy.LOG_LIVE,
-                        store_results=["*.txt", "*.log"],
+                        log_policy=self.log_policy,
+                        store_results=self.store_results,
                         remote=True,
                     )
                 )
@@ -300,7 +336,8 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
                     "Reduction submitted to the cluster. See status: \
                     <a href='%s'> here </a>" % reverse_lazy(
                         "results:job_log_live",
-                        args=[job.pk])
+                        args=[job.pk]
+                    )
                 )
             except Exception as e:
                 logger.exception(e)

@@ -59,7 +59,7 @@ class ConfigurationHYSPEC(abstract.Configuration):
         help_text="Energy step in meV."
     )
 
-    Save_md_events = models.BooleanField(
+    save_md_events = models.BooleanField(
         'Save MD Events',
         default=True,
         help_text='Whether to save data as Mantid multi dimensional events.',
