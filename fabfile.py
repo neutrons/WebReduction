@@ -226,8 +226,14 @@ def clean_db(db_username='reduction'):
 @task
 @apply_role
 def pull_from_branch(branch='master'):
+    '''
+    Run for example as:
+    fab -R dev pull_from_branch:branch='dev'
+    '''
     with cd(env.project_root):
         run("git fetch -p")
+        run("git clean -f") # remove untracked files
+        run("git checkout {}".format(branch))
         run("git pull origin {}".format(branch))
 
 
