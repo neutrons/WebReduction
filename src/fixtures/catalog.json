@@ -335,7 +335,7 @@
 			"ldap_group_name": "sns_hys_team",
 			"drive_directory_path": "/SNS/HYS",
 			"data_file_path_template": "",
-			"reduction_directory_path_template": "/SNS/HYS/%(ipts_number)s/shared/autoreduction",
+			"reduction_directory_path_template": "/SNS/HYS/%(ipts_number)s/shared/autoreduce",
 			"job_template_path": "/SNS/HYS/shared/templates/hyspec.tpl",
 			"visible_reduction": true,
 			"visible_catalog": true,

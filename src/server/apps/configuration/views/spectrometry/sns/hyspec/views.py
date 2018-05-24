@@ -48,7 +48,7 @@ class ConfigurationCreate(LoginRequiredMixin, ConfigurationCreateMixin, Configur
     model = Configuration
     form_class = ConfigurationForm
     formset_class = MaskInlineFormSetCreate
-    success_url = reverse_lazy('configuration:list')
+    # success_url = reverse_lazy('configuration:list')
 
 
 class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, ConfigurationUpdateMixin, UpdateView):
@@ -59,7 +59,7 @@ class ConfigurationUpdate(LoginRequiredMixin, ConfigurationMixin, ConfigurationU
     model = Configuration
     form_class = ConfigurationForm
     formset_class = MaskInlineFormSetUpdate
-    success_url = reverse_lazy('configuration:list')
+    # success_url = reverse_lazy('configuration:list')
 
 
 class ConfigurationDelete(LoginRequiredMixin, ConfigurationMixin, ConfigurationDeleteMixin, DeleteView):

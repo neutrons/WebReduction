@@ -207,3 +207,14 @@ sudo systemctl restart runworker.service
 sudo systemctl status runworker.service
 
 ```
+
+Note that RHEL7 with Python3 use:
+
+```bash
+cd /usr/local/reduction
+
+virtualenv -p /opt/rh/rh-python36/root/bin/python3.6 venv
+
+CFLAGS="-I/opt/rh/rh-python36/root/usr/include/python3.6m" LDFLAGS="-L/opt/rh/rh-python36/root/usr/lib64" pip install -r config/requirements/production.txt
+
+```

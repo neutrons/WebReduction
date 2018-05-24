@@ -5,8 +5,8 @@
     "fields": {
       "created": "2016-12-08T14:55:42.837Z",
       "modified": "2016-12-08T14:55:42.838Z",
-      "name": "Mantid Nightly",
-      "path": "/usr/local/bin/mantidpythonnightly",
+      "name": "Mantid Default",
+      "path": "/usr/local/bin/mantidpython",
       "arguments": ["--classic"]
     }
   },
@@ -14,10 +14,21 @@
     "model": "django_remote_submission.interpreter",
     "pk": 2,
     "fields": {
+      "created": "2016-12-08T14:55:42.837Z",
+      "modified": "2016-12-08T14:55:42.838Z",
+      "name": "Mantid Nightly",
+      "path": "/usr/local/bin/mantidpythonnightly",
+      "arguments": ["--classic"]
+    }
+  },
+  {
+    "model": "django_remote_submission.interpreter",
+    "pk": 3,
+    "fields": {
       "created": "2016-12-08T15:01:18.062Z",
       "modified": "2016-12-08T15:01:18.064Z",
-      "name": "Mantid 3.9",
-      "path": "/usr/bin/mantidpython39",
+      "name": "Python Default",
+      "path": "/usr/bin/python",
       "arguments": ["--classic"]
     }
   },

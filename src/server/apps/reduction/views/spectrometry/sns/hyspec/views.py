@@ -48,7 +48,7 @@ class ReductionCreate(LoginRequiredMixin, ReductionCreateMixin, CreateView):
     model_configuration = Configuration
     form_class = ReductionForm
     formset_class = RegionInlineFormSetCreate
-    success_url = reverse_lazy('reduction:list')
+    # success_url = reverse_lazy('reduction:list')
 
 
 class ReductionDelete(LoginRequiredMixin, ReductionDeleteMixin, DeleteView):
@@ -75,7 +75,7 @@ class ReductionUpdate(LoginRequiredMixin, ReductionUpdateMixin, UpdateView):
     model_configuration = Configuration
     form_class = ReductionForm
     formset_class = RegionInlineFormSetUpdate
-    success_url = reverse_lazy('reduction:list')
+    # success_url = reverse_lazy('reduction:list')
 
 
 class ReductionScriptUpdate(LoginRequiredMixin, ReductionScriptUpdateMixin, UpdateView):
