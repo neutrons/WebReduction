@@ -30,7 +30,7 @@
                 <th>Title</th>
                 <th>Date created</th>
                 <th>Date modified</th>
-                <th>Edit</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -42,8 +42,13 @@
                 	</td>
                 <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>
                 <td>{{object.modified_date | date:"DATETIME_FORMAT" }}</td>
-                <td><a data-toggle="tooltip" data-placement="right" href="{% url 'reduction:update' object.pk %}"
-            title="Click to edit the details of this configuration."><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></td>
+                <td>
+                    <a data-toggle="tooltip" data-placement="right" href="{% url 'reduction:update' object.pk %}"
+                        title="Click to edit the details of this reduction."><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                    &nbsp;
+                    <a data-toggle="tooltip" data-placement="right" href="{% url 'reduction:delete' object.pk %}"
+                        title="Click to delete this reduction."><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -53,7 +58,7 @@
                 <th>Title</th>
                 <th>Date created</th>
                 <th>Date modified</th>
-                <th>Edit</th>
+                <th>Actions</th>
             </tr>
         </tfoot>
     </table>

@@ -30,6 +30,7 @@
                 <th>Title</th>
                 <th>Date created</th>
                 <th>Date modified</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -42,6 +43,13 @@
                 </td>
                 <td>{{object.created_date | date:"DATETIME_FORMAT" }}</td>
                 <td>{{object.modified_date | date:"DATETIME_FORMAT" }}</td>
+                <td>
+                    <a data-toggle="tooltip" data-placement="right" href="{% url 'configuration:update' object.pk %}"
+                        title="Click to edit the details of this configuration."><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                    &nbsp;
+                    <a data-toggle="tooltip" data-placement="right" href="{% url 'configuration:delete' object.pk %}"
+                        title="Click to delete this configuration."><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                </td>
 
             </tr>
             {% endfor %}
@@ -52,6 +60,7 @@
                 <th>Title</th>
                 <th>Date created</th>
                 <th>Date modified</th>
+                <th>Actions</th>
             </tr>
         </tfoot>
     </table>
@@ -72,7 +81,21 @@
                 "searching": true,
                 "ordering": true,
                 "info": true,
-                "autoWidth": true
+                "autoWidth": true,
+                columnDefs: [
+                {
+                    "targets": 4,
+                    //"visible": false,      // And making this columns invisible ...
+                    "orderable" : false,
+                    "searchable": false,
+                    "width": "10%",
+                    "className": "text-center"
+                },
+                {
+                    "targets": [2,3],
+                    "className": "text-right"
+                }
+            ]
             });
         });
     </script>
