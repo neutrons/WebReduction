@@ -160,26 +160,26 @@ plotParameters.append({'Name':'HHL',
         ('Q1', 'Q1'),
         ('Q2', 'Q2'),
         ('Q3', 'Q3'),
-        ('DE', 'DeltaE'),
+        ('DeltaE', 'DeltaE'),
     )
 
-    axis_0 = models.CharField("X-Axis", max_length=2, choices=AXIS_CHOICES)
+    axis_0 = models.CharField("X-Axis", max_length=8, choices=AXIS_CHOICES)
     min_0 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_0 = models.DecimalField("Max", max_digits=10, decimal_places=2)
     nsteps_0 = models.IntegerField("#Steps", default=200,)
 
-    axis_1 = models.CharField("Y-Axis", max_length=2, choices=AXIS_CHOICES)
+    axis_1 = models.CharField("Y-Axis", max_length=8, choices=AXIS_CHOICES)
     min_1 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_1 = models.DecimalField("Max", max_digits=10, decimal_places=2)
     nsteps_1 = models.IntegerField("#Steps", default=200,)
 
     axis_2 = models.CharField(
-        "Integrated Axis", max_length=2, choices=AXIS_CHOICES)
+        "Integrated Axis", max_length=8, choices=AXIS_CHOICES)
     min_2 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_2 = models.DecimalField("Max", max_digits=10, decimal_places=2)
 
     axis_3 = models.CharField(
-        "Integrated Axis", max_length=2, choices=AXIS_CHOICES)
+        "Integrated Axis", max_length=8, choices=AXIS_CHOICES)
     min_3 = models.DecimalField("Min", max_digits=10, decimal_places=2)
     max_3 = models.DecimalField("Max", max_digits=10, decimal_places=2)
 
