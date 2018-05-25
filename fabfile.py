@@ -212,7 +212,7 @@ def start(branch='master'):
 
 @task
 @apply_role
-def clean_db(db_username='reduction'):
+def clean_db(db_username='reduction', db_name='reduction'):
     '''
     deletes migrations and cleans the db.
     It asks for the
@@ -220,8 +220,10 @@ def clean_db(db_username='reduction'):
     fab -R dev clean_db:db_username='reduction'
     '''
     with  cd(env.project_root):
-        run('find . -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" | xargs --no-run-if-empty rm')
-        run('psql -U {} -d reduction -c "drop owned by reduction;"'.format(db_username))
+        run('find . -regextype sed -regex ".*migrations/[0-9]\{4\}_.*py" | \
+        xargs --no-run-if-empty rm')
+        run('psql -U {} -d {} -c "drop owned by reduction;"'.format(
+            db_username, db_name))
 
 @task
 @apply_role
@@ -251,6 +253,10 @@ def migrate():
     '''
     with  prefix('. ' + env.project_venv + '/bin/activate'),\
             cd(env.project_src):
+        # For RHEL 7 and Python 6
+        run('CFLAGS="-I/opt/rh/rh-python36/root/usr/include/python3.6m" \
+            LDFLAGS="-L/opt/rh/rh-python36/root/usr/lib64" \
+            pip install -r config/requirements/production.txt')
         # Collect all the static files
         run('python manage.py collectstatic --noinput')
         # Migrate and Update the database

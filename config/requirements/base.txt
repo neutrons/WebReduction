@@ -1,39 +1,38 @@
 # Django
-Django>=2.0.2
-django-crispy-forms
-django-auth-ldap>=1.2.12
+Django~=2.0.2
+django-crispy-forms~=1.7.2
+django-auth-ldap~=1.5.0
 
 # for .env file
-django-environ>=0.4.4
-
+django-environ~=0.4.4
 # Chained Selects (e.g. Pick facility then the associated instrument)
 # django-smart-selects==1.5.2
 
 # For The catalogpip
-requests>=2.18.4
-requests_oauthlib>=0.8.0
+requests~=2.18.4
+requests_oauthlib~=0.8.0
 
 # PostGres
-psycopg2>=2.6.1
-psycopg2-binary>=2.7.4
+psycopg2~=2.7.4
+psycopg2-binary~=2.7.4
 
 # Remote job submission
-django-remote-submission>=2.1.0
+django-remote-submission~=2.1.0
 #../django-remote-submission/dist/django-remote-submission-0.3.1.tar.gz
-celery[redis]>=4.1.0
-django-celery-results>=1.0.1
-channels-redis>=2.1.1
+celery[redis]~=4.1.1
+django-celery-results~=1.0.1
+channels-redis~=2.2.1
 
 # For deploy
-Fabric3>=1.13.1
-python-dotenv>=0.7.1
+Fabric3~=1.14.0
+python-dotenv~=0.8.2
 
 # For visualizing data
-numpy>=1.12.0
-plotly>=2.0.2
+numpy~=1.14.2
+plotly~=2.7.0
 
 # Natutal sorting:
-natsort>=5.1.0
+natsort~=5.3.2
 
 # Admin Skin
-django-grappelli>=2.11.1
+django-grappelli~=2.11.1

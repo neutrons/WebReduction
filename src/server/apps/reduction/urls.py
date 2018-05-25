@@ -5,7 +5,7 @@ from .views import *
 # pylint: disable=C0103
 urlpatterns = [
     url(r'^$', reduction_list, name='list'),
-    url(r'^(?P<pk>\d+)/$', reduction_detail, name='detail'),
+    url(r'^(?P<pk>\d+)$', reduction_detail, name='detail'),
     url(r'^create$', reduction_create, name='create'),
     url(r'^update/(?P<pk>\d+)$', reduction_update, name='update'),
     url(r'^delete/(?P<pk>\d+)$', reduction_delete, name='delete'),

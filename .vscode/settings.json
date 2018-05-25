@@ -17,41 +17,11 @@
         "*.tpl": "jinja",
         "**/*.service": "ini"
     },
-    "cSpell.words": [
-        "oncat",
-        "pformat"
-    ],
-    "cSpell.enabledLanguageIds": [
-        "c",
-        "cpp",
-        "csharp",
-        "css",
-        "go",
-        "handlebars",
-        "html",
-        "jade",
-        "javascript",
-        "javascriptreact",
-        "json",
-        "latex",
-        "less",
-        "markdown",
-        "php",
-        "plaintext",
-        "pub",
-        "restructuredtext",
-        "rust",
-        "scss",
-        "text",
-        "typescript",
-        "typescriptreact",
-        "yml"
-    ],
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
-    "python.linting.flake8Enabled": false,
     //
     "python.pythonPath": "${workspaceFolder}/venv/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    // formatter
     "python.formatting.provider": "autopep8",
     "python.formatting.autopep8Path": "${workspaceRoot}/venv/bin/autopep8",
 

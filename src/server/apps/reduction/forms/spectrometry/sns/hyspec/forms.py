@@ -2,7 +2,8 @@ import logging
 
 from django.forms import ModelForm, inlineformset_factory
 
-from crispy_forms.layout import HTML, Div, Field
+from crispy_forms.layout import HTML, Div, Field, Fieldset
+from crispy_forms.bootstrap import AppendedText, PrependedText
 
 from server.apps.reduction.models.spectrometry.sns.hyspec import Reduction, Region
 from server.apps.reduction.forms import abstract
@@ -62,12 +63,19 @@ class RegionForm(abstract.RegionForm, ModelForm):
         self.helper[5:8].wrap(Div, css_class="col-md-3")
         self.helper[5:8].wrap_together(Div, css_class="row")
 
-        self.helper.layout.append(Field("DELETE"))
-        self.helper[len(self.helper.layout)-1].wrap(Div, css_class="col-md-12 text-right")
+        # This to add the delete button
+        #self.helper.layout.append(Field("DELETE"))
+        self.helper.layout.append(AppendedText("DELETE", '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'))
+        #self.helper.layout.append(Div("DELETE", HTML('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>')))
 
+        
+        self.helper[len(self.helper.layout)-1].wrap(
+            Div, css_class="col-md-12 text-right")
+        # This adds a ruller at the end
         self.helper.layout.append(HTML("""<hr class="col-xs-12">"""))
 
         # self.helper.layout.extend(['ORDER', 'DELETE'])
+        # Wrap all in div so I can identify a formset in JS
         self.helper.all().wrap_together(Div, css_class="a-formset")
 
     class Meta(abstract.RegionForm.Meta):

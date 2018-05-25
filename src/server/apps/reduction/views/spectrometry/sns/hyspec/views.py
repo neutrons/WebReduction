@@ -50,6 +50,15 @@ class ReductionCreate(LoginRequiredMixin, ReductionCreateMixin, CreateView):
     formset_class = RegionInlineFormSetCreate
     # success_url = reverse_lazy('reduction:list')
 
+    # def get_success_url(self):
+    #     from pprint import pprint
+    #     pprint(self.pk_url_kwarg)
+    #     pprint(self.kwargs)
+    #     pprint(self.args)
+    #     return reverse_lazy('reduction:detail', 
+    #         kwargs={'pk': self._id},
+    # )
+
 
 class ReductionDelete(LoginRequiredMixin, ReductionDeleteMixin, DeleteView):
 

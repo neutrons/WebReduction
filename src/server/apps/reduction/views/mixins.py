@@ -169,35 +169,39 @@ class ReductionCloneMixin(ReductionFormMixin):
             reverse('reduction:update', kwargs={'pk': self.object.pk}))
 
 class ReductionUpdateMixin(ReductionFormMixin, ReductionFormsetMixin):
-    '''
-    Edit a Reduction (The spreadsheet)
-    '''
-    def post(self, request, **kwargs):
-        '''
-        When the form is saved we fo back success_url: the reduction list
-        When the form is posted through the button Run, it will be saved and
-        redirected to the edit script view.
-        if the form was posted with the run button, in the html:
-        <button name="run" ...
-        The script is generated from the data in the form and then the default
-        procedure is followed by calling super
-        '''
-        if 'run' in self.request.POST:
-            request.POST = request.POST.copy()
-            script_builder = self._get_script_builder()
-            try:
-                request.POST['script'] = script_builder.build_script()
-                self.success_url = reverse_lazy(
-                    'reduction:script',
-                    kwargs={'pk': kwargs['pk']},)
-                logger.debug("Generated script. Going to: %s", self.success_url)
-            except Exception as e:
-                logger.exception(e)
-                messages.error(
-                    self.request,
-                    "An exception occurred: {0} :: {1}".format(
-                        type(e).__name__, str(e)))
-        return super().post(request, **kwargs)
+    # '''
+    # Edit a Reduction (The spreadsheet)
+    # '''
+    # def post(self, request, **kwargs):
+    #     '''
+    #     When the form is saved we fo back success_url: the reduction list
+    #     When the form is posted through the button Run, it will be saved and
+    #     redirected to the edit script view.
+    #     if the form was posted with the run button, in the html:
+    #     <button name="run" ...
+    #     The script is generated from the data in the form and then the default
+    #     procedure is followed by calling super
+    #     '''
+    #     # if 'run' in self.request.POST:
+    #     #     request.POST = request.POST.copy()
+    #     #     script_builder = self._get_script_builder()
+    #     #     try:
+    #     #         request.POST['script'] = script_builder.build_script()
+    #     #         self.success_url = reverse_lazy(
+    #     #             'reduction:script',
+    #     #             kwargs={'pk': kwargs['pk']},)
+    #     #         logger.debug("Generated script. Going to: %s", self.success_url)
+    #     #     except Exception as e:
+    #     #         logger.exception(e)
+    #     #         messages.error(
+    #     #             self.request,
+    #     #             "An exception occurred: {0} :: {1}".format(
+    #     #                 type(e).__name__, str(e)))
+    #     return super().post(request, **kwargs)
+    
+    def form_valid(self, form, formset):
+    
+        return FormsetMixin.form_valid(self, form, formset)
 
 
 class ReductionScriptUpdateMixin(ReductionFormMixin):

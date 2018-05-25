@@ -116,7 +116,7 @@ class ReductionHYSPEC(abstract.Reduction):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('reduction:reduction_detail', [self.pk])
+        return ('reduction:detail', [self.pk])
 
 
 class RegionHYSPEC(abstract.Region):
