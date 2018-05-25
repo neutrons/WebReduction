@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import re
-from datetime import datetime
 from pprint import pformat
 
 
@@ -19,6 +18,8 @@ from django_remote_submission.tasks import (
     LogPolicy, submit_job_to_server, copy_job_to_server,
 )
 from django.urls import reverse
+from django.utils import timezone
+
 from server.apps.catalog.oncat.facade import Catalog
 from server.util.formsets import FormsetMixin
 from server.util.path import import_class_from_module
@@ -217,8 +218,8 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
     # I'm leaving this as global variables as this can be overloaded in the 
     # Intrument specific classes that inherit from this
     # Otherwise those are defaults
-    remote_filename = "reduction_{}.py".format(datetime.now().strftime(
-        "%Y%m%d-%H%M%S.%f"))
+    remote_filename = "reduction_{}.py".format(timezone.now().strftime(
+        r"%Y%m%d-%H%M%S"))
     log_policy=LogPolicy.LOG_LIVE
     store_results=["*.txt", "*.log"]
 
@@ -281,6 +282,7 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
             owner=self.request.user,
             interpreter=form.instance.script_interpreter,
         )
+        logger.debug("Job created. Remote file name = %s", self.remote_filename)
         return job
     
     def _get_remote_task(self, form):

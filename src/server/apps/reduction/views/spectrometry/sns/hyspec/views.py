@@ -21,7 +21,7 @@ from server.apps.reduction.views.mixins import (
     ReductionScriptUpdateMixin,
 )
 
-from datetime import datetime
+from django.utils import timezone
 
 
 class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
@@ -98,7 +98,7 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionScriptUpdateMixin, Upda
 
     # Variables for jobsubmission
     remote_filename="reduce_HYS_{}.py".format(
-        datetime.now().strftime(r"%Y%m%d-%H%M%S")
+        timezone.now().strftime(r"%Y%m%d-%H%M%S")
     )
     store_results=[]
 
