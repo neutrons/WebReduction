@@ -260,7 +260,7 @@ def migrate():
         # Collect all the static files
         run('python manage.py collectstatic --noinput')
         # Migrate and Update the database
-        run('python manage.py makemigrations --noinput')
+        # run('python manage.py makemigrations --noinput')
         run('python manage.py migrate --no-input')
         run('python manage.py loaddata catalog jobs')
 
