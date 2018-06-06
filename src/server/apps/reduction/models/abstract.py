@@ -63,7 +63,7 @@ class ReductionManager(models.Manager):
         '''
         obj = self.select_related().get(pk=pk)
         obj_json = model_to_dict(obj)
-        obj_json["user"] = obj.user.username
+        obj_json["users"] = ", ".join(user.username for user in obj.users.all())
         obj_json["regions"] = []
         for region in obj.regions.select_related():
             d = model_to_dict(region)
