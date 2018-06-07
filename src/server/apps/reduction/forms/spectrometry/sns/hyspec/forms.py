@@ -17,18 +17,19 @@ class ReductionForm(abstract.ReductionForm, ModelForm):
         super(ReductionForm, self).__init__(*args, **kwargs)
         # super().__init__(*args, **kwargs)
 
+        start = 3
         # Cell
-        self.helper[2:8].wrap(Div, css_class="col-md-12")
-        self.helper[2:8].wrap(Div, css_class="col-md-2")
-        self.helper[2:8].wrap_together(Div, css_class="row")
+        self.helper[start:start+6].wrap(Div, css_class="col-md-12")
+        self.helper[start:start+6].wrap(Div, css_class="col-md-2")
+        self.helper[start:start+6].wrap_together(Div, css_class="row")
         # Vectors
-        self.helper[3:5].wrap(Div, css_class="col-md-12")
-        self.helper[3:5].wrap(Div, css_class="col-md-6")
-        self.helper[3:5].wrap_together(Div, css_class="row")
+        self.helper[start+1:start+3].wrap(Div, css_class="col-md-12")
+        self.helper[start+1:start+3].wrap(Div, css_class="col-md-6")
+        self.helper[start+1:start+3].wrap_together(Div, css_class="row")
         # # # Projections
-        self.helper[4:7].wrap(Div, css_class="col-md-12")
-        self.helper[4:7].wrap(Div, css_class="col-md-4")
-        self.helper[4:7].wrap_together(Div, css_class="row")
+        self.helper[start+2:start+5].wrap(Div, css_class="col-md-12")
+        self.helper[start+2:start+5].wrap(Div, css_class="col-md-4")
+        self.helper[start+2:start+5].wrap_together(Div, css_class="row")
 
     class Meta(abstract.ReductionForm.Meta):
         model = Reduction

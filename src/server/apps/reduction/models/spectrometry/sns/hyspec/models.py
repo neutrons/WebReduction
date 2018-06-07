@@ -32,6 +32,15 @@ class ReductionHYSPEC(abstract.Reduction):
 
     # Fields
 
+    e_i = models.DecimalField(
+        u'\( E_{i} \)',
+        max_digits=4,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text=u"Nominal \( E_{i} \)."
+    )
+
     ub_a = models.DecimalField(
         "a",
         max_digits=8,
