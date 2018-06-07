@@ -42,7 +42,7 @@ class ConfigurationMixin(object):
         '''
         Make sure the user only accesses its configurations
         '''
-        return self.model.objects.filter(user=self.request.user)
+        return self.model.objects.filter(users=self.request.user)
 
 
 class ConfigurationCreateMixin(object):
@@ -51,9 +51,12 @@ class ConfigurationCreateMixin(object):
         """
         Sets initial values which are hidden in the form
         """
-        form.instance.user = self.request.user
         form.instance.instrument = get_object_or_404(
             Instrument, name=self.instrument_obj.name)
+        form.save() # model needs to be sabed before inserting manytomany values
+        logger.debug("Configuration valid. Adding user {}".format(self.request.user))
+        form.instance.users.add(self.request.user)
+
         return CreateView.form_valid(self, form)
 
 

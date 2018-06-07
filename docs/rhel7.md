@@ -76,6 +76,9 @@ sudo su - postgres
 createuser -P -s -e reduction
 
 # Once postgres user, create a db
+# createdb [OPTION]... [DBNAME] [DESCRIPTION]
+# -O Owner
+# -W Asks for pawword
 createdb -O reduction -W reduction
 
 # leave pgsql shell

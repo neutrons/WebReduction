@@ -16,9 +16,11 @@ class ConfigurationCreateMixin(FormsetMixin):
         Sets initial values which are hidden in the form
         """
         logger.debug("form_valid from ConfigurationCreateMixin in spectrometry")
-        form.instance.user = self.request.user
         form.instance.instrument = get_object_or_404(
             Instrument, name=self.instrument_obj.name)
+        form.save()
+        form.instance.users.add(self.request.user)
+
 
         return FormsetMixin.form_valid(self, form, formset)
 

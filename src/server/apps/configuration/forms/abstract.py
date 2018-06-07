@@ -35,5 +35,5 @@ class ConfigurationForm(object):
                                          onclick="window.history.back()"))
 
     class Meta:
-        exclude = ['user', 'instrument']
+        exclude = ['users', 'instrument']
 

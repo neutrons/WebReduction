@@ -20,7 +20,7 @@ class ConfigurationForm(object):
         self.helper.form_tag = False
 
     class Meta:
-        exclude = ['user', 'instrument']
+        exclude = ['users', 'instrument']
 
 
 class MaskForm(object):

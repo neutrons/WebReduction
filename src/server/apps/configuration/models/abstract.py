@@ -100,13 +100,8 @@ class Configuration(models.Model, ModelMixin):
         # null=True,
     )
 
-    user = models.ForeignKey(
+    users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="%(class)s_users",
-        related_query_name="%(class)s_user",
-        # blank=True,
-        # null=True,
     )
 
     # Manager
