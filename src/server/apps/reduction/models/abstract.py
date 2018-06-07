@@ -1,12 +1,14 @@
 from __future__ import unicode_literals
 
 import logging
+from pprint import pformat
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.forms.models import model_to_dict
 from django_remote_submission.models import Interpreter, Job
-from pprint import pformat
+from django_auth_ldap.backend import LDAPBackend
 
 from server.apps.catalog.models import Instrument
 from server.util.models import ModelMixin
@@ -40,6 +42,7 @@ class ReductionManager(models.Manager):
             region.pk = None
             region.save()
             new_regions.append(region)
+        users = obj.users.all()
 
         obj.pk = None  # setting to None, clones the object!
         obj.save()
@@ -47,6 +50,7 @@ class ReductionManager(models.Manager):
         obj.regions.set(new_regions)
         obj.title += " (cloned)"
         obj.save()
+        obj.users.add(*users)
         return obj
 
     def to_json(self, pk):
@@ -85,6 +89,15 @@ class Reduction(models.Model, ModelMixin):
 
     modified_date = models.DateTimeField(auto_now=True)
 
+    share_with_ipts = models.BooleanField(
+        'Share this reduction with other members of this IPTS.',
+        help_text=(
+            'If checked, anyone belonging to this IPTS can see and change this Redution.'
+        ),
+        default=True,
+    )
+
+
     script_interpreter = models.ForeignKey(
         Interpreter,
         null=True,
@@ -93,7 +106,7 @@ class Reduction(models.Model, ModelMixin):
         related_query_name="%(class)s_interpreter",
         default=1,
     )
-
+    
     script_execution_path = models.CharField(max_length=256)
 
     script = models.TextField(
@@ -118,10 +131,18 @@ class Reduction(models.Model, ModelMixin):
         Instrument, on_delete=models.CASCADE,
         related_name="%(class)s_instruments",
         related_query_name="%(class)s_instrument",)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-        related_name="%(class)s_users",
-        related_query_name="%(class)s_user",)
+
+    # user = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+    #     related_name="%(class)s_users",
+    #     related_query_name="%(class)s_user",)
+    
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        #related_name="%(class)s_users",
+        #related_query_name="%(class)s_user",
+    )
+
 
     job = models.ForeignKey(
         Job,

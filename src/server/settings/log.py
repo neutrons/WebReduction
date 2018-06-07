@@ -72,7 +72,7 @@ LOGGING = {
         },
         'django_auth_ldap': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
         'django_remote_submission': {

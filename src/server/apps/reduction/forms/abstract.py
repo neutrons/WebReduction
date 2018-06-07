@@ -4,9 +4,12 @@ Created on Jan 8, 2016
 '''
 from crispy_forms.bootstrap  import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Button, Layout, Fieldset, HTML, Field
+from crispy_forms.layout import (
+    Submit, Button, Layout, Fieldset, HTML,
+)
+from crispy_forms.bootstrap import Field, InlineCheckboxes
 
-from django.forms import HiddenInput
+from django.forms import HiddenInput, BooleanField
 
 
 class SubmitWithCss(Submit):
@@ -16,22 +19,21 @@ class SubmitWithCss(Submit):
     '''
     def __init__(self, *args, **kwargs):
         self.field_classes = 'btn'
-        super(Submit, self).__init__(*args, **kwargs)
+        super(SubmitWithCss, self).__init__(*args, **kwargs)
 
 class ReductionForm(object):
+
     def __init__(self, *args, **kwargs):
-        super(ReductionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.render_required_fields = True
-        self.helper.form_tag = False
-        # self.fields['ipts'].widget.attrs['readonly'] = True
-        # self.fields['experiment'].widget.attrs['readonly'] = True
+        self.helper.form_tag = False # To NOT render the form csrf fields etc..
 
     class Meta:
         exclude = [
-            'user', 'instrument', 'script', 'script_interpreter', 'job', 
+            'users', 'instrument', 'script', 'script_interpreter', 'job', 
             'script_execution_path', 'run_type',
         ]
         #widgets = {'script': HiddenInput()}

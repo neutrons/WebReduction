@@ -4,28 +4,28 @@ import os
 import re
 from pprint import pformat
 
-
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
+from django.core import signing
+from django.db import transaction
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
-from django.core import signing
+from django_auth_ldap.backend import LDAPBackend
 from django_remote_submission.models import Job, Server
-from django_remote_submission.tasks import (
-    LogPolicy, submit_job_to_server, copy_job_to_server,
-)
-from django.urls import reverse
-from django.utils import timezone
+from django_remote_submission.tasks import (LogPolicy, copy_job_to_server,
+                                            submit_job_to_server)
 
 from server.apps.catalog.oncat.facade import Catalog
-from server.util.formsets import FormsetMixin
-from server.util.path import import_class_from_module
+from server.apps.users.ldap_util import LdapSns
 from server.scripts.builder import ScriptBuilder
 from server.settings.env import env
-from django.db import transaction
+from server.util.formsets import FormsetMixin
+from server.util.path import import_class_from_module
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -50,7 +50,7 @@ class ReductionMixin(object):
         '''
         Make sure the user only accesses its configurations
         '''
-        return self.model.objects.filter(user=self.request.user)
+        return self.model.objects.filter(users=self.request.user)
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
@@ -75,6 +75,51 @@ class ReductionFormMixin(ReductionMixin):
             self.request.user.profile.ipts,
             self.request.user.profile.experiment
         )
+    
+    def _assign_to_uids(self, form, uids):
+        '''
+        if it's assigned already do nothing
+        if uid is not on the DB, populates it from the ldap
+        '''
+
+        user_objets = []
+        for uid in uids:
+            if not get_user_model().objects.filter(username=uid).exists():
+                # this new_uid is not on the database
+                logger.debug("UID {} does not exist. Getting it from LDAP.".format(uid))
+                ldapobj = LDAPBackend()
+                user = ldapobj.populate_user(uid)
+                if not user:
+                    logger.warning("UID {} does not exist in LDAP... Skipping it.".format(uid))
+                else:
+                    logger.debug("Appending User {} to the list.".format(user))
+                    user_objets.append(user)
+            else:
+                user = get_user_model().objects.get(username=uid)
+                user_objets.append(user)
+        logger.debug("Adding to the form: {}.".format(user_objets))
+        form.instance.users.add(*user_objets)
+    
+
+    def _assign_users_to_this_ipts(self, form):
+        ldap_server = LdapSns()
+        if form.instance.share_with_ipts:
+            uids = ldap_server.get_all_uids_for_an_ipts(self.request.user.profile.ipts)
+            if self.request.user.username not in uids:
+                uids.append(self.request.user.username)
+            form.save() # model needs to be sabed before inserting manytomany values
+            logger.debug("Sharing this IPTS with other users. Assiging {} UIDs to this IPTS {}.".format(
+                uids, self.request.user.profile.ipts,
+            ))
+            self._assign_to_uids(form, uids)
+        else:
+            logger.debug("NOT Sharing this IPTS with other users. Assiging {} UID to this IPTS {}.".format(
+                self.request.user, self.request.user.profile.ipts,
+            ))
+            form.instance.users.clear()
+            form.instance.users.add(self.request.user)
+        return form
+
 
     def get_form(self, form_class=None):
         '''
@@ -105,7 +150,7 @@ class ReductionFormsetMixin(ReductionMixin, FormsetMixin):
             # If the configuration is in the formsets (SANS Instruments)
             if 'configuration' in form.fields:
                 form.fields['configuration'].queryset = self.model_configuration.objects.filter(
-                    user=self.request.user)
+                    users=self.request.user)
         return formset
 
 #     def get_formset_kwargs(self):
@@ -125,8 +170,8 @@ class ReductionCreateMixin(ReductionFormMixin, ReductionFormsetMixin):
         """
         Sets initial values which are hidden in the form
         """
-        form.instance.user = self.request.user
         form.instance.instrument = self.request.user.profile.instrument
+        form = self._assign_users_to_this_ipts(form)
         return FormsetMixin.form_valid(self, form, formset)
 
 
@@ -137,7 +182,9 @@ class ReductionDeleteMixin(ReductionMixin):
         Hook to ensure object is owned by request.user.
         """
         obj = super().get_object()
-        if not obj.user == self.request.user:
+        # reduction.users.filter(username=rhf.username)
+
+        if self.request.user not in obj.users.all():
             raise Http404
         return obj
 
@@ -201,7 +248,7 @@ class ReductionUpdateMixin(ReductionFormMixin, ReductionFormsetMixin):
     #     return super().post(request, **kwargs)
     
     def form_valid(self, form, formset):
-    
+        form = self._assign_users_to_this_ipts(form)
         return FormsetMixin.form_valid(self, form, formset)
 
 

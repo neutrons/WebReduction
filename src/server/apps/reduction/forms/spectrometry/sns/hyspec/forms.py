@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 class ReductionForm(abstract.ReductionForm, ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ReductionForm, self).__init__(*args, **kwargs)
-        # super().__init__(*args, **kwargs)
+        # super(ReductionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        start = 3
+        start = 4
         # Cell
         self.helper[start:start+6].wrap(Div, css_class="col-md-12")
         self.helper[start:start+6].wrap(Div, css_class="col-md-2")
@@ -30,7 +30,7 @@ class ReductionForm(abstract.ReductionForm, ModelForm):
         self.helper[start+2:start+5].wrap(Div, css_class="col-md-12")
         self.helper[start+2:start+5].wrap(Div, css_class="col-md-4")
         self.helper[start+2:start+5].wrap_together(Div, css_class="row")
-
+        
     class Meta(abstract.ReductionForm.Meta):
         model = Reduction
 

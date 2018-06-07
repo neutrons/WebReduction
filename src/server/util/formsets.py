@@ -81,7 +81,7 @@ class FormsetMixin(object):
                 'data': self.request.POST,
                 'files': self.request.FILES,
             })
-        logger.debug("FormsetMixin: get_formset_kwargs: {}".format(pformat(kwargs)))
+        # logger.debug("FormsetMixin: get_formset_kwargs: {}".format(pformat(kwargs)))
         return kwargs
 
     def form_valid(self, form, formset):
