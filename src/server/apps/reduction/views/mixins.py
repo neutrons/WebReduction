@@ -129,7 +129,7 @@ class ReductionFormMixin(ReductionMixin):
         form = super().get_form(form_class)
         if 'configuration' in form.fields:
             form.fields['configuration'].queryset = self.model_configuration.objects.filter(
-                    user=self.request.user)
+                    users=self.request.user)
         return form
 
 

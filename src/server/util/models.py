@@ -1,3 +1,9 @@
+'''
+
+Here will go general classes user by all models
+
+'''
+
 class ModelMixin(object):
 
 
@@ -26,3 +32,7 @@ class ModelMixin(object):
                     'value': value,
                 })
         return fields
+
+class ModelManagerMixin(object):
+    pass
+

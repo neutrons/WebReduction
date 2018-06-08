@@ -162,6 +162,7 @@ class Reduction(models.Model, ModelMixin):
         return self.title
 
 
+
 class RegionManager(models.Manager):
     '''
     Queries go here!!
