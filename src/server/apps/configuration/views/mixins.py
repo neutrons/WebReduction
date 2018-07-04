@@ -1,5 +1,6 @@
 import logging
 import os
+from pprint import pformat
 
 from django.contrib import messages
 from django.http import Http404
@@ -151,8 +152,8 @@ class ConfigurationAssignListIptsMixin(object):
             instrument=self.request.user.profile.instrument.catalog_name,
             request=self.request
         ).experiments()
-        logger.debug(this_instrument_ipts)
-        context['object_list'] = [d['ipts'] for d in this_instrument_ipts]
+        logger.debug(pformat(this_instrument_ipts))
+        context['object_list'] = this_instrument_ipts #[d['ipts'] for d in this_instrument_ipts]
         obj = self.model.objects.get(pk=kwargs['pk'])
         context['object'] = obj
         return context
@@ -162,18 +163,22 @@ class ConfigurationAssignUidMixin(object):
     def get(self, request, *args, **kwargs):
         obj = self.model.objects.clone_and_assign_new_uid(
             kwargs['pk'], kwargs['uid'])
-        messages.success(request, "Configuration %s assigned to the user %s. \
-            New configuration id = %s." % (obj, obj.user, obj.pk))
+        messages.success(request, "Configuration %s assigned to the user %s."
+            " New configuration id = %s." % (
+                obj, obj.users.first().username, # I know in this case there's only a user
+                obj.pk))
         return super().get(request, *args, **kwargs)
 
 class ConfigurationAssignIptsMixin(object):
 
     def get(self, request, *args, **kwargs):
-        cloned_objs = self.model.objects.clone_and_assign_new_uids_based_on_ipts(
+        obj = self.model.objects.clone_and_assign_new_uids_based_on_ipts(
             kwargs['pk'], kwargs['ipts'])
-        for obj in cloned_objs:
-            messages.success(
-                request,
-                "Configuration %s assigned to the user "
-                "%s. New configuration id = %s." % (obj, obj.user, obj.pk))
+    
+        users_list = list(obj.users.values_list('username', flat=True)) 
+        messages.success(
+            request,
+            "Configuration %s assigned to the users: "
+            "%s. New configuration id = %s." % (
+                obj, ", ".join(users_list), obj.pk))
         return super().get(request, *args, **kwargs)

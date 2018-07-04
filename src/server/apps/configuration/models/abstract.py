@@ -37,49 +37,70 @@ class ConfigurationManager(models.Manager):
 
     use_for_related_fields = True
 
-    def clone(self, pk):
+    def clone(self, pk, title_suffix=" (cloned)"):
         '''
-        Clone an object and returns
+        Clone an object and returns the new object
         '''
         obj = self.get(id=pk)
+        users = obj.users.all()
+
         obj.pk = None  # setting to None, clones the object!
-        obj.title += " (cloned)"
+        obj.title += title_suffix
         obj.save()
+        obj.users.add(*users) # clone cleans the users fields
         return obj
+    
+    def _get_user(self, uid):
+        '''
+        If the user is not in the DB already
+        gets it from LDAP and populate the DB with it
+        returns the User object or None if it doesn't exist
+        '''
+        if not get_user_model().objects.filter(username=uid).exists():
+            # this new_uid is not on the database
+            logger.debug("UID %s does not exist in the DB. "
+                "Getting it from LDAP.", uid)
+            user = LDAPBackend().populate_user(uid)
+            if not user:
+                logger.warning("UID %s is known to belong to this IPTS but does"
+                    " not exist in LDAP... Skipping it.", uid)
+                return None
+        return get_user_model().objects.get(username=uid)
 
     def clone_and_assign_new_uid(self, pk, new_uid):
         '''
         if new_uid is not on the DB, populates it from the ldap
         '''
-        if not get_user_model().objects.filter(username=new_uid).exists():
-            # this new_uid is not on the database
-            logger.debug("UID %s does not exist. Getting it from LDAP." % (new_uid))
-            ldapobj = LDAPBackend()
-            user = ldapobj.populate_user(new_uid)
-            if not user:
-                logger.warning("UID %s does not exist in LDAP... Skipping it." % new_uid)
-                return None
-        obj = self.get(id=pk)
-        logger.debug("Cloning %s and assigning to user %s.", obj, new_uid)
-        obj.pk = None  # setting to None, clones the object!
-        obj.user = get_user_model().objects.get(username=new_uid)
-        obj.save()
-        return obj
+        user_obj = self._get_user(new_uid)
+        logger.debug("User %s is being assigned a new Configuration", user_obj)
+        if user_obj is None:
+            return None
+        else:
+            obj = self.clone(pk=pk, title_suffix="")
+            obj.users.clear()
+            logger.debug("Cloned %s and assigned to user %s.", obj, new_uid)            
+            return obj
 
     def clone_and_assign_new_uids_based_on_ipts(self, pk, ipts):
         '''
-        For an IPTS get all user uids from LDAP and clones
-        the configuration as above
+        For an IPTS get all user uids from LDAP and clone once the configuration
+        All uids will be added to the clone.
         '''
-        ldap_server = LdapSns()
-        uids = ldap_server.get_all_uids_for_an_ipts(ipts)
+        uids = LdapSns().get_all_uids_for_an_ipts(ipts)
         logger.debug("Users for IPTS %s : %s", ipts, pformat(uids))
-        cloned_objs = []
+        
+        obj = self.clone(pk=pk, title_suffix="")
+        obj.users.clear()
+        obj.save()
+
         for uid in uids:
-            obj = self.clone_and_assign_new_uid(pk, uid)
-            if obj:
-                cloned_objs.append(obj)
-        return cloned_objs
+            user_obj = self._get_user(uid)
+            if user_obj is not None:
+                logger.debug("User %s added to Configuration %s.", user_obj, obj)
+                obj.users.add(user_obj)
+                obj.save()
+
+        return obj
 
 class Configuration(models.Model, ModelMixin):
     '''
