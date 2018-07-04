@@ -68,7 +68,7 @@ class ConfigurationDeleteMixin(object):
         Hook to ensure object is owned by request.user.
         """
         obj = super().get_object()
-        if not obj.user == self.request.user:
+        if not obj.users.filter(username=self.request.user.username).exists():
             raise Http404("The user {} is not the owner of {}.".format(
                 self.request.user, obj))
         return obj

@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^update/(?P<pk>\d+)$', reduction_update, name='update'),
     url(r'^delete/(?P<pk>\d+)$', reduction_delete, name='delete'),
     url(r'^clone/(?P<pk>\d+)$', reduction_clone, name='clone'),
+    url(r'^share/(?P<pk>\d+)$', reduction_share, name='share'),
     url(r'^script/(?P<pk>\d+)$', reduction_script_update, name='script'),
 ]

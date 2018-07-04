@@ -17,7 +17,7 @@ class ReductionForm(abstract.ReductionForm, ModelForm):
         # super(ReductionForm, self).__init__(*args, **kwargs)
         super().__init__(*args, **kwargs)
 
-        start = 4
+        start = 3
         # Cell
         self.helper[start:start+6].wrap(Div, css_class="col-md-12")
         self.helper[start:start+6].wrap(Div, css_class="col-md-2")

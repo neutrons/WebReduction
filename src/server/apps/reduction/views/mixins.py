@@ -76,51 +76,6 @@ class ReductionFormMixin(ReductionMixin):
             self.request.user.profile.experiment
         )
     
-    def _assign_to_uids(self, form, uids):
-        '''
-        if it's assigned already do nothing
-        if uid is not on the DB, populates it from the ldap
-        '''
-
-        user_objets = []
-        for uid in uids:
-            if not get_user_model().objects.filter(username=uid).exists():
-                # this new_uid is not on the database
-                logger.debug("UID {} does not exist. Getting it from LDAP.".format(uid))
-                ldapobj = LDAPBackend()
-                user = ldapobj.populate_user(uid)
-                if not user:
-                    logger.warning("UID {} does not exist in LDAP... Skipping it.".format(uid))
-                else:
-                    logger.debug("Appending User {} to the list.".format(user))
-                    user_objets.append(user)
-            else:
-                user = get_user_model().objects.get(username=uid)
-                user_objets.append(user)
-        logger.debug("Adding to the form: {}.".format(user_objets))
-        form.instance.users.add(*user_objets)
-    
-
-    def _assign_users_to_this_ipts(self, form):
-        ldap_server = LdapSns()
-        if form.instance.share_with_ipts:
-            uids = ldap_server.get_all_uids_for_an_ipts(self.request.user.profile.ipts)
-            if self.request.user.username not in uids:
-                uids.append(self.request.user.username)
-            form.save() # model needs to be sabed before inserting manytomany values
-            logger.debug("Sharing this IPTS with other users. Assiging {} UIDs to this IPTS {}.".format(
-                uids, self.request.user.profile.ipts,
-            ))
-            self._assign_to_uids(form, uids)
-        else:
-            logger.debug("NOT Sharing this IPTS with other users. Assiging {} UID to this IPTS {}.".format(
-                self.request.user, self.request.user.profile.ipts,
-            ))
-            form.instance.users.clear()
-            form.instance.users.add(self.request.user)
-        return form
-
-
     def get_form(self, form_class=None):
         '''
         When the configuration is in the main form (reduction) it makes sure
@@ -171,7 +126,9 @@ class ReductionCreateMixin(ReductionFormMixin, ReductionFormsetMixin):
         Sets initial values which are hidden in the form
         """
         form.instance.instrument = self.request.user.profile.instrument
-        form = self._assign_users_to_this_ipts(form)
+        form.save() # ManyToMany needs save before
+        #form.instance.users.clear()
+        form.instance.users.add(self.request.user)
         return FormsetMixin.form_valid(self, form, formset)
 
 
@@ -192,6 +149,24 @@ class ReductionDeleteMixin(ReductionMixin):
         logger.debug("Deleting reduction %s", self.get_object())
         messages.success(request, 'Reduction %s deleted.' % (self.get_object()))
         return super().delete(request, *args, **kwargs)
+
+class ReductionShareMixin(ReductionMixin):
+
+    def get_object(self, queryset=None):
+        """
+        
+        """
+        obj = super().get_object()        
+        self.model.objects.share(
+            obj.pk,
+            self.request.user.profile.ipts)
+
+        messages.success(
+            self.request, 
+            "Reduction '{}' among users {}.".format(
+                obj, list(obj.users.values_list('username', flat=True))))
+
+        return obj
 
 
 class ReductionCloneMixin(ReductionFormMixin):
@@ -248,7 +223,6 @@ class ReductionUpdateMixin(ReductionFormMixin, ReductionFormsetMixin):
     #     return super().post(request, **kwargs)
     
     def form_valid(self, form, formset):
-        form = self._assign_users_to_this_ipts(form)
         return FormsetMixin.form_valid(self, form, formset)
 
 

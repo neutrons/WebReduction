@@ -19,6 +19,7 @@ from server.apps.reduction.views.mixins import (
     ReductionCloneMixin,
     ReductionUpdateMixin,
     ReductionScriptUpdateMixin,
+    ReductionShareMixin,
 )
 
 from django.utils import timezone
@@ -33,6 +34,13 @@ class ReductionList(LoginRequiredMixin, ReductionMixin, ListView):
 
 
 class ReductionDetail(LoginRequiredMixin, ReductionMixin, DetailView):
+    '''
+    '''
+    template_name = 'reduction/detail.html'
+    model = Reduction
+
+
+class ReductionShare(LoginRequiredMixin, ReductionShareMixin, DetailView):
     '''
     '''
     template_name = 'reduction/detail.html'

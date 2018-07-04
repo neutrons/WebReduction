@@ -68,16 +68,23 @@
 
     <p>
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:update' object.pk %}"
-            title="Click to edit the details of this configuration.">Edit</a>
+            title="Click to edit the details of this configuration."><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a>
 
         <a id="button_delete" class="btn btn-danger" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:delete' object.pk %}"
-            title="Delete this reduction and associated regions.">Delete...</a>
+            title="Delete this reduction and associated regions."><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete...</a>
 
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:clone' object.pk %}"
             title="Creates a copy of this reduction as you might need a few different parameters.">Duplicate</a>
 
 		<a class="btn btn-info" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:script' object.id  %}"
-		    title="Generates a python script and prepare the job submission.">Run...</a>
+            title="Generates a python script and prepare the job submission.">Auto Reduction...</a>
+        
+        <a class="btn btn-info" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:script' object.id  %}"
+            title="Generates a python script and prepare the job submission.">Run...</a>
+          
+        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:share' object.pk %}"
+            title="Share the reduction among the members of the same IPTS"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a>
+
         {% if object.job is not None %}
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'results:job_detail' object.job.id  %}"
 		    title="See the Job info and Results for this reduction.">Results...</a>

@@ -40,6 +40,11 @@ def reduction_clone(request, *args, **kwargs):
     view = class_imported.as_view()(request, *args, **kwargs)
     return view
 
+def reduction_share(request, *args, **kwargs):
+    class_imported = _get_class_view(request, "ReductionShare")
+    view = class_imported.as_view()(request, *args, **kwargs)
+    return view
+
 def reduction_script_update(request, *args, **kwargs):
     class_imported = _get_class_view(request, "ReductionScriptUpdate")
     view = class_imported.as_view()(request, *args, **kwargs)

@@ -12,7 +12,7 @@ from django_auth_ldap.backend import LDAPBackend
 
 from server.apps.catalog.models import Instrument
 from server.util.models import ModelMixin
-
+from server.apps.users.ldap_util import LdapSns
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -79,6 +79,42 @@ class ReductionManager(models.Manager):
         # logger.debug(pformat(obj_json))
         return obj_json
 
+    def _get_user(self, uid):
+        '''
+        If the user is not in the DB already
+        gets it from LDAP and populate the DB with it
+        returns the User object or None if it doesn't exist
+        '''
+        if not get_user_model().objects.filter(username=uid).exists():
+            # this new_uid is not on the database
+            logger.debug("UID %s does not exist in the DB. "
+                "Getting it from LDAP.", uid)
+            user = LDAPBackend().populate_user(uid)
+            if not user:
+                logger.warning("UID %s is known to belong to this IPTS but does"
+                    " not exist in LDAP... Skipping it.", uid)
+                return None
+        return get_user_model().objects.get(username=uid)
+
+    def share(self, pk, ipts):
+        '''
+        For an IPTS get all user uids from LDAP and assign them to the obj.
+        '''
+        uids = LdapSns().get_all_uids_for_an_ipts(ipts)
+        logger.debug("Share: Users for IPTS %s : %s", ipts, pformat(uids))
+        
+        obj = self.get(id=pk)
+        # obj.users.clear()
+        for uid in uids:
+            user_obj = self._get_user(uid)
+            if user_obj is not None:
+                obj.users.add(user_obj)
+                obj.configuration.users.add(user_obj)
+                obj.save()
+                logger.debug("Share: User {} added to Reduction '{}' and Configuration '{}'".format(
+                    user_obj, obj, obj.configuration))
+        return obj
+     
 
 class Reduction(models.Model, ModelMixin):
     '''
@@ -88,15 +124,6 @@ class Reduction(models.Model, ModelMixin):
     created_date = models.DateTimeField(auto_now_add=True)
 
     modified_date = models.DateTimeField(auto_now=True)
-
-    share_with_ipts = models.BooleanField(
-        'Share this reduction with other members of this IPTS.',
-        help_text=(
-            'If checked, anyone belonging to this IPTS can see and change this Redution.'
-        ),
-        default=True,
-    )
-
 
     script_interpreter = models.ForeignKey(
         Interpreter,

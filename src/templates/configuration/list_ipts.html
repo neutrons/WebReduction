@@ -26,7 +26,8 @@
     <table id="table_configuration" class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>Integrated Proposal Tracking System (IPTS)</th>
+                <th>IPTS</th>
+                <th>Title</th>
                 <th>Last modified</th>
                 <th></th>
             </tr>
@@ -34,18 +35,20 @@
         <tbody>
             {% for obj in object_list %}
             <tr>
-                <td>{{obj.ipts}} : {{obj.title}}</td>
+                <td>{{obj.ipts}}</td>
+                <td>{{obj.title}}</td>
                 <td>{{obj.modified}}</td>
                 <td><a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
                     href="{% url 'configuration:assign_ipts' object.id obj.id %}"
-                    title="Assign to users: {% for user in obj.users %} {{user.id}} {% endfor %}">Assign to the users of this IPTS</a></td>
+                    title="Assign to users: {% for user in obj.users %} {{user.id}} {% endfor %}">Assign to the users of {{obj.ipts}}</a></td>
                 
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr>
-                <th>Integrated Proposal Tracking System (IPTS)</th>
+                <th>IPTS</th>
+                <th>Title</th>
                 <th>Last modified</th>
                 <th></th>
             </tr>
@@ -62,7 +65,7 @@
         $(function () {
             $("#table_configuration").DataTable({
                 "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-                "order": [[ 1, 'desc' ]],
+                "order": [[ 2, 'desc' ]],
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,
