@@ -47,23 +47,40 @@
             </ul>
     </div>
     <hr/>
+
+    <!-- This is the action -->
+    {% if object.action %}
+    <div class="container-fluid">
+        <h3>Action</h3>
+        <ul class="list-group">
+            {% for f in object.action.get_all_fields %}
+            <li class="list-group-item">
+                    <strong>{{f.label|capfirst}}</strong>
+                    <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <hr/>
+    {% endif %}
+
     <!-- This is the region (low,med,high) info -->
     <div class="container-fluid">
-			{% for entry in object.regions.all %}
-			<h3>{{entry}}</h3>
-            <ul class="list-group">
-                {% for f in entry.get_all_fields %}
-	                <li class="list-group-item">
-						{% if f.name == "entries" %}
-							<div id="hot-{{forloop.counter}}" value="{{f.value}}"></div>
-						{% else %}
-							<strong>{{f.label|capfirst}}</strong>
-							<span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
-						{% endif %}
-	                </li>
-	            {% endfor %}
-            </ul>
-			{% endfor %}
+        {% for entry in object.regions.all %}
+        <h3>{{entry}}</h3>
+        <ul class="list-group">
+            {% for f in entry.get_all_fields %}
+                <li class="list-group-item">
+                    {% if f.name == "entries" %}
+                        <div id="hot-{{forloop.counter}}" value="{{f.value}}"></div>
+                    {% else %}
+                        <strong>{{f.label|capfirst}}</strong>
+                        <span class="pull-right">{{f.value|escape|urlize|linebreaks}}</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
     </div>
 
     <p>
@@ -75,20 +92,18 @@
 
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:clone' object.pk %}"
             title="Creates a copy of this reduction as you might need a few different parameters.">Duplicate</a>
-
-		<a class="btn btn-info" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:script' object.id  %}"
-            title="Generates a python script and prepare the job submission.">Auto Reduction...</a>
-        
-        <a class="btn btn-info" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:script' object.id  %}"
-            title="Generates a python script and prepare the job submission.">Run...</a>
           
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:share' object.pk %}"
             title="Share the reduction among the members of the same IPTS"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a>
 
+        <a class="btn btn-info" data-toggle="tooltip" data-placement="top" href="{% url 'reduction:script' object.id  %}"
+            title="Generates a python script and prepare the job submission.">Launch...</a>
+        
         {% if object.job is not None %}
         <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" href="{% url 'results:job_detail' object.job.id  %}"
 		    title="See the Job info and Results for this reduction.">Results...</a>
-		{% endif %}
+        {% endif %}
+        
         <a id="cancel" class="btn btn-default" data-toggle="tooltip" data-placement="top" onclick="window.history.back()"
         	href="#" title="Goes back....">Cancel</a>
     </p>

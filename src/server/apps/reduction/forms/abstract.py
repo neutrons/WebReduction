@@ -33,8 +33,7 @@ class ReductionForm(object):
 
     class Meta:
         exclude = [
-            'users', 'instrument', 'script', 'script_interpreter', 'job', 
-            'script_execution_path', 'run_type',
+            'users', 'instrument', 'parameters', 'script', 'job', 'action', 
         ]
         #widgets = {'script': HiddenInput()}
 
@@ -57,8 +56,9 @@ class ReductionScriptForm(object):
                 Button('cancel', 'Cancel', css_class='btn-default',
                        onclick="window.history.back()")))
     class Meta:
-        fields = ['script_interpreter', 'script_execution_path', 'script', 'run_type']
+        fields = [ 'action', 'parameters', 'script',]
         #exclude = ['user', 'instrument']
+        widgets = {'parameters': HiddenInput()}
 
 
 class RegionForm(object):

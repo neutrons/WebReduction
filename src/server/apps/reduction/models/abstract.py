@@ -9,6 +9,7 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django_remote_submission.models import Interpreter, Job
 from django_auth_ldap.backend import LDAPBackend
+from django.contrib.postgres.fields import JSONField
 
 from server.apps.catalog.models import Instrument
 from server.util.models import ModelMixin
@@ -22,6 +23,59 @@ Abstract models for SANS
 Configuration - 1 to many - Reductions
 Reduction - 1 to many - Entries
 '''
+
+################################################################################
+# Actions
+################################################################################
+
+class Actions(models.Model, ModelMixin):
+    '''
+    '''
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    modified_date = models.DateTimeField(auto_now=True)
+
+    description = models.CharField(max_length=256)
+
+    instrument = models.ForeignKey(
+        Instrument, on_delete=models.CASCADE,
+        related_name="%(class)s_instruments",
+        related_query_name="%(class)s_instrument",
+    )
+
+    script_interpreter = models.ForeignKey(
+        Interpreter,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_interpreters",
+        related_query_name="%(class)s_interpreter",
+        default=1,
+    )
+
+    script_template_path  = models.CharField(
+        max_length=256,
+        help_text="Where the script template is. E.g. /SNS/HYS/shared/templates/reduce.tpl"
+    )
+
+    destination_directory_path_template  = models.CharField(
+        max_length=256,
+        help_text="Where the script is going to be copied and may be executed."
+            r" E.g. /SNS/HYS/%(ipts_number)s/shared/reduce/%(hash)s"
+    )
+
+    django_remote_submission_tasks = models.CharField(
+        max_length=32,
+        help_text="Tasks in Django Remote Submission: copy_job_to_server, submit_job_to_server",
+    )
+
+    def __str__(self):
+        return "Action: {}".format(self.description)
+
+
+################################################################################
+# Reduction
+################################################################################
 
 class ReductionManager(models.Manager):
     '''
@@ -125,6 +179,9 @@ class Reduction(models.Model, ModelMixin):
 
     modified_date = models.DateTimeField(auto_now=True)
 
+    # Additional parameters: e.g. Runs for executing the algorithm
+    parameters = JSONField(null=True,)
+
     script = models.TextField(
         blank=True,
         help_text="Python script generated from the reduction entry. \
@@ -134,7 +191,8 @@ class Reduction(models.Model, ModelMixin):
     instrument = models.ForeignKey(
         Instrument, on_delete=models.CASCADE,
         related_name="%(class)s_instruments",
-        related_query_name="%(class)s_instrument",)
+        related_query_name="%(class)s_instrument",
+    )
     
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -142,12 +200,21 @@ class Reduction(models.Model, ModelMixin):
         #related_query_name="%(class)s_user",
     )
 
+    action = models.ForeignKey(
+        Actions,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_action",
+        related_query_name="%(class)s_action",
+    )
+
     job = models.ForeignKey(
         Job,
         null=True,
         on_delete=models.CASCADE,
         related_name="%(class)s_job",
-        related_query_name="%(class)s_job",)
+        related_query_name="%(class)s_job",
+    )
 
     # Manager
     objects = ReductionManager()
@@ -187,50 +254,3 @@ class Region(models.Model, ModelMixin):
         abstract = True
         ordering = ["id"]
 
-################################################################################
-# Actions
-################################################################################
-
-class Actions(models.Model):
-    '''
-    '''
-    
-    created_date = models.DateTimeField(auto_now_add=True)
-
-    modified_date = models.DateTimeField(auto_now=True)
-
-    description = models.CharField(max_length=256)
-
-    instrument = models.ForeignKey(
-        Instrument, on_delete=models.CASCADE,
-        related_name="%(class)s_instruments",
-        related_query_name="%(class)s_instrument",
-    )
-
-    script_interpreter = models.ForeignKey(
-        Interpreter,
-        null=True,
-        on_delete=models.CASCADE,
-        related_name="%(class)s_interpreters",
-        related_query_name="%(class)s_interpreter",
-        default=1,
-    )
-
-    script_template_path  = models.CharField(
-        max_length=256,
-        help_text="Where the script template is. E.g. /SNS/HYS/shared/templates/reduce.tpl"
-    )
-
-    destination_directory_path_template  = models.CharField(
-        max_length=256,
-        help_text="Where the script is going to be copied and may be executed."
-            r" E.g. /SNS/HYS/%(ipts_number)s/shared/reduce/%(hash)s"
-    )
-
-    django_remote_submission_tasks = models.CharField(
-        max_length=32,
-        help_text="Tasks in Django Remote Submission: copy_job_to_server, submit_job_to_server",
-    )
-
-    def __str__(self):
-        return "Action: {}".format(self.description)

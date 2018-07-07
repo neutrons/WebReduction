@@ -266,8 +266,8 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
                     logger.exception(e)
                     messages.error(self.request, "An exception occurred: {0} ::\
                         {1}".format(type(e).__name__, str(e)))
-            if obj.script_execution_path is None or obj.script_execution_path == "":
-                obj.script_execution_path = script_builder.get_reduction_path()
+            # if obj.script_execution_path is None or obj.script_execution_path == "":
+            #     obj.script_execution_path = script_builder.get_reduction_path()
         
         return obj
 
