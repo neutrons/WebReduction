@@ -1,0 +1,30 @@
+[
+    {
+        "model": "reduction.actions",
+        "pk": 1,
+        "fields": {
+            "created_date": "2016-12-08T14:55:42.837Z",
+            "modified_date": "2016-12-08T14:55:42.838Z",
+            "description": "Copy auto reduction script",
+            "script_interpreter": 3,
+            "instrument": 18,
+            "destination_directory_path_template": "/SNS/HYS/%(ipts_number)s/shared/autoreduce",
+            "script_template_path": "/SNS/HYS/shared/templates/hyspec.tpl",
+            "django_remote_submission_tasks": "copy_job_to_server"
+        }
+    },
+    {
+        "model": "reduction.actions",
+        "pk": 2,
+        "fields": {
+            "created_date": "2016-12-08T14:55:42.837Z",
+            "modified_date": "2016-12-08T14:55:42.838Z",
+            "description": "Execute script",
+            "script_interpreter": 1,
+            "instrument": 18,
+            "destination_directory_path_template": "/SNS/HYS/%(ipts_number)s/shared/reduce/%(hash)s",
+            "script_template_path": "/SNS/HYS/shared/templates/reduce.tpl",
+            "django_remote_submission_tasks": "submit_job_to_server"
+        }
+    }
+]

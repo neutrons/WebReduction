@@ -125,51 +125,22 @@ class Reduction(models.Model, ModelMixin):
 
     modified_date = models.DateTimeField(auto_now=True)
 
-    script_interpreter = models.ForeignKey(
-        Interpreter,
-        null=True,
-        on_delete=models.CASCADE,
-        related_name="%(class)s_interpreters",
-        related_query_name="%(class)s_interpreter",
-        default=1,
-    )
-    
-    script_execution_path = models.CharField(max_length=256)
-
     script = models.TextField(
         blank=True,
         help_text="Python script generated from the reduction entry. \
         If the script was generated already just shows it!"
     )
 
-    RUN_CHOICES = (
-        (1, 'Copy and Execute the script'),
-        (2, 'Copy the script'),
-    )
-    run_type = models.IntegerField(
-        choices=RUN_CHOICES,
-        default=1,
-        help_text="For auto reduction copy only the script. If you have "
-            "previledges you can copy the script to the instrument "
-            "autoreduction directory."
-    )
-
     instrument = models.ForeignKey(
         Instrument, on_delete=models.CASCADE,
         related_name="%(class)s_instruments",
         related_query_name="%(class)s_instrument",)
-
-    # user = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-    #     related_name="%(class)s_users",
-    #     related_query_name="%(class)s_user",)
     
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         #related_name="%(class)s_users",
         #related_query_name="%(class)s_user",
     )
-
 
     job = models.ForeignKey(
         Job,
@@ -188,7 +159,9 @@ class Reduction(models.Model, ModelMixin):
     def __str__(self):
         return self.title
 
-
+################################################################################
+# Region
+################################################################################
 
 class RegionManager(models.Manager):
     '''
@@ -204,6 +177,7 @@ class Region(models.Model, ModelMixin):
     '''
 
     created_date = models.DateTimeField(auto_now_add=True)
+
     modified_date = models.DateTimeField(auto_now=True)
 
     # Manager
@@ -212,3 +186,51 @@ class Region(models.Model, ModelMixin):
     class Meta:
         abstract = True
         ordering = ["id"]
+
+################################################################################
+# Actions
+################################################################################
+
+class Actions(models.Model):
+    '''
+    '''
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    modified_date = models.DateTimeField(auto_now=True)
+
+    description = models.CharField(max_length=256)
+
+    instrument = models.ForeignKey(
+        Instrument, on_delete=models.CASCADE,
+        related_name="%(class)s_instruments",
+        related_query_name="%(class)s_instrument",
+    )
+
+    script_interpreter = models.ForeignKey(
+        Interpreter,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_interpreters",
+        related_query_name="%(class)s_interpreter",
+        default=1,
+    )
+
+    script_template_path  = models.CharField(
+        max_length=256,
+        help_text="Where the script template is. E.g. /SNS/HYS/shared/templates/reduce.tpl"
+    )
+
+    destination_directory_path_template  = models.CharField(
+        max_length=256,
+        help_text="Where the script is going to be copied and may be executed."
+            r" E.g. /SNS/HYS/%(ipts_number)s/shared/reduce/%(hash)s"
+    )
+
+    django_remote_submission_tasks = models.CharField(
+        max_length=32,
+        help_text="Tasks in Django Remote Submission: copy_job_to_server, submit_job_to_server",
+    )
+
+    def __str__(self):
+        return "Action: {}".format(self.description)

@@ -24,5 +24,6 @@
     // formatter
     "python.formatting.provider": "autopep8",
     "python.formatting.autopep8Path": "${workspaceRoot}/venv/bin/autopep8",
+    "cSpell.enabled": false,
 
 }
