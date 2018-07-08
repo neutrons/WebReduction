@@ -270,6 +270,40 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
             #     obj.script_execution_path = script_builder.get_reduction_path()
         
         return obj
+    
+    def get_context_data(self, **kwargs):
+        '''
+        This will get from the catalog the runs for this IPTS.
+        This is passed to the view as context variables: header and runs
+        '''
+        context = super().get_context_data(**kwargs)
+
+        facility_name = self.request.user.profile.instrument.facility.name
+        instrument_catalog_name = self.request.user.profile.instrument.catalog_name
+        ipts = self.request.user.profile.ipts
+
+        logger.debug('Populating the context with the \
+                      catalog: %s %s %s',
+                     facility_name, instrument_catalog_name, ipts)
+        try:
+            runs = Catalog(
+                facility=facility_name,
+                technique=self.request.user.profile.instrument.technique,
+                instrument=instrument_catalog_name,
+                request=self.request
+            ).runs(ipts)
+        except Exception as e:
+            logger.warning("Catalog function get runs failed %s", e)
+            messages.warning(self.request, "An exception occurred while getting \
+                data from the catalog: {0} :: {1}".format(type(e).__name__, str(e)))
+            runs = []
+        #context['runs'] = json.dumps(runs) # Converts dict to string and None to null: Good for JS
+        # https://stackoverflow.com/questions/11875770/how-to-overcome-datetime-datetime-not-json-serializable/36142844#36142844
+        # My quick & dirty JSON dump that eats dates and everything:
+        logger.debug(pformat(runs))
+        #context['runs'] = json.dumps(runs, default=str)
+        context['runs'] = runs
+        return context
 
     def post(self, request, **kwargs):
         '''

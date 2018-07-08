@@ -58,7 +58,7 @@ class ReductionScriptForm(object):
     class Meta:
         fields = [ 'action', 'parameters', 'script',]
         #exclude = ['user', 'instrument']
-        widgets = {'parameters': HiddenInput()}
+        #widgets = {'parameters': HiddenInput()}
 
 
 class RegionForm(object):

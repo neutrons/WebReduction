@@ -35,6 +35,31 @@
     </form>
 </div>
 <br/>
+
+<table id="tableruns" class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Run</th>
+            <th>Title</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for run in runs %}
+        <tr>
+            {# Make sure that either the run number or the file name are available#}
+            <td>{{run.metadata.run_number}}</td>
+            <td>{{run.title}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>Run</th>
+            <th>Title</th>
+        </tr>
+    </tfoot>
+</table>
+
 {% endblock %}
 
 {% block footer_js%}
@@ -42,6 +67,12 @@
 <script src='{% static "thirdparty/ace/ace.js" %}' type="text/javascript" charset="utf-8"></script>
 <script src='{% static "thirdparty/ace/theme-github.js" %}' type="text/javascript" charset="utf-8"></script>
 <script src='{% static "thirdparty/ace/mode-python.js" %}' type="text/javascript" charset="utf-8"></script>
+
+<script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/dataTables.buttons.min.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.bootstrap.js" %}'></script>
+<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.colVis.min.js" %}'></script>
+
 <script>
 	// set up Ace editor
 	$('<div id="editor"></div>').insertBefore('#id_script');
@@ -63,7 +94,25 @@
     });
 
     //
-    
+    var data_table_config = {
+		lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+		paging: true,
+		lengthChange: true,
+		searching: true,
+		ordering: true,
+		info: true,
+		autoWidth: true,
+		order: [[ 0, "asc" ]],
+        stateSave: true, // saves
+        select: {
+            style: 'multi'
+        }
+	}
+
+
+		$("#tableruns").DataTable(data_table_config);
+
+
     
 </script>
 {% endblock %}
