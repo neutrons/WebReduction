@@ -12,14 +12,14 @@ from crispy_forms.bootstrap import Field, InlineCheckboxes
 from django.forms import HiddenInput, BooleanField
 
 
-class SubmitWithCss(Submit):
-    '''
-    Overries the Submit button to remove the default css:
-    btn btn-primary
-    '''
-    def __init__(self, *args, **kwargs):
-        self.field_classes = 'btn'
-        super(SubmitWithCss, self).__init__(*args, **kwargs)
+# class SubmitWithCss(Submit):
+#     '''
+#     Overries the Submit button to remove the default css:
+#     btn btn-primary
+#     '''
+#     def __init__(self, *args, **kwargs):
+#         self.field_classes = 'btn'
+#         super(SubmitWithCss, self).__init__(*args, **kwargs)
 
 class ReductionForm(object):
 
@@ -43,18 +43,6 @@ class ReductionScriptForm(object):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
-        self.helper.layout.append(
-            # FormActions just groups the buttons
-            FormActions(
-                # Submit all have type="submit" in the html
-                SubmitWithCss(name='save', value='Save & go back', css_class='btn-info',
-                    title="Save the script and go back to the detail."),
-                Submit('generate', 'Regenerate the script',
-                    title="Did you do something wrong? This regenerate the script from the reduction fields."),
-                SubmitWithCss('submit', 'Save & Submit job', css_class='btn-warning',
-                    title="Send the script to the cluster to be executed."),
-                Button('cancel', 'Cancel', css_class='btn-default',
-                       onclick="window.history.back()")))
     class Meta:
         fields = [ 'action', 'parameters', 'script',]
         #exclude = ['user', 'instrument']

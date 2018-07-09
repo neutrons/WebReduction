@@ -11,16 +11,14 @@
 		height: 600px;
 		border-style: groove;
     }
-</style>
-<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
-<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/Buttons/css/buttons.bootstrap.min.css" %}'>
-<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/Select-1.2.2/js/dataTables.select.min.js" %}'>
 
-<style type="text/css">
-table.dataTable tbody tr.selected {
-    background-color: #00451d !important;
-}
+    table.dataTable tbody tr.selected {
+        background-color: #00451d !important;
+    }
 </style>
+
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/Select-1.2.2/js/dataTables.select.min.js" %}'>
 
 {% endblock %}
 
@@ -40,11 +38,20 @@ table.dataTable tbody tr.selected {
     <div class="page-header">
         <h1>Reduction<small> script</small></h1>
     </div>
+    <form>
     {#% crispy form  %#}
 
     {{ form.action|as_crispy_field }}
     {{ form.parameters|as_crispy_field }}
     {{ form.script|as_crispy_field }}
+
+    <button name="save" type="submit" class="btn btn-primary" data-toggle="tooltip"
+        data-placement="top" title="Save the script and go back to the detail.">Save &amp; go back</button>
+    <button name="generate" type="submit" class="btn btn-primary" data-toggle="tooltip"
+        data-placement="top" title="Did you do something wrong? This regenerate the script from the reduction fields.">Regenerate the script</button>
+    <button name="generate" type="submit" class="btn btn-primary" data-toggle="tooltip"
+        data-placement="top" title="Send the script to the cluster to be executed.">Save &amp; submit to the cluster</button>
+    <button type="cancel" class="btn btn-default" onclick="window.history.back()">Cancel</button>
     </form>
 </div>
 <br/>
@@ -73,6 +80,7 @@ table.dataTable tbody tr.selected {
                                             <th></th>
                                             <th>Run</th>
                                             <th>Title</th>
+                                            <th>Location</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -81,6 +89,7 @@ table.dataTable tbody tr.selected {
                                             <td></td>
                                             <td>{{run.metadata.run_number}}</td>
                                             <td>{{run.title}}</td>
+                                            <td>{{run.location}}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -89,6 +98,7 @@ table.dataTable tbody tr.selected {
                                             <th></th>
                                             <th>Run</th>
                                             <th>Title</th>
+                                            <th>Location</th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -116,7 +126,7 @@ table.dataTable tbody tr.selected {
 <script src='{% static "thirdparty/ace/mode-python.js" %}' type="text/javascript" charset="utf-8"></script>
 
 <script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
-
+<!-- <script src='{% static "thirdparty/DataTables/DataTables-1.10.15/js/jquery.dataTables.min.js" %}'></script> -->
 
 <script>
 	// set up Ace editor
@@ -148,11 +158,18 @@ table.dataTable tbody tr.selected {
 		info: true,
 		autoWidth: true,
         stateSave: true, // saves
-        columnDefs: [ {
-            orderable: false,
-            className: 'select-checkbox',
-            targets:   0
-        } ],
+        columnDefs: [
+            {
+                orderable: false,
+                className: 'select-checkbox',
+                targets:   0
+            },
+            {
+                targets: 3,
+                visible: false,
+                searchable: false
+            }
+        ],
         select: {
             //style:    'os', //complex behaviours such as ctrl/cmd clicking to select / deselect individual items, shift clicking to select ranges and an unmodified click to select a single item.
             style:    'multi',
@@ -163,7 +180,7 @@ table.dataTable tbody tr.selected {
     $("#tableruns").DataTable(data_table_config);
 
 
-    // Model
+    // pick the select runs from the model and sets the form field parameters
     function pickSelectedRuns(){
 
         var table = $("#tableruns").DataTable();
@@ -173,11 +190,19 @@ table.dataTable tbody tr.selected {
         for (var i = 0; i < selectedRowsArray.length; i++){
             var selectedData = table.row(selectedRowsArray[i]).data();
             console.log(selectedData);
-            formData.push(selectedData[1]);
+            formData.push(selectedData[3]);
         }
         $('#id_parameters').val(JSON.stringify(formData));
         $('#runsModal').modal('hide');
     }
+
+    function init(){
+
+        $("#div_id_script").hide();
+        $("#div_id_parameters").hide();
+    }
+
+    init();
     
 </script>
 {% endblock %}
