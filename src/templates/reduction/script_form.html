@@ -12,6 +12,15 @@
 		border-style: groove;
     }
 </style>
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/datatables.min.css" %}'>
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/Buttons/css/buttons.bootstrap.min.css" %}'>
+<link rel="stylesheet" type="text/css" href='{% static "thirdparty/DataTables/Select-1.2.2/js/dataTables.select.min.js" %}'>
+
+<style type="text/css">
+table.dataTable tbody tr.selected {
+    background-color: #00451d !important;
+}
+</style>
 
 {% endblock %}
 
@@ -31,34 +40,72 @@
     <div class="page-header">
         <h1>Reduction<small> script</small></h1>
     </div>
-    {% crispy form  %}
+    {#% crispy form  %#}
+
+    {{ form.action|as_crispy_field }}
+    {{ form.parameters|as_crispy_field }}
+    {{ form.script|as_crispy_field }}
     </form>
 </div>
 <br/>
 
-<table id="tableruns" class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Run</th>
-            <th>Title</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for run in runs %}
-        <tr>
-            {# Make sure that either the run number or the file name are available#}
-            <td>{{run.metadata.run_number}}</td>
-            <td>{{run.title}}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    <tfoot>
-        <tr>
-            <th>Run</th>
-            <th>Title</th>
-        </tr>
-    </tfoot>
-</table>
+
+
+<!-- Trigger the modal with a button -->
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#runsModal">Open Modal</button>
+
+
+      
+        <!-- Modal -->
+        <div class="modal fade" id="runsModal" role="dialog">
+          <div class="modal-dialog">
+          
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+
+                            <table id="tableruns" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Run</th>
+                                            <th>Title</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for run in runs %}
+                                        <tr>
+                                            <td></td>
+                                            <td>{{run.metadata.run_number}}</td>
+                                            <td>{{run.title}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th>Run</th>
+                                            <th>Title</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="pickSelectedRuns();">Pick these runs</button>
+                    </div>
+                </div>
+
+
+          </div>
+        </div>
+
 
 {% endblock %}
 
@@ -69,9 +116,7 @@
 <script src='{% static "thirdparty/ace/mode-python.js" %}' type="text/javascript" charset="utf-8"></script>
 
 <script src='{% static "thirdparty/DataTables/datatables.min.js" %}'></script>
-<script src='{% static "thirdparty/DataTables/Buttons/js/dataTables.buttons.min.js" %}'></script>
-<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.bootstrap.js" %}'></script>
-<script src='{% static "thirdparty/DataTables/Buttons/js/buttons.colVis.min.js" %}'></script>
+
 
 <script>
 	// set up Ace editor
@@ -102,17 +147,37 @@
 		ordering: true,
 		info: true,
 		autoWidth: true,
-		order: [[ 0, "asc" ]],
         stateSave: true, // saves
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            targets:   0
+        } ],
         select: {
-            style: 'multi'
-        }
+            //style:    'os', //complex behaviours such as ctrl/cmd clicking to select / deselect individual items, shift clicking to select ranges and an unmodified click to select a single item.
+            style:    'multi',
+            selector: 'td:first-child'
+        },
+        order: [[ 1, 'asc' ]]
 	}
+    $("#tableruns").DataTable(data_table_config);
 
 
-		$("#tableruns").DataTable(data_table_config);
+    // Model
+    function pickSelectedRuns(){
 
-
+        var table = $("#tableruns").DataTable();
+        var selectedRows = table.rows( { selected: true } );
+        var selectedRowsArray = selectedRows[0];
+        var formData = [];
+        for (var i = 0; i < selectedRowsArray.length; i++){
+            var selectedData = table.row(selectedRowsArray[i]).data();
+            console.log(selectedData);
+            formData.push(selectedData[1]);
+        }
+        $('#id_parameters').val(JSON.stringify(formData));
+        $('#runsModal').modal('hide');
+    }
     
 </script>
 {% endblock %}
