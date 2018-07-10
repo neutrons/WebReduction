@@ -179,6 +179,45 @@ class RunsAjax(LoginRequiredMixin, CatalogMixin, TemplateView):
         return JsonResponse(runs_out, status=200, safe=False)
 
 
+class RunsAjaxTable(LoginRequiredMixin, CatalogMixin, TemplateView):
+    '''
+    List of RUNS for a given ipts as ajax
+
+    Output is a list of:
+    {
+        "location": "/SNS/HYS/IPTS-21013/nexus/HYS_189090.nxs.h5",
+        "modified": "2018-07-06T12:13:07.616-04:00",
+        "metadata": {
+            "total_counts": 8539,
+            "run_number": "189090",
+            "end_time": "2018-07-06T12:12:48.180432666-04:00",
+            "duration": 64.24916076660156,
+            "start_time": "2018-07-06T12:11:43.931269666-04:00",
+            "title": "Align:check alignment in air"
+        },
+        "title": "Align:check alignment in air"
+    },
+    '''
+
+    def get(self, request, *args, **kwargs):
+
+        ipts = kwargs['ipts']
+        exp = kwargs.get('exp')
+        logger.debug("Listing RunsAjax for: %s -> %s %s",
+                     self.catalog, ipts, exp)
+        runs = self.catalog.runs(ipts, exp)
+
+        runs_out = [
+            [i['metadata']['run_number'], i['title'], i['location']] for i in runs
+        ]
+
+        # runs_out = {
+        #     'data': runs_out
+        # }
+        
+        # logger.debug(pformat(iptss))
+        return JsonResponse(runs_out, status=200, safe=False)
+
 class RunDetail(LoginRequiredMixin, CatalogMixin, TemplateView):
     '''
     Detail of run

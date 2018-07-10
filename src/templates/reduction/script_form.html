@@ -59,7 +59,7 @@
 
 
 <!-- Trigger the modal with a button -->
-<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#runsModal">Open Modal</button>
+<button type="button" class="btn btn-info btn-lg"  onclick="showDataTable();">Open Modal</button>
 
 
       
@@ -77,25 +77,14 @@
                             <table id="tableruns" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th></th>
                                             <th>Run</th>
                                             <th>Title</th>
                                             <th>Location</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {% for run in runs %}
-                                        <tr>
-                                            <td></td>
-                                            <td>{{run.metadata.run_number}}</td>
-                                            <td>{{run.title}}</td>
-                                            <td>{{run.location}}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
+
                                     <tfoot>
                                         <tr>
-                                            <th></th>
                                             <th>Run</th>
                                             <th>Title</th>
                                             <th>Location</th>
@@ -148,36 +137,77 @@
     	textarea.val(editor_content);
     });
 
-    //
-    var data_table_config = {
-		lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
-		paging: true,
-		lengthChange: true,
-		searching: true,
-		ordering: true,
-		info: true,
-		autoWidth: true,
-        stateSave: true, // saves
-        columnDefs: [
-            {
-                orderable: false,
-                className: 'select-checkbox',
-                targets:   0
+    // Table
+
+        // Setting up jQuery to pass csrf tokens to Django when using ajax.
+	$.ajaxSetup({
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        }
+    });
+
+    // set Instruments field
+    function getDataTableContent() {
+        $.ajax({
+            url : "{% url 'catalog:list_runs_ajax_table' ipts=user.profile.ipts %}",
+            type : 'get',
+            dataType : 'json',
+            success : function(data) {
+                console.log(data);
+                $("#tableruns").DataTable().destroy();
+                $('#tableruns').empty(); // empty in case the columns change
+
+                $("#tableruns").DataTable(
+                    {
+                        data: data,
+                        lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+                        paging: true,
+                        lengthChange: true,
+                        searching: true,
+                        ordering: true,
+                        info: true,
+                        autoWidth: true,
+                        stateSave: true, // saves
+                        columns: [
+                            { title: "Run" },
+                            { title: "Title" },
+                            { title: "Location" }
+                        ],
+                        columnDefs: [
+
+                            {
+                                targets: 2,
+                                visible: false,
+                                searchable: false
+                            }
+                        ],
+                        select: {
+                            style:    'os' //complex behaviours such as ctrl/cmd clicking to select / deselect individual items, shift clicking to select ranges and an unmodified click to select a single item.
+                            //style:    'multi',
+                            //selector: 'td:first-child'
+                        },
+                        order: [[ 1, 'asc' ]]
+                    }
+                );
+                $(".loader").hide();
+                $('#runsModal').modal('show');
             },
-            {
-                targets: 3,
-                visible: false,
-                searchable: false
+            error: function () {
+                $.notify("Error fetching catalog runs data...", "error");
+                $(".loader").hide();
             }
-        ],
-        select: {
-            //style:    'os', //complex behaviours such as ctrl/cmd clicking to select / deselect individual items, shift clicking to select ranges and an unmodified click to select a single item.
-            style:    'multi',
-            selector: 'td:first-child'
-        },
-        order: [[ 1, 'asc' ]]
-	}
-    $("#tableruns").DataTable(data_table_config);
+        });
+    }
+
+
+    
+    function showDataTable(){
+        $(".loader").show();
+        getDataTableContent();
+
+        
+    }
+    
 
 
     // pick the select runs from the model and sets the form field parameters

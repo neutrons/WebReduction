@@ -18,6 +18,8 @@ urlpatterns = [
     # View all Runs for an instrument
     url(r'^(?P<ipts>[\w\-\.]+)/$',
         views.Runs.as_view(), name='list_runs'),
+    url(r'^(?P<ipts>[\w\-\.]+)/ajax-table/$',
+        views.RunsAjaxTable.as_view(), name='list_runs_ajax_table'),
     # run detail
     url(r'^(?P<ipts>[\w\-\.]+)/(?P<filename>/SNS/[^\.]+(\.\w+)+)/$',
         views.RunDetail.as_view(), name='run_detail'),
