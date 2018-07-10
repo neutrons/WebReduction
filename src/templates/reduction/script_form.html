@@ -42,13 +42,16 @@
     {#% crispy form  %#}
 
     {{ form.action|as_crispy_field }}
+
+    <button name="generate" type="submit" class="btn btn-primary" data-toggle="tooltip"
+        data-placement="top" title="Did you do something wrong? This regenerate the script from the reduction fields.">Generate the script</button>
+
     {{ form.parameters|as_crispy_field }}
     {{ form.script|as_crispy_field }}
 
     <button name="save" type="submit" class="btn btn-primary" data-toggle="tooltip"
         data-placement="top" title="Save the script and go back to the detail.">Save &amp; go back</button>
-    <button name="generate" type="submit" class="btn btn-primary" data-toggle="tooltip"
-        data-placement="top" title="Did you do something wrong? This regenerate the script from the reduction fields.">Regenerate the script</button>
+    
     <button name="generate" type="submit" class="btn btn-primary" data-toggle="tooltip"
         data-placement="top" title="Send the script to the cluster to be executed.">Save &amp; submit to the cluster</button>
     <button type="cancel" class="btn btn-default" onclick="window.history.back()">Cancel</button>
@@ -166,8 +169,8 @@
                         searching: true,
                         ordering: true,
                         info: true,
-                        autoWidth: true,
-                        stateSave: true, // saves
+                        //autoWidth: true,
+                        //stateSave: true, // saves
                         columns: [
                             { title: "Run" },
                             { title: "Title" },
@@ -192,10 +195,9 @@
                 // see if there's any selected elements in the form
                 var parameters = JSON.parse($("#id_parameters").val());
                 if (parameters != null && parameters.length > 0){
+                    // Add the selected elements in the form to the table
                     var tableData = table.data().toArray();
-
                     tableData.forEach(function(element, i) {
-                        console.log(i, element);
                         parameters.forEach(function(param) {
                             if (element[0] == param[0]){
                                 table.rows(i).select();
@@ -203,7 +205,6 @@
                         });
                     });
                 }
-
 
                 $(".loader").hide();
                 $('#runsModal').modal('show');
