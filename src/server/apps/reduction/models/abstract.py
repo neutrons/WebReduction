@@ -50,7 +50,6 @@ class Actions(models.Model, ModelMixin):
         on_delete=models.CASCADE,
         related_name="%(class)s_interpreters",
         related_query_name="%(class)s_interpreter",
-        default=1,
     )
 
     script_template_path  = models.CharField(
@@ -70,7 +69,7 @@ class Actions(models.Model, ModelMixin):
     )
 
     def __str__(self):
-        return "Action: {}".format(self.description)
+        return "{}".format(self.description)
 
 
 ################################################################################
@@ -180,7 +179,7 @@ class Reduction(models.Model, ModelMixin):
     modified_date = models.DateTimeField(auto_now=True)
 
     # Additional parameters: e.g. Runs for executing the algorithm
-    parameters = JSONField(null=True,)
+    parameters = JSONField(null=True, default=[], blank=True,)
 
     script = models.TextField(
         blank=True,

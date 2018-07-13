@@ -36,7 +36,7 @@
             <ul class="list-group">
                 {% for f in object.get_all_fields %}
 	                <li class="list-group-item">
-						{% if f.name == "script" %}
+						{% if f.name == "script" or f.name == "parameters" %}
 							<pre><code>{{f.value}}</code></pre>
 						{% else %}
 							<strong>{{f.label|capfirst}}</strong>

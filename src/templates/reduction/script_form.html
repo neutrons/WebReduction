@@ -38,75 +38,72 @@
     <div class="page-header">
         <h1>Reduction<small> script</small></h1>
     </div>
-    <form>
-    {#% crispy form  %#}
 
-    {{ form.action|as_crispy_field }}
+    <form method="post">
 
-    <button name="generate" type="submit" class="btn btn-primary" data-toggle="tooltip"
-        data-placement="top" title="Did you do something wrong? This regenerate the script from the reduction fields.">Generate the script</button>
+        {#% crispy form  %#}
+        {% csrf_token %}
 
-    {{ form.parameters|as_crispy_field }}
-    {{ form.script|as_crispy_field }}
+        {{ form.action|as_crispy_field }}
 
-    <button name="save" type="submit" class="btn btn-primary" data-toggle="tooltip"
-        data-placement="top" title="Save the script and go back to the detail.">Save &amp; go back</button>
-    
-    <button name="generate" type="submit" class="btn btn-primary" data-toggle="tooltip"
-        data-placement="top" title="Send the script to the cluster to be executed.">Save &amp; submit to the cluster</button>
-    <button type="cancel" class="btn btn-default" onclick="window.history.back()">Cancel</button>
+        <!-- Trigger the modal with a button -->
+        <button id="button_pick_runs" type="button" class="btn btn-info"  onclick="showDataTable();">Pick Runs</button>
+
+
+        <button id="button_generate" name="generate" type="submit" class="btn btn-primary" data-toggle="tooltip"
+            data-placement="top" title="Did you do something wrong? This regenerate the script from the reduction fields."> Generate the script</button>
+
+        {{ form.parameters|as_crispy_field }}
+        {{ form.script|as_crispy_field }}
+
+        <button id="button_save" name="save" type="submit" class="btn btn-primary" data-toggle="tooltip"
+            data-placement="top" title="Save the script and go back to the detail.">Save &amp; go back</button>
+        
+        <button id="button_execute" name="execute" type="submit" class="btn btn-primary" data-toggle="tooltip"
+            data-placement="top" title="Send the script to the cluster to be executed.">Execute</button>
+
+        <button type="cancel" class="btn btn-default" onclick="window.history.back()">Cancel</button>
     </form>
 </div>
 <br/>
 
 
 
-<!-- Trigger the modal with a button -->
-<button type="button" class="btn btn-info btn-lg"  onclick="showDataTable();">Open Modal</button>
-
 
       
-        <!-- Modal -->
-        <div class="modal fade" id="runsModal" role="dialog">
-          <div class="modal-dialog">
-          
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Confirmation</h4>
-                    </div>
-                    <div class="modal-body">
-
-                            <table id="tableruns" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Run</th>
-                                            <th>Title</th>
-                                            <th>Location</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tfoot>
-                                        <tr>
-                                            <th>Run</th>
-                                            <th>Title</th>
-                                            <th>Location</th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-
-
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="pickSelectedRuns();">Pick these runs</button>
-                    </div>
-                </div>
-
-
-          </div>
+<!-- Modal for run picking-->
+<div class="modal fade" id="runsModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <table id="tableruns" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Run</th>
+                            <th>Title</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Run</th>
+                            <th>Title</th>
+                            <th>Location</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="pickSelectedRuns();handleCompVisability();">Pick these runs</button>
+            </div>
         </div>
+    </div>
+</div>
 
 
 {% endblock %}
@@ -121,6 +118,7 @@
 <!-- <script src='{% static "thirdparty/DataTables/DataTables-1.10.15/js/jquery.dataTables.min.js" %}'></script> -->
 
 <script>
+    ///////////////////////////////////////////////////////////////////////////
 	// set up Ace editor
 	$('<div id="editor"></div>').insertBefore('#id_script');
 	$('#id_script' ).css("display", "none")
@@ -140,9 +138,10 @@
     	textarea.val(editor_content);
     });
 
-    // Table
+    ///////////////////////////////////////////////////////////////////////////
+    // DataTable with the runs
 
-        // Setting up jQuery to pass csrf tokens to Django when using ajax.
+    // Setting up jQuery to pass csrf tokens to Django when using ajax.
 	$.ajaxSetup({
         data: {
           csrfmiddlewaretoken: '{{ csrf_token }}'
@@ -156,7 +155,6 @@
             type : 'get',
             dataType : 'json',
             success : function(data) {
-                console.log(data);
                 $("#tableruns").DataTable().destroy();
                 $('#tableruns').empty(); // empty in case the columns change
 
@@ -215,42 +213,80 @@
             }
         });
     }
-
-
     
     function showDataTable(){
         $(".loader").show();
-        setDataTableContent();
-
-        
+        setDataTableContent();        
     }
-    
-
 
     // pick the select runs from the model and sets the form field parameters
     function pickSelectedRuns(){
-
         var table = $("#tableruns").DataTable();
-        //var selectedRows = table.rows( { selected: true } );
-        //var selectedRowsArray = selectedRows[0];
-        //var formData = [];
-        //for (var i = 0; i < selectedRowsArray.length; i++){
-        //    var selectedData = table.row(selectedRowsArray[i]).data();
-        //    console.log(selectedData);
-        //    formData.push(selectedData[3]);
-        //}
-        //$('#id_parameters').val(JSON.stringify(formData));
         $('#id_parameters').val(JSON.stringify(table.rows( { selected: true } ).data().toArray()));
         $('#runsModal').modal('hide');
     }
 
-    function init(){
+    ///////////////////////////////////////////////////////////////////////////
+    // Select Action
+    function handleCompVisability(){
+        
+        if ($("#id_action").val() == ""){
+            $("#button_pick_runs").hide();
+            $("#button_generate").hide();
+            $("#button_save").hide();
+            $("#button_execute").hide();
 
-        $("#div_id_script").hide();
-        //$("#div_id_parameters").hide();
+            $("#div_id_parameters").hide();
+            $("#div_id_script").hide();
+        } else {
+            var actionsText = $("#id_action option:selected").text();
+            var runs = $("#id_parameters").val();
+            var script = $("#id_script").val();
+
+            if ( actionsText.toLowerCase().indexOf("execute") >= 0 ){
+                console.log("Execute");
+                $("#div_id_script").hide();
+                $("#button_pick_runs").show();
+                if (runs.length > 10){
+                    $("#button_generate").show();
+                }
+                else{
+                    $("#button_generate").hide();
+                }
+
+            } else { // auto reduction
+                console.log("Auto reduction");
+                $("#button_pick_runs").hide();
+                $("#div_id_parameters").hide();
+                $("#button_generate").show();
+            }
+    
+            if (script.length > 10) {
+                $("#div_id_script").show();
+                $("#button_save").show();
+                $("#button_execute").show();
+            } else {
+                $("#div_id_script").hide();
+                $("#button_save").hide();
+                $("#button_execute").hide();
+            }
+        }
     }
 
-    init();
+    function init(){
+        // The user cannot change the runs
+        $("#id_parameters").prop('readonly', true);
+
+        // Add action to the select box
+        $("#id_action").on("change", function() { 
+            handleCompVisability();
+        });
+        handleCompVisability();
+    }
+
+    $( document ).ready(function() {
+        init();
+    });
     
 </script>
 {% endblock %}

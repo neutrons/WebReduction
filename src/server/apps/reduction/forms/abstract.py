@@ -43,10 +43,12 @@ class ReductionScriptForm(object):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
+        
     class Meta:
         fields = [ 'action', 'parameters', 'script',]
         #exclude = ['user', 'instrument']
         #widgets = {'parameters': HiddenInput()}
+        
 
 
 class RegionForm(object):

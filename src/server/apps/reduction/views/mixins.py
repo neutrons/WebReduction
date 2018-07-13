@@ -244,32 +244,32 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
     log_policy=LogPolicy.LOG_LIVE
     store_results=["*.txt", "*.log"]
 
-    def get_object(self, queryset=None):
-        '''
-        Always called has the script form is an edit form
-        We get the object already in the DB. This is called by get and post:
-        * on GET: Generate the script (if the script field in the DB is empty!)
-        and add it to object shown on the form
-        It does the same for script path.
-        '''
-        obj = super().get_object()
-        logger.debug("ReductionScriptUpdateMixin :: get_object = {}".format(obj))
-        # If we are generating the form fill in empty bits
-        if self.request.method == 'GET':
-            script_builder = self._get_script_builder()
-            if obj.script is None or obj.script == "":
-                # if the script does not exist, let's generate it!
-                logger.debug("Generate the script for %s.", obj)
-                try:
-                    obj.script = script_builder.build_script()
-                except Exception as e:
-                    logger.exception(e)
-                    messages.error(self.request, "An exception occurred: {0} ::\
-                        {1}".format(type(e).__name__, str(e)))
-            # if obj.script_execution_path is None or obj.script_execution_path == "":
-            #     obj.script_execution_path = script_builder.get_reduction_path()
+    # def get_object(self, queryset=None):
+    #     '''
+    #     Always called has the script form is an edit form
+    #     We get the object already in the DB. This is called by get and post:
+    #     * on GET: Generate the script (if the script field in the DB is empty!)
+    #     and add it to object shown on the form
+    #     It does the same for script path.
+    #     '''
+    #     obj = super().get_object()
+    #     logger.debug("ReductionScriptUpdateMixin :: get_object = {}".format(obj))
+    #     # If we are generating the form fill in empty bits
+    #     if self.request.method == 'GET':
+    #         script_builder = self._get_script_builder()
+    #         if obj.script is None or obj.script == "":
+    #             # if the script does not exist, let's generate it!
+    #             logger.debug("Generate the script for %s.", obj)
+    #             try:
+    #                 obj.script = script_builder.build_script()
+    #             except Exception as e:
+    #                 logger.exception(e)
+    #                 messages.error(self.request, "An exception occurred: {0} ::\
+    #                     {1}".format(type(e).__name__, str(e)))
+    #         # if obj.script_execution_path is None or obj.script_execution_path == "":
+    #         #     obj.script_execution_path = script_builder.get_reduction_path()
         
-        return obj
+    #     return obj
     
     # def get_context_data(self, **kwargs):
     #     '''
@@ -367,7 +367,7 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
             self.success_url = reverse_lazy('reduction:detail',
                                             args=[self.kwargs['pk']])
         elif 'generate' in self.request.POST:
-            messages.success(self.request, "Reduction script re-generated from scratch.")
+            messages.success(self.request, "Reduction script successfully generated.")
             self.success_url = reverse_lazy('reduction:script',
                                             args=[self.kwargs['pk']])
         else:
