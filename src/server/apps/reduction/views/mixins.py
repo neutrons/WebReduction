@@ -17,10 +17,11 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
 from django_auth_ldap.backend import LDAPBackend
 from django_remote_submission.models import Job, Server
-from django_remote_submission.tasks import (LogPolicy, copy_job_to_server,
-                                            submit_job_to_server)
+from django_remote_submission.tasks import LogPolicy
+import django_remote_submission.tasks
 
 from server.apps.catalog.oncat.facade import Catalog
+from server.apps.reduction.models.abstract import Actions
 from server.apps.users.ldap_util import LdapSns
 from server.scripts.builder import ScriptBuilder
 from server.settings.env import env
@@ -63,18 +64,6 @@ class ReductionFormMixin(ReductionMixin):
     '''
     Mixin only used for the Reduction Form views
     '''
-
-    def _get_script_builder(self):
-        '''
-        This function builds a script based on the request parameters
-        Used only in the form
-        '''
-        return ScriptBuilder(
-            self.model.objects.to_json(self.kwargs['pk']),
-            self.request.user.profile.instrument,
-            self.request.user.profile.ipts,
-            self.request.user.profile.experiment
-        )
     
     def get_form(self, form_class=None):
         '''
@@ -192,48 +181,19 @@ class ReductionCloneMixin(ReductionFormMixin):
             reverse('reduction:update', kwargs={'pk': self.object.pk}))
 
 class ReductionUpdateMixin(ReductionFormMixin, ReductionFormsetMixin):
-    # '''
-    # Edit a Reduction (The spreadsheet)
-    # '''
-    # def post(self, request, **kwargs):
-    #     '''
-    #     When the form is saved we fo back success_url: the reduction list
-    #     When the form is posted through the button Run, it will be saved and
-    #     redirected to the edit script view.
-    #     if the form was posted with the run button, in the html:
-    #     <button name="run" ...
-    #     The script is generated from the data in the form and then the default
-    #     procedure is followed by calling super
-    #     '''
-    #     # if 'run' in self.request.POST:
-    #     #     request.POST = request.POST.copy()
-    #     #     script_builder = self._get_script_builder()
-    #     #     try:
-    #     #         request.POST['script'] = script_builder.build_script()
-    #     #         self.success_url = reverse_lazy(
-    #     #             'reduction:script',
-    #     #             kwargs={'pk': kwargs['pk']},)
-    #     #         logger.debug("Generated script. Going to: %s", self.success_url)
-    #     #     except Exception as e:
-    #     #         logger.exception(e)
-    #     #         messages.error(
-    #     #             self.request,
-    #     #             "An exception occurred: {0} :: {1}".format(
-    #     #                 type(e).__name__, str(e)))
-    #     return super().post(request, **kwargs)
-    
+
     def form_valid(self, form, formset):
         return FormsetMixin.form_valid(self, form, formset)
 
 
 class ReductionScriptUpdateMixin(ReductionFormMixin):
     '''
-    Edit a Reduction Script
-    on GET:
-    Generate the script and show it to the user
-    on POST:
-    - Save it
-    - Save it and submit the job to the cluster
+    Only does POST
+    Generates the script
+    Depending on actions chosen, selects:
+        - template to use to generate the script
+        - django remote submission task.
+
     '''
 
     # I'm leaving this as global variables as this can be overloaded in the 
@@ -241,85 +201,45 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
     # Otherwise those are defaults
     remote_filename = "reduction_{}.py".format(timezone.now().strftime(
         r"%Y%m%d-%H%M%S"))
+    remote_directory_hash = timezone.now().strftime(r"%Y%m%d%H%M%S%f")
     log_policy=LogPolicy.LOG_LIVE
     store_results=["*.txt", "*.log"]
 
-    # def get_object(self, queryset=None):
-    #     '''
-    #     Always called has the script form is an edit form
-    #     We get the object already in the DB. This is called by get and post:
-    #     * on GET: Generate the script (if the script field in the DB is empty!)
-    #     and add it to object shown on the form
-    #     It does the same for script path.
-    #     '''
-    #     obj = super().get_object()
-    #     logger.debug("ReductionScriptUpdateMixin :: get_object = {}".format(obj))
-    #     # If we are generating the form fill in empty bits
-    #     if self.request.method == 'GET':
-    #         script_builder = self._get_script_builder()
-    #         if obj.script is None or obj.script == "":
-    #             # if the script does not exist, let's generate it!
-    #             logger.debug("Generate the script for %s.", obj)
-    #             try:
-    #                 obj.script = script_builder.build_script()
-    #             except Exception as e:
-    #                 logger.exception(e)
-    #                 messages.error(self.request, "An exception occurred: {0} ::\
-    #                     {1}".format(type(e).__name__, str(e)))
-    #         # if obj.script_execution_path is None or obj.script_execution_path == "":
-    #         #     obj.script_execution_path = script_builder.get_reduction_path()
-        
-    #     return obj
-    
-    # def get_context_data(self, **kwargs):
-    #     '''
-    #     This will get from the catalog the runs for this IPTS.
-    #     This is passed to the view as context variables: header and runs
-    #     '''
-    #     context = super().get_context_data(**kwargs)
 
-    #     facility_name = self.request.user.profile.instrument.facility.name
-    #     instrument_catalog_name = self.request.user.profile.instrument.catalog_name
-    #     ipts = self.request.user.profile.ipts
-
-    #     logger.debug('Populating the context with the \
-    #                   catalog: %s %s %s',
-    #                  facility_name, instrument_catalog_name, ipts)
-    #     try:
-    #         runs = Catalog(
-    #             facility=facility_name,
-    #             technique=self.request.user.profile.instrument.technique,
-    #             instrument=instrument_catalog_name,
-    #             request=self.request
-    #         ).runs(ipts)
-    #     except Exception as e:
-    #         logger.warning("Catalog function get runs failed %s", e)
-    #         messages.warning(self.request, "An exception occurred while getting \
-    #             data from the catalog: {0} :: {1}".format(type(e).__name__, str(e)))
-    #         runs = []
-    #     #context['runs'] = json.dumps(runs) # Converts dict to string and None to null: Good for JS
-    #     # https://stackoverflow.com/questions/11875770/how-to-overcome-datetime-datetime-not-json-serializable/36142844#36142844
-    #     # My quick & dirty JSON dump that eats dates and everything:
-    #     logger.debug(pformat(runs))
-    #     #context['runs'] = json.dumps(runs, default=str)
-    #     context['runs'] = runs
-    #     return context
+    def _get_script_builder(self, template_path):
+        '''
+        This function builds a script based on the request parameters
+        Used only in the form
+        '''
+        return ScriptBuilder(
+            self.model.objects.to_json(self.kwargs['pk']),
+            self.request.user.profile.instrument,
+            self.request.user.profile.ipts,
+            self.request.user.profile.experiment,
+            template_path
+        )
 
     def post(self, request, **kwargs):
         '''
         When the form is posted if we clicked in generate, it will
         regenerate the form and fill it in the respective field
-        Note: We need to modify the previously posted form (POST)!
+        Note: We need to modify the previously posted form (POST) before the 
+        for is vallid
         '''
         if 'generate' in self.request.POST:
             request.POST = request.POST.copy()
-            script_builder = self._get_script_builder()
+            action_obj = Actions.objects.get(pk=request.POST['action'])
+            script_builder = self._get_script_builder(
+                action_obj.script_template_path)
+
             try:
                 request.POST['script'] = script_builder.build_script()
             except Exception as e:
                 logger.exception(e)
-                messages.error(self.request, "An exception occurred: {0} :: \
-                    {1}".format(type(e).__name__, str(e)))
+                messages.error(
+                    self.request,
+                    "An exception occurred while generating the script: "
+                    "{0} :: {1}".format(type(e).__name__, str(e)))
                 return super().get(request, **kwargs)
         return super().post(request, **kwargs)
 
@@ -328,32 +248,37 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
         '''
         Auxiliary function to create a job from a form
         '''
+ 
+        ipts = self.request.user.profile.ipts
+        path_template = form.instance.action.destination_directory_path_template
+        path = path_template % {
+            'datetime': self.remote_directory_hash,
+            'ipts': ipts,
+        }
+        logger.debug("Job is going to executed in {}.".format(path))
+
         job = Job.objects.create(
             title=form.instance.title,
             program=form.instance.script,
-            remote_directory=form.instance.script_execution_path,
+            remote_directory=path,
             remote_filename=self.remote_filename,
             server=server,
             owner=self.request.user,
-            interpreter=form.instance.script_interpreter,
+            interpreter=form.instance.action.script_interpreter,
         )
         logger.debug("Job created. Remote file name = %s", self.remote_filename)
         return job
     
     def _get_remote_task(self, form):
         '''
-        Based on the dropbox run_type selection calls one of the functions
-        in the django-remote-submission
-        Form run type
-         (1, 'Copy and Execute the script'),
-         (2, 'Copy the script'),
+        The Actions has the type of task to run as remote
+        This returns from text in the DB the function
         '''
-        functions = {
-            1: submit_job_to_server,
-            2: copy_job_to_server
-        }
-        run_type = form.instance.run_type
-        return functions[run_type]
+        task = form.instance.action.django_remote_submission_tasks
+        logger.debug("Executing remotely the task {}.".format(task))
+
+        method_to_call = getattr(django_remote_submission.tasks, task)
+        return method_to_call
 
 
     def form_valid(self, form):
@@ -370,7 +295,7 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
             messages.success(self.request, "Reduction script successfully generated.")
             self.success_url = reverse_lazy('reduction:script',
                                             args=[self.kwargs['pk']])
-        else:
+        else: # execute
             try:
                 server_name = env("JOB_SERVER_NAME")
                 server = get_object_or_404(Server, title=server_name)
@@ -383,6 +308,7 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
 
                 task = self._get_remote_task(form)
                 logger.debug("Executing remotely: {}".format(task) )
+                # Only launches this if everything went well before!
                 transaction.on_commit(
                     lambda:task.delay(
                         job.pk,

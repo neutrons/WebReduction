@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 class ScriptBuilder(object):
 
-    def __init__(self, data, instrument, ipts, experiment=None):
+    def __init__(self, data, instrument, ipts, experiment, template_path):
         '''
         instrument, ipts, experiment :: are objects
         '''
-        self.template_file_path = instrument.job_template_path
+        self.template_file_path = template_path
         self.engine = Engine(
             # debug=True,
             builtins=['server.scripts.filters'], # this is for tags and filters
@@ -35,10 +35,6 @@ class ScriptBuilder(object):
 
         self.data.pop('script', None)
         logger.debug("JSON:\n{}".format(pformat(self.data)))
-
-    def get_reduction_path(self):
-        return self.instrument.reduction_directory_path_template % self.data
-
 
     def build_script(self):
         '''

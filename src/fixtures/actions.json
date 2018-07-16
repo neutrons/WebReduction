@@ -8,7 +8,7 @@
             "description": "Copy auto reduction script",
             "script_interpreter": 3,
             "instrument": 18,
-            "destination_directory_path_template": "/SNS/HYS/%(ipts_number)s/shared/autoreduce",
+            "destination_directory_path_template": "/SNS/HYS/%(ipts)s/shared/autoreduce",
             "script_template_path": "/SNS/HYS/shared/templates/hyspec.tpl",
             "django_remote_submission_tasks": "copy_job_to_server"
         }
@@ -22,7 +22,7 @@
             "description": "Execute script",
             "script_interpreter": 1,
             "instrument": 18,
-            "destination_directory_path_template": "/SNS/HYS/%(ipts_number)s/shared/reduce/%(hash)s",
+            "destination_directory_path_template": "/SNS/HYS/%(ipts)s/shared/reduce/%(datetime)s",
             "script_template_path": "/SNS/HYS/shared/templates/reduce.tpl",
             "django_remote_submission_tasks": "submit_job_to_server"
         }

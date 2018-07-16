@@ -201,10 +201,12 @@ class Reduction(models.Model, ModelMixin):
 
     action = models.ForeignKey(
         Actions,
+        verbose_name="Action to take for the reduction",
         null=True,
         on_delete=models.CASCADE,
         related_name="%(class)s_action",
         related_query_name="%(class)s_action",
+        help_text="Pick an action for your reduction",
     )
 
     job = models.ForeignKey(
