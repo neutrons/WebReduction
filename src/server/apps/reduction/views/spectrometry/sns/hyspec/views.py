@@ -108,5 +108,5 @@ class ReductionScriptUpdate(LoginRequiredMixin, ReductionScriptUpdateMixin, Upda
     remote_filename="reduce_HYS_{}.py".format(
         timezone.now().strftime(r"%Y%m%d-%H%M%S")
     )
-    store_results=[]
+    store_results=["*.txt", "*.txt"]
 

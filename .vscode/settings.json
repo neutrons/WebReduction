@@ -10,8 +10,8 @@
         "**/dist": true,
         "**/.settings": true,
         "**/.vscode": true,
-        "**/.project": true,
-        "**/.pydevproject": true
+        "**/.gitignore": true,
+        "**/dump.rdb": true
     },
     "files.associations": {
         "*.tpl": "jinja",
@@ -19,11 +19,15 @@
     },
     //
     "python.pythonPath": "${workspaceFolder}/venv/bin/python",
+    // Pylint
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": ["--load-plugins", "pylint_django"],
+    
     // formatter
     "python.formatting.provider": "autopep8",
     "python.formatting.autopep8Path": "${workspaceRoot}/venv/bin/autopep8",
-    "cSpell.enabled": false,
+    
+    
 
 }

@@ -29,7 +29,7 @@
       "modified": "2016-12-08T15:01:18.064Z",
       "name": "Python Default",
       "path": "/usr/bin/python",
-      "arguments": ["--classic"]
+      "arguments": ["-u"]
     }
   },
   {

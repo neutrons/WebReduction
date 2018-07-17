@@ -56,11 +56,11 @@
         {{ form.parameters|as_crispy_field }}
         {{ form.script|as_crispy_field }}
 
-        <button id="button_save" name="save" type="submit" class="btn btn-primary" data-toggle="tooltip"
-            data-placement="top" title="Save the script and go back to the detail.">Save &amp; go back</button>
-        
         <button id="button_execute" name="execute" type="submit" class="btn btn-primary" data-toggle="tooltip"
             data-placement="top" title="Send the script to the cluster to be executed.">Execute</button>
+        
+        <button id="button_save" name="save" type="submit" class="btn btn-info" data-toggle="tooltip"
+            data-placement="top" title="Save the script and go back to the detail.">Save &amp; go back</button>
 
         <button type="cancel" class="btn btn-default" onclick="window.history.back()">Cancel</button>
     </form>

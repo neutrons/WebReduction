@@ -201,48 +201,25 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
     # Otherwise those are defaults
     remote_filename = "reduction_{}.py".format(timezone.now().strftime(
         r"%Y%m%d-%H%M%S"))
-    remote_directory_hash = timezone.now().strftime(r"%Y%m%d%H%M%S%f")
+    remote_directory_hash = "res_{}.py".format(timezone.now().strftime(
+        r"%Y%m%d%H%M%S%f"))
     log_policy=LogPolicy.LOG_LIVE
     store_results=["*.txt", "*.log"]
 
 
-    def _get_script_builder(self, template_path):
+    def _get_script_builder(self, data, template_path):
         '''
-        This function builds a script based on the request parameters
-        Used only in the form
+        This function builds a script based on the request parameters        
+        @param data is in json
         '''
+
         return ScriptBuilder(
-            self.model.objects.to_json(self.kwargs['pk']),
+            data,
             self.request.user.profile.instrument,
             self.request.user.profile.ipts,
             self.request.user.profile.experiment,
             template_path
         )
-
-    def post(self, request, **kwargs):
-        '''
-        When the form is posted if we clicked in generate, it will
-        regenerate the form and fill it in the respective field
-        Note: We need to modify the previously posted form (POST) before the 
-        for is vallid
-        '''
-        if 'generate' in self.request.POST:
-            request.POST = request.POST.copy()
-            action_obj = Actions.objects.get(pk=request.POST['action'])
-            script_builder = self._get_script_builder(
-                action_obj.script_template_path)
-
-            try:
-                request.POST['script'] = script_builder.build_script()
-            except Exception as e:
-                logger.exception(e)
-                messages.error(
-                    self.request,
-                    "An exception occurred while generating the script: "
-                    "{0} :: {1}".format(type(e).__name__, str(e)))
-                return super().get(request, **kwargs)
-        return super().post(request, **kwargs)
-
 
     def _create_job(self, form, server):
         '''
@@ -292,7 +269,21 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
             self.success_url = reverse_lazy('reduction:detail',
                                             args=[self.kwargs['pk']])
         elif 'generate' in self.request.POST:
-            messages.success(self.request, "Reduction script successfully generated.")
+            form.save() # Forms needs to be saved before calling the manager below
+            script_builder = self._get_script_builder(
+                self.model.objects.to_json(self.kwargs['pk']),
+                form.instance.action.script_template_path
+            )
+            try:
+                form.instance.script = script_builder.build_script()
+                messages.success(self.request, "Reduction script successfully generated.")
+            except Exception as e:
+                logger.exception(e)
+                messages.error(
+                    self.request,
+                    "An exception occurred while generating the script: "
+                    "{0} :: {1}".format(type(e).__name__, str(e)))
+            
             self.success_url = reverse_lazy('reduction:script',
                                             args=[self.kwargs['pk']])
         else: # execute
