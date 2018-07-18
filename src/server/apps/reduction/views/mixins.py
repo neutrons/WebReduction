@@ -1,12 +1,7 @@
-import json
 import logging
-import os
-import re
 from pprint import pformat
 
 from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import signing
 from django.db import transaction
 from django.http import Http404, HttpResponseRedirect
@@ -15,7 +10,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
-from django_auth_ldap.backend import LDAPBackend
+
 from django_remote_submission.models import Job, Server
 from django_remote_submission.tasks import LogPolicy
 import django_remote_submission.tasks
@@ -59,7 +54,6 @@ class ReductionMixin(object):
     #     return context
 
 
-
 class ReductionFormMixin(ReductionMixin):
     '''
     Mixin only used for the Reduction Form views
@@ -75,7 +69,6 @@ class ReductionFormMixin(ReductionMixin):
             form.fields['configuration'].queryset = self.model_configuration.objects.filter(
                     users=self.request.user)
         return form
-
 
 
 class ReductionFormsetMixin(ReductionMixin, FormsetMixin):
@@ -107,7 +100,6 @@ class ReductionFormsetMixin(ReductionMixin, FormsetMixin):
 #         return kwargs
 
 
-
 class ReductionCreateMixin(ReductionFormMixin, ReductionFormsetMixin):
 
     def form_valid(self, form, formset):
@@ -115,8 +107,8 @@ class ReductionCreateMixin(ReductionFormMixin, ReductionFormsetMixin):
         Sets initial values which are hidden in the form
         """
         form.instance.instrument = self.request.user.profile.instrument
-        form.save() # ManyToMany needs save before
-        #form.instance.users.clear()
+        form.save()  # ManyToMany needs save before
+        # form.instance.users.clear()
         form.instance.users.add(self.request.user)
         return FormsetMixin.form_valid(self, form, formset)
 
@@ -138,6 +130,7 @@ class ReductionDeleteMixin(ReductionMixin):
         logger.debug("Deleting reduction %s", self.get_object())
         messages.success(request, 'Reduction %s deleted.' % (self.get_object()))
         return super().delete(request, *args, **kwargs)
+
 
 class ReductionShareMixin(ReductionMixin):
 
@@ -180,6 +173,7 @@ class ReductionCloneMixin(ReductionFormMixin):
         return HttpResponseRedirect(
             reverse('reduction:update', kwargs={'pk': self.object.pk}))
 
+
 class ReductionUpdateMixin(ReductionFormMixin, ReductionFormsetMixin):
 
     def form_valid(self, form, formset):
@@ -201,38 +195,47 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
     # Otherwise those are defaults
     remote_filename = "reduction_{}.py".format(timezone.now().strftime(
         r"%Y%m%d-%H%M%S"))
-    remote_directory_hash = "res_{}.py".format(timezone.now().strftime(
+    remote_directory_hash = "res_{}".format(timezone.now().strftime(
         r"%Y%m%d%H%M%S%f"))
-    log_policy=LogPolicy.LOG_LIVE
-    store_results=["*.txt", "*.log"]
+    log_policy = LogPolicy.LOG_LIVE
+    store_results = ["*.txt", "*.log"]
 
-
-    def _get_script_builder(self, data, template_path):
+    def _get_script_builder(self, data, **kwargs):
         '''
         This function builds a script based on the request parameters        
         @param data is in json
         '''
 
+        kwargs.update({
+            'instrument_name': self.request.user.profile.instrument.name,
+            'ipts_number': self.request.user.profile.ipts,
+            'experiment_number': self.request.user.profile.experiment,
+        })
+        
         return ScriptBuilder(
             data,
-            self.request.user.profile.instrument,
-            self.request.user.profile.ipts,
-            self.request.user.profile.experiment,
-            template_path
+            **kwargs,
         )
+    
+    def _create_remote_path(self, form):
+        '''
+        
+        '''
+        ipts = self.request.user.profile.ipts
+        path_template = form.instance.action.destination_directory_path_template
+        path = path_template % {
+            'remote_directory_hash': self.remote_directory_hash,
+            'ipts': ipts,
+        }
+        logger.debug("Job is going to executed in {}.".format(path))
+        return path
 
     def _create_job(self, form, server):
         '''
         Auxiliary function to create a job from a form
         '''
- 
-        ipts = self.request.user.profile.ipts
-        path_template = form.instance.action.destination_directory_path_template
-        path = path_template % {
-            'datetime': self.remote_directory_hash,
-            'ipts': ipts,
-        }
-        logger.debug("Job is going to executed in {}.".format(path))
+
+        path = self._create_remote_path(form)
 
         job = Job.objects.create(
             title=form.instance.title,
@@ -269,14 +272,16 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
             self.success_url = reverse_lazy('reduction:detail',
                                             args=[self.kwargs['pk']])
         elif 'generate' in self.request.POST:
-            form.save() # Forms needs to be saved before calling the manager below
+            form.save()  # Form needs to be saved before calling the manager below
             script_builder = self._get_script_builder(
                 self.model.objects.to_json(self.kwargs['pk']),
-                form.instance.action.script_template_path
+                template_path=form.instance.action.script_template_path,
+                script_execution_path=self._create_remote_path(form),
             )
             try:
                 form.instance.script = script_builder.build_script()
-                messages.success(self.request, "Reduction script successfully generated.")
+                messages.success(self.request,
+                                 "Reduction script successfully generated.")
             except Exception as e:
                 logger.exception(e)
                 messages.error(
@@ -286,7 +291,7 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
             
             self.success_url = reverse_lazy('reduction:script',
                                             args=[self.kwargs['pk']])
-        else: # execute
+        else:  # execute
             try:
                 server_name = env("JOB_SERVER_NAME")
                 server = get_object_or_404(Server, title=server_name)

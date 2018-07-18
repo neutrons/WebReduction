@@ -12,27 +12,20 @@ logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 class ScriptBuilder(object):
 
-    def __init__(self, data, instrument, ipts, experiment, template_path):
+    def __init__(self, data, **kwargs):
         '''
-        instrument, ipts, experiment :: are objects
+        Initalises the script builder: in the template replaces the data
+        data is a json
+        kwargs is a dict that is going to be joined to data
+        
         '''
-        self.template_file_path = template_path
         self.engine = Engine(
             # debug=True,
-            builtins=['server.scripts.filters'], # this is for tags and filters
+            builtins=['server.scripts.filters'],  # this is for tags and filters
         )
-        # Because the following is not part of the data
-        data.update({
-            "instrument_name": instrument.name,
-            "ipts_number": ipts,
-            "experiment_number": experiment,
-            "data_file_path_template": instrument.data_file_path_template,
-        })
         self.data = data
-        self.instrument = instrument
-        self.ipts = ipts
-        self.experiment = experiment
-
+        self.data.update(**kwargs)
+        self.template_file_path = self.data['template_path']
         self.data.pop('script', None)
         logger.debug("JSON:\n{}".format(pformat(self.data)))
 

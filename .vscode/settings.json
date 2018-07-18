@@ -21,12 +21,13 @@
     "python.pythonPath": "${workspaceFolder}/venv/bin/python",
     // Pylint
     "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
+    "python.linting.pylintEnabled": false,
     "python.linting.pylintArgs": ["--load-plugins", "pylint_django"],
     
     // formatter
     "python.formatting.provider": "autopep8",
     "python.formatting.autopep8Path": "${workspaceRoot}/venv/bin/autopep8",
+    "python.linting.flake8Enabled": true,
     
     
 

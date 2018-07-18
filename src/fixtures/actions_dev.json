@@ -22,7 +22,7 @@
             "description": "DEV: Execute script",
             "script_interpreter": 3,
             "instrument": 18,
-            "destination_directory_path_template": "/SNS/users/rhf/tmp/HYS/%(ipts)s/reduce/%(datetime)s",
+            "destination_directory_path_template": "/SNS/users/rhf/tmp/HYS/%(ipts)s/reduce/%(remote_directory_hash)s",
             "script_template_path": "/SNS/users/rhf/tmp/HYS/reduce.tpl",
             "django_remote_submission_tasks": "submit_job_to_server"
         }

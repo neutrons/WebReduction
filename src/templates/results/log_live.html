@@ -58,7 +58,8 @@ pre {
 <script src='{% static "thirdparty/reconnecting-websocket/reconnecting-websocket.min.js" %}'></script>
 <script>
 
-socket = new ReconnectingWebSocket("wss://" + window.location.host + "/ws/job-log/{{ object.id }}/");
+var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+socket = new ReconnectingWebSocket(ws_scheme + "://" + window.location.host + "/ws/job-log/{{ object.id }}/");
 socket.onmessage = function(e) {
     var { log_id, time, content, stream } = JSON.parse(e.data);
 //    $('#job-log-rows').append(
