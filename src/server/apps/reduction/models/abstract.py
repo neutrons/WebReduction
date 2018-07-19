@@ -99,7 +99,7 @@ class ReductionManager(models.Manager):
 
         obj.pk = None  # setting to None, clones the object!
         obj.save()
-        #obj.regions = new_regions
+        # obj.regions = new_regions
         obj.regions.set(new_regions)
         obj.title += " (cloned)"
         obj.save()
@@ -122,9 +122,13 @@ class ReductionManager(models.Manager):
             d = model_to_dict(region)
             obj_json["regions"].append(d)
         obj_json['configuration'] = model_to_dict(obj.configuration)
-
-        if hasattr(obj.configuration, 'masks') and  obj.configuration.masks is not None:
-            obj_json['configuration']['masks']=[]
+        obj_json['action'] = model_to_dict(obj.action)
+        obj_json['action']['script_interpreter'] = \
+            model_to_dict(obj.action.script_interpreter)
+        
+        if hasattr(obj.configuration, 'masks') and \
+                obj.configuration.masks is not None:
+            obj_json['configuration']['masks'] = []
             for mask in obj.configuration.masks.select_related():
                 d = model_to_dict(mask)
                 obj_json['configuration']['masks'].append(d)
@@ -141,11 +145,11 @@ class ReductionManager(models.Manager):
         if not get_user_model().objects.filter(username=uid).exists():
             # this new_uid is not on the database
             logger.debug("UID %s does not exist in the DB. "
-                "Getting it from LDAP.", uid)
+                         "Getting it from LDAP.", uid)
             user = LDAPBackend().populate_user(uid)
             if not user:
                 logger.warning("UID %s is known to belong to this IPTS but does"
-                    " not exist in LDAP... Skipping it.", uid)
+                               " not exist in LDAP... Skipping it.", uid)
                 return None
         return get_user_model().objects.get(username=uid)
 
@@ -167,11 +171,11 @@ class ReductionManager(models.Manager):
                 logger.debug("Share: User {} added to Reduction '{}' and Configuration '{}'".format(
                     user_obj, obj, obj.configuration))
         return obj
-     
 
 class Reduction(models.Model, ModelMixin):
     '''
     '''
+
     title = models.CharField(max_length=256)
 
     created_date = models.DateTimeField(auto_now_add=True)
