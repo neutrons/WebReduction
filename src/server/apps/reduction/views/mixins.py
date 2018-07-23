@@ -303,10 +303,10 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
                 password = signing.loads(password_encrypted)
 
                 task = self._get_remote_task(form)
-                logger.debug("Executing remotely: {}".format(task) )
+                logger.debug("Executing remotely: {}".format(task))
                 # Only launches this if everything went well before!
                 transaction.on_commit(
-                    lambda:task.delay(
+                    lambda: task.delay(
                         job.pk,
                         password=password,
                         log_policy=self.log_policy,
@@ -316,12 +316,9 @@ class ReductionScriptUpdateMixin(ReductionFormMixin):
                 )
                 messages.success(
                     self.request,
-                    "Reduction submitted to the cluster. See status: \
-                    <a href='%s'> here </a>" % reverse_lazy(
-                        "results:job_log_live",
-                        args=[job.pk]
-                    )
-                )
+                    "Reduction submitted to the cluster. <a href='{}'> Click to"
+                    "see the Live Log</a> of this Job".format(
+                        reverse_lazy("results:job_log_live", args=[job.pk])))
             except Exception as e:
                 logger.exception(e)
                 messages.error(self.request, "Reduction not submitted to the cluster. \

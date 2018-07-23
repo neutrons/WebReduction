@@ -51,7 +51,7 @@ socket.onmessage = function(e) {
       ).append(
         //$('<td>').text('' + title)
           $('<td>').append('<a href="' + "{% url 'results:job_log_live' 999 %}".replace (999, job_id) +
-                   '" title="Click to see the log of this Job."><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> ' +
+                   '" title="Click to see the Live Log of this Job."><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> ' +
                    title + ' {{object.title}}</a>')
       ).append(
         //$('<td>').text('' + status)

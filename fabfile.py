@@ -161,6 +161,12 @@ def apply_role(func):
 # To see what is available as tasks
 @task
 @apply_role
+def add_ssh_key():
+    env.forward_agent = True
+    run('eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_rsa')
+
+@task
+@apply_role
 def start(branch='master'):
     '''
     Clones or pull the repo into the project root
@@ -256,13 +262,13 @@ def migrate():
         # For RHEL 7 and Python 6
         run('CFLAGS="-I/opt/rh/rh-python36/root/usr/include/python3.6m" \
             LDFLAGS="-L/opt/rh/rh-python36/root/usr/lib64" \
-            pip install -r config/requirements/production.txt')
+            pip install -r ../config/requirements/production.txt')
         # Collect all the static files
         run('python manage.py collectstatic --noinput')
         # Migrate and Update the database
         # run('python manage.py makemigrations --noinput')
         run('python manage.py migrate --no-input')
-        run('python manage.py loaddata catalog jobs')
+        run('python manage.py loaddata catalog jobs actions')
 
 @task
 @apply_role

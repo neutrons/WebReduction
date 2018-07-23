@@ -66,22 +66,25 @@ class ReductionHYSPEC(abstract.Reduction):
         "\(	\\alpha \)",
         max_digits=8,
         decimal_places=4,
-        blank=True,
+        default=90.0,
         null=True,
+        help_text="alpha",
     )
     ub_beta = models.DecimalField(
         "\(	\\beta \)",
         max_digits=8,
         decimal_places=4,
-        blank=True,
+        default=90.0,
         null=True,
+        help_text="beta",
     )
     ub_gamma = models.DecimalField(
         "\(	\\gamma \)",
         max_digits=8,
         decimal_places=4,
-        blank=True,
+        default=90.0,
         null=True,
+        help_text="gamma",
     )
 
     ub_u_vector = models.CharField(

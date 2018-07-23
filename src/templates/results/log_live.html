@@ -24,7 +24,7 @@ pre {
     <ol class="breadcrumb">
         <li><a href="{% url 'index' %}">Home</a></li>
         <li><a href="{% url 'results:job_list_live'%}">Jobs Live list</a></li>
-        <li class="active">Log live</li>
+        <li class="active">Log live for {{object}}</li>
     </ol>
 </div>
 {% endblock %}
@@ -39,7 +39,7 @@ pre {
     <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">Log for Job :: <a href="{% url 'results:job_detail' object.id %}"
-                   title="Click to see the details of this Job."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a></div>
+                   title="Click to see the Results of this Job."><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> {{object.title}}</a></div>
             <div class="panel-body">
                <pre id="job-log-rows"></pre>
             </div>
