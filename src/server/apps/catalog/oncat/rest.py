@@ -4,6 +4,7 @@ import sys
 from pprint import pformat, pprint
 from django.conf import settings
 from django.core import signing
+from datetime import datetime
 import requests
 
 import oauthlib
@@ -22,6 +23,7 @@ class TokenStorage(object):
     Class to store the token in the session
     I'm assuming that the password and the user exist already in the session
     '''
+
     def __init__(self, request):
         '''
         '''
@@ -32,7 +34,12 @@ class TokenStorage(object):
         '''
         Fetch token from the session
         '''
-        return self._request.session.get('token')
+        token = self._request.session.get('token')
+        logger.debug("Current token: %s", pformat(token))
+        if 'expires_at' in token:
+            logger.debug("Token expires at: %s",
+                         datetime.fromtimestamp(token['expires_at']).isoformat())
+        return token
 
     @token.setter
     def token(self, val):
@@ -46,7 +53,7 @@ class TokenStorage(object):
         Set it in the session
         @token.setter does not work in the function below....
         '''
-        logger.debug("New token set:\n%s", pformat(val))
+        logger.debug("New token set in the Session:\n%s", pformat(val))
         self._request.session['token'] = val
 
     @property
@@ -98,7 +105,7 @@ class OAuthClient(object):
             client_id=settings.ONCAT_CLIENT_ID,
             client_secret=settings.ONCAT_CLIENT_SECRET,
         )
-        logger.debug("Got a new token: %s", token)
+        logger.debug("Got a new token: %s", pformat(token))
         return token
 
     def get_auto_refresh_client(self):
