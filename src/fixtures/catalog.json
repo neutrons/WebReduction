@@ -565,7 +565,7 @@
 			"name": "FOUR-CIRCLE",
 			"description": "Four-Circle Diffractometer",
 			"beamline": "HB-3A",
-			"technique": "Crystallography",
+			"technique": "TAS",
 			"catalog_name": "HB3A",
 			"ldap_group_name": "hfir_hb3a_team",
 			"drive_directory_path": "/HFIR/HB3A",
