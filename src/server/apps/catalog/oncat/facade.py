@@ -221,12 +221,16 @@ class SNS(Catalog):
     def runs_specific(self, entry):
         '''
         '''
+
         elem = {}
-        elem['metadata'] = {
-            (key): (value if value is not None else "") for key, value \
-                in entry['metadata'][self.RUNS_ENTRY].items()
-        }
-        elem['title'] = elem['metadata']['title']
+        try:
+            elem['metadata'] = {
+                (key): (value if value is not None else "") for key, value \
+                    in entry['metadata'][self.RUNS_ENTRY].items()
+            }
+            elem['title'] = elem['metadata']['title']
+        except KeyError:
+            elem['title'] = "Malformed file"
         return elem
 
 
