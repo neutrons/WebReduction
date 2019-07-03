@@ -7,13 +7,12 @@
 	<th>Total Counts</th>
 {% endblock table_header %}
 
-
 {% block table_content %}
     
 	{{ block.super }}
 	<td>
 		<div class="text-center">
-			<a href="https://monitor.sns.gov/report/{{instrument|lower}}/{{run.metadata.run_number}}/"  target="_blank"
+			<a href="https://monitor.sns.gov/report/{{request.user.profile.instrument.catalog_name|lower}}/{{run.metadata.run_number}}/"  target="_blank"
 				class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="Click to see this run in the monitor.">
 				<span class="glyphicon glyphicon-new-window"></span>
 			</a>
@@ -23,6 +22,7 @@
 	<td>{{run.metadata.total_counts|stringformat:".2e"}}</td>
     
 {% endblock table_content %}
+
 
 
 {% block table_footer %}
